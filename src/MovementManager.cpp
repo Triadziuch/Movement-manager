@@ -14,17 +14,10 @@ void MovementManager::update(float dt)
 	for (auto it = this->m_Movements.begin(); it != this->m_Movements.end();) {
 		it->second->currentTime += dt;
 
-		float position_x = it->second->used_function(it->second->currentTime / it->second->movementTime, 2.f) * (it->second->endingPos.x - it->second->startingPos.x) + it->second->startingPos.x;
-		float position_y = it->second->used_function(it->second->currentTime / it->second->movementTime, 2.f) * (it->second->endingPos.y - it->second->startingPos.y) + it->second->startingPos.y;
+		double position_x = it->second->used_function(static_cast<double>(it->second->currentTime / it->second->movementTime)) * (it->second->endingPos.x - it->second->startingPos.x) + it->second->startingPos.x;
+		double position_y = it->second->used_function(static_cast<double>(it->second->currentTime / it->second->movementTime)) * (it->second->endingPos.y - it->second->startingPos.y) + it->second->startingPos.y;
 		
-		//float position_x = outPow(it->second->currentTime / it->second->movementTime, 2.f) * (it->second->endingPos.x - it->second->startingPos.x) + it->second->startingPos.x;
-		//float position_y = outPow(it->second->currentTime / it->second->movementTime, 2.f) * (it->second->endingPos.y - it->second->startingPos.y) + it->second->startingPos.y;
-
-		//float position_x = outPow(it->second->currentTime / it->second->movementTime) * (it->second->endingPos.x - it->second->startingPos.x) + it->second->startingPos.x;
-		//float position_y = outPow(it->second->currentTime / it->second->movementTime) * (it->second->endingPos.y - it->second->startingPos.y) + it->second->startingPos.y;
-
-		printf("x: %f, y: %f\n", position_x, position_y);
-		it->first->setPosition(position_x, position_y);
+		it->first->setPosition(static_cast<float>(position_x), static_cast<float>(position_y));
 
 		if (it->second->isDone()) {
 			delete it->second;

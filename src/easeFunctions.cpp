@@ -140,6 +140,8 @@ static double inOutExpo(double x)
 // Circ
 static double inCirc(double x)
 {
+	if(x <= 0.0) return 0.0;
+	if (x >= 1.0) return 1.0;
 	return 1.0 - sqrt(1.0 - pow(x, 2.0));
 }
 

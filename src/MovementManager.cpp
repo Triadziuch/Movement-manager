@@ -41,3 +41,12 @@ void MovementManager::addMovement(sf::Vector2f _startingPos, sf::Vector2f _endin
 		movementMap.insert(std::make_pair(_sprite, newMovement));
 	}
 }
+
+void MovementManager::resetMovement()
+{
+	for (auto it = this->m_Movements.begin(); it != this->m_Movements.end();) {
+		it->first->setPosition(it->second->startingPos);
+		delete it->second;
+		it = m_Movements.erase(it);
+	}
+}

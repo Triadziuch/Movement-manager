@@ -25,7 +25,7 @@ private:
 			used_function = _movementInfo.used_function;
 		}
 
-		bool isDone() { return currentTime >= movementTime; }
+		const bool isDone() { return currentTime >= movementTime; }
 	};
 
 	//float (*return_movement_function(movement_type type))(float, float); madafaka
@@ -74,6 +74,7 @@ public:
 	void update(float dt);
 
 	static void addMovement(sf::Vector2f startingPos, sf::Vector2f endingPos, float movementTime, sf::CircleShape* _sprite, movement_type _used_function);
+	void resetMovement();
 
 	int getMovementCount() { return m_Movements.size(); }
 };

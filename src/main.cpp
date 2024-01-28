@@ -41,48 +41,66 @@ int main()
 		{"IN_OUT_BOUNCE", movement_type::IN_OUT_BOUNCE}
 	};
 
+	float animation_time = 2.f;
+
 	// Start position initialization
 	sf::Vector2f start_pos[3];
 	for (int i = 0; i < 3; i++) 
 		start_pos[i] = sf::Vector2f(300.f, static_cast<float>(window.getSize().y) / 3.f * static_cast<float>(i) + window.getSize().y / 3.f / 2.f);
 
+	// End position initialization
 	sf::Vector2f end_pos[3];
 	for (int i = 0; i < 3; i++)
 		end_pos[i] = sf::Vector2f(static_cast<float>(window.getSize().x) - 300.f, static_cast<float>(window.getSize().y) / 3.f * static_cast<float>(i) + window.getSize().y / 3.f / 2.f);
 
+	// Shapes initialiaztion
 	sf::CircleShape shapes[3];
 	for (int i = 0; i < 3; i++) {
-		shapes[i].setRadius(20.f);
+		shapes[i].setRadius(30.f);
 		shapes[i].setFillColor(sf::Color::Blue);
 		shapes[i].setOrigin(shapes[i].getRadius(), shapes[i].getRadius());
 		shapes[i].setPosition(start_pos[i]);
 	}
 
-	int n = 15;
-	float section_height = window.getSize().y / n;
-	sf::CircleShape* shapes = new sf::CircleShape[n];
+	int current_ease_type = 0;
 
+	// GUI Initialization
+	sf::Font font;
+	if (!font.loadFromFile("Fonts/Arial.ttf"))
+		std::cout << "ERROR: Font not found!\n";
+	sf::Text text[3];
 
-
-	float animation_time = 2.f;
-	movement_type type = movement_type::LINEAR;
-	for (int i = 0; i < n; i++) {
-		shapes[i].setRadius(20.f);
-		shapes[i].setFillColor(sf::Color::Blue);
-		shapes[i].setOrigin(shapes[i].getRadius(), shapes[i].getRadius());
-		shapes[i].setPosition(300.f, section_height * i + section_height / 2);
+	for (int i = 0; i < 3; i++) {
+		text[i].setFont(font);
+		text[i].setCharacterSize(30);
+		text[i].setFillColor(sf::Color::White);
+		text[i].setString(easeType[current_ease_type + i].first);
+		text[i].setPosition(50.f, static_cast<float>(window.getSize().y) / 3.f * static_cast<float>(i) + window.getSize().y / 3.f / 2.f);
 	}
 
 	sf::Clock dt_clock;
 	float dt;
 
 	float wait_time = 0.f;
-	float wait_time_max = 2.f;
+	float wait_time_max = 0.5f;
 
 	while (window.isOpen())
 	{
 		dt = dt_clock.restart().asSeconds();
 
+		if (movementManager.getMovementCount() == 0) {
+			wait_time += dt;
+			if (wait_time >= wait_time_max) {
+				wait_time = 0.f;
+				for (int i = 0; i < 3; i++)
+					shapes[i].setPosition(start_pos[i]);
+
+				movementManager.addMovement(start_pos[0], end_pos[0], animation_time, &shapes[0], easeType[current_ease_type].second);
+				movementManager.addMovement(start_pos[1], end_pos[1], animation_time, &shapes[1], easeType[current_ease_type + 1].second);
+				movementManager.addMovement(start_pos[2], end_pos[2], animation_time, &shapes[2], easeType[current_ease_type + 2].second);
+			}
+		}
+		
 		movementManager.update(dt);
 
 		sf::Event event;
@@ -90,9 +108,35 @@ int main()
 		{
 			if (event.type == sf::Event::Closed || (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape))
 				window.close();
+
+			if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::Up || event.key.code ==sf::Keyboard::W)) {
+				current_ease_type += 3;
+				if (current_ease_type >= easeTypeSize - 2)
+					current_ease_type = 0;
+
+				for (int i = 0; i < 3; i++)
+					text[i].setString(easeType[current_ease_type + i].first);
+
+				movementManager.resetMovement();
+			}
+			else if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::Down || event.key.code == sf::Keyboard::S)) {
+				current_ease_type -= 3;
+				if (current_ease_type < 0)
+					current_ease_type = easeTypeSize - 3;
+
+				for (int i = 0; i < 3; i++)
+					text[i].setString(easeType[current_ease_type + i].first);
+
+				movementManager.resetMovement();
+			}
 		}
 
 		window.clear();
+		for (int i = 0; i < 3; i++)
+			window.draw(shapes[i]);
+
+		for (int i = 0; i < 3; i++)
+			window.draw(text[i]);
 		window.display();
 	}
 

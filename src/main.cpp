@@ -67,6 +67,15 @@ int main()
 
 	int current_ease_type = 0;
 
+	// Graph initialization
+	Graph graphs[3];
+	for (int i = 0; i < 3; i++) {
+		graphs[i].setPrecision(75);
+		graphs[i].setSize(200.f, 200.f);
+		graphs[i].setPosition(sf::Vector2f(end_pos[i].x + 150.f, end_pos[i].y + graphs[i].getSize().y / 2.f));
+		graphs[i].setFunction(movementManager.getFunctionPointer(easeType[current_ease_type + i].second));
+	}
+
 	// GUI Initialization
 	sf::Font font;
 	if (!font.loadFromFile("Fonts/Helvetica Regular.otf"))
@@ -83,36 +92,14 @@ int main()
 
 	sf::Clock dt_clock;
 	float dt;
-
 	float wait_time = 0.f;
 	float wait_time_max = 0.5f;
-
-
-	// Wykres funkcji
-	constexpr int precision = 75;
-	float scale = 5.f;
-
-	// Wielkoœæ wykresu w pixelach = precision * scale
-	sf::Vector2f position(100, 900);
-	sf::Vector2f size(100.f, 100.f);
-
-
-
-	Graph wykres(position, size, 100, inElastic);
-
-
-	sf::Vector2f zero_point(100, 900);
-
-	sf::Vertex line[] ={
-		sf::Vertex(sf::Vector2f(10, 10)),
-		sf::Vertex(sf::Vector2f(150, 150))
-	};
 
 	while (window.isOpen())
 	{
 		dt = dt_clock.restart().asSeconds();
 
-		/*if (movementManager.getMovementCount() == 0) {
+		if (movementManager.getMovementCount() == 0) {
 			wait_time += dt;
 			if (wait_time >= wait_time_max) {
 				wait_time = 0.f;
@@ -123,7 +110,7 @@ int main()
 				movementManager.addMovement(start_pos[1], end_pos[1], animation_time, &shapes[1], easeType[current_ease_type + 1].second);
 				movementManager.addMovement(start_pos[2], end_pos[2], animation_time, &shapes[2], easeType[current_ease_type + 2].second);
 			}
-		}*/
+		}
 		
 		movementManager.update(dt);
 
@@ -133,39 +120,17 @@ int main()
 			if (event.type == sf::Event::Closed || (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape))
 				window.close();
 
-			if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::Up || event.key.code == sf::Keyboard::W)) {
-				wykres.setOXColor(sf::Color::Red);
-				wykres.setLineColor(sf::Color::Blue);
-				wykres.setOXColor(sf::Color::Green);
-				wykres.setFunction(inBounce);
-				wykres.setPosition(sf::Vector2f(20.f, 1060.f));
-				wykres.setSize(sf::Vector2f(1900.f, 1060.f));
-
-			}
-			else if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::Down || event.key.code == sf::Keyboard::S)) {
-				wykres.setOXColor(sf::Color::Green);
-				wykres.setLineColor(sf::Color::Red);
-				wykres.setOXColor(sf::Color::Blue);
-				wykres.setFunction(outBounce);
-				wykres.setSize(sf::Vector2f(150.f, 150.f));
-				wykres.setPosition(sf::Vector2f(100.f, 700.f));
-				
-			}
-			else if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::Left || event.key.code == sf::Keyboard::A)) {
-				wykres.setPrecision(wykres.getPrecision() + 1);
-				printf("%d\n", wykres.getPrecision());
-			}
-			else if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::Right || event.key.code == sf::Keyboard::D)) {
-				wykres.setPrecision(wykres.getPrecision() - 1);
-			}
-
-			/*if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::Up || event.key.code ==sf::Keyboard::W)) {
+			if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::Up || event.key.code ==sf::Keyboard::W)) {
 				current_ease_type += 3;
 				if (current_ease_type >= easeTypeSize - 2)
 					current_ease_type = 0;
 
-				for (int i = 0; i < 3; i++)
+				for (int i = 0; i < 3; i++) {
 					text[i].setString(easeType[current_ease_type + i].first);
+					graphs[i].setFunction(movementManager.getFunctionPointer(easeType[current_ease_type + i].second));
+				}
+					
+
 
 				movementManager.resetMovement();
 			}
@@ -174,26 +139,21 @@ int main()
 				if (current_ease_type < 0)
 					current_ease_type = easeTypeSize - 3;
 
-				for (int i = 0; i < 3; i++)
+				for (int i = 0; i < 3; i++) {
 					text[i].setString(easeType[current_ease_type + i].first);
+					graphs[i].setFunction(movementManager.getFunctionPointer(easeType[current_ease_type + i].second));
+				}
 
 				movementManager.resetMovement();
-			}*/
+			}
 		}
 
 		window.clear();
-		/*for (int i = 0; i < 3; i++)
+		for (int i = 0; i < 3; i++) {
 			window.draw(text[i]);
-
-		for (int i = 0; i < 3; i++)
-			window.draw(shapes[i]);*/
-		//window.draw(line, 3, sf::Lines);
-		//window.draw(OX, 2, sf::Lines);
-		//window.draw(OY, 2, sf::Lines);
-		//window.draw(linearray);
-		wykres.draw(window);
-		//window.draw(linearray, 3, sf::Lines);
-
+			window.draw(shapes[i]);
+			graphs[i].draw(window);
+		}
 		window.display();
 	}
 

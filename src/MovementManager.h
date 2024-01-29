@@ -78,4 +78,5 @@ public:
 
 	// Accessors / Mutators
 	int getMovementCount() { return m_Movements.size(); }
+	double (*getFunctionPointer(movement_type _movement_type))(double) { return movement_functions[_movement_type]; }
 };

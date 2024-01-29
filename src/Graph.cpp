@@ -18,6 +18,9 @@
 
 void Graph::drawFunction()
 {
+	if (this->used_function == nullptr)
+		return;
+
 	if (this->linearray.getVertexCount() != 0)
 		this->linearray.clear();
 

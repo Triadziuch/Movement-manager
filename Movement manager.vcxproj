@@ -135,10 +135,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\easeFunctions.cpp" />
+    <ClCompile Include="src\Graph.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\MovementManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="src\Graph.h" />
     <ClInclude Include="src\MovementManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

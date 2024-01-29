@@ -6,7 +6,7 @@
 
 class MovementManager {
 private:
-
+	// Movement info struct
 	struct movementInfo {
 		sf::Vector2f startingPos{};
 		sf::Vector2f endingPos{};
@@ -27,8 +27,6 @@ private:
 
 		const bool isDone() { return currentTime >= movementTime; }
 	};
-
-	//float (*return_movement_function(movement_type type))(float, float); madafaka
 
 	std::map<movement_type, double(*)(double)> movement_functions = {
 		{movement_type::IN_SINE, inSine},
@@ -62,19 +60,22 @@ private:
 		{movement_type::OUT_BOUNCE, outBounce},
 		{movement_type::IN_OUT_BOUNCE, inOutBounce}
 	};
-
 	std::map<sf::CircleShape*, movementInfo*>  m_Movements;
 
+	// Singleton
 	static MovementManager* sInstance;
-public:
-	
 
+public:
+	// Default constructor
 	MovementManager();
 
+	// Update functions
 	void update(float dt);
 
+	// Public functions
 	static void addMovement(sf::Vector2f startingPos, sf::Vector2f endingPos, float movementTime, sf::CircleShape* _sprite, movement_type _used_function);
 	void resetMovement();
 
+	// Accessors / Mutators
 	int getMovementCount() { return m_Movements.size(); }
 };

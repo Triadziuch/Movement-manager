@@ -1,14 +1,17 @@
 #include "MovementManager.h"
 #include <assert.h>
 
+// Singleton initialization
 MovementManager* MovementManager::sInstance = nullptr;
 
+// Default constructor
 MovementManager::MovementManager()
 {
 	assert(this->sInstance == nullptr);
 	sInstance = this;
 }
 
+// Update functions
 void MovementManager::update(float dt)
 {
 	for (auto it = this->m_Movements.begin(); it != this->m_Movements.end();) {
@@ -28,13 +31,14 @@ void MovementManager::update(float dt)
 	}
 }
 
+// Public functions
 void MovementManager::addMovement(sf::Vector2f _startingPos, sf::Vector2f _endingPos, float _movementTime, sf::CircleShape* _sprite, movement_type _used_function)
 {
 	auto& movementMap = sInstance->m_Movements;
 	auto movementFound = movementMap.find(_sprite);
 
 	if (movementFound != movementMap.end()) {
-		printf("ERROR: Movement already exists!\n");
+		printf("ERROR: Movement for this object already exists!\n");
 	}
 	else {
 		movementInfo* newMovement = new movementInfo(_startingPos, _endingPos, _movementTime, sInstance->movement_functions[_used_function]);

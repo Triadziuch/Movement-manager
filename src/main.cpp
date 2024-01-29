@@ -1,10 +1,13 @@
 #include <iostream>
 #include "MovementManager.h"
 #include "SFML\Graphics.hpp"
+#include "Graph.h"
 
 int main()
 {
-	sf::RenderWindow window(sf::VideoMode(1920, 1080), "Ease functions", sf::Style::Fullscreen);
+	sf::ContextSettings settings;
+	settings.antialiasingLevel = 16;
+	sf::RenderWindow window(sf::VideoMode(1920, 1080), "Ease functions", sf::Style::Fullscreen, settings);
 	MovementManager movementManager;
 
 	constexpr size_t easeTypeSize = 30;
@@ -46,17 +49,17 @@ int main()
 	// Start position initialization
 	sf::Vector2f start_pos[3];
 	for (int i = 0; i < 3; i++) 
-		start_pos[i] = sf::Vector2f(300.f, static_cast<float>(window.getSize().y) / 3.f * static_cast<float>(i) + window.getSize().y / 3.f / 2.f);
+		start_pos[i] = sf::Vector2f(400.f, static_cast<float>(window.getSize().y) / 3.f * static_cast<float>(i) + window.getSize().y / 3.f / 2.f);
 
 	// End position initialization
 	sf::Vector2f end_pos[3];
 	for (int i = 0; i < 3; i++)
-		end_pos[i] = sf::Vector2f(static_cast<float>(window.getSize().x) - 300.f, static_cast<float>(window.getSize().y) / 3.f * static_cast<float>(i) + window.getSize().y / 3.f / 2.f);
+		end_pos[i] = sf::Vector2f(static_cast<float>(window.getSize().x) - 400.f, static_cast<float>(window.getSize().y) / 3.f * static_cast<float>(i) + window.getSize().y / 3.f / 2.f);
 
 	// Shapes initialiaztion
 	sf::CircleShape shapes[3];
 	for (int i = 0; i < 3; i++) {
-		shapes[i].setRadius(30.f);
+		shapes[i].setRadius(50.f);
 		shapes[i].setFillColor(sf::Color::Blue);
 		shapes[i].setOrigin(shapes[i].getRadius(), shapes[i].getRadius());
 		shapes[i].setPosition(start_pos[i]);
@@ -66,7 +69,7 @@ int main()
 
 	// GUI Initialization
 	sf::Font font;
-	if (!font.loadFromFile("Fonts/Arial.ttf"))
+	if (!font.loadFromFile("Fonts/Helvetica Regular.otf"))
 		std::cout << "ERROR: Font not found!\n";
 	sf::Text text[3];
 
@@ -75,7 +78,7 @@ int main()
 		text[i].setCharacterSize(30);
 		text[i].setFillColor(sf::Color::White);
 		text[i].setString(easeType[current_ease_type + i].first);
-		text[i].setPosition(50.f, static_cast<float>(window.getSize().y) / 3.f * static_cast<float>(i) + window.getSize().y / 3.f / 2.f);
+		text[i].setPosition(50.f, static_cast<float>(window.getSize().y) / 3.f * static_cast<float>(i) + window.getSize().y / 3.f / 2.f - text[i].getGlobalBounds().height / 2.f);
 	}
 
 	sf::Clock dt_clock;
@@ -84,11 +87,32 @@ int main()
 	float wait_time = 0.f;
 	float wait_time_max = 0.5f;
 
+
+	// Wykres funkcji
+	constexpr int precision = 75;
+	float scale = 5.f;
+
+	// Wielkoœæ wykresu w pixelach = precision * scale
+	sf::Vector2f position(100, 900);
+	sf::Vector2f size(100.f, 100.f);
+
+
+
+	Graph wykres(position, size, 100, inElastic);
+
+
+	sf::Vector2f zero_point(100, 900);
+
+	sf::Vertex line[] ={
+		sf::Vertex(sf::Vector2f(10, 10)),
+		sf::Vertex(sf::Vector2f(150, 150))
+	};
+
 	while (window.isOpen())
 	{
 		dt = dt_clock.restart().asSeconds();
 
-		if (movementManager.getMovementCount() == 0) {
+		/*if (movementManager.getMovementCount() == 0) {
 			wait_time += dt;
 			if (wait_time >= wait_time_max) {
 				wait_time = 0.f;
@@ -99,7 +123,7 @@ int main()
 				movementManager.addMovement(start_pos[1], end_pos[1], animation_time, &shapes[1], easeType[current_ease_type + 1].second);
 				movementManager.addMovement(start_pos[2], end_pos[2], animation_time, &shapes[2], easeType[current_ease_type + 2].second);
 			}
-		}
+		}*/
 		
 		movementManager.update(dt);
 
@@ -109,7 +133,33 @@ int main()
 			if (event.type == sf::Event::Closed || (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape))
 				window.close();
 
-			if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::Up || event.key.code ==sf::Keyboard::W)) {
+			if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::Up || event.key.code == sf::Keyboard::W)) {
+				wykres.setOXColor(sf::Color::Red);
+				wykres.setLineColor(sf::Color::Blue);
+				wykres.setOXColor(sf::Color::Green);
+				wykres.setFunction(inBounce);
+				wykres.setPosition(sf::Vector2f(20.f, 1060.f));
+				wykres.setSize(sf::Vector2f(1900.f, 1060.f));
+
+			}
+			else if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::Down || event.key.code == sf::Keyboard::S)) {
+				wykres.setOXColor(sf::Color::Green);
+				wykres.setLineColor(sf::Color::Red);
+				wykres.setOXColor(sf::Color::Blue);
+				wykres.setFunction(outBounce);
+				wykres.setSize(sf::Vector2f(150.f, 150.f));
+				wykres.setPosition(sf::Vector2f(100.f, 700.f));
+				
+			}
+			else if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::Left || event.key.code == sf::Keyboard::A)) {
+				wykres.setPrecision(wykres.getPrecision() + 1);
+				printf("%d\n", wykres.getPrecision());
+			}
+			else if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::Right || event.key.code == sf::Keyboard::D)) {
+				wykres.setPrecision(wykres.getPrecision() - 1);
+			}
+
+			/*if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::Up || event.key.code ==sf::Keyboard::W)) {
 				current_ease_type += 3;
 				if (current_ease_type >= easeTypeSize - 2)
 					current_ease_type = 0;
@@ -128,15 +178,22 @@ int main()
 					text[i].setString(easeType[current_ease_type + i].first);
 
 				movementManager.resetMovement();
-			}
+			}*/
 		}
 
 		window.clear();
-		for (int i = 0; i < 3; i++)
-			window.draw(shapes[i]);
+		/*for (int i = 0; i < 3; i++)
+			window.draw(text[i]);
 
 		for (int i = 0; i < 3; i++)
-			window.draw(text[i]);
+			window.draw(shapes[i]);*/
+		//window.draw(line, 3, sf::Lines);
+		//window.draw(OX, 2, sf::Lines);
+		//window.draw(OY, 2, sf::Lines);
+		//window.draw(linearray);
+		wykres.draw(window);
+		//window.draw(linearray, 3, sf::Lines);
+
 		window.display();
 	}
 

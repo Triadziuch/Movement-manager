@@ -22,11 +22,20 @@
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
     <ClCompile Include="src\easeFunctions.cpp">
-      <Filter>Pliki nagłówkowe</Filter>
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graph.cpp">
+      <Filter>Pliki źródłowe</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\MovementManager.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Pliki nagłówkowe</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graph.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
   </ItemGroup>

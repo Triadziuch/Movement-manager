@@ -7,25 +7,30 @@
 class Graph {
 private:
 	// Private variables
-	sf::VertexArray linearray{};
+
+	// Axis variables
 	sf::Vertex OX[2]{}, OY[2]{};
-	int precision = 100;
+	sf::Color OX_color = sf::Color::White, OY_color = sf::Color::White;
+	bool axis_visible = true;
+
+	// Function variables
+	sf::VertexArray function_vertexes{};
+	sf::Color		function_color	= sf::Color::White;
+	int				precision		= 100;
 	double(*used_function)(double) {};
+
+	// General variables
 	sf::Vector2f position{};
-	sf::Color OX_color = sf::Color::White, OY_color = sf::Color::White, line_color = sf::Color::White;
 	sf::Vector2f size{};
 	sf::Vector2f scale{};
-
 
 	// Private functions
 	void drawFunction();
 	void drawOX();
 	void drawOY();
 
-	
-
 public:
-
+	// Constructors & Destructors
 	Graph() {};
 	Graph(sf::Vector2f _position, sf::Vector2f _size, int _precision, double(*_used_function)(double));
 	Graph(const Graph& _graph);
@@ -42,11 +47,15 @@ public:
 	void setPosition(sf::Vector2f _position);
 	void setPosition(float _x, float _y) { this->setPosition(sf::Vector2f(_x, _y)); }
 	void setFunction(double(*_used_function)(double));
+	void setAxisVisible(bool _visible) { this->axis_visible = _visible; }
 
 	// Accessors
-	sf::Vector2f getSize() { return this->size; }
-	sf::Vector2f getPosition() { return this->position; }
-	int getPrecision() { return this->precision; }
+	const sf::Vector2f getSize()	 { return this->size; }
+	const int getPrecision()		 { return this->precision; }
+	const sf::Vector2f getPosition() { return this->position; }
+	double (*getFunction())(double)	 { return this->used_function; }
+	const bool getAxisVisible()	     { return this->axis_visible; }
 
+	// Render functions
 	void draw(sf::RenderWindow& window);
 };

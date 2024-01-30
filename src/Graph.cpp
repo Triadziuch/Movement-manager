@@ -1,37 +1,24 @@
 #include "Graph.h"
 
-//sf::VertexArray linearray(sf::LineStrip, precision + 1);
-//for (int i = 0; i <= precision; i++) {
-//	linearray[i].position = sf::Vector2f(zero_point.x + i * scale, zero_point.y - precision * scale * inOutElastic(static_cast<double>(i) / static_cast<double>(precision)));
-//	linearray[i].color = sf::Color::Blue;
-//}
-//
-//sf::Vertex OX[] = {
-//	sf::Vertex(sf::Vector2f(linearray[0].position.x, zero_point.y)),
-//	sf::Vertex(sf::Vector2f(linearray[precision].position.x, zero_point.y))
-//};
-//
-//sf::Vertex OY[] = {
-//	sf::Vertex(sf::Vector2f(zero_point.x, linearray[0].position.y)),
-//	sf::Vertex(sf::Vector2f(zero_point.x, linearray[precision].position.y))
-//};
-
+// Private functions
 void Graph::drawFunction()
 {
 	if (this->used_function == nullptr)
 		return;
 
-	if (this->linearray.getVertexCount() != 0)
-		this->linearray.clear();
+	if (this->function_vertexes.getVertexCount() != 0)
+		this->function_vertexes.clear();
 
-	this->linearray.setPrimitiveType(sf::LineStrip);
-	this->linearray.resize(static_cast<size_t>(this->precision + 1));
-
-	for (size_t i = 0; i <= precision; i++) {
-		this->linearray[i].position = sf::Vector2f(this->position.x + static_cast<float>(i) * this->scale.x, this->position.y - this->precision * this->scale.y * this->used_function(static_cast<double>(i) / static_cast<double>(this->precision)));
-		this->linearray[i].color = this->line_color;
-	}
+	this->function_vertexes.setPrimitiveType(sf::LineStrip);
+	this->function_vertexes.resize(static_cast<size_t>(this->precision + 1));
+	
+	for (size_t i = 0; i <= static_cast<size_t>(precision); i++) {
+		this->function_vertexes[i].position = sf::Vector2f(
+					this->position.x + static_cast<float>(i) * this->scale.x,
+					this->position.y - this->precision * this->scale.y * static_cast<float>(this->used_function(static_cast<double>(i) / static_cast<double>(this->precision))));
 		
+		this->function_vertexes[i].color = this->function_color;
+	}
 }
 
 void Graph::drawOX()
@@ -52,6 +39,7 @@ void Graph::drawOY()
 		this->OY[i].color = this->OY_color;
 }
 
+// Constructors & Destructors
 Graph::Graph(sf::Vector2f _position, sf::Vector2f _size, int _precision, double(*_used_function)(double))
 {
 	this->position = _position;
@@ -69,17 +57,43 @@ Graph::Graph(sf::Vector2f _position, sf::Vector2f _size, int _precision, double(
 
 Graph::Graph(const Graph& _graph)
 {
+	// Axis variables
+	for (size_t i = 0; i < 2; ++i) {
+		this->OX[i] = _graph.OX[i];
+		this->OY[i] = _graph.OY[i];
+	}
+	this->OX_color		 = _graph.OX_color;
+	this->OY_color		 = _graph.OY_color;
+	this->axis_visible	 = _graph.axis_visible;
+
+	// Function variables
+	this->function_vertexes	 = _graph.function_vertexes;
+	this->function_color	 = _graph.function_color;
+	this->precision			 = _graph.precision;
+	this->used_function		 = _graph.used_function;
+
+	// General variables
+	this->position	= _graph.position;
+	this->size		= _graph.size;
+	this->scale		= _graph.scale;
+
+	this->drawFunction();
+	this->drawOX();
+	this->drawOY();
 }
 
 Graph::~Graph()
 {
 }
 
+// Public functions
 void Graph::draw(sf::RenderWindow& window)
 {
-	window.draw(this->OX, 2, sf::Lines);
-	window.draw(this->OY, 2, sf::Lines);
-	window.draw(this->linearray);
+	if (this->axis_visible) {
+		window.draw(this->OX, 2, sf::Lines);
+		window.draw(this->OY, 2, sf::Lines);
+	}
+	window.draw(this->function_vertexes);
 }
 
 void Graph::setOXColor(sf::Color _color)
@@ -104,11 +118,11 @@ void Graph::setOYColor(sf::Color _color)
 
 void Graph::setLineColor(sf::Color _color)
 {
-	if (this->line_color != _color) {
-		this->line_color = _color;
+	if (this->function_color != _color) {
+		this->function_color = _color;
 
-		for (size_t i = 0; i < this->linearray.getVertexCount(); i++)
-			this->linearray[i].color = this->line_color;
+		for (size_t i = 0; i < this->function_vertexes.getVertexCount(); i++)
+			this->function_vertexes[i].color = this->function_color;
 	}
 }
 
@@ -143,8 +157,8 @@ void Graph::setPosition(sf::Vector2f _position)
 		sf::Vector2f offset = _position - this->position;
 		this->position = _position;
 		
-		for (size_t i = 0; i < this->linearray.getVertexCount(); i++)
-			this->linearray[i].position += offset;
+		for (size_t i = 0; i < this->function_vertexes.getVertexCount(); i++)
+			this->function_vertexes[i].position += offset;
 		
 		for (int i = 0; i < 2; i++) {
 			this->OX[i].position += offset;

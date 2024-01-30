@@ -2,12 +2,14 @@
 #include "MovementManager.h"
 #include "SFML\Graphics.hpp"
 #include "Graph.h"
-
+#include <Windows.h>
+int iterator = 0;
 int main()
 {
 	sf::ContextSettings settings;
 	settings.antialiasingLevel = 16;
 	sf::RenderWindow window(sf::VideoMode(1920, 1080), "Ease functions", sf::Style::Fullscreen, settings);
+
 	MovementManager movementManager;
 
 	constexpr size_t easeTypeSize = 30;
@@ -44,7 +46,7 @@ int main()
 		{"IN_OUT_BOUNCE", movement_type::IN_OUT_BOUNCE}
 	};
 
-	float animation_time = 2.f;
+	float animation_time = 30.f;
 
 	// Start position initialization
 	sf::Vector2f start_pos[3];
@@ -94,7 +96,7 @@ int main()
 	float dt;
 	float wait_time = 0.f;
 	float wait_time_max = 0.5f;
-
+	Sleep(1000);
 	while (window.isOpen())
 	{
 		dt = dt_clock.restart().asSeconds();
@@ -115,7 +117,7 @@ int main()
 		movementManager.update(dt);
 
 		sf::Event event;
-		while (window.pollEvent(event))
+		if (window.pollEvent(event))
 		{
 			if (event.type == sf::Event::Closed || (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape))
 				window.close();

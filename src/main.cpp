@@ -9,7 +9,8 @@ int main()
 	sf::ContextSettings settings;
 	settings.antialiasingLevel = 16;
 	sf::RenderWindow window(sf::VideoMode(1920, 1080), "Ease functions", sf::Style::Fullscreen, settings);
-
+	window.setFramerateLimit(60);
+	window.setVerticalSyncEnabled(true);
 	MovementManager movementManager;
 
 	constexpr size_t easeTypeSize = 30;
@@ -46,7 +47,7 @@ int main()
 		{"IN_OUT_BOUNCE", movement_type::IN_OUT_BOUNCE}
 	};
 
-	float animation_time = 30.f;
+	float animation_time = 60.f;
 
 	// Start position initialization
 	sf::Vector2f start_pos[3];
@@ -66,6 +67,8 @@ int main()
 		shapes[i].setOrigin(shapes[i].getRadius(), shapes[i].getRadius());
 		shapes[i].setPosition(start_pos[i]);
 	}
+
+	
 
 	int current_ease_type = 0;
 
@@ -96,7 +99,11 @@ int main()
 	float dt;
 	float wait_time = 0.f;
 	float wait_time_max = 0.5f;
-	Sleep(1000);
+
+	movementManager.addMovement(start_pos[0], end_pos[0], 15.f, &shapes[0], easeType[current_ease_type].second);
+	movementManager.addMovement(start_pos[1], end_pos[1], 15.f, &shapes[1], easeType[current_ease_type + 1].second);
+	movementManager.addMovement(start_pos[2], end_pos[2], 15.f, &shapes[2], easeType[current_ease_type + 2].second);
+
 	while (window.isOpen())
 	{
 		dt = dt_clock.restart().asSeconds();

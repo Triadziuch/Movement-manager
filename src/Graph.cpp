@@ -40,6 +40,22 @@ void Graph::drawOY()
 }
 
 // Constructors & Destructors
+Graph::Graph()
+{
+	if (!this->font.loadFromFile("Fonts/Arial.ttf"))
+		printf("ERROR: Couldn't load font file: Fonst/Arial.ttf\n");
+
+	this->OX_label.setFont(this->font);
+	this->OX_label.setCharacterSize(this->label_size);
+	this->OX_label.setString(this->OX_label_string);
+	this->OX_label.setFillColor(sf::Color::White);
+
+	this->OY_label.setFont(this->font);
+	this->OY_label.setCharacterSize(this->label_size);
+	this->OY_label.setString(this->OY_label_string);
+	this->OX_label.setFillColor(sf::Color::White);
+}
+
 Graph::Graph(sf::Vector2f _position, sf::Vector2f _size, int _precision, double(*_used_function)(double))
 {
 	this->position = _position;
@@ -53,6 +69,21 @@ Graph::Graph(sf::Vector2f _position, sf::Vector2f _size, int _precision, double(
 		this->drawOX();
 		this->drawOY();
 	}
+
+	if (!this->font.loadFromFile("Fonts/Arial.ttf"))
+		printf("ERROR: Couldn't load font file: Fonst/Arial.ttf\n");
+
+	this->OX_label.setFont(this->font);
+	this->OX_label.setCharacterSize(this->label_size);
+	this->OX_label.setString(this->OX_label_string);
+	this->OX_label.setFillColor(sf::Color::White);
+	this->OX_label.setPosition(this->position.x + this->size.x + 10.f, this->position.y - this->OX_label.getGlobalBounds().height);
+
+	this->OY_label.setFont(this->font);
+	this->OY_label.setCharacterSize(this->label_size);
+	this->OY_label.setString(this->OY_label_string);
+	this->OX_label.setFillColor(sf::Color::White);
+	this->OY_label.setPosition(this->position.x - this->OY_label.getGlobalBounds().width / 2.f, this->position.y - this->size.y - this->OY_label.getGlobalBounds().height - 30.f);
 }
 
 Graph::Graph(const Graph& _graph)
@@ -66,6 +97,13 @@ Graph::Graph(const Graph& _graph)
 	this->OY_color		 = _graph.OY_color;
 	this->axis_visible	 = _graph.axis_visible;
 
+	this->font = _graph.font;
+	this->label_size = _graph.label_size;
+	this->OX_label_string = _graph.OX_label_string;
+	this->OY_label_string = _graph.OY_label_string;
+	this->OX_label = _graph.OX_label;
+	this->OY_label = _graph.OY_label;
+
 	// Function variables
 	this->function_vertexes	 = _graph.function_vertexes;
 	this->function_color	 = _graph.function_color;
@@ -76,10 +114,6 @@ Graph::Graph(const Graph& _graph)
 	this->position	= _graph.position;
 	this->size		= _graph.size;
 	this->scale		= _graph.scale;
-
-	this->drawFunction();
-	this->drawOX();
-	this->drawOY();
 }
 
 Graph::~Graph()
@@ -87,15 +121,6 @@ Graph::~Graph()
 }
 
 // Public functions
-void Graph::draw(sf::RenderWindow& window)
-{
-	if (this->axis_visible) {
-		window.draw(this->OX, 2, sf::Lines);
-		window.draw(this->OY, 2, sf::Lines);
-	}
-	window.draw(this->function_vertexes);
-}
-
 void Graph::setOXColor(sf::Color _color)
 {
 	if (this->OX_color != _color) {
@@ -135,6 +160,9 @@ void Graph::setSize(sf::Vector2f _size)
 		this->drawFunction();
 		this->drawOX();
 		this->drawOY();
+
+		this->OX_label.setPosition(this->position.x + this->size.x + 10.f, this->position.y - this->OX_label.getGlobalBounds().height);
+		this->OY_label.setPosition(this->position.x - this->OY_label.getGlobalBounds().width / 2.f, this->position.y - this->size.y - this->OY_label.getGlobalBounds().height - 30.f);
 	}
 }
 
@@ -164,6 +192,9 @@ void Graph::setPosition(sf::Vector2f _position)
 			this->OX[i].position += offset;
 			this->OY[i].position += offset;
 		}
+
+		this->OX_label.setPosition(this->OX_label.getPosition() + offset);
+		this->OY_label.setPosition(this->OY_label.getPosition() + offset);
 	}
 }
 
@@ -173,4 +204,34 @@ void Graph::setFunction(double(*_used_function)(double))
 		this->used_function = _used_function;
 		this->drawFunction();
 	}
+}
+
+void Graph::setOXLabelText(std::string _label)
+{
+	if (this->OX_label_string != _label) {
+		this->OX_label_string = _label;
+		this->OX_label.setString(this->OX_label_string);
+		this->OX_label.setPosition(this->position.x + this->size.x + 10.f, this->position.y - this->OX_label.getGlobalBounds().height);
+	}
+}
+
+void Graph::setOYLabelText(std::string _label)
+{
+	if (this->OY_label_string != _label) {
+		this->OY_label_string = _label;
+		this->OY_label.setString(this->OY_label_string);
+		this->OY_label.setPosition(this->position.x - this->OY_label.getGlobalBounds().width / 2.f, this->position.y - this->size.y - this->OY_label.getGlobalBounds().height - 30.f);
+	}
+}
+
+// Render functions
+void Graph::draw(sf::RenderWindow& window)
+{
+	if (this->axis_visible) {
+		window.draw(this->OX, 2, sf::Lines);
+		window.draw(this->OY, 2, sf::Lines);
+		window.draw(this->OX_label);
+		window.draw(this->OY_label);
+	}
+	window.draw(this->function_vertexes);
 }

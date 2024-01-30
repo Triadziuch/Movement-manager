@@ -12,6 +12,10 @@ private:
 	sf::Vertex OX[2]{}, OY[2]{};
 	sf::Color OX_color = sf::Color::White, OY_color = sf::Color::White;
 	bool axis_visible = true;
+	sf::Text OX_label{}, OY_label{};
+	std::string OX_label_string{"t"}, OY_label_string{"x"};
+	unsigned label_size = 30u;
+	sf::Font font{};
 
 	// Function variables
 	sf::VertexArray function_vertexes{};
@@ -31,7 +35,7 @@ private:
 
 public:
 	// Constructors & Destructors
-	Graph() {};
+	Graph();
 	Graph(sf::Vector2f _position, sf::Vector2f _size, int _precision, double(*_used_function)(double));
 	Graph(const Graph& _graph);
 	~Graph();
@@ -48,6 +52,9 @@ public:
 	void setPosition(float _x, float _y) { this->setPosition(sf::Vector2f(_x, _y)); }
 	void setFunction(double(*_used_function)(double));
 	void setAxisVisible(bool _visible) { this->axis_visible = _visible; }
+	void setOXLabelText(std::string _label);
+	void setOYLabelText(std::string _label);
+
 
 	// Accessors
 	const sf::Vector2f getSize()	 { return this->size; }

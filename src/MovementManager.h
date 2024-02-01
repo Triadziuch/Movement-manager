@@ -1,7 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <map>
-#include <unordered_map>
 #include "easeFunctions.cpp"
 
 class MovementManager {
@@ -12,10 +11,11 @@ private:
 		sf::Vector2f endingPos{};
 		float		 movementTime{};
 		float		 currentTime{};
+		bool		 repeat = false;
 		double (*used_function)(double) {};
 
-		movementInfo(sf::Vector2f _startingPos, sf::Vector2f _endingPos, float _movementTime, double(*_used_function)(double)) :
-			startingPos(_startingPos), endingPos(_endingPos), movementTime(_movementTime), currentTime(0.f), used_function(_used_function) {};
+		movementInfo(sf::Vector2f _startingPos, sf::Vector2f _endingPos, float _movementTime, double(*_used_function)(double), bool _repeat) :
+			startingPos(_startingPos), endingPos(_endingPos), movementTime(_movementTime), currentTime(0.f), used_function(_used_function), repeat(_repeat) {};
 
 		movementInfo(const movementInfo& _movementInfo) {
 			startingPos = _movementInfo.startingPos;
@@ -60,7 +60,8 @@ private:
 		{movement_type::OUT_BOUNCE, outBounce},
 		{movement_type::IN_OUT_BOUNCE, inOutBounce}
 	};
-	std::map<sf::CircleShape*, movementInfo*>  m_Movements;
+	std::map<sf::CircleShape*, movementInfo*>  m_Movements_CS;
+	std::map<sf::VertexArray*, movementInfo*>  m_Movements_VA;
 
 	// Singleton
 	static MovementManager* sInstance;
@@ -73,10 +74,11 @@ public:
 	void update(float dt);
 
 	// Public functions
-	static void addMovement(sf::Vector2f startingPos, sf::Vector2f endingPos, float movementTime, sf::CircleShape* _sprite, movement_type _used_function);
+	static void addMovement(sf::Vector2f startingPos, sf::Vector2f endingPos, float movementTime, sf::CircleShape* _circleshape, movement_type _used_function, bool _repeat = false);
+	static void addMovement(sf::Vector2f startingPos, sf::Vector2f endingPos, float movementTime, sf::VertexArray* _vertexarray, movement_type _used_function, bool _repeat = false);
 	void resetMovement();
 
 	// Accessors / Mutators
-	int getMovementCount() { return m_Movements.size(); }
+	int getMovementCount() { return m_Movements_CS.size(); }
 	double (*getFunctionPointer(movement_type _movement_type))(double) { return movement_functions[_movement_type]; }
 };

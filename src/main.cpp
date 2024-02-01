@@ -13,7 +13,13 @@ int main()
 	window.setVerticalSyncEnabled(true);
 	MovementManager movementManager;
 
+	// Configuration
 	constexpr size_t easeTypeSize = 30;
+	const int rows = 3;
+	float animation_time = 3.f;
+	int current_ease_type = 0;
+	float wait_time_max = 0.5f;
+
 	std::pair<std::string, movement_type> easeType[easeTypeSize] = {
 		{"IN_SINE", movement_type::IN_SINE},
 		{"OUT_SINE", movement_type::OUT_SINE},
@@ -47,35 +53,29 @@ int main()
 		{"IN_OUT_BOUNCE", movement_type::IN_OUT_BOUNCE}
 	};
 
-	float animation_time = 60.f;
-
 	// Start position initialization
-	sf::Vector2f start_pos[3];
-	for (int i = 0; i < 3; i++) 
-		start_pos[i] = sf::Vector2f(400.f, static_cast<float>(window.getSize().y) / 3.f * static_cast<float>(i) + window.getSize().y / 3.f / 2.f);
+	sf::Vector2f start_pos[rows];
+	for (int i = 0; i < rows; i++) 
+		start_pos[i] = sf::Vector2f(500.f, static_cast<float>(window.getSize().y) / static_cast<float>(rows) * static_cast<float>(i) + window.getSize().y / static_cast<float>(rows) / 2.f);
 
 	// End position initialization
-	sf::Vector2f end_pos[3];
-	for (int i = 0; i < 3; i++)
-		end_pos[i] = sf::Vector2f(static_cast<float>(window.getSize().x) - 400.f, static_cast<float>(window.getSize().y) / 3.f * static_cast<float>(i) + window.getSize().y / 3.f / 2.f);
+	sf::Vector2f end_pos[rows];
+	for (int i = 0; i < rows; i++)
+		end_pos[i] = sf::Vector2f(static_cast<float>(window.getSize().x) - 400.f, static_cast<float>(window.getSize().y) / static_cast<float>(rows) * static_cast<float>(i) + window.getSize().y / static_cast<float>(rows) / 2.f);
 
 	// Shapes initialiaztion
-	sf::CircleShape shapes[3];
-	for (int i = 0; i < 3; i++) {
+	sf::CircleShape shapes[5];
+	for (int i = 0; i < rows; i++) {
 		shapes[i].setRadius(50.f);
 		shapes[i].setFillColor(sf::Color::Blue);
 		shapes[i].setOrigin(shapes[i].getRadius(), shapes[i].getRadius());
 		shapes[i].setPosition(start_pos[i]);
 	}
 
-	
-
-	int current_ease_type = 0;
-
 	// Graph initialization
-	Graph graphs[3];
-	for (int i = 0; i < 3; i++) {
-		graphs[i].setPrecision(75);
+	Graph graphs[rows];
+	for (int i = 0; i < rows; i++) {
+		graphs[i].setPrecision(200);
 		graphs[i].setSize(200.f, 200.f);
 		graphs[i].setPosition(sf::Vector2f(end_pos[i].x + 150.f, end_pos[i].y + graphs[i].getSize().y / 2.f));
 		graphs[i].setFunction(movementManager.getFunctionPointer(easeType[current_ease_type + i].second));
@@ -85,24 +85,37 @@ int main()
 	sf::Font font;
 	if (!font.loadFromFile("Fonts/Helvetica Regular.otf"))
 		std::cout << "ERROR: Font not found!\n";
-	sf::Text text[3];
 
-	for (int i = 0; i < 3; i++) {
+	sf::Text text[rows];
+	for (int i = 0; i < rows; i++) {
 		text[i].setFont(font);
 		text[i].setCharacterSize(30);
 		text[i].setFillColor(sf::Color::White);
 		text[i].setString(easeType[current_ease_type + i].first);
-		text[i].setPosition(50.f, static_cast<float>(window.getSize().y) / 3.f * static_cast<float>(i) + window.getSize().y / 3.f / 2.f - text[i].getGlobalBounds().height / 2.f);
+		text[i].setStyle(sf::Text::Bold);
+		text[i].setPosition(50.f, static_cast<float>(window.getSize().y) / static_cast<float>(rows) * static_cast<float>(i) + window.getSize().y / static_cast<float>(rows) / 2.f - text[i].getGlobalBounds().height / 2.f);
 	}
+
+	// Arrows initialization
+	sf::VertexArray up_arrow(sf::LineStrip, 3u), down_arrow(sf::LineStrip, 3u);
+	up_arrow[0].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f - 40.f, 60.f);
+	up_arrow[1].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f, 30.f);
+	up_arrow[2].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f + 40.f, 60.f);
+
+	down_arrow[0].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f - 40.f, static_cast<float>(window.getSize().y) - 60.f);
+	down_arrow[1].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f, static_cast<float>(window.getSize().y) - 30.f);
+	down_arrow[2].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f + 40.f, static_cast<float>(window.getSize().y) - 60.f);
+
+	float arrow_animation_time = 2.f;
+	movementManager.addMovement(up_arrow[0].position, up_arrow[0].position + sf::Vector2f(0.f, -20.f), arrow_animation_time, &up_arrow, movement_type::OUT_SINE, true);
+	movementManager.addMovement(down_arrow[0].position, down_arrow[0].position + sf::Vector2f(0.f, 20.f), arrow_animation_time, &down_arrow, movement_type::OUT_SINE, true);
 
 	sf::Clock dt_clock;
 	float dt;
-	float wait_time = 0.f;
-	float wait_time_max = 0.5f;
+	float wait_time = 0.5f;
 
-	movementManager.addMovement(start_pos[0], end_pos[0], 15.f, &shapes[0], easeType[current_ease_type].second);
-	movementManager.addMovement(start_pos[1], end_pos[1], 15.f, &shapes[1], easeType[current_ease_type + 1].second);
-	movementManager.addMovement(start_pos[2], end_pos[2], 15.f, &shapes[2], easeType[current_ease_type + 2].second);
+	for(int i = 0; i < rows; i++)
+		movementManager.addMovement(start_pos[i], end_pos[i], animation_time, &shapes[i], easeType[current_ease_type + i].second);
 
 	while (window.isOpen())
 	{
@@ -112,12 +125,11 @@ int main()
 			wait_time += dt;
 			if (wait_time >= wait_time_max) {
 				wait_time = 0.f;
-				for (int i = 0; i < 3; i++)
+				for (int i = 0; i < rows; i++)
 					shapes[i].setPosition(start_pos[i]);
 
-				movementManager.addMovement(start_pos[0], end_pos[0], animation_time, &shapes[0], easeType[current_ease_type].second);
-				movementManager.addMovement(start_pos[1], end_pos[1], animation_time, &shapes[1], easeType[current_ease_type + 1].second);
-				movementManager.addMovement(start_pos[2], end_pos[2], animation_time, &shapes[2], easeType[current_ease_type + 2].second);
+				for (int i = 0; i < rows; i++)
+					movementManager.addMovement(start_pos[i], end_pos[i], animation_time, &shapes[i], easeType[current_ease_type + i].second);
 			}
 		}
 		
@@ -130,11 +142,11 @@ int main()
 				window.close();
 
 			if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::Up || event.key.code ==sf::Keyboard::W)) {
-				current_ease_type += 3;
+				current_ease_type += rows;
 				if (current_ease_type >= easeTypeSize - 2)
 					current_ease_type = 0;
 
-				for (int i = 0; i < 3; i++) {
+				for (int i = 0; i < rows; i++) {
 					text[i].setString(easeType[current_ease_type + i].first);
 					graphs[i].setFunction(movementManager.getFunctionPointer(easeType[current_ease_type + i].second));
 				}
@@ -144,11 +156,11 @@ int main()
 				movementManager.resetMovement();
 			}
 			else if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::Down || event.key.code == sf::Keyboard::S)) {
-				current_ease_type -= 3;
+				current_ease_type -= rows;
 				if (current_ease_type < 0)
-					current_ease_type = easeTypeSize - 3;
+					current_ease_type = easeTypeSize - rows;
 
-				for (int i = 0; i < 3; i++) {
+				for (int i = 0; i < rows; i++) {
 					text[i].setString(easeType[current_ease_type + i].first);
 					graphs[i].setFunction(movementManager.getFunctionPointer(easeType[current_ease_type + i].second));
 				}
@@ -158,10 +170,14 @@ int main()
 		}
 
 		window.clear();
-		for (int i = 0; i < 3; i++) {
+		for (int i = 0; i < rows; i++) {
 			window.draw(text[i]);
 			window.draw(shapes[i]);
+
 			graphs[i].draw(window);
+
+			window.draw(up_arrow);
+			window.draw(down_arrow);
 		}
 		window.display();
 	}

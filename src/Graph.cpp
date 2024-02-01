@@ -43,7 +43,7 @@ void Graph::drawOY()
 Graph::Graph()
 {
 	if (!this->font.loadFromFile("Fonts/Arial.ttf"))
-		printf("ERROR: Couldn't load font file: Fonst/Arial.ttf\n");
+		printf("ERROR: Couldn't load font file: Fonts/Arial.ttf\n");
 
 	this->OX_label.setFont(this->font);
 	this->OX_label.setCharacterSize(this->label_size);

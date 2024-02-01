@@ -76,9 +76,11 @@ public:
 	void update(float dt);
 
 	// Public functions
-	// Dodaæ nadpisan¹ metodê addMovement w której startingPos bêdzie pobierane z obiektu
-	static void addMovement(sf::Vector2f startingPos, sf::Vector2f endingPos, float movementTime, sf::CircleShape* _circleshape, movement_type _used_function, bool _repeat = false, float _wait_before_repeating = 0.f);
-	static void addMovement(sf::Vector2f startingPos, sf::Vector2f endingPos, float movementTime, sf::VertexArray* _vertexarray, movement_type _used_function, bool _repeat = false, float _wait_before_repeating = 0.f);
+	const bool addMovement(sf::CircleShape* _circleshape, sf::Vector2f endingPos, float movementTime, movement_type _used_function, bool _repeat = false, float _wait_before_repeating = 0.f);
+	const bool addMovement(sf::CircleShape* _circleshape, sf::Vector2f startingPos, sf::Vector2f endingPos, float movementTime, movement_type _used_function, bool _repeat = false, float _wait_before_repeating = 0.f);
+	
+	const bool addMovement(sf::VertexArray* _vertexarray, sf::Vector2f endingPos, float movementTime, movement_type _used_function, bool _repeat = false, float _wait_before_repeating = 0.f);
+	const bool addMovement(sf::VertexArray* _vertexarray, sf::Vector2f startingPos, sf::Vector2f endingPos, float movementTime, movement_type _used_function, bool _repeat = false, float _wait_before_repeating = 0.f);
 	
 	void undoMovement();
 	void undoMovement(sf::CircleShape* _circleshape);

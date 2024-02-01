@@ -115,13 +115,13 @@ int main()
 	float wait_time = 0.5f;
 
 	for(int i = 0; i < rows; i++)
-		movementManager.addMovement(start_pos[i], end_pos[i], animation_time, &shapes[i], easeType[current_ease_type + i].second);
+		movementManager.addMovement(start_pos[i], end_pos[i], animation_time, &shapes[i], easeType[current_ease_type + i].second, true, 1.f);
 
 	while (window.isOpen())
 	{
 		dt = dt_clock.restart().asSeconds();
 
-		if (movementManager.getMovementCount() == 0) {
+		/*if (movementManager.getMovementCount() == 0) {
 			wait_time += dt;
 			if (wait_time >= wait_time_max) {
 				wait_time = 0.f;
@@ -131,7 +131,7 @@ int main()
 				for (int i = 0; i < rows; i++)
 					movementManager.addMovement(start_pos[i], end_pos[i], animation_time, &shapes[i], easeType[current_ease_type + i].second);
 			}
-		}
+		}*/
 		
 		movementManager.update(dt);
 
@@ -150,10 +150,13 @@ int main()
 					text[i].setString(easeType[current_ease_type + i].first);
 					graphs[i].setFunction(movementManager.getFunctionPointer(easeType[current_ease_type + i].second));
 				}
+
+
+				for (int i = 0; i < rows; i++) {
+					movementManager.undoMovement(&shapes[i]);
+					movementManager.addMovement(start_pos[i], end_pos[i], animation_time, &shapes[i], easeType[current_ease_type + i].second, true, 1.f);
+				}
 					
-
-
-				movementManager.resetMovement();
 			}
 			else if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::Down || event.key.code == sf::Keyboard::S)) {
 				current_ease_type -= rows;
@@ -165,7 +168,10 @@ int main()
 					graphs[i].setFunction(movementManager.getFunctionPointer(easeType[current_ease_type + i].second));
 				}
 
-				movementManager.resetMovement();
+				for (int i = 0; i < rows; i++) {
+					movementManager.undoMovement(&shapes[i]);
+					movementManager.addMovement(start_pos[i], end_pos[i], animation_time, &shapes[i], easeType[current_ease_type + i].second, true, 1.f);
+				}
 			}
 		}
 

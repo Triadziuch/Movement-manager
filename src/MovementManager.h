@@ -9,13 +9,15 @@ private:
 	struct movementInfo {
 		sf::Vector2f startingPos{};
 		sf::Vector2f endingPos{};
-		float		 movementTime{};
 		float		 currentTime{};
+		float		 movementTime{};
 		bool		 repeat = false;
+		float		 repeat_timer{};
+		float		 wait_before_repeating{};
 		double (*used_function)(double) {};
 
-		movementInfo(sf::Vector2f _startingPos, sf::Vector2f _endingPos, float _movementTime, double(*_used_function)(double), bool _repeat) :
-			startingPos(_startingPos), endingPos(_endingPos), movementTime(_movementTime), currentTime(0.f), used_function(_used_function), repeat(_repeat) {};
+		movementInfo(sf::Vector2f _startingPos, sf::Vector2f _endingPos, float _movementTime, double(*_used_function)(double), bool _repeat, bool _wait_before_repeating) :
+			startingPos(_startingPos), endingPos(_endingPos), movementTime(_movementTime), currentTime(0.f), used_function(_used_function), repeat(_repeat), wait_before_repeating(_wait_before_repeating) {};
 
 		movementInfo(const movementInfo& _movementInfo) {
 			startingPos = _movementInfo.startingPos;
@@ -74,8 +76,13 @@ public:
 	void update(float dt);
 
 	// Public functions
-	static void addMovement(sf::Vector2f startingPos, sf::Vector2f endingPos, float movementTime, sf::CircleShape* _circleshape, movement_type _used_function, bool _repeat = false);
-	static void addMovement(sf::Vector2f startingPos, sf::Vector2f endingPos, float movementTime, sf::VertexArray* _vertexarray, movement_type _used_function, bool _repeat = false);
+	static void addMovement(sf::Vector2f startingPos, sf::Vector2f endingPos, float movementTime, sf::CircleShape* _circleshape, movement_type _used_function, bool _repeat = false, float _wait_before_repeating = 0.f);
+	static void addMovement(sf::Vector2f startingPos, sf::Vector2f endingPos, float movementTime, sf::VertexArray* _vertexarray, movement_type _used_function, bool _repeat = false, float _wait_before_repeating = 0.f);
+	
+	void undoMovement();
+	void undoMovement(sf::CircleShape* _circleshape);
+	void undoMovement(sf::VertexArray* _vertexarray);
+
 	void resetMovement();
 
 	// Accessors / Mutators

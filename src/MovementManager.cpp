@@ -116,11 +116,10 @@ void MovementManager::undoMovement()
 
 	for (auto it = this->m_Movements_VA.begin(); it != this->m_Movements_VA.end();) {
 		if (it->first->getVertexCount() != 0) {
-			float offset_x = it->second->endingPos.x - it->second->startingPos.x;
-			float offset_y = it->second->endingPos.y - it->second->startingPos.y;
+			sf::Vector2f offset = it->first->operator[](0).position - it->second->startingPos;
 
 			for (size_t i = 0; i < it->first->getVertexCount(); i++)
-				it->first->operator[](i).position -= sf::Vector2f(offset_x, offset_y);
+				it->first->operator[](i).position -= offset;
 
 			delete it->second;
 			it = m_Movements_VA.erase(it);
@@ -147,11 +146,10 @@ void MovementManager::undoMovement(sf::VertexArray* _vertexarray)
 
 	if (movementFound != movementMap.end()) {
 		if (_vertexarray->getVertexCount() != 0) {
-			float offset_x = movementFound->second->endingPos.x - movementFound->second->startingPos.x;
-			float offset_y = movementFound->second->endingPos.y - movementFound->second->startingPos.y;
+			sf::Vector2f offset = movementFound->first->operator[](0).position - movementFound->second->startingPos;
 
 			for (size_t i = 0; i < _vertexarray->getVertexCount(); i++)
-				_vertexarray->operator[](i).position -= sf::Vector2f(offset_x, offset_y);
+				_vertexarray->operator[](i).position -= offset;
 
 			delete movementFound->second;
 			movementMap.erase(movementFound);
@@ -164,18 +162,83 @@ void MovementManager::resetMovement()
 	for (auto it = this->m_Movements_CS.begin(); it != this->m_Movements_CS.end();) {
 		it->first->setPosition(it->second->startingPos);
 		it->second->currentTime = 0.f;
+		it->second->repeat_timer = 0.f;
 		++it;
 	}
 
 	for (auto it = this->m_Movements_VA.begin(); it != this->m_Movements_VA.end();) {
 		if (it->first->getVertexCount() != 0) {
-			float offset_x = it->second->endingPos.x - it->second->startingPos.x;
-			float offset_y = it->second->endingPos.y - it->second->startingPos.y;
+			sf::Vector2f offset = it->first->operator[](0).position - it->second->startingPos;
 
 			for (size_t i = 0; i < it->first->getVertexCount(); i++)
-				it->first->operator[](i).position -= sf::Vector2f(offset_x, offset_y);
+				it->first->operator[](i).position -= offset;
 		}
 		it->second->currentTime = 0.f;
+		it->second->repeat_timer = 0.f;
 		++it;
+	}
+}
+
+void MovementManager::resetMovement(sf::CircleShape* _circleshape)
+{
+	auto& movementMap = sInstance->m_Movements_CS;
+	auto movementFound = movementMap.find(_circleshape);
+
+	if (movementFound != movementMap.end()) {
+		_circleshape->setPosition(movementFound->second->startingPos);
+		movementFound->second->currentTime = 0.f;
+		movementFound->second->repeat_timer = 0.f;
+	}
+}
+
+void MovementManager::resetMovement(sf::VertexArray* _vertexarray)
+{
+	auto& movementMap = sInstance->m_Movements_VA;
+	auto movementFound = movementMap.find(_vertexarray);
+
+	if (movementFound != movementMap.end()) {
+		if (_vertexarray->getVertexCount() != 0) {
+			sf::Vector2f offset = movementFound->first->operator[](0).position - movementFound->second->startingPos;
+
+			for (size_t i = 0; i < _vertexarray->getVertexCount(); i++)
+				_vertexarray->operator[](i).position -= offset;
+		}
+		movementFound->second->currentTime = 0.f;
+		movementFound->second->repeat_timer = 0.f;
+	}
+}
+
+void MovementManager::stopMovement()
+{
+	for (auto it = this->m_Movements_CS.begin(); it != this->m_Movements_CS.end();) {
+		delete it->second;
+		it = m_Movements_CS.erase(it);
+	}
+
+	for (auto it = this->m_Movements_VA.begin(); it != this->m_Movements_VA.end();) {
+		delete it->second;
+		it = m_Movements_VA.erase(it);
+	}
+}
+
+void MovementManager::stopMovement(sf::CircleShape* _circleshape)
+{
+	auto& movementMap = sInstance->m_Movements_CS;
+	auto movementFound = movementMap.find(_circleshape);
+
+	if (movementFound != movementMap.end()) {
+		delete movementFound->second;
+		movementMap.erase(movementFound);
+	}
+}
+
+void MovementManager::stopMovement(sf::VertexArray* _vertexarray)
+{
+	auto& movementMap = sInstance->m_Movements_VA;
+	auto movementFound = movementMap.find(_vertexarray);
+
+	if (movementFound != movementMap.end()) {
+		delete movementFound->second;
+		movementMap.erase(movementFound);
 	}
 }

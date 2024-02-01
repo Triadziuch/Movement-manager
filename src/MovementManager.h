@@ -65,7 +65,7 @@ private:
 	std::map<sf::CircleShape*, movementInfo*>  m_Movements_CS;
 	std::map<sf::VertexArray*, movementInfo*>  m_Movements_VA;
 
-	// Singleton
+	// Singleton instance
 	static MovementManager* sInstance;
 
 public:
@@ -76,6 +76,7 @@ public:
 	void update(float dt);
 
 	// Public functions
+	// Dodaæ nadpisan¹ metodê addMovement w której startingPos bêdzie pobierane z obiektu
 	static void addMovement(sf::Vector2f startingPos, sf::Vector2f endingPos, float movementTime, sf::CircleShape* _circleshape, movement_type _used_function, bool _repeat = false, float _wait_before_repeating = 0.f);
 	static void addMovement(sf::Vector2f startingPos, sf::Vector2f endingPos, float movementTime, sf::VertexArray* _vertexarray, movement_type _used_function, bool _repeat = false, float _wait_before_repeating = 0.f);
 	
@@ -84,6 +85,12 @@ public:
 	void undoMovement(sf::VertexArray* _vertexarray);
 
 	void resetMovement();
+	void resetMovement(sf::CircleShape* _circleshape);
+	void resetMovement(sf::VertexArray* _vertexarray);
+
+	void stopMovement();
+	void stopMovement(sf::CircleShape* _circleshape);
+	void stopMovement(sf::VertexArray* _vertexarray);
 
 	// Accessors / Mutators
 	int getMovementCount() { return m_Movements_CS.size(); }

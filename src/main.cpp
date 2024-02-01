@@ -151,12 +151,10 @@ int main()
 					graphs[i].setFunction(movementManager.getFunctionPointer(easeType[current_ease_type + i].second));
 				}
 
-
 				for (int i = 0; i < rows; i++) {
 					movementManager.undoMovement(&shapes[i]);
 					movementManager.addMovement(start_pos[i], end_pos[i], animation_time, &shapes[i], easeType[current_ease_type + i].second, true, 1.f);
-				}
-					
+				}	
 			}
 			else if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::Down || event.key.code == sf::Keyboard::S)) {
 				current_ease_type -= rows;

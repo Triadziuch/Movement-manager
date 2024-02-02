@@ -142,6 +142,70 @@ const bool MovementManager::addMovement(sf::VertexArray* _vertexarray, sf::Vecto
 	return 1;
 }
 
+const bool MovementManager::addMovement(sf::Sprite* _sprite, sf::Vector2f endingPos, float movementTime, movement_type _used_function, bool _repeat, float _wait_before_repeating)
+{
+	auto& movementMap = sInstance->m_Movements_S;
+	auto movementFound = movementMap.find(_sprite);
+
+	if (movementFound != movementMap.end()) {
+		printf("ERROR: Movement for sf::Sprite* object already exists!\n");
+		return 0;
+	}
+	else {
+		movementInfo* newMovement = new movementInfo(_sprite->getPosition(), endingPos, movementTime, sInstance->movement_functions[_used_function], _repeat, _wait_before_repeating);
+		movementMap.insert(std::make_pair(_sprite, newMovement));
+	}
+	return 1;
+}
+
+const bool MovementManager::addMovement(sf::Sprite* _sprite, sf::Vector2f startingPos, sf::Vector2f endingPos, float movementTime, movement_type _used_function, bool _repeat, float _wait_before_repeating)
+{
+	auto& movementMap = sInstance->m_Movements_S;
+	auto movementFound = movementMap.find(_sprite);
+
+	if (movementFound != movementMap.end()) {
+		printf("ERROR: Movement for sf::Sprite* object already exists!\n");
+		return 0;
+	}
+	else {
+		movementInfo* newMovement = new movementInfo(startingPos, endingPos, movementTime, sInstance->movement_functions[_used_function], _repeat, _wait_before_repeating);
+		movementMap.insert(std::make_pair(_sprite, newMovement));
+	}
+	return 1;
+}
+
+const bool MovementManager::addMovement(sf::RectangleShape* _rectangleshape, sf::Vector2f endingPos, float movementTime, movement_type _used_function, bool _repeat, float _wait_before_repeating)
+{
+	auto& movementMap = sInstance->m_Movements_RS;
+	auto movementFound = movementMap.find(_rectangleshape);
+
+	if (movementFound != movementMap.end()) {
+		printf("ERROR: Movement for sf::RectangleShape* object already exists!\n");
+		return 0;
+	}
+	else {
+		movementInfo* newMovement = new movementInfo(_rectangleshape->getPosition(), endingPos, movementTime, sInstance->movement_functions[_used_function], _repeat, _wait_before_repeating);
+		movementMap.insert(std::make_pair(_rectangleshape, newMovement));
+	}
+	return 1;
+}
+
+const bool MovementManager::addMovement(sf::RectangleShape* _rectangleshape, sf::Vector2f startingPos, sf::Vector2f endingPos, float movementTime, movement_type _used_function, bool _repeat, float _wait_before_repeating)
+{
+	auto& movementMap = sInstance->m_Movements_RS;
+	auto movementFound = movementMap.find(_rectangleshape);
+
+	if (movementFound != movementMap.end()) {
+		printf("ERROR: Movement for sf::RectangleShape* object already exists!\n");
+		return 0;
+	}
+	else {
+		movementInfo* newMovement = new movementInfo(startingPos, endingPos, movementTime, sInstance->movement_functions[_used_function], _repeat, _wait_before_repeating);
+		movementMap.insert(std::make_pair(_rectangleshape, newMovement));
+	}
+	return 1;
+}
+
 void MovementManager::undoMovement()
 {
 	for (auto it = this->m_Movements_CS.begin(); it != this->m_Movements_CS.end();) {
@@ -160,6 +224,18 @@ void MovementManager::undoMovement()
 			delete it->second;
 			it = m_Movements_VA.erase(it);
 		}
+	}
+
+	for (auto it = this->m_Movements_S.begin(); it != this->m_Movements_S.end();) {
+		it->first->setPosition(it->second->startingPos);
+		delete it->second;
+		it = m_Movements_S.erase(it);
+	}
+
+	for (auto it = this->m_Movements_RS.begin(); it != this->m_Movements_RS.end();) {
+		it->first->setPosition(it->second->startingPos);
+		delete it->second;
+		it = m_Movements_RS.erase(it);
 	}
 }
 
@@ -193,6 +269,30 @@ void MovementManager::undoMovement(sf::VertexArray* _vertexarray)
 	}
 }
 
+void MovementManager::undoMovement(sf::Sprite* _sprite)
+{
+	auto& movementMap = sInstance->m_Movements_S;
+	auto movementFound = movementMap.find(_sprite);
+
+	if (movementFound != movementMap.end()) {
+		_sprite->setPosition(movementFound->second->startingPos);
+		delete movementFound->second;
+		movementMap.erase(movementFound);
+	}
+}
+
+void MovementManager::undoMovement(sf::RectangleShape* _rectangleshape)
+{
+	auto& movementMap = sInstance->m_Movements_RS;
+	auto movementFound = movementMap.find(_rectangleshape);
+
+	if (movementFound != movementMap.end()) {
+		_rectangleshape->setPosition(movementFound->second->startingPos);
+		delete movementFound->second;
+		movementMap.erase(movementFound);
+	}
+}
+
 void MovementManager::resetMovement()
 {
 	for (auto it = this->m_Movements_CS.begin(); it != this->m_Movements_CS.end();) {
@@ -209,6 +309,20 @@ void MovementManager::resetMovement()
 			for (size_t i = 0; i < it->first->getVertexCount(); i++)
 				it->first->operator[](i).position -= offset;
 		}
+		it->second->currentTime = 0.f;
+		it->second->repeat_timer = 0.f;
+		++it;
+	}
+
+	for (auto it = this->m_Movements_S.begin(); it != this->m_Movements_S.end();) {
+		it->first->setPosition(it->second->startingPos);
+		it->second->currentTime = 0.f;
+		it->second->repeat_timer = 0.f;
+		++it;
+	}
+
+	for (auto it = this->m_Movements_RS.begin(); it != this->m_Movements_RS.end();) {
+		it->first->setPosition(it->second->startingPos);
 		it->second->currentTime = 0.f;
 		it->second->repeat_timer = 0.f;
 		++it;
@@ -244,6 +358,30 @@ void MovementManager::resetMovement(sf::VertexArray* _vertexarray)
 	}
 }
 
+void MovementManager::resetMovement(sf::Sprite* _sprite)
+{
+	auto& movementMap = sInstance->m_Movements_S;
+	auto movementFound = movementMap.find(_sprite);
+
+	if (movementFound != movementMap.end()) {
+		_sprite->setPosition(movementFound->second->startingPos);
+		movementFound->second->currentTime = 0.f;
+		movementFound->second->repeat_timer = 0.f;
+	}
+}
+
+void MovementManager::resetMovement(sf::RectangleShape* _rectangleshape)
+{
+	auto& movementMap = sInstance->m_Movements_RS;
+	auto movementFound = movementMap.find(_rectangleshape);
+
+	if (movementFound != movementMap.end()) {
+		_rectangleshape->setPosition(movementFound->second->startingPos);
+		movementFound->second->currentTime = 0.f;
+		movementFound->second->repeat_timer = 0.f;
+	}
+}
+
 void MovementManager::stopMovement()
 {
 	for (auto it = this->m_Movements_CS.begin(); it != this->m_Movements_CS.end();) {
@@ -254,6 +392,16 @@ void MovementManager::stopMovement()
 	for (auto it = this->m_Movements_VA.begin(); it != this->m_Movements_VA.end();) {
 		delete it->second;
 		it = m_Movements_VA.erase(it);
+	}
+
+	for (auto it = this->m_Movements_S.begin(); it != this->m_Movements_S.end();) {
+		delete it->second;
+		it = m_Movements_S.erase(it);
+	}
+
+	for (auto it = this->m_Movements_RS.begin(); it != this->m_Movements_RS.end();) {
+		delete it->second;
+		it = m_Movements_RS.erase(it);
 	}
 }
 
@@ -272,6 +420,28 @@ void MovementManager::stopMovement(sf::VertexArray* _vertexarray)
 {
 	auto& movementMap = sInstance->m_Movements_VA;
 	auto movementFound = movementMap.find(_vertexarray);
+
+	if (movementFound != movementMap.end()) {
+		delete movementFound->second;
+		movementMap.erase(movementFound);
+	}
+}
+
+void MovementManager::stopMovement(sf::Sprite* _sprite)
+{
+	auto& movementMap = sInstance->m_Movements_S;
+	auto movementFound = movementMap.find(_sprite);
+
+	if (movementFound != movementMap.end()) {
+		delete movementFound->second;
+		movementMap.erase(movementFound);
+	}
+}
+
+void MovementManager::stopMovement(sf::RectangleShape* _rectangleshape)
+{
+	auto& movementMap = sInstance->m_Movements_RS;
+	auto movementFound = movementMap.find(_rectangleshape);
 
 	if (movementFound != movementMap.end()) {
 		delete movementFound->second;

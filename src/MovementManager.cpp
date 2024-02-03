@@ -780,6 +780,12 @@ void MovementManager::undoScaling()
 		delete it->second;
 		it = m_Scalings_RS.erase(it);
 	}
+
+	for (auto it = this->m_Scalings_VA.begin(); it != this->m_Scalings_VA.end();) {
+		it->first->operator= (it->second->originalVertex);
+		delete it->second;
+		it = m_Scalings_VA.erase(it);
+	}
 }
 
 void MovementManager::undoScaling(sf::CircleShape* _circleshape)
@@ -796,6 +802,14 @@ void MovementManager::undoScaling(sf::CircleShape* _circleshape)
 
 void MovementManager::undoScaling(sf::VertexArray* _vertexarray)
 {
+	auto& scalingMap = sInstance->m_Scalings_VA;
+	auto scalingFound = scalingMap.find(_vertexarray);
+
+	if (scalingFound != scalingMap.end()) {
+		_vertexarray->operator= (scalingFound->second->originalVertex);
+		delete scalingFound->second;
+		scalingMap.erase(scalingFound);
+	}
 }
 
 void MovementManager::undoScaling(sf::Sprite* _sprite)
@@ -844,6 +858,13 @@ void MovementManager::resetScaling()
 		it->second->repeat_timer = 0.f;
 		++it;
 	}
+
+	for (auto it = this->m_Scalings_VA.begin(); it != this->m_Scalings_VA.end();) {
+		it->first->operator= (it->second->originalVertex);
+		it->second->currentTime = 0.f;
+		it->second->repeat_timer = 0.f;
+		++it;
+	}
 }
 
 void MovementManager::resetScaling(sf::CircleShape* _circleshape)
@@ -860,6 +881,14 @@ void MovementManager::resetScaling(sf::CircleShape* _circleshape)
 
 void MovementManager::resetScaling(sf::VertexArray* _vertexarray)
 {
+	auto& scalingMap = sInstance->m_Scalings_VA;
+	auto scalingFound = scalingMap.find(_vertexarray);
+
+	if (scalingFound != scalingMap.end()) {
+		_vertexarray->operator= (scalingFound->second->originalVertex);
+		scalingFound->second->currentTime = 0.f;
+		scalingFound->second->repeat_timer = 0.f;
+	}
 }
 
 void MovementManager::resetScaling(sf::Sprite* _sprite)
@@ -902,6 +931,11 @@ void MovementManager::stopScaling()
 		delete it->second;
 		it = m_Scalings_RS.erase(it);
 	}
+
+	for (auto it = this->m_Scalings_VA.begin(); it != this->m_Scalings_VA.end();) {
+		delete it->second;
+		it = m_Scalings_VA.erase(it);
+	}
 }
 
 void MovementManager::stopScaling(sf::CircleShape* _circleshape)
@@ -917,6 +951,13 @@ void MovementManager::stopScaling(sf::CircleShape* _circleshape)
 
 void MovementManager::stopScaling(sf::VertexArray* _vertexarray)
 {
+	auto& scalingMap = sInstance->m_Scalings_VA;
+	auto scalingFound = scalingMap.find(_vertexarray);
+
+	if (scalingFound != scalingMap.end()) {
+		delete scalingFound->second;
+		scalingMap.erase(scalingFound);
+	}
 }
 
 void MovementManager::stopScaling(sf::Sprite* _sprite)

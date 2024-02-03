@@ -109,6 +109,7 @@ int main()
 	float arrow_animation_time = 2.f;
 	movementManager.addMovement(&up_arrow, up_arrow[0].position, up_arrow[0].position + sf::Vector2f(0.f, -20.f), arrow_animation_time,movement_type::OUT_SINE, true);
 	movementManager.addMovement(&down_arrow, down_arrow[0].position, down_arrow[0].position + sf::Vector2f(0.f, 20.f), arrow_animation_time, movement_type::OUT_SINE, true);
+	movementManager.addScaling(&up_arrow, { 5.f, 5.f }, arrow_animation_time, movement_type::OUT_SINE, true);
 
 	sf::Clock dt_clock;
 	float dt;

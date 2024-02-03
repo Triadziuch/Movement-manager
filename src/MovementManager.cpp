@@ -69,7 +69,6 @@ void MovementManager::updateVertexArray(float dt)
 	for (auto it = this->m_Movements_VA.begin(); it != this->m_Movements_VA.end();) {
 		it->second->currentTime += dt;
 
-		// OGARN¥Æ TO
 		if (it->first->getVertexCount() != 0) {
 			float offset_x = static_cast<float>(it->second->used_function(static_cast<double>(it->second->currentTime / it->second->movementTime))) * (it->second->endingPos.x - it->second->startingPos.x) + it->second->startingPos.x - it->first->operator[](0).position.x;
 			float offset_y = static_cast<float>(it->second->used_function(static_cast<double>(it->second->currentTime / it->second->movementTime))) * (it->second->endingPos.y - it->second->startingPos.y) + it->second->startingPos.y - it->first->operator[](0).position.y;
@@ -90,6 +89,33 @@ void MovementManager::updateVertexArray(float dt)
 				else {
 					delete it->second;
 					it = m_Movements_VA.erase(it);
+				}
+			}
+			else
+				++it;
+		}
+	}
+
+	for (auto it = this->m_Scalings_VA.begin(); it != this->m_Scalings_VA.end();) {
+		it->second->currentTime += dt;
+
+		if (it->first->getVertexCount() != 0) {
+			float scale_x = static_cast<float>(it->second->used_function(static_cast<double>(it->second->currentTime / it->second->scalingTime))) * (it->second->endingScale.x - it->second->startingScale.x) + it->second->startingScale.x;
+			float scale_y = static_cast<float>(it->second->used_function(static_cast<double>(it->second->currentTime / it->second->scalingTime))) * (it->second->endingScale.y - it->second->startingScale.y) + it->second->startingScale.y;
+
+			for (size_t i = 0; i < it->first->getVertexCount(); i++) {
+				it->first->operator[](i).position.x = it->second->centroid.x + (it->second->originalVertex.operator[](i).position.x - it->second->centroid.x) * scale_x;
+				it->first->operator[](i).position.y = it->second->centroid.y + (it->second->originalVertex.operator[](i).position.y - it->second->centroid.y) * scale_y;
+			}
+
+			if (it->second->isDone()) {
+				if (it->second->repeat) {
+					it->first->operator=(it->second->originalVertex);
+					it->second->currentTime = 0.f;
+				}
+				else {
+					delete it->second;
+					it = m_Scalings_VA.erase(it);
 				}
 			}
 			else
@@ -639,6 +665,38 @@ const bool MovementManager::addScaling(sf::CircleShape* _circleshape, sf::Vector
 	return 1;
 }
 
+const bool MovementManager::addScaling(sf::VertexArray* _vertexarray, sf::Vector2f endingScale, float scalingTime, movement_type _used_function, bool _repeat, float _wait_before_repeating)
+{
+	auto& scalingMap = sInstance->m_Scalings_VA;
+	auto scalingFound = scalingMap.find(_vertexarray);
+
+	if (scalingFound != scalingMap.end()) {
+		printf("ERROR: Scaling for sf::VertexArray* object already exists!\n");
+		return 0;
+	}
+	else if (_vertexarray->getVertexCount() != 0){
+		scalingInfoVA* newScaling = new scalingInfoVA({ 1.f, 1.f }, endingScale, scalingTime, sInstance->movement_functions[_used_function], _repeat, _wait_before_repeating, _vertexarray);
+		scalingMap.insert(std::make_pair(_vertexarray, newScaling));
+	}
+	return 1;
+}
+
+const bool MovementManager::addScaling(sf::VertexArray* _vertexarray, sf::Vector2f startingScale, sf::Vector2f endingScale, float scalingTime, movement_type _used_function, bool _repeat, float _wait_before_repeating)
+{
+	auto& scalingMap = sInstance->m_Scalings_VA;
+	auto scalingFound = scalingMap.find(_vertexarray);
+
+	if (scalingFound != scalingMap.end()) {
+		printf("ERROR: Scaling for sf::VertexArray* object already exists!\n");
+		return 0;
+	}
+	else if (_vertexarray->getVertexCount() != 0) {
+		scalingInfoVA* newScaling = new scalingInfoVA(startingScale, endingScale, scalingTime, sInstance->movement_functions[_used_function], _repeat, _wait_before_repeating, _vertexarray);
+		scalingMap.insert(std::make_pair(_vertexarray, newScaling));
+	}
+	return 1;
+}
+
 const bool MovementManager::addScaling(sf::Sprite* _sprite, sf::Vector2f endingScale, float scalingTime, movement_type _used_function, bool _repeat, float _wait_before_repeating)
 {
 	auto& scalingMap = sInstance->m_Scalings_S;
@@ -736,6 +794,10 @@ void MovementManager::undoScaling(sf::CircleShape* _circleshape)
 	}
 }
 
+void MovementManager::undoScaling(sf::VertexArray* _vertexarray)
+{
+}
+
 void MovementManager::undoScaling(sf::Sprite* _sprite)
 {
 	auto& scalingMap = sInstance->m_Scalings_S;
@@ -796,6 +858,10 @@ void MovementManager::resetScaling(sf::CircleShape* _circleshape)
 	}
 }
 
+void MovementManager::resetScaling(sf::VertexArray* _vertexarray)
+{
+}
+
 void MovementManager::resetScaling(sf::Sprite* _sprite)
 {
 	auto& scalingMap = sInstance->m_Scalings_S;
@@ -847,6 +913,10 @@ void MovementManager::stopScaling(sf::CircleShape* _circleshape)
 		delete scalingFound->second;
 		scalingMap.erase(scalingFound);
 	}
+}
+
+void MovementManager::stopScaling(sf::VertexArray* _vertexarray)
+{
 }
 
 void MovementManager::stopScaling(sf::Sprite* _sprite)

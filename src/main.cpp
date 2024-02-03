@@ -109,7 +109,8 @@ int main()
 	float arrow_animation_time = 2.f;
 	movementManager.addMovement(&up_arrow, up_arrow[0].position, up_arrow[0].position + sf::Vector2f(0.f, -20.f), arrow_animation_time,movement_type::OUT_SINE, true);
 	movementManager.addMovement(&down_arrow, down_arrow[0].position, down_arrow[0].position + sf::Vector2f(0.f, 20.f), arrow_animation_time, movement_type::OUT_SINE, true);
-	movementManager.addScaling(&up_arrow, { 5.f, 5.f }, arrow_animation_time, movement_type::OUT_SINE, true);
+	movementManager.addScaling(&up_arrow, { 1.2f, 1.2f }, arrow_animation_time, movement_type::OUT_SINE, true);
+	movementManager.addScaling(&down_arrow, { 1.2f, 1.2f }, arrow_animation_time, movement_type::OUT_SINE, true);
 
 	sf::Clock dt_clock;
 	float dt;
@@ -149,6 +150,9 @@ int main()
 					movementManager.addMovement(&shapes[i], start_pos[i], end_pos[i], animation_time, easeType[current_ease_type + i].second, true, 1.f);
 					movementManager.addScaling(&shapes[i], { 1.5f, 1.5f }, animation_time, easeType[current_ease_type + i].second, true, 1.f);
 				}
+
+				movementManager.resetScaling(&up_arrow);
+				movementManager.resetScaling(&down_arrow);
 			}
 			else if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::Down || event.key.code == sf::Keyboard::S)) {
 				current_ease_type -= rows;

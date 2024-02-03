@@ -30,6 +30,30 @@ private:
 		const bool isDone() { return currentTime >= movementTime; }
 	};
 
+	struct scalingInfo {
+		sf::Vector2f startingScale{};
+		sf::Vector2f endingScale{};
+		float		 currentTime{};
+		float		 scalingTime{};
+		bool		 repeat = false;
+		float		 repeat_timer{};
+		float		 wait_before_repeating{};
+		double (*used_function)(double) {};
+
+		scalingInfo(sf::Vector2f _startingScale, sf::Vector2f _endingScale, float _scalingTime, double(*_used_function)(double), bool _repeat, bool _wait_before_repeating) :
+			startingScale(_startingScale), endingScale(_endingScale), scalingTime(_scalingTime), currentTime(0.f), used_function(_used_function), repeat(_repeat), wait_before_repeating(_wait_before_repeating) {};
+
+		scalingInfo(const scalingInfo& _scalingInfo) {
+			startingScale = _scalingInfo.startingScale;
+			endingScale = _scalingInfo.endingScale;
+			scalingTime = _scalingInfo.scalingTime;
+			currentTime = _scalingInfo.currentTime;
+			used_function = _scalingInfo.used_function;
+		}
+
+		const bool isDone() { return currentTime >= scalingTime; }
+	};
+
 	std::map<movement_type, double(*)(double)>		movement_functions = {
 		{movement_type::IN_SINE, inSine},
 		{movement_type::OUT_SINE, outSine},
@@ -62,10 +86,15 @@ private:
 		{movement_type::OUT_BOUNCE, outBounce},
 		{movement_type::IN_OUT_BOUNCE, inOutBounce}
 	};
+	
 	std::map<sf::CircleShape*, movementInfo*>		m_Movements_CS;
 	std::map<sf::VertexArray*, movementInfo*>		m_Movements_VA;
 	std::map<sf::Sprite*, movementInfo*>			m_Movements_S;
 	std::map<sf::RectangleShape*, movementInfo*>	m_Movements_RS;
+
+	std::map<sf::CircleShape*, scalingInfo*>		m_Scalings_CS;
+	std::map<sf::Sprite*, scalingInfo*>				m_Scalings_S;
+	std::map<sf::RectangleShape*, scalingInfo*>		m_Scalings_RS;
 
 	// Singleton instance
 	static MovementManager* sInstance;
@@ -84,6 +113,8 @@ public:
 	void update(float dt);
 
 	// Public functions
+
+	// Movement functions
 	const bool addMovement(sf::CircleShape* _circleshape, sf::Vector2f endingPos, float movementTime, movement_type _used_function, bool _repeat = false, float _wait_before_repeating = 0.f);
 	const bool addMovement(sf::CircleShape* _circleshape, sf::Vector2f startingPos, sf::Vector2f endingPos, float movementTime, movement_type _used_function, bool _repeat = false, float _wait_before_repeating = 0.f);
 
@@ -113,6 +144,32 @@ public:
 	void stopMovement(sf::VertexArray* _vertexarray);
 	void stopMovement(sf::Sprite* _sprite);
 	void stopMovement(sf::RectangleShape* _rectangleshape);
+
+	// Scaling functions
+	const bool addScaling(sf::CircleShape* _circleshape, sf::Vector2f endingScale, float scalingTime, movement_type _used_function, bool _repeat = false, float _wait_before_repeating = 0.f);
+	const bool addScaling(sf::CircleShape* _circleshape, sf::Vector2f startingScale, sf::Vector2f endingScale, float scalingTime, movement_type _used_function, bool _repeat = false, float _wait_before_repeating = 0.f);
+
+	const bool addScaling(sf::Sprite* _sprite, sf::Vector2f endingScale, float scalingTime, movement_type _used_function, bool _repeat = false, float _wait_before_repeating = 0.f);
+	const bool addScaling(sf::Sprite* _sprite, sf::Vector2f startingScale, sf::Vector2f endingScale, float scalingTime, movement_type _used_function, bool _repeat = false, float _wait_before_repeating = 0.f);
+
+	const bool addScaling(sf::RectangleShape* _rectangleshape, sf::Vector2f endingScale, float scalingTime, movement_type _used_function, bool _repeat = false, float _wait_before_repeating = 0.f);
+	const bool addScaling(sf::RectangleShape* _rectangleshape, sf::Vector2f startingScale, sf::Vector2f endingScale, float scalingTime, movement_type _used_function, bool _repeat = false, float _wait_before_repeating = 0.f);
+
+	void undoScaling();
+	void undoScaling(sf::CircleShape* _circleshape);
+	void undoScaling(sf::Sprite* _sprite);
+	void undoScaling(sf::RectangleShape* _rectangleshape);
+
+	void resetScaling();
+	void resetScaling(sf::CircleShape* _circleshape);
+	void resetScaling(sf::Sprite* _sprite);
+	void resetScaling(sf::RectangleShape* _rectangleshape);
+
+	void stopScaling();
+	void stopScaling(sf::CircleShape* _circleshape);
+	void stopScaling(sf::Sprite* _sprite);
+	void stopScaling(sf::RectangleShape* _rectangleshape);
+
 
 	// Accessors / Mutators
 	int getMovementCount() { return m_Movements_CS.size(); }

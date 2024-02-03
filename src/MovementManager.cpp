@@ -33,7 +33,34 @@ void MovementManager::updateCircleShape(float dt)
 			it->first->setPosition(position_x, position_y);
 			++it;
 		}
+	}
 
+	for (auto it = this->m_Scalings_CS.begin(); it != this->m_Scalings_CS.end();) {
+		it->second->currentTime += dt;
+
+		if (it->second->isDone()) {
+			if (it->second->repeat) {
+				if (it->second->repeat_timer < it->second->wait_before_repeating)
+					it->second->repeat_timer += dt;
+				else {
+					it->second->repeat_timer = 0.f;
+					it->second->currentTime = 0.f;
+					it->first->setScale(it->second->startingScale);
+				}
+				++it;
+			}
+			else {
+				delete it->second;
+				it = m_Scalings_CS.erase(it);
+			}
+		}
+		else {
+			float scale_x = static_cast<float>(it->second->used_function(static_cast<double>(it->second->currentTime / it->second->scalingTime))) * (it->second->endingScale.x - it->second->startingScale.x) + it->second->startingScale.x;
+			float scale_y = static_cast<float>(it->second->used_function(static_cast<double>(it->second->currentTime / it->second->scalingTime))) * (it->second->endingScale.y - it->second->startingScale.y) + it->second->startingScale.y;
+
+			it->first->setScale(scale_x, scale_y);
+			++it;
+		}
 	}
 }
 
@@ -100,6 +127,34 @@ void MovementManager::updateSprite(float dt)
 			++it;
 		}
 	}
+
+	for (auto it = this->m_Scalings_S.begin(); it != this->m_Scalings_S.end();) {
+		it->second->currentTime += dt;
+
+		if (it->second->isDone()) {
+			if (it->second->repeat) {
+				if (it->second->repeat_timer < it->second->wait_before_repeating)
+					it->second->repeat_timer += dt;
+				else {
+					it->second->repeat_timer = 0.f;
+					it->second->currentTime = 0.f;
+					it->first->setScale(it->second->startingScale);
+				}
+				++it;
+			}
+			else {
+				delete it->second;
+				it = m_Scalings_S.erase(it);
+			}
+		}
+		else {
+			float scale_x = static_cast<float>(it->second->used_function(static_cast<double>(it->second->currentTime / it->second->scalingTime))) * (it->second->endingScale.x - it->second->startingScale.x) + it->second->startingScale.x;
+			float scale_y = static_cast<float>(it->second->used_function(static_cast<double>(it->second->currentTime / it->second->scalingTime))) * (it->second->endingScale.y - it->second->startingScale.y) + it->second->startingScale.y;
+
+			it->first->setScale(scale_x, scale_y);
+			++it;
+		}
+	}
 }
 
 void MovementManager::updateRectangleShape(float dt)
@@ -131,6 +186,34 @@ void MovementManager::updateRectangleShape(float dt)
 			++it;
 		}
 	}
+
+	for (auto it = this->m_Scalings_RS.begin(); it != this->m_Scalings_RS.end();) {
+		it->second->currentTime += dt;
+
+		if (it->second->isDone()) {
+			if (it->second->repeat) {
+				if (it->second->repeat_timer < it->second->wait_before_repeating)
+					it->second->repeat_timer += dt;
+				else {
+					it->second->repeat_timer = 0.f;
+					it->second->currentTime = 0.f;
+					it->first->setScale(it->second->startingScale);
+				}
+				++it;
+			}
+			else {
+				delete it->second;
+				it = m_Scalings_RS.erase(it);
+			}
+		}
+		else {
+			float scale_x = static_cast<float>(it->second->used_function(static_cast<double>(it->second->currentTime / it->second->scalingTime))) * (it->second->endingScale.x - it->second->startingScale.x) + it->second->startingScale.x;
+			float scale_y = static_cast<float>(it->second->used_function(static_cast<double>(it->second->currentTime / it->second->scalingTime))) * (it->second->endingScale.y - it->second->startingScale.y) + it->second->startingScale.y;
+
+			it->first->setScale(scale_x, scale_y);
+			++it;
+		}
+	}
 }
 
 // Default constructor
@@ -150,6 +233,8 @@ void MovementManager::update(float dt)
 }
 
 // Public functions
+
+// Movement functions
 const bool MovementManager::addMovement(sf::CircleShape* _circleshape, sf::Vector2f endingPos, float movementTime, movement_type _used_function, bool _repeat, float _wait_before_repeating)
 {
 	auto& movementMap = sInstance->m_Movements_CS;
@@ -518,5 +603,270 @@ void MovementManager::stopMovement(sf::RectangleShape* _rectangleshape)
 	if (movementFound != movementMap.end()) {
 		delete movementFound->second;
 		movementMap.erase(movementFound);
+	}
+}
+
+// Scaling functions
+const bool MovementManager::addScaling(sf::CircleShape* _circleshape, sf::Vector2f endingScale, float scalingTime, movement_type _used_function, bool _repeat, float _wait_before_repeating)
+{
+	auto& scalingMap = sInstance->m_Scalings_CS;
+	auto scalingFound = scalingMap.find(_circleshape);
+
+	if (scalingFound != scalingMap.end()) {
+		printf("ERROR: Scaling for sf::CircleShape* object already exists!\n");
+		return 0;
+	}
+	else {
+		scalingInfo* newScaling = new scalingInfo(_circleshape->getScale(), endingScale, scalingTime, sInstance->movement_functions[_used_function], _repeat, _wait_before_repeating);
+		scalingMap.insert(std::make_pair(_circleshape, newScaling));
+	}
+	return 1;
+}
+
+const bool MovementManager::addScaling(sf::CircleShape* _circleshape, sf::Vector2f startingScale, sf::Vector2f endingScale, float scalingTime, movement_type _used_function, bool _repeat, float _wait_before_repeating)
+{
+	auto& scalingMap = sInstance->m_Scalings_CS;
+	auto scalingFound = scalingMap.find(_circleshape);
+
+	if (scalingFound != scalingMap.end()) {
+		printf("ERROR: Scaling for sf::CircleShape* object already exists!\n");
+		return 0;
+	}
+	else {
+		scalingInfo* newScaling = new scalingInfo(startingScale, endingScale, scalingTime, sInstance->movement_functions[_used_function], _repeat, _wait_before_repeating);
+		scalingMap.insert(std::make_pair(_circleshape, newScaling));
+	}
+	return 1;
+}
+
+const bool MovementManager::addScaling(sf::Sprite* _sprite, sf::Vector2f endingScale, float scalingTime, movement_type _used_function, bool _repeat, float _wait_before_repeating)
+{
+	auto& scalingMap = sInstance->m_Scalings_S;
+	auto scalingFound = scalingMap.find(_sprite);
+
+	if (scalingFound != scalingMap.end()) {
+		printf("ERROR: Scaling for sf::Sprite* object already exists!\n");
+		return 0;
+	}
+	else {
+		scalingInfo* newScaling = new scalingInfo(_sprite->getScale(), endingScale, scalingTime, sInstance->movement_functions[_used_function], _repeat, _wait_before_repeating);
+		scalingMap.insert(std::make_pair(_sprite, newScaling));
+	}
+	return 1;
+}
+
+const bool MovementManager::addScaling(sf::Sprite* _sprite, sf::Vector2f startingScale, sf::Vector2f endingScale, float scalingTime, movement_type _used_function, bool _repeat, float _wait_before_repeating)
+{
+	auto& scalingMap = sInstance->m_Scalings_S;
+	auto scalingFound = scalingMap.find(_sprite);
+
+	if (scalingFound != scalingMap.end()) {
+		printf("ERROR: Scaling for sf::Sprite* object already exists!\n");
+		return 0;
+	}
+	else {
+		scalingInfo* newScaling = new scalingInfo(startingScale, endingScale, scalingTime, sInstance->movement_functions[_used_function], _repeat, _wait_before_repeating);
+		scalingMap.insert(std::make_pair(_sprite, newScaling));
+	}
+	return 1;
+}
+
+const bool MovementManager::addScaling(sf::RectangleShape* _rectangleshape, sf::Vector2f endingScale, float scalingTime, movement_type _used_function, bool _repeat, float _wait_before_repeating)
+{
+	auto& scalingMap = sInstance->m_Scalings_RS;
+	auto scalingFound = scalingMap.find(_rectangleshape);
+
+	if (scalingFound != scalingMap.end()) {
+		printf("ERROR: Scaling for sf::RectangleShape* object already exists!\n");
+		return 0;
+	}
+	else {
+		scalingInfo* newScaling = new scalingInfo(_rectangleshape->getScale(), endingScale, scalingTime, sInstance->movement_functions[_used_function], _repeat, _wait_before_repeating);
+		scalingMap.insert(std::make_pair(_rectangleshape, newScaling));
+	}
+	return 1;
+}
+
+const bool MovementManager::addScaling(sf::RectangleShape* _rectangleshape, sf::Vector2f startingScale, sf::Vector2f endingScale, float scalingTime, movement_type _used_function, bool _repeat, float _wait_before_repeating)
+{
+	auto& scalingMap = sInstance->m_Scalings_RS;
+	auto scalingFound = scalingMap.find(_rectangleshape);
+
+	if (scalingFound != scalingMap.end()) {
+		printf("ERROR: Scaling for sf::RectangleShape* object already exists!\n");
+		return 0;
+	}
+	else {
+		scalingInfo* newScaling = new scalingInfo(startingScale, endingScale, scalingTime, sInstance->movement_functions[_used_function], _repeat, _wait_before_repeating);
+		scalingMap.insert(std::make_pair(_rectangleshape, newScaling));
+	}
+	return 1;
+}
+
+void MovementManager::undoScaling()
+{
+	for (auto it = this->m_Scalings_CS.begin(); it != this->m_Scalings_CS.end();) {
+		it->first->setScale(it->second->startingScale);
+		delete it->second;
+		it = m_Scalings_CS.erase(it);
+	}
+
+	for (auto it = this->m_Scalings_S.begin(); it != this->m_Scalings_S.end();) {
+		it->first->setScale(it->second->startingScale);
+		delete it->second;
+		it = m_Scalings_S.erase(it);
+	}
+
+	for (auto it = this->m_Scalings_RS.begin(); it != this->m_Scalings_RS.end();) {
+		it->first->setScale(it->second->startingScale);
+		delete it->second;
+		it = m_Scalings_RS.erase(it);
+	}
+}
+
+void MovementManager::undoScaling(sf::CircleShape* _circleshape)
+{
+	auto& scalingMap = sInstance->m_Scalings_CS;
+	auto scalingFound = scalingMap.find(_circleshape);
+
+	if (scalingFound != scalingMap.end()) {
+		_circleshape->setScale(scalingFound->second->startingScale);
+		delete scalingFound->second;
+		scalingMap.erase(scalingFound);
+	}
+}
+
+void MovementManager::undoScaling(sf::Sprite* _sprite)
+{
+	auto& scalingMap = sInstance->m_Scalings_S;
+	auto scalingFound = scalingMap.find(_sprite);
+
+	if (scalingFound != scalingMap.end()) {
+		_sprite->setScale(scalingFound->second->startingScale);
+		delete scalingFound->second;
+		scalingMap.erase(scalingFound);
+	}
+}
+
+void MovementManager::undoScaling(sf::RectangleShape* _rectangleshape)
+{
+	auto& scalingMap = sInstance->m_Scalings_RS;
+	auto scalingFound = scalingMap.find(_rectangleshape);
+
+	if (scalingFound != scalingMap.end()) {
+		_rectangleshape->setScale(scalingFound->second->startingScale);
+		delete scalingFound->second;
+		scalingMap.erase(scalingFound);
+	}
+}
+
+void MovementManager::resetScaling()
+{
+	for (auto it = this->m_Scalings_CS.begin(); it != this->m_Scalings_CS.end();) {
+		it->first->setScale(it->second->startingScale);
+		it->second->currentTime = 0.f;
+		it->second->repeat_timer = 0.f;
+		++it;
+	}
+
+	for (auto it = this->m_Scalings_S.begin(); it != this->m_Scalings_S.end();) {
+		it->first->setScale(it->second->startingScale);
+		it->second->currentTime = 0.f;
+		it->second->repeat_timer = 0.f;
+		++it;
+	}
+
+	for (auto it = this->m_Scalings_RS.begin(); it != this->m_Scalings_RS.end();) {
+		it->first->setScale(it->second->startingScale);
+		it->second->currentTime = 0.f;
+		it->second->repeat_timer = 0.f;
+		++it;
+	}
+}
+
+void MovementManager::resetScaling(sf::CircleShape* _circleshape)
+{
+	auto& scalingMap = sInstance->m_Scalings_CS;
+	auto scalingFound = scalingMap.find(_circleshape);
+
+	if (scalingFound != scalingMap.end()) {
+		_circleshape->setScale(scalingFound->second->startingScale);
+		scalingFound->second->currentTime = 0.f;
+		scalingFound->second->repeat_timer = 0.f;
+	}
+}
+
+void MovementManager::resetScaling(sf::Sprite* _sprite)
+{
+	auto& scalingMap = sInstance->m_Scalings_S;
+	auto scalingFound = scalingMap.find(_sprite);
+
+	if (scalingFound != scalingMap.end()) {
+		_sprite->setScale(scalingFound->second->startingScale);
+		scalingFound->second->currentTime = 0.f;
+		scalingFound->second->repeat_timer = 0.f;
+	}
+}
+
+void MovementManager::resetScaling(sf::RectangleShape* _rectangleshape)
+{
+	auto& scalingMap = sInstance->m_Scalings_RS;
+	auto scalingFound = scalingMap.find(_rectangleshape);
+
+	if (scalingFound != scalingMap.end()) {
+		_rectangleshape->setScale(scalingFound->second->startingScale);
+		scalingFound->second->currentTime = 0.f;
+		scalingFound->second->repeat_timer = 0.f;
+	}
+}
+
+void MovementManager::stopScaling()
+{
+	for (auto it = this->m_Scalings_CS.begin(); it != this->m_Scalings_CS.end();) {
+		delete it->second;
+		it = m_Scalings_CS.erase(it);
+	}
+
+	for (auto it = this->m_Scalings_S.begin(); it != this->m_Scalings_S.end();) {
+		delete it->second;
+		it = m_Scalings_S.erase(it);
+	}
+
+	for (auto it = this->m_Scalings_RS.begin(); it != this->m_Scalings_RS.end();) {
+		delete it->second;
+		it = m_Scalings_RS.erase(it);
+	}
+}
+
+void MovementManager::stopScaling(sf::CircleShape* _circleshape)
+{
+	auto& scalingMap = sInstance->m_Scalings_CS;
+	auto scalingFound = scalingMap.find(_circleshape);
+
+	if (scalingFound != scalingMap.end()) {
+		delete scalingFound->second;
+		scalingMap.erase(scalingFound);
+	}
+}
+
+void MovementManager::stopScaling(sf::Sprite* _sprite)
+{
+	auto& scalingMap = sInstance->m_Scalings_S;
+	auto scalingFound = scalingMap.find(_sprite);
+
+	if (scalingFound != scalingMap.end()) {
+		delete scalingFound->second;
+		scalingMap.erase(scalingFound);
+	}
+}
+
+void MovementManager::stopScaling(sf::RectangleShape* _rectangleshape)
+{
+	auto& scalingMap = sInstance->m_Scalings_RS;
+	auto scalingFound = scalingMap.find(_rectangleshape);
+
+	if (scalingFound != scalingMap.end()) {
+		delete scalingFound->second;
+		scalingMap.erase(scalingFound);
 	}
 }

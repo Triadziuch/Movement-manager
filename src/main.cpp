@@ -114,8 +114,11 @@ int main()
 	float dt;
 	float wait_time = 0.5f;
 
-	for(int i = 0; i < rows; i++)
+	for (int i = 0; i < rows; i++) {
 		movementManager.addMovement(&shapes[i], start_pos[i], end_pos[i], animation_time, easeType[current_ease_type + i].second, true, 1.f);
+		movementManager.addScaling(&shapes[i], {1.5f, 1.5f}, animation_time, easeType[current_ease_type + i].second, true, 1.f);
+	}
+		
 
 	while (window.isOpen())
 	{
@@ -141,8 +144,10 @@ int main()
 
 				for (int i = 0; i < rows; i++) {
 					movementManager.undoMovement(&shapes[i]);
+					movementManager.undoScaling(&shapes[i]);
 					movementManager.addMovement(&shapes[i], start_pos[i], end_pos[i], animation_time, easeType[current_ease_type + i].second, true, 1.f);
-				}	
+					movementManager.addScaling(&shapes[i], { 1.5f, 1.5f }, animation_time, easeType[current_ease_type + i].second, true, 1.f);
+				}
 			}
 			else if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::Down || event.key.code == sf::Keyboard::S)) {
 				current_ease_type -= rows;
@@ -156,7 +161,9 @@ int main()
 
 				for (int i = 0; i < rows; i++) {
 					movementManager.undoMovement(&shapes[i]);
+					movementManager.undoScaling(&shapes[i]);
 					movementManager.addMovement(&shapes[i], start_pos[i], end_pos[i], animation_time, easeType[current_ease_type + i].second, true, 1.f);
+					movementManager.addScaling(&shapes[i], { 1.5f, 1.5f }, animation_time, easeType[current_ease_type + i].second, true, 1.f);
 				}
 			}
 		}

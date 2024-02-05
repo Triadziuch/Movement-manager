@@ -33,6 +33,40 @@ private:
 		const bool isDone() { return currentTime >= movementTime; }
 	};
 
+	struct movementInfoVA {
+		sf::Vector2f startingPos{};
+		sf::Vector2f endingPos{};
+		sf::Vector2f centroid{};
+		float		 currentTime{};
+		float		 movementTime{};
+		bool		 repeat = false;
+		float		 repeat_timer{};
+		float		 wait_before_repeating{};
+		double (*used_function)(double) {};
+
+		movementInfoVA(sf::Vector2f _startingPos, sf::Vector2f _endingPos, float _movementTime, double(*_used_function)(double), bool _repeat, bool _wait_before_repeating, sf::VertexArray* _vertexarray) :
+			startingPos(_startingPos), endingPos(_endingPos), movementTime(_movementTime), currentTime(0.f), used_function(_used_function), repeat(_repeat), wait_before_repeating(_wait_before_repeating) {
+			
+			for (size_t i = 0; i < _vertexarray->getVertexCount(); i++)
+				centroid += _vertexarray->operator[](i).position;
+			centroid /= static_cast<float>(_vertexarray->getVertexCount());
+		};
+
+		movementInfoVA(const movementInfoVA& _movementInfoVA) {
+			startingPos = _movementInfoVA.startingPos;
+			endingPos = _movementInfoVA.endingPos;
+			centroid = _movementInfoVA.centroid;
+			currentTime = _movementInfoVA.currentTime;
+			movementTime = _movementInfoVA.movementTime;
+			repeat = _movementInfoVA.repeat;
+			repeat_timer = _movementInfoVA.repeat_timer;
+			wait_before_repeating = _movementInfoVA.wait_before_repeating;
+			used_function = _movementInfoVA.used_function;
+		}
+
+		const bool isDone() { return currentTime >= movementTime; }
+	};
+
 	struct scalingInfo {
 		sf::Vector2f startingScale{};
 		sf::Vector2f endingScale{};
@@ -65,6 +99,7 @@ private:
 		sf::Vector2f endingScale{};
 		sf::Vector2f centroid{};
 		sf::VertexArray originalVertex{};
+		sf::Vector2f currentScale{};
 		float		 currentTime{};
 		float		 scalingTime{};
 		bool		 repeat = false;
@@ -78,6 +113,8 @@ private:
 			for (size_t i = 0; i < _vertexarray->getVertexCount(); i++)
 				centroid += _vertexarray->operator[](i).position;
 			centroid /= static_cast<float>(_vertexarray->getVertexCount());
+
+			currentScale = startingScale;
 		};
 
 		scalingInfoVA(const scalingInfoVA& _scalingInfoVA) {
@@ -159,7 +196,7 @@ private:
 	};
 	
 	std::map<sf::Shape*, movementInfo*>			    m_Movements_Shape;
-	std::map<sf::VertexArray*, movementInfo*>		m_Movements_VA;
+	std::map<sf::VertexArray*, movementInfoVA*>		m_Movements_VA;
 	std::map<sf::Sprite*, movementInfo*>			m_Movements_S;
 
 	std::map<sf::Shape*, scalingInfo*>				m_Scalings_Shape;
@@ -249,4 +286,14 @@ public:
 	int getScalingCount() { return m_Scalings_Shape.size() + m_Scalings_VA.size() + m_Scalings_S.size(); }
 
 	double (*getFunctionPointer(movement_type _movement_type))(double) { return movement_functions[_movement_type]; }
+
+	void renderCentroids(sf::RenderWindow* _window) {
+		for (auto& it : m_Scalings_VA) {
+			sf::CircleShape centroid(5.f);
+			centroid.setOrigin(centroid.getRadius(), centroid.getRadius());
+			centroid.setFillColor(sf::Color::Red);
+			centroid.setPosition(it.second->centroid);
+			_window->draw(centroid);
+		}
+	}
 };

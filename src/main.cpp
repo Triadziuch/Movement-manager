@@ -108,11 +108,11 @@ int main()
 	down_arrow[1].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f, static_cast<float>(window.getSize().y) - 30.f);
 	down_arrow[2].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f + 40.f, static_cast<float>(window.getSize().y) - 60.f);
 
-	float arrow_animation_time = 2.f;
+	float arrow_animation_time = 0.5f;
 	movementManager.addMovement(&up_arrow, up_arrow[0].position, up_arrow[0].position + sf::Vector2f(0.f, -20.f), arrow_animation_time,movement_type::OUT_SINE, true);
 	movementManager.addMovement(&down_arrow, down_arrow[0].position, down_arrow[0].position + sf::Vector2f(0.f, 20.f), arrow_animation_time, movement_type::OUT_SINE, true);
-	movementManager.addScaling(&up_arrow, { 1.2f, 1.2f }, arrow_animation_time, movement_type::OUT_SINE, true);
-	movementManager.addScaling(&down_arrow, { 1.2f, 1.2f }, arrow_animation_time, movement_type::OUT_SINE, true);
+	movementManager.addScaling(&up_arrow, { 1.5f, 1.5f }, arrow_animation_time, movement_type::OUT_SINE, true);
+	movementManager.addScaling(&down_arrow, { 1.5f, 1.5f }, arrow_animation_time, movement_type::OUT_SINE, true);
 
 	sf::Clock dt_clock;
 	float dt;
@@ -189,6 +189,8 @@ int main()
 
 			window.draw(up_arrow);
 			window.draw(down_arrow);
+
+			movementManager.renderCentroids(&window);
 		}
 		window.display();
 	}

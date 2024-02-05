@@ -5,7 +5,7 @@
 MovementManager* MovementManager::sInstance = nullptr;
 
 // Private update functions
-void MovementManager::updateCircleShape(float dt)
+void MovementManager::updateShape(float dt)
 {
 	for (auto it = this->m_Movements_Shape.begin(); it != this->m_Movements_Shape.end();) {
 		it->second->currentTime += dt;
@@ -59,6 +59,35 @@ void MovementManager::updateCircleShape(float dt)
 			float scale_y = static_cast<float>(it->second->used_function(static_cast<double>(it->second->currentTime / it->second->scalingTime))) * (it->second->endingScale.y - it->second->startingScale.y) + it->second->startingScale.y;
 
 			it->first->setScale(scale_x, scale_y);
+			++it;
+		}
+	}
+
+	for (auto it = this->m_Rotations_Shape.begin(); it != this->m_Rotations_Shape.end();) {
+		it->second->currentTime += dt;
+
+		if (it->second->isDone()) {
+			if (it->second->repeat) {
+				if (it->second->repeat_timer < it->second->wait_before_repeating)
+					it->second->repeat_timer += dt;
+				else {
+					it->second->repeat_timer = 0.f;
+					it->second->currentTime = 0.f;
+					it->first->setRotation(it->second->startingRotation);
+				}
+				++it;
+			}
+			else {
+				delete it->second;
+				it = m_Rotations_Shape.erase(it);
+			}
+		}
+		else {
+			if (it->second->clockwise) {
+				float rotation = static_cast<float>(it->second->used_function(static_cast<double>(it->second->currentTime / it->second->rotationTime))) * (it->second->endingRotation - it->second->startingRotation) + it->second->startingRotation;
+				printf("%f\n", rotation);
+				it->first->setRotation(rotation);
+			}
 			++it;
 		}
 	}
@@ -193,7 +222,7 @@ MovementManager::MovementManager()
 // Update functions
 void MovementManager::update(float dt)
 {
-	this->updateCircleShape(dt);
+	this->updateShape(dt);
 	this->updateVertexArray(dt);
 	this->updateSprite(dt);
 }
@@ -750,4 +779,37 @@ void MovementManager::stopScaling(sf::Sprite* _sprite)
 		delete scalingFound->second;
 		scalingMap.erase(scalingFound);
 	}
+}
+
+// Rotation functions
+const bool MovementManager::addRotation(sf::Shape* _shape, float endingRotation, float rotationTime, movement_type _used_function, bool _clockwise, bool _repeat, float _wait_before_repeating)
+{
+	auto& rotationMap = sInstance->m_Rotations_Shape;
+	auto rotationFound = rotationMap.find(_shape);
+
+	if (rotationFound != rotationMap.end()) {
+		printf("ERROR: Rotation for sf::CircleShape* object already exists!\n");
+		return 0;
+	}
+	else {
+		rotationInfo* newRotation = new rotationInfo(_shape->getRotation(), endingRotation, rotationTime, sInstance->movement_functions[_used_function], _clockwise, _repeat, _wait_before_repeating);
+		rotationMap.insert(std::make_pair(_shape, newRotation));
+	}
+	return 1;
+}
+
+const bool MovementManager::addRotation(sf::Shape* _shape, float startingRotation, float endingRotation, float rotationTime, movement_type _used_function, bool _clockwise, bool _repeat, float _wait_before_repeating)
+{
+	auto& rotationMap = sInstance->m_Rotations_Shape;
+	auto rotationFound = rotationMap.find(_shape);
+
+	if (rotationFound != rotationMap.end()) {
+		printf("ERROR: Rotation for sf::CircleShape* object already exists!\n");
+		return 0;
+	}
+	else {
+		rotationInfo* newRotation = new rotationInfo(startingRotation, endingRotation, rotationTime, sInstance->movement_functions[_used_function], _clockwise, _repeat, _wait_before_repeating);
+		rotationMap.insert(std::make_pair(_shape, newRotation));
+	}
+	return 1;
 }

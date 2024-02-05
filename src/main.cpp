@@ -64,11 +64,13 @@ int main()
 		end_pos[i] = sf::Vector2f(static_cast<float>(window.getSize().x) - 400.f, static_cast<float>(window.getSize().y) / static_cast<float>(rows) * static_cast<float>(i) + window.getSize().y / static_cast<float>(rows) / 2.f);
 
 	// Shapes initialiaztion
-	sf::CircleShape shapes[5];
+	sf::RectangleShape shapes[5];
 	for (int i = 0; i < rows; i++) {
-		shapes[i].setRadius(50.f);
+		//shapes[i].setRadius(50.f);
+		shapes[i].setSize(sf::Vector2f(100.f, 100.f));
 		shapes[i].setFillColor(sf::Color::Blue);
-		shapes[i].setOrigin(shapes[i].getRadius(), shapes[i].getRadius());
+		shapes[i].setOrigin(shapes[i].getSize().x / 2.f, shapes[i].getSize().y / 2.f);
+		//shapes[i].setOrigin(shapes[i].getRadius(), shapes[i].getRadius());
 		shapes[i].setPosition(start_pos[i]);
 	}
 
@@ -119,6 +121,7 @@ int main()
 	for (int i = 0; i < rows; i++) {
 		movementManager.addMovement(&shapes[i], start_pos[i], end_pos[i], animation_time, easeType[current_ease_type + i].second, true, 1.f);
 		movementManager.addScaling(&shapes[i], {1.5f, 1.5f}, animation_time, easeType[current_ease_type + i].second, true, 1.f);
+		movementManager.addRotation(&shapes[i], 360.f, animation_time, easeType[current_ease_type + i].second, true, true, 1.f);
 	}
 		
 
@@ -149,6 +152,7 @@ int main()
 					movementManager.undoScaling(&shapes[i]);
 					movementManager.addMovement(&shapes[i], start_pos[i], end_pos[i], animation_time, easeType[current_ease_type + i].second, true, 1.f);
 					movementManager.addScaling(&shapes[i], { 1.5f, 1.5f }, animation_time, easeType[current_ease_type + i].second, true, 1.f);
+
 				}
 
 				movementManager.resetScaling(&up_arrow);

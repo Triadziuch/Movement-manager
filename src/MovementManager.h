@@ -281,6 +281,12 @@ public:
 	void undoRotation();
 	void undoRotation(sf::Shape* _shape);
 
+	void resetRotation();
+	void resetRotation(sf::Shape* _shape);
+
+	void stopRotation();
+	void stopRotation(sf::Shape* _shape);
+
 	// Accessors / Mutators
 	int getMovementCount() { return m_Movements_Shape.size() + m_Movements_VA.size() + m_Movements_S.size(); }
 	int getScalingCount() { return m_Scalings_Shape.size() + m_Scalings_VA.size() + m_Scalings_S.size(); }

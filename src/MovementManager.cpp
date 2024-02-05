@@ -878,3 +878,44 @@ void MovementManager::undoRotation(sf::Shape* _shape)
 		rotationMap.erase(rotationFound);
 	}
 }
+
+void MovementManager::resetRotation()
+{
+	for (auto it = this->m_Rotations_Shape.begin(); it != this->m_Rotations_Shape.end();) {
+		it->first->setRotation(it->second->startingRotation);
+		it->second->currentTime = 0.f;
+		it->second->repeat_timer = 0.f;
+		++it;
+	}
+}
+
+void MovementManager::resetRotation(sf::Shape* _shape)
+{
+	auto& rotationMap = sInstance->m_Rotations_Shape;
+	auto rotationFound = rotationMap.find(_shape);
+
+	if (rotationFound != rotationMap.end()) {
+		_shape->setRotation(rotationFound->second->startingRotation);
+		rotationFound->second->currentTime = 0.f;
+		rotationFound->second->repeat_timer = 0.f;
+	}
+}
+
+void MovementManager::stopRotation()
+{
+	for (auto it = this->m_Rotations_Shape.begin(); it != this->m_Rotations_Shape.end();) {
+		delete it->second;
+		it = m_Rotations_Shape.erase(it);
+	}
+}
+
+void MovementManager::stopRotation(sf::Shape* _shape)
+{
+	auto& rotationMap = sInstance->m_Rotations_Shape;
+	auto rotationFound = rotationMap.find(_shape);
+
+	if (rotationFound != rotationMap.end()) {
+		delete rotationFound->second;
+		rotationMap.erase(rotationFound);
+	}
+}

@@ -134,8 +134,8 @@ private:
 	};
 
 	struct rotationInfo {
-		float startingRotation{};
-		float endingRotation{};
+		float		 startingRotation{};
+		float		 endingRotation{};
 		float		 currentTime{};
 		float		 rotationTime{};
 		bool		 repeat = false;
@@ -278,14 +278,20 @@ public:
 	const bool addRotation(sf::Shape* _shape, float endingRotation, float rotationTime, movement_type _used_function, bool _clockwise = true, bool _repeat = false, float _wait_before_repeating = 0.f);
 	const bool addRotation(sf::Shape* _shape, float startingRotation, float endingRotation, float rotationTime, movement_type _used_function, bool _clockwise = true, bool _repeat = false, float _wait_before_repeating = 0.f);
 
+	const bool addRotation(sf::Sprite* _sprite, float endingRotation, float rotationTime, movement_type _used_function, bool _clockwise = true, bool _repeat = false, float _wait_before_repeating = 0.f);
+	const bool addRotation(sf::Sprite* _sprite, float startingRotation, float endingRotation, float rotationTime, movement_type _used_function, bool _clockwise = true, bool _repeat = false, float _wait_before_repeating = 0.f);
+
 	void undoRotation();
 	void undoRotation(sf::Shape* _shape);
+	void undoRotation(sf::Sprite* _sprite);
 
 	void resetRotation();
 	void resetRotation(sf::Shape* _shape);
+	void resetRotation(sf::Sprite* _sprite);
 
 	void stopRotation();
 	void stopRotation(sf::Shape* _shape);
+	void stopRotation(sf::Sprite* _sprite);
 
 	// Accessors / Mutators
 	int getMovementCount() { return m_Movements_Shape.size() + m_Movements_VA.size() + m_Movements_S.size(); }

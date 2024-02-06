@@ -254,6 +254,34 @@ void MovementManager::updateSprite(float dt)
 			++it;
 		}
 	}
+
+	for (auto it = this->m_Rotations_S.begin(); it != this->m_Rotations_S.end();) {
+		it->second->currentTime += dt;
+
+		if (it->second->isDone()) {
+			if (it->second->repeat) {
+				if (it->second->repeat_timer < it->second->wait_before_repeating)
+					it->second->repeat_timer += dt;
+				else {
+					it->second->repeat_timer = 0.f;
+					it->second->currentTime = 0.f;
+					it->first->setRotation(it->second->startingRotation);
+				}
+				++it;
+			}
+			else {
+				delete it->second;
+				it = m_Rotations_S.erase(it);
+			}
+		}
+		else {
+			if (it->second->clockwise) {
+				float rotation = static_cast<float>(it->second->used_function(static_cast<double>(it->second->currentTime / it->second->rotationTime))) * (it->second->endingRotation - it->second->startingRotation) + it->second->startingRotation;
+				it->first->setRotation(rotation);
+			}
+			++it;
+		}
+	}
 }
 
 // Default constructor
@@ -858,12 +886,49 @@ const bool MovementManager::addRotation(sf::Shape* _shape, float startingRotatio
 	return 1;
 }
 
+const bool MovementManager::addRotation(sf::Sprite* _sprite, float endingRotation, float rotationTime, movement_type _used_function, bool _clockwise, bool _repeat, float _wait_before_repeating)
+{
+	auto& rotationMap = sInstance->m_Rotations_S;
+	auto rotationFound = rotationMap.find(_sprite);
+
+	if (rotationFound != rotationMap.end()) {
+		printf("ERROR: Rotation for sf::Sprite* object already exists!\n");
+		return 0;
+	}
+	else {
+		rotationInfo* newRotation = new rotationInfo(_sprite->getRotation(), endingRotation, rotationTime, sInstance->movement_functions[_used_function], _clockwise, _repeat, _wait_before_repeating);
+		rotationMap.insert(std::make_pair(_sprite, newRotation));
+	}
+}
+
+const bool MovementManager::addRotation(sf::Sprite* _sprite, float startingRotation, float endingRotation, float rotationTime, movement_type _used_function, bool _clockwise, bool _repeat, float _wait_before_repeating)
+{
+	auto& rotationMap = sInstance->m_Rotations_S;
+	auto rotationFound = rotationMap.find(_sprite);
+
+	if (rotationFound != rotationMap.end()) {
+		printf("ERROR: Rotation for sf::Sprite* object already exists!\n");
+		return 0;
+	}
+	else {
+		rotationInfo* newRotation = new rotationInfo(startingRotation, endingRotation, rotationTime, sInstance->movement_functions[_used_function], _clockwise, _repeat, _wait_before_repeating);
+		rotationMap.insert(std::make_pair(_sprite, newRotation));
+	}
+	return 1;
+}
+
 void MovementManager::undoRotation()
 {
 	for (auto it = this->m_Rotations_Shape.begin(); it != this->m_Rotations_Shape.end();) {
 		it->first->setRotation(it->second->startingRotation);
 		delete it->second;
 		it = m_Rotations_Shape.erase(it);
+	}
+
+	for (auto it = this->m_Rotations_S.begin(); it != this->m_Rotations_S.end();) {
+		it->first->setRotation(it->second->startingRotation);
+		delete it->second;
+		it = m_Rotations_S.erase(it);
 	}
 }
 
@@ -879,9 +944,28 @@ void MovementManager::undoRotation(sf::Shape* _shape)
 	}
 }
 
+void MovementManager::undoRotation(sf::Sprite* _sprite)
+{
+	auto& rotationMap = sInstance->m_Rotations_S;
+	auto rotationFound = rotationMap.find(_sprite);
+
+	if (rotationFound != rotationMap.end()) {
+		_sprite->setRotation(rotationFound->second->startingRotation);
+		delete rotationFound->second;
+		rotationMap.erase(rotationFound);
+	}
+}
+
 void MovementManager::resetRotation()
 {
 	for (auto it = this->m_Rotations_Shape.begin(); it != this->m_Rotations_Shape.end();) {
+		it->first->setRotation(it->second->startingRotation);
+		it->second->currentTime = 0.f;
+		it->second->repeat_timer = 0.f;
+		++it;
+	}
+
+	for (auto it = this->m_Rotations_S.begin(); it != this->m_Rotations_S.end();) {
 		it->first->setRotation(it->second->startingRotation);
 		it->second->currentTime = 0.f;
 		it->second->repeat_timer = 0.f;
@@ -901,11 +985,28 @@ void MovementManager::resetRotation(sf::Shape* _shape)
 	}
 }
 
+void MovementManager::resetRotation(sf::Sprite* _sprite)
+{
+	auto& rotationMap = sInstance->m_Rotations_S;
+	auto rotationFound = rotationMap.find(_sprite);
+
+	if (rotationFound != rotationMap.end()) {
+		_sprite->setRotation(rotationFound->second->startingRotation);
+		rotationFound->second->currentTime = 0.f;
+		rotationFound->second->repeat_timer = 0.f;
+	}
+}
+
 void MovementManager::stopRotation()
 {
 	for (auto it = this->m_Rotations_Shape.begin(); it != this->m_Rotations_Shape.end();) {
 		delete it->second;
 		it = m_Rotations_Shape.erase(it);
+	}
+
+	for (auto it = this->m_Rotations_S.begin(); it != this->m_Rotations_S.end();) {
+		delete it->second;
+		it = m_Rotations_S.erase(it);
 	}
 }
 
@@ -913,6 +1014,17 @@ void MovementManager::stopRotation(sf::Shape* _shape)
 {
 	auto& rotationMap = sInstance->m_Rotations_Shape;
 	auto rotationFound = rotationMap.find(_shape);
+
+	if (rotationFound != rotationMap.end()) {
+		delete rotationFound->second;
+		rotationMap.erase(rotationFound);
+	}
+}
+
+void MovementManager::stopRotation(sf::Sprite* _sprite)
+{
+	auto& rotationMap = sInstance->m_Rotations_S;
+	auto rotationFound = rotationMap.find(_sprite);
 
 	if (rotationFound != rotationMap.end()) {
 		delete rotationFound->second;

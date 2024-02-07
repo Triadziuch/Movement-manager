@@ -129,6 +129,15 @@ void MovementManager::updateVertexArray(float dt)
 							scaling->second->centroid = it->second->centroid;
 						}
 
+						auto& rotationMap = sInstance->m_Rotations_VA;
+						auto rotation = rotationMap.find(it->first);
+
+						if (rotation != rotationMap.end()) {
+							for (size_t j = 0; j < rotation->second->originalVertex.getVertexCount(); j++)
+								rotation->second->originalVertex.operator[](j).position -= sf::Vector2f(offset_x, offset_y);
+							rotation->second->centroid = it->second->centroid;
+						}
+
 						it->second->repeat_timer = 0.f;
 					}
 					++it;
@@ -155,6 +164,16 @@ void MovementManager::updateVertexArray(float dt)
 						scaling->second->originalVertex.operator[](j).position += sf::Vector2f(offset_x, offset_y);
 					scaling->second->centroid = it->second->centroid;
 				}
+
+				auto& rotationMap = sInstance->m_Rotations_VA;
+				auto rotation = rotationMap.find(it->first);
+
+				if (rotation != rotationMap.end()) {
+					for (size_t j = 0; j < rotation->second->originalVertex.getVertexCount(); j++)
+						rotation->second->originalVertex.operator[](j).position += sf::Vector2f(offset_x, offset_y);
+					rotation->second->centroid = it->second->centroid;
+				}
+					
 				
 				++it;
 			}
@@ -170,6 +189,21 @@ void MovementManager::updateVertexArray(float dt)
 						it->second->repeat_timer += dt;
 					else {
 						it->first->operator=(it->second->originalVertex);
+
+						auto& rotationMap = sInstance->m_Rotations_VA;
+						auto rotation = rotationMap.find(it->first);
+
+						if (rotation != rotationMap.end()) {
+							
+							for (size_t j = 0; j < rotation->second->originalVertex.getVertexCount(); j++) {
+								rotation->second->originalVertex.operator[](j).position = it->first->operator[](j).position;
+								float x = rotation->second->originalVertex.operator[](j).position.x - rotation->second->centroid.x;
+								float y = rotation->second->originalVertex.operator[](j).position.y - rotation->second->centroid.y;
+								rotation->first->operator[](j).position.x = rotation->second->centroid.x + x * cos(rotation->second->current_rotation * 3.14159265358979323846 / 180) - y * sin(rotation->second->current_rotation * 3.14159265358979323846 / 180);
+								rotation->first->operator[](j).position.y = rotation->second->centroid.y + x * sin(rotation->second->current_rotation * 3.14159265358979323846 / 180) + y * cos(rotation->second->current_rotation * 3.14159265358979323846 / 180);
+							}
+						}
+
 						it->second->currentScale = it->second->startingScale;
 						it->second->repeat_timer = 0.f;
 						it->second->currentTime = 0.f;
@@ -189,6 +223,64 @@ void MovementManager::updateVertexArray(float dt)
 				for (size_t i = 0; i < it->first->getVertexCount(); i++) {
 					it->first->operator[](i).position.x = it->second->centroid.x + (it->second->originalVertex.operator[](i).position.x - it->second->centroid.x) * scale_x;
 					it->first->operator[](i).position.y = it->second->centroid.y + (it->second->originalVertex.operator[](i).position.y - it->second->centroid.y) * scale_y;
+				}
+
+				auto& rotationMap = sInstance->m_Rotations_VA;
+				auto rotation = rotationMap.find(it->first);
+
+				if (rotation != rotationMap.end()) {
+					float rot = rotation->second->endingRotation;
+					for (size_t j = 0; j < rotation->second->originalVertex.getVertexCount(); j++)
+						rotation->second->originalVertex.operator[](j).position = it->first->operator[](j).position;
+
+					if (it->second->repeat_timer < it->second->wait_before_repeating){
+						for (size_t j = 0; j < rotation->second->originalVertex.getVertexCount(); j++) {
+							rotation->second->originalVertex.operator[](j).position = it->first->operator[](j).position;
+
+							float x = rotation->second->originalVertex.operator[](j).position.x - rotation->second->centroid.x;
+							float y = rotation->second->originalVertex.operator[](j).position.y - rotation->second->centroid.y;
+							rotation->first->operator[](j).position.x = rotation->second->centroid.x + x * cos(rot * 3.14159265358979323846 / 180) - y * sin(rot * 3.14159265358979323846 / 180);
+							rotation->first->operator[](j).position.y = rotation->second->centroid.y + x * sin(rot * 3.14159265358979323846 / 180) + y * cos(rot * 3.14159265358979323846 / 180);
+						}
+					}
+				}
+			
+
+				++it;
+			}
+		}
+	}
+
+	for (auto it = this->m_Rotations_VA.begin(); it != this->m_Rotations_VA.end();) {
+		it->second->currentTime += dt;
+
+		if (it->first->getVertexCount() != 0) {
+			if (it->second->isDone()) {
+				if (it->second->repeat) {
+					if (it->second->repeat_timer < it->second->wait_before_repeating)
+						it->second->repeat_timer += dt;
+					else {
+						it->first->operator=(it->second->originalVertex);
+						it->second->current_rotation = it->second->startingRotation;
+						it->second->repeat_timer = 0.f;
+						it->second->currentTime = 0.f;
+					}
+					++it;
+				}
+				else {
+					delete it->second;
+					it = m_Rotations_VA.erase(it);
+				}
+			}
+			else {
+				float rotation = static_cast<float>(it->second->used_function(static_cast<double>(it->second->currentTime / it->second->rotationTime))) * (it->second->endingRotation - it->second->startingRotation) + it->second->startingRotation;
+				it->second->current_rotation = rotation;
+				
+				for (size_t i = 0; i < it->first->getVertexCount(); ++i) {
+					float x = it->second->originalVertex.operator[](i).position.x - it->second->centroid.x;
+					float y = it->second->originalVertex.operator[](i).position.y - it->second->centroid.y;
+					it->first->operator[](i).position.x = it->second->centroid.x + x * cos(rotation * 3.14159265358979323846 / 180) - y * sin(rotation * 3.14159265358979323846 / 180);
+					it->first->operator[](i).position.y = it->second->centroid.y + x * sin(rotation * 3.14159265358979323846 / 180) + y * cos(rotation * 3.14159265358979323846 / 180);
 				}
 
 				++it;
@@ -864,7 +956,7 @@ const bool MovementManager::addRotation(sf::Shape* _shape, float endingRotation,
 		return 0;
 	}
 	else {
-		rotationInfo* newRotation = new rotationInfo(_shape->getRotation(), endingRotation, rotationTime, sInstance->movement_functions[_used_function], _clockwise, _repeat, _wait_before_repeating);
+		rotationInfo* newRotation = new rotationInfo(_shape->getRotation(), endingRotation, rotationTime, sInstance->movement_functions[_used_function], _repeat, _wait_before_repeating, _clockwise);
 		rotationMap.insert(std::make_pair(_shape, newRotation));
 	}
 	return 1;
@@ -880,8 +972,40 @@ const bool MovementManager::addRotation(sf::Shape* _shape, float startingRotatio
 		return 0;
 	}
 	else {
-		rotationInfo* newRotation = new rotationInfo(startingRotation, endingRotation, rotationTime, sInstance->movement_functions[_used_function], _clockwise, _repeat, _wait_before_repeating);
+		rotationInfo* newRotation = new rotationInfo(startingRotation, endingRotation, rotationTime, sInstance->movement_functions[_used_function], _repeat, _wait_before_repeating, _clockwise);
 		rotationMap.insert(std::make_pair(_shape, newRotation));
+	}
+	return 1;
+}
+
+const bool MovementManager::addRotation(sf::VertexArray* _vertexarray, float endingRotation, float rotationTime, movement_type _used_function, bool _clockwise, bool _repeat, float _wait_before_repeating)
+{
+	auto& rotationMap = sInstance->m_Rotations_VA;
+	auto rotationFound = rotationMap.find(_vertexarray);
+
+	if (rotationFound != rotationMap.end()) {
+		printf("ERROR: Rotation for sf::VertexArray* object already exists!\n");
+		return 0;
+	}
+	else if (_vertexarray->getVertexCount() != 0) {
+		rotationInfoVA* newRotation = new rotationInfoVA(0.f, endingRotation, rotationTime, sInstance->movement_functions[_used_function], _vertexarray, _repeat, _wait_before_repeating, _clockwise);
+		rotationMap.insert(std::make_pair(_vertexarray, newRotation));
+	}
+	return 1;
+}
+
+const bool MovementManager::addRotation(sf::VertexArray* _vertexarray, float startingRotation, float endingRotation, float rotationTime, movement_type _used_function, bool _clockwise, bool _repeat, float _wait_before_repeating)
+{
+	auto& rotationMap = sInstance->m_Rotations_VA;
+	auto rotationFound = rotationMap.find(_vertexarray);
+
+	if (rotationFound != rotationMap.end()) {
+		printf("ERROR: Rotation for sf::VertexArray* object already exists!\n");
+		return 0;
+	}
+	else if (_vertexarray->getVertexCount() != 0) {
+		rotationInfoVA* newRotation = new rotationInfoVA(startingRotation, endingRotation, rotationTime, sInstance->movement_functions[_used_function], _vertexarray, _repeat, _wait_before_repeating, _clockwise);
+		rotationMap.insert(std::make_pair(_vertexarray, newRotation));
 	}
 	return 1;
 }
@@ -896,7 +1020,7 @@ const bool MovementManager::addRotation(sf::Sprite* _sprite, float endingRotatio
 		return 0;
 	}
 	else {
-		rotationInfo* newRotation = new rotationInfo(_sprite->getRotation(), endingRotation, rotationTime, sInstance->movement_functions[_used_function], _clockwise, _repeat, _wait_before_repeating);
+		rotationInfo* newRotation = new rotationInfo(_sprite->getRotation(), endingRotation, rotationTime, sInstance->movement_functions[_used_function], _repeat, _wait_before_repeating, _clockwise);
 		rotationMap.insert(std::make_pair(_sprite, newRotation));
 	}
 }
@@ -911,7 +1035,7 @@ const bool MovementManager::addRotation(sf::Sprite* _sprite, float startingRotat
 		return 0;
 	}
 	else {
-		rotationInfo* newRotation = new rotationInfo(startingRotation, endingRotation, rotationTime, sInstance->movement_functions[_used_function], _clockwise, _repeat, _wait_before_repeating);
+		rotationInfo* newRotation = new rotationInfo(startingRotation, endingRotation, rotationTime, sInstance->movement_functions[_used_function], _repeat, _wait_before_repeating, _clockwise);
 		rotationMap.insert(std::make_pair(_sprite, newRotation));
 	}
 	return 1;

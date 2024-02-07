@@ -16,7 +16,7 @@ private:
 		float		 wait_before_repeating{};
 		double (*used_function)(double) {};
 
-		movementInfo(sf::Vector2f _startingPos, sf::Vector2f _endingPos, float _movementTime, double(*_used_function)(double), bool _repeat, bool _wait_before_repeating) :
+		movementInfo(sf::Vector2f _startingPos, sf::Vector2f _endingPos, float _movementTime, double(*_used_function)(double), bool _repeat, float _wait_before_repeating) :
 			startingPos(_startingPos), endingPos(_endingPos), movementTime(_movementTime), currentTime(0.f), used_function(_used_function), repeat(_repeat), wait_before_repeating(_wait_before_repeating) {};
 
 		movementInfo(const movementInfo& _movementInfo) {
@@ -44,7 +44,7 @@ private:
 		float		 wait_before_repeating{};
 		double (*used_function)(double) {};
 
-		movementInfoVA(sf::Vector2f _startingPos, sf::Vector2f _endingPos, float _movementTime, double(*_used_function)(double), bool _repeat, bool _wait_before_repeating, sf::VertexArray* _vertexarray) :
+		movementInfoVA(sf::Vector2f _startingPos, sf::Vector2f _endingPos, float _movementTime, double(*_used_function)(double), bool _repeat, float _wait_before_repeating, sf::VertexArray* _vertexarray) :
 			startingPos(_startingPos), endingPos(_endingPos), movementTime(_movementTime), currentTime(0.f), used_function(_used_function), repeat(_repeat), wait_before_repeating(_wait_before_repeating) {
 			
 			for (size_t i = 0; i < _vertexarray->getVertexCount(); i++)
@@ -107,7 +107,7 @@ private:
 		float		 wait_before_repeating{};
 		double (*used_function)(double) {};
 
-		scalingInfoVA(sf::Vector2f _startingScale, sf::Vector2f _endingScale, float _scalingTime, double(*_used_function)(double), bool _repeat, bool _wait_before_repeating, sf::VertexArray* _vertexarray) :
+		scalingInfoVA(sf::Vector2f _startingScale, sf::Vector2f _endingScale, float _scalingTime, double(*_used_function)(double), bool _repeat, float _wait_before_repeating, sf::VertexArray* _vertexarray) :
 			startingScale(_startingScale), endingScale(_endingScale), scalingTime(_scalingTime), currentTime(0.f), used_function(_used_function), repeat(_repeat), wait_before_repeating(_wait_before_repeating), originalVertex(*_vertexarray) {
 			
 			for (size_t i = 0; i < _vertexarray->getVertexCount(); i++)
@@ -144,7 +144,7 @@ private:
 		float		 wait_before_repeating{};
 		double (*used_function)(double) {};
 
-		rotationInfo(float _startingRotation, float _endingRotation, float _rotationTime, double(*_used_function)(double), bool _repeat, bool _wait_before_repeating, bool _clockwise) :
+		rotationInfo(float _startingRotation, float _endingRotation, float _rotationTime, double(*_used_function)(double), bool _repeat, float _wait_before_repeating, bool _clockwise) :
 			startingRotation(_startingRotation), endingRotation(_endingRotation), rotationTime(_rotationTime), currentTime(0.f), used_function(_used_function), repeat(_repeat), wait_before_repeating(_wait_before_repeating), clockwise(_clockwise) {};
 
 		rotationInfo(const rotationInfo& _rotationInfo) {
@@ -157,6 +157,46 @@ private:
 			repeat_timer = _rotationInfo.repeat_timer;
 			wait_before_repeating = _rotationInfo.wait_before_repeating;
 			used_function = _rotationInfo.used_function;
+		}
+
+		const bool isDone() { return currentTime >= rotationTime; }
+	};
+
+	struct rotationInfoVA {
+		float		 startingRotation{};
+		float		 endingRotation{};
+		sf::Vector2f centroid{};
+		float		 currentTime{};
+		float		 rotationTime{};
+		bool		 repeat = false;
+		bool		 clockwise = true;
+		sf::VertexArray originalVertex{};
+		float		 current_rotation{};
+		float		 repeat_timer{};
+		float		 wait_before_repeating{};
+		double (*used_function)(double) {};
+
+		rotationInfoVA(float _startingRotation, float _endingRotation, float _rotationTime, double(*_used_function)(double), sf::VertexArray* _vertexarray, bool _repeat, float _wait_before_repeating, bool _clockwise) :
+			startingRotation(_startingRotation), endingRotation(_endingRotation), rotationTime(_rotationTime), currentTime(0.f), used_function(_used_function), originalVertex(*_vertexarray), repeat(_repeat), wait_before_repeating(_wait_before_repeating), clockwise(_clockwise) {
+			
+			for (size_t i = 0; i < _vertexarray->getVertexCount(); i++)
+				centroid += _vertexarray->operator[](i).position;
+			centroid /= static_cast<float>(_vertexarray->getVertexCount());
+		};
+
+		rotationInfoVA(const rotationInfoVA& _rotationInfoVA) {
+			startingRotation = _rotationInfoVA.startingRotation;
+			endingRotation = _rotationInfoVA.endingRotation;
+			centroid = _rotationInfoVA.centroid;
+			currentTime = _rotationInfoVA.currentTime;
+			rotationTime = _rotationInfoVA.rotationTime;
+			repeat = _rotationInfoVA.repeat;
+			clockwise = _rotationInfoVA.clockwise;
+			originalVertex = _rotationInfoVA.originalVertex;
+			current_rotation = _rotationInfoVA.current_rotation;
+			repeat_timer = _rotationInfoVA.repeat_timer;
+			wait_before_repeating = _rotationInfoVA.wait_before_repeating;
+			used_function = _rotationInfoVA.used_function;
 		}
 
 		const bool isDone() { return currentTime >= rotationTime; }
@@ -204,7 +244,7 @@ private:
 	std::map<sf::Sprite*, scalingInfo*>				m_Scalings_S;
 
 	std::map<sf::Shape*, rotationInfo*>				m_Rotations_Shape;
-	std::map<sf::VertexArray*, rotationInfo*>		m_Rotations_VA;
+	std::map<sf::VertexArray*, rotationInfoVA*>		m_Rotations_VA;
 	std::map<sf::Sprite*, rotationInfo*>			m_Rotations_S;
 
 	// Singleton instance
@@ -278,6 +318,9 @@ public:
 	const bool addRotation(sf::Shape* _shape, float endingRotation, float rotationTime, movement_type _used_function, bool _clockwise = true, bool _repeat = false, float _wait_before_repeating = 0.f);
 	const bool addRotation(sf::Shape* _shape, float startingRotation, float endingRotation, float rotationTime, movement_type _used_function, bool _clockwise = true, bool _repeat = false, float _wait_before_repeating = 0.f);
 
+	const bool addRotation(sf::VertexArray* _vertexarray, float endingRotation, float rotationTime, movement_type _used_function, bool _clockwise = true, bool _repeat = false, float _wait_before_repeating = 0.f);
+	const bool addRotation(sf::VertexArray* _vertexarray, float startingRotation, float endingRotation, float rotationTime, movement_type _used_function, bool _clockwise = true, bool _repeat = false, float _wait_before_repeating = 0.f);
+
 	const bool addRotation(sf::Sprite* _sprite, float endingRotation, float rotationTime, movement_type _used_function, bool _clockwise = true, bool _repeat = false, float _wait_before_repeating = 0.f);
 	const bool addRotation(sf::Sprite* _sprite, float startingRotation, float endingRotation, float rotationTime, movement_type _used_function, bool _clockwise = true, bool _repeat = false, float _wait_before_repeating = 0.f);
 
@@ -304,6 +347,14 @@ public:
 			sf::CircleShape centroid(5.f);
 			centroid.setOrigin(centroid.getRadius(), centroid.getRadius());
 			centroid.setFillColor(sf::Color::Red);
+			centroid.setPosition(it.second->centroid);
+			_window->draw(centroid);
+		}
+
+		for (auto& it : m_Rotations_VA) {
+			sf::CircleShape centroid(3.f);
+			centroid.setOrigin(centroid.getRadius(), centroid.getRadius());
+			centroid.setFillColor(sf::Color::Green);
 			centroid.setPosition(it.second->centroid);
 			_window->draw(centroid);
 		}

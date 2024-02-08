@@ -341,22 +341,4 @@ public:
 	int getScalingCount() { return m_Scalings_Shape.size() + m_Scalings_VA.size() + m_Scalings_S.size(); }
 
 	double (*getFunctionPointer(movement_type _movement_type))(double) { return movement_functions[_movement_type]; }
-
-	void renderCentroids(sf::RenderWindow* _window) {
-		for (auto& it : m_Scalings_VA) {
-			sf::CircleShape centroid(5.f);
-			centroid.setOrigin(centroid.getRadius(), centroid.getRadius());
-			centroid.setFillColor(sf::Color::Red);
-			centroid.setPosition(it.second->centroid);
-			_window->draw(centroid);
-		}
-
-		for (auto& it : m_Rotations_VA) {
-			sf::CircleShape centroid(3.f);
-			centroid.setOrigin(centroid.getRadius(), centroid.getRadius());
-			centroid.setFillColor(sf::Color::Green);
-			centroid.setPosition(it.second->centroid);
-			_window->draw(centroid);
-		}
-	}
 };

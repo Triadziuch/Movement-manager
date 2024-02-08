@@ -1172,6 +1172,12 @@ void MovementManager::undoRotation()
 		it = m_Rotations_Shape.erase(it);
 	}
 
+	for (auto it = this->m_Rotations_VA.begin(); it != this->m_Rotations_VA.end();) {
+		it->first->operator= (it->second->originalVertex);
+		delete it->second;
+		it = m_Rotations_VA.erase(it);
+	}
+
 	for (auto it = this->m_Rotations_S.begin(); it != this->m_Rotations_S.end();) {
 		it->first->setRotation(it->second->startingRotation);
 		delete it->second;
@@ -1186,6 +1192,18 @@ void MovementManager::undoRotation(sf::Shape* _shape)
 
 	if (rotationFound != rotationMap.end()) {
 		_shape->setRotation(rotationFound->second->startingRotation);
+		delete rotationFound->second;
+		rotationMap.erase(rotationFound);
+	}
+}
+
+void MovementManager::undoRotation(sf::VertexArray* _vertexarray)
+{
+	auto& rotationMap = sInstance->m_Rotations_VA;
+	auto rotationFound = rotationMap.find(_vertexarray);
+
+	if (rotationFound != rotationMap.end()) {
+		_vertexarray->operator= (rotationFound->second->originalVertex);
 		delete rotationFound->second;
 		rotationMap.erase(rotationFound);
 	}
@@ -1212,6 +1230,14 @@ void MovementManager::resetRotation()
 		++it;
 	}
 
+	for (auto it = this->m_Rotations_VA.begin(); it != this->m_Rotations_VA.end();) {
+		it->first->operator= (it->second->originalVertex);
+		it->second->current_rotation = it->second->startingRotation;
+		it->second->currentTime = 0.f;
+		it->second->repeat_timer = 0.f;
+		++it;
+	}
+
 	for (auto it = this->m_Rotations_S.begin(); it != this->m_Rotations_S.end();) {
 		it->first->setRotation(it->second->startingRotation);
 		it->second->currentTime = 0.f;
@@ -1227,6 +1253,19 @@ void MovementManager::resetRotation(sf::Shape* _shape)
 
 	if (rotationFound != rotationMap.end()) {
 		_shape->setRotation(rotationFound->second->startingRotation);
+		rotationFound->second->currentTime = 0.f;
+		rotationFound->second->repeat_timer = 0.f;
+	}
+}
+
+void MovementManager::resetRotation(sf::VertexArray* _vertexarray)
+{
+	auto& rotationMap = sInstance->m_Rotations_VA;
+	auto rotationFound = rotationMap.find(_vertexarray);
+
+	if (rotationFound != rotationMap.end()) {
+		_vertexarray->operator= (rotationFound->second->originalVertex);
+		rotationFound->second->current_rotation = rotationFound->second->startingRotation;
 		rotationFound->second->currentTime = 0.f;
 		rotationFound->second->repeat_timer = 0.f;
 	}
@@ -1251,6 +1290,11 @@ void MovementManager::stopRotation()
 		it = m_Rotations_Shape.erase(it);
 	}
 
+	for (auto it = this->m_Rotations_VA.begin(); it != this->m_Rotations_VA.end();) {
+		delete it->second;
+		it = m_Rotations_VA.erase(it);
+	}
+
 	for (auto it = this->m_Rotations_S.begin(); it != this->m_Rotations_S.end();) {
 		delete it->second;
 		it = m_Rotations_S.erase(it);
@@ -1261,6 +1305,17 @@ void MovementManager::stopRotation(sf::Shape* _shape)
 {
 	auto& rotationMap = sInstance->m_Rotations_Shape;
 	auto rotationFound = rotationMap.find(_shape);
+
+	if (rotationFound != rotationMap.end()) {
+		delete rotationFound->second;
+		rotationMap.erase(rotationFound);
+	}
+}
+
+void MovementManager::stopRotation(sf::VertexArray* _vertexarray)
+{
+	auto& rotationMap = sInstance->m_Rotations_VA;
+	auto rotationFound = rotationMap.find(_vertexarray);
 
 	if (rotationFound != rotationMap.end()) {
 		delete rotationFound->second;

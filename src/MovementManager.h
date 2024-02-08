@@ -326,14 +326,17 @@ public:
 
 	void undoRotation();
 	void undoRotation(sf::Shape* _shape);
+	void undoRotation(sf::VertexArray* _vertexarray);
 	void undoRotation(sf::Sprite* _sprite);
 
 	void resetRotation();
 	void resetRotation(sf::Shape* _shape);
+	void resetRotation(sf::VertexArray* _vertexarray);
 	void resetRotation(sf::Sprite* _sprite);
 
 	void stopRotation();
 	void stopRotation(sf::Shape* _shape);
+	void stopRotation(sf::VertexArray* _vertexarray);
 	void stopRotation(sf::Sprite* _sprite);
 
 	// Accessors / Mutators

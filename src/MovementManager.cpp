@@ -1172,6 +1172,12 @@ void MovementManager::undoRotation()
 		it = m_Rotations_Shape.erase(it);
 	}
 
+	for (auto it = this->m_Rotations_VA.begin(); it != this->m_Rotations_VA.end();) {
+		it->first->operator= (it->second->originalVertex);
+		delete it->second;
+		it = m_Rotations_VA.erase(it);
+	}
+
 	for (auto it = this->m_Rotations_S.begin(); it != this->m_Rotations_S.end();) {
 		it->first->setRotation(it->second->startingRotation);
 		delete it->second;
@@ -1186,6 +1192,18 @@ void MovementManager::undoRotation(sf::Shape* _shape)
 
 	if (rotationFound != rotationMap.end()) {
 		_shape->setRotation(rotationFound->second->startingRotation);
+		delete rotationFound->second;
+		rotationMap.erase(rotationFound);
+	}
+}
+
+void MovementManager::undoRotation(sf::VertexArray* _vertexarray)
+{
+	auto& rotationMap = sInstance->m_Rotations_VA;
+	auto rotationFound = rotationMap.find(_vertexarray);
+
+	if (rotationFound != rotationMap.end()) {
+		_vertexarray->operator= (rotationFound->second->originalVertex);
 		delete rotationFound->second;
 		rotationMap.erase(rotationFound);
 	}

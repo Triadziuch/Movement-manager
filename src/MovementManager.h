@@ -326,6 +326,7 @@ public:
 
 	void undoRotation();
 	void undoRotation(sf::Shape* _shape);
+	void undoRotation(sf::VertexArray* _vertexarray);
 	void undoRotation(sf::Sprite* _sprite);
 
 	void resetRotation();

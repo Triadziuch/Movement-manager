@@ -108,16 +108,16 @@ int main()
 	down_arrow[1].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f, static_cast<float>(window.getSize().y) - 30.f);
 	down_arrow[2].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f + 40.f, static_cast<float>(window.getSize().y) - 60.f);
 
-	float arrow_movement_time = 2.f;
-	float arrow_scaling_time = 1.f;
+	float arrow_movement_time = 3.f;
+	float arrow_scaling_time = 2.f;
 	float arrow_rotation_time = 1.f;
-	float arrow_wait_time = 0.f;
+	float arrow_wait_time = 1.f;
 
-	//movementManager.addMovement(&up_arrow, up_arrow[0].position, up_arrow[0].position + sf::Vector2f(0.f, -20.f), arrow_movement_time,movement_type::IN_OUT_SINE, true, arrow_wait_time);
+	movementManager.addMovement(&up_arrow, up_arrow[0].position, up_arrow[0].position + sf::Vector2f(0.f, -20.f), arrow_movement_time,movement_type::IN_OUT_SINE, true, arrow_wait_time);
 	movementManager.addMovement(&down_arrow, down_arrow[0].position, down_arrow[0].position + sf::Vector2f(0.f, 20.f), arrow_movement_time, movement_type::IN_OUT_SINE, true, arrow_wait_time);
-	//movementManager.addScaling(&up_arrow, { 1.5f, 1.5f }, arrow_scaling_time, movement_type::IN_OUT_SINE, true, arrow_wait_time);
+	movementManager.addScaling(&up_arrow, { 1.5f, 1.5f }, arrow_scaling_time, movement_type::IN_OUT_SINE, true, arrow_wait_time);
 	movementManager.addScaling(&down_arrow, { 1.5f, 1.5f }, arrow_scaling_time, movement_type::IN_OUT_SINE, true, arrow_wait_time);
-	//movementManager.addRotation(&up_arrow, 90.f, arrow_rotation_time, movement_type::IN_OUT_SINE, true, true, arrow_wait_time);
+	movementManager.addRotation(&up_arrow, 90.f, arrow_rotation_time, movement_type::IN_OUT_SINE, true, true, arrow_wait_time);
 	movementManager.addRotation(&down_arrow, 90.f, arrow_rotation_time, movement_type::IN_OUT_SINE, true, true, arrow_wait_time);
 
 	sf::Clock dt_clock;

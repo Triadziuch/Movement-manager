@@ -53,6 +53,19 @@ void MovementManager::updateScalingCentroidOriginalVertex(sf::VertexArray* _vert
 			rotation->second->originalVertex.operator[](i).position = _vertexarray->operator[](i).position;
 }
 
+void MovementManager::updateRotationCentroidOriginalVertex(sf::VertexArray* _vertexarray, rotationInfoVA* _rotationInfo)
+{
+	float sine   = static_cast<float>(sin(static_cast<double>(_rotationInfo->current_rotation) * M_RAD)),
+		  cosine = static_cast<float>(cos(static_cast<double>(_rotationInfo->current_rotation) * M_RAD));
+
+	for (size_t i = 0; i < _vertexarray->getVertexCount(); ++i) {
+		float x = _rotationInfo->originalVertex.operator[](i).position.x - _rotationInfo->centroid.x;
+		float y = _rotationInfo->originalVertex.operator[](i).position.y - _rotationInfo->centroid.y;
+		_vertexarray->operator[](i).position.x = _rotationInfo->centroid.x + x * cosine - y * sine;
+		_vertexarray->operator[](i).position.y = _rotationInfo->centroid.y + x * sine + y * cosine;
+	}
+}
+
 // Private update functions
 void MovementManager::updateShape(float dt)
 {
@@ -156,14 +169,8 @@ void MovementManager::updateShape(float dt)
 	}
 }
 
-
-int k = 0;
-long long int suma = 0;
-
 void MovementManager::updateVertexArray(float dt)
 {
-	auto start = std::chrono::high_resolution_clock::now();
-
 	for (auto it = this->m_Movements_VA.begin(); it != this->m_Movements_VA.end();) {
 		it->second->currentTime += dt;
 		if (it->first->getVertexCount() != 0) {
@@ -213,13 +220,11 @@ void MovementManager::updateVertexArray(float dt)
 
 				if (it->second->repeat) {
 					if (it->second->currentTime - it->second->scalingTime < it->second->wait_before_repeating) {
-
 						it->second->currentScale = it->second->endingScale;
 						updateScalingCentroidOriginalVertex(it->first, it->second);
 					}
 						
 					else {
-
 						it->second->currentScale = it->second->startingScale;
 						updateScalingCentroidOriginalVertex(it->first, it->second);
 
@@ -234,11 +239,10 @@ void MovementManager::updateVertexArray(float dt)
 				}
 			}
 			else {
-				// === Scaling ===
+
 				sf::Vector2f scale(it->second->used_function(static_cast<double>(it->second->currentTime / it->second->scalingTime)) * (it->second->endingScale.x - it->second->startingScale.x) + it->second->startingScale.x,
 								   it->second->used_function(static_cast<double>(it->second->currentTime / it->second->scalingTime)) * (it->second->endingScale.y - it->second->startingScale.y) + it->second->startingScale.y);
 				it->second->currentScale = scale;
-
 				updateScalingCentroidOriginalVertex(it->first, it->second);
 
 				++it;
@@ -251,48 +255,19 @@ void MovementManager::updateVertexArray(float dt)
 		if (it->first->getVertexCount() != 0) {
 			if (it->second->isDone()) {
 				if (!it->second->repeat || (it->second->repeat_timer == 0.f && it->second->wait_before_repeating != 0.f)) {
-					// === Rotation ===
 					it->second->current_rotation = it->second->endingRotation;
-
-					float sine   = static_cast<float>(sin(static_cast<double>(it->second->current_rotation) * M_RAD)),
-						  cosine = static_cast<float>(cos(static_cast<double>(it->second->current_rotation) * M_RAD));
-
-					for (size_t i = 0; i < it->first->getVertexCount(); ++i) {
-						float x = it->second->originalVertex.operator[](i).position.x - it->second->centroid.x;
-						float y = it->second->originalVertex.operator[](i).position.y - it->second->centroid.y;
-						it->first->operator[](i).position.x = it->second->centroid.x + x * cosine - y * sine;
-						it->first->operator[](i).position.y = it->second->centroid.y + x * sine + y * cosine;
-					}
+					updateRotationCentroidOriginalVertex(it->first, it->second);
 				}
 
 				if (it->second->repeat) {
 					if (it->second->currentTime - it->second->rotationTime < it->second->wait_before_repeating) {
 						it->second->current_rotation = it->second->endingRotation;
-
-						float sine   = static_cast<float>(sin(static_cast<double>(it->second->current_rotation) * M_RAD)),
-							  cosine = static_cast<float>(cos(static_cast<double>(it->second->current_rotation) * M_RAD));
-
-						for (size_t i = 0; i < it->first->getVertexCount(); ++i) {
-							float x = it->second->originalVertex.operator[](i).position.x - it->second->centroid.x;
-							float y = it->second->originalVertex.operator[](i).position.y - it->second->centroid.y;
-							it->first->operator[](i).position.x = it->second->centroid.x + x * cosine - y * sine;
-							it->first->operator[](i).position.y = it->second->centroid.y + x * sine + y * cosine;
-						}
+						updateRotationCentroidOriginalVertex(it->first, it->second);
 					}
 						
 					else {
-						// === Rotation ===
 						it->second->current_rotation = it->second->startingRotation;
-
-						float sine   = static_cast<float>(sin(static_cast<double>(it->second->current_rotation) * M_RAD)),
-							  cosine = static_cast<float>(cos(static_cast<double>(it->second->current_rotation) * M_RAD));
-
-						for (size_t i = 0; i < it->first->getVertexCount(); ++i) {
-							float x = it->second->originalVertex.operator[](i).position.x - it->second->centroid.x;
-							float y = it->second->originalVertex.operator[](i).position.y - it->second->centroid.y;
-							it->first->operator[](i).position.x = it->second->centroid.x + x * cosine - y * sine;
-							it->first->operator[](i).position.y = it->second->centroid.y + x * sine + y * cosine;
-						}
+						updateRotationCentroidOriginalVertex(it->first, it->second);
 
 						it->second->currentTime -= (it->second->rotationTime + it->second->wait_before_repeating);
 						it->second->repeat_timer = 0.f;
@@ -306,31 +281,13 @@ void MovementManager::updateVertexArray(float dt)
 				}
 			}
 			else {
-				// === Rotation ===
 				it->second->current_rotation = static_cast<float>(it->second->used_function(static_cast<double>(it->second->currentTime / it->second->rotationTime))) * (it->second->endingRotation - it->second->startingRotation) + it->second->startingRotation;
-				
-				float sine   = static_cast<float>(sin(static_cast<double>(it->second->current_rotation) * M_RAD)),
-					  cosine = static_cast<float>(cos(static_cast<double>(it->second->current_rotation) * M_RAD));
-
-				for (size_t i = 0; i < it->first->getVertexCount(); ++i) {
-					float x = it->second->originalVertex.operator[](i).position.x - it->second->centroid.x;
-					float y = it->second->originalVertex.operator[](i).position.y - it->second->centroid.y;
-					it->first->operator[](i).position.x = it->second->centroid.x + x * cosine - y * sine;
-					it->first->operator[](i).position.y = it->second->centroid.y + x * sine + y * cosine;
-				}
+				updateRotationCentroidOriginalVertex(it->first, it->second);
 
 				++it;
 			}
 		}
 	}
-
-	auto end = std::chrono::high_resolution_clock::now();
-	auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start);
-	suma += duration.count();
-	k++;
-
-	if (k % 1000 == 0) 
-		printf("Average time: %lld\n", suma / k);
 }
 
 void MovementManager::updateSprite(float dt)

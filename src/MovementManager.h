@@ -2,9 +2,6 @@
 #include <SFML/Graphics.hpp>
 #include <map>
 #include "easeFunctions.cpp"
-#include <chrono>
-
-using namespace std::chrono;
 
 class MovementManager {
 private:
@@ -254,6 +251,7 @@ private:
 
 	void updateMovementCentroidOriginalVertex(sf::VertexArray* _vertexarray, movementInfoVA* _movementInfo, sf::Vector2f _offset);
 	void updateScalingCentroidOriginalVertex(sf::VertexArray* _vertexarray, scalingInfoVA* _scalingInfo);
+	void updateRotationCentroidOriginalVertex(sf::VertexArray* _vertexarray, rotationInfoVA* _rotationInfo);
 
 	// Singleton instance
 	static MovementManager* sInstance;

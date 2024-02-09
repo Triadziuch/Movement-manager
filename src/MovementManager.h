@@ -2,9 +2,14 @@
 #include <SFML/Graphics.hpp>
 #include <map>
 #include "easeFunctions.cpp"
+#include <chrono>
+
+using namespace std::chrono;
 
 class MovementManager {
 private:
+	constexpr static double M_RAD = 3.14159265358979323846 / 180.0;
+
 	// Movement info struct
 	struct movementInfo {
 		sf::Vector2f startingPos{};
@@ -246,6 +251,8 @@ private:
 	std::map<sf::Shape*, rotationInfo*>				m_Rotations_Shape;
 	std::map<sf::VertexArray*, rotationInfoVA*>		m_Rotations_VA;
 	std::map<sf::Sprite*, rotationInfo*>			m_Rotations_S;
+
+	void updateMovementCentroidOriginalVartex(sf::VertexArray* _vertexarray, movementInfoVA* _movementInfo, sf::Vector2f _offset);
 
 	// Singleton instance
 	static MovementManager* sInstance;

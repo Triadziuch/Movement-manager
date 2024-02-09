@@ -4,7 +4,7 @@
 // Singleton initialization
 MovementManager* MovementManager::sInstance = nullptr;
 
-void MovementManager::updateMovementCentroidOriginalVartex(sf::VertexArray* _vertexarray, movementInfoVA* _movementInfo, sf::Vector2f _offset)
+void MovementManager::updateMovementCentroidOriginalVertex(sf::VertexArray* _vertexarray, movementInfoVA* _movementInfo, sf::Vector2f _offset)
 {
 	// === Movement ===
 	_movementInfo->centroid += _offset;
@@ -33,6 +33,24 @@ void MovementManager::updateMovementCentroidOriginalVartex(sf::VertexArray* _ver
 		for (size_t i = 0; i < rotation->second->originalVertex.getVertexCount(); i++)
 			rotation->second->originalVertex.operator[](i).position += _offset;
 	}
+}
+
+void MovementManager::updateScalingCentroidOriginalVertex(sf::VertexArray* _vertexarray, scalingInfoVA* _scalingInfo)
+{
+	// VA Scaling
+	for (size_t i = 0; i < _vertexarray->getVertexCount(); i++) {
+		_vertexarray->operator[](i).position.x = _scalingInfo->centroid.x + (_scalingInfo->originalVertex.operator[](i).position.x - _scalingInfo->centroid.x) * _scalingInfo->currentScale.x;
+		_vertexarray->operator[](i).position.y = _scalingInfo->centroid.y + (_scalingInfo->originalVertex.operator[](i).position.y - _scalingInfo->centroid.y) * _scalingInfo->currentScale.y;
+	}
+
+
+	// === Rotation ===
+	auto& rotationMap = sInstance->m_Rotations_VA;
+	auto rotation = rotationMap.find(_vertexarray);
+
+	if (rotation != rotationMap.end())
+		for (size_t i = 0; i < rotation->second->originalVertex.getVertexCount(); i++)
+			rotation->second->originalVertex.operator[](i).position = _vertexarray->operator[](i).position;
 }
 
 // Private update functions
@@ -154,14 +172,14 @@ void MovementManager::updateVertexArray(float dt)
 					sf::Vector2f offset(static_cast<float>(it->second->used_function(1.0)) * (it->second->endingPos.x - it->second->startingPos.x) + it->second->startingPos.x - it->second->centroid.x,
 										static_cast<float>(it->second->used_function(1.0)) * (it->second->endingPos.y - it->second->startingPos.y) + it->second->startingPos.y - it->second->centroid.y);
 
-					this->updateMovementCentroidOriginalVartex(it->first, it->second, offset);
+					this->updateMovementCentroidOriginalVertex(it->first, it->second, offset);
 				}
 
 				if (it->second->repeat) {
 					if (it->second->currentTime - it->second->movementTime >= it->second->wait_before_repeating){
 						sf::Vector2f offset(it->second->endingPos - it->second->startingPos);
 
-						this->updateMovementCentroidOriginalVartex(it->first, it->second, -offset);
+						this->updateMovementCentroidOriginalVertex(it->first, it->second, -offset);
 
 						it->second->currentTime -= (it->second->movementTime + it->second->wait_before_repeating);
 						it->second->repeat_timer = 0.f;
@@ -177,7 +195,7 @@ void MovementManager::updateVertexArray(float dt)
 				sf::Vector2f offset(static_cast<float>(it->second->used_function(static_cast<double>(it->second->currentTime / it->second->movementTime))) * (it->second->endingPos.x - it->second->startingPos.x) + it->second->startingPos.x - it->second->centroid.x,
 									static_cast<float>(it->second->used_function(static_cast<double>(it->second->currentTime / it->second->movementTime))) * (it->second->endingPos.y - it->second->startingPos.y) + it->second->startingPos.y - it->second->centroid.y);
 
-				this->updateMovementCentroidOriginalVartex(it->first, it->second, offset);
+				this->updateMovementCentroidOriginalVertex(it->first, it->second, offset);
 				++it;
 			}
 		}
@@ -188,64 +206,22 @@ void MovementManager::updateVertexArray(float dt)
 		if (it->first->getVertexCount() != 0) {
 			if (it->second->isDone()) {
 				if (!it->second->repeat || (it->second->repeat_timer == 0.f && it->second->wait_before_repeating != 0.f)) {
-					// === Scaling ===
+
 					it->second->currentScale = it->second->endingScale;
-
-					// VA Scaling
-					for (size_t i = 0; i < it->first->getVertexCount(); i++) {
-						it->first->operator[](i).position.x = it->second->centroid.x + (it->second->originalVertex.operator[](i).position.x - it->second->centroid.x) * it->second->currentScale.x;
-						it->first->operator[](i).position.y = it->second->centroid.y + (it->second->originalVertex.operator[](i).position.y - it->second->centroid.y) * it->second->currentScale.y;
-					}
-
-
-					// === Rotation ===
-					auto& rotationMap = sInstance->m_Rotations_VA;
-					auto rotation = rotationMap.find(it->first);
-
-					if (rotation != rotationMap.end()) 
-						for (size_t i = 0; i < rotation->second->originalVertex.getVertexCount(); i++)
-							rotation->second->originalVertex.operator[](i).position = it->first->operator[](i).position;
+					updateScalingCentroidOriginalVertex(it->first, it->second);
 				}
 
 				if (it->second->repeat) {
 					if (it->second->currentTime - it->second->scalingTime < it->second->wait_before_repeating) {
-						// === Scaling ===
+
 						it->second->currentScale = it->second->endingScale;
-
-						// VA Scaling
-						for (size_t i = 0; i < it->first->getVertexCount(); i++) {
-							it->first->operator[](i).position.x = it->second->centroid.x + (it->second->originalVertex.operator[](i).position.x - it->second->centroid.x) * it->second->currentScale.x;
-							it->first->operator[](i).position.y = it->second->centroid.y + (it->second->originalVertex.operator[](i).position.y - it->second->centroid.y) * it->second->currentScale.y;
-						}
-
-
-						// === Rotation ===
-						auto& rotationMap = sInstance->m_Rotations_VA;
-						auto rotation = rotationMap.find(it->first);
-
-						if (rotation != rotationMap.end()) 
-							for (size_t i = 0; i < rotation->second->originalVertex.getVertexCount(); i++)
-								rotation->second->originalVertex.operator[](i).position = it->first->operator[](i).position;
+						updateScalingCentroidOriginalVertex(it->first, it->second);
 					}
 						
 					else {
-						// === Scaling ===
+
 						it->second->currentScale = it->second->startingScale;
-
-						// VA Scaling
-						for (size_t i = 0; i < it->first->getVertexCount(); i++) {
-							it->first->operator[](i).position.x = it->second->centroid.x + (it->second->originalVertex.operator[](i).position.x - it->second->centroid.x) * it->second->currentScale.x;
-							it->first->operator[](i).position.y = it->second->centroid.y + (it->second->originalVertex.operator[](i).position.y - it->second->centroid.y) * it->second->currentScale.y;
-						}
-
-
-						// === Rotation ===
-						auto& rotationMap = sInstance->m_Rotations_VA;
-						auto rotation = rotationMap.find(it->first);
-
-						if (rotation != rotationMap.end())
-							for (size_t i = 0; i < rotation->second->originalVertex.getVertexCount(); i++)
-								rotation->second->originalVertex.operator[](i).position = it->first->operator[](i).position;
+						updateScalingCentroidOriginalVertex(it->first, it->second);
 
 						it->second->currentTime -= (it->second->scalingTime + it->second->wait_before_repeating);
 						it->second->repeat_timer = 0.f;
@@ -263,20 +239,7 @@ void MovementManager::updateVertexArray(float dt)
 								   it->second->used_function(static_cast<double>(it->second->currentTime / it->second->scalingTime)) * (it->second->endingScale.y - it->second->startingScale.y) + it->second->startingScale.y);
 				it->second->currentScale = scale;
 
-				// VA Scaling
-				for (size_t i = 0; i < it->first->getVertexCount(); i++) {
-					it->first->operator[](i).position.x = it->second->centroid.x + (it->second->originalVertex.operator[](i).position.x - it->second->centroid.x) * it->second->currentScale.x;
-					it->first->operator[](i).position.y = it->second->centroid.y + (it->second->originalVertex.operator[](i).position.y - it->second->centroid.y) * it->second->currentScale.y;
-				}
-
-
-				// === Rotation ===
-				auto& rotationMap = sInstance->m_Rotations_VA;
-				auto rotation = rotationMap.find(it->first);
-
-				if (rotation != rotationMap.end())
-					for (size_t i = 0; i < rotation->second->originalVertex.getVertexCount(); i++)
-						rotation->second->originalVertex.operator[](i).position = it->first->operator[](i).position;
+				updateScalingCentroidOriginalVertex(it->first, it->second);
 
 				++it;
 			}

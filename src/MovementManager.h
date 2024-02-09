@@ -252,7 +252,8 @@ private:
 	std::map<sf::VertexArray*, rotationInfoVA*>		m_Rotations_VA;
 	std::map<sf::Sprite*, rotationInfo*>			m_Rotations_S;
 
-	void updateMovementCentroidOriginalVartex(sf::VertexArray* _vertexarray, movementInfoVA* _movementInfo, sf::Vector2f _offset);
+	void updateMovementCentroidOriginalVertex(sf::VertexArray* _vertexarray, movementInfoVA* _movementInfo, sf::Vector2f _offset);
+	void updateScalingCentroidOriginalVertex(sf::VertexArray* _vertexarray, scalingInfoVA* _scalingInfo);
 
 	// Singleton instance
 	static MovementManager* sInstance;

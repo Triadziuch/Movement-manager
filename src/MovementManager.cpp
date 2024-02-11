@@ -80,7 +80,6 @@ void MovementManager::updateShape(float dt)
 					it->first->setPosition(it->second->startingPos);
 
 					it->second->currentTime -= (it->second->movementTime + it->second->wait_before_repeating);
-					it->second->repeat_timer = 0.f;
 				}
 				++it;
 			}
@@ -109,8 +108,6 @@ void MovementManager::updateShape(float dt)
 					it->first->setScale(it->second->startingScale);
 					
 					it->second->currentTime -= (it->second->scalingTime + it->second->wait_before_repeating);
-					it->second->repeat_timer = 0.f;
-					
 				}
 				++it;
 			}
@@ -139,7 +136,6 @@ void MovementManager::updateShape(float dt)
 					it->first->setRotation(it->second->startingRotation);
 
 					it->second->currentTime -= (it->second->rotationTime + it->second->wait_before_repeating);
-					it->second->repeat_timer = 0.f;
 				}
 				++it;
 			}
@@ -180,7 +176,6 @@ void MovementManager::updateVertexArray(float dt)
 						this->updateMovementCentroidOriginalVertex(it->first, it->second, -offset);
 
 						it->second->currentTime -= (it->second->movementTime + it->second->wait_before_repeating);
-						it->second->repeat_timer = 0.f;
 					}
 					++it;
 				}
@@ -220,7 +215,6 @@ void MovementManager::updateVertexArray(float dt)
 						updateScalingCentroidOriginalVertex(it->first, it->second);
 
 						it->second->currentTime -= (it->second->scalingTime + it->second->wait_before_repeating);
-						it->second->repeat_timer = 0.f;
 					}
 					++it;
 				}
@@ -260,7 +254,6 @@ void MovementManager::updateVertexArray(float dt)
 						updateRotationCentroidOriginalVertex(it->first, it->second);
 
 						it->second->currentTime -= (it->second->rotationTime + it->second->wait_before_repeating);
-						it->second->repeat_timer = 0.f;
 					}
 
 					++it;
@@ -293,7 +286,6 @@ void MovementManager::updateSprite(float dt)
 					it->first->setPosition(it->second->startingPos);
 
 					it->second->currentTime -= (it->second->movementTime + it->second->wait_before_repeating);
-					it->second->repeat_timer = 0.f;
 				}
 
 				++it;
@@ -323,7 +315,6 @@ void MovementManager::updateSprite(float dt)
 					it->first->setScale(it->second->startingScale);
 
 					it->second->currentTime -= (it->second->scalingTime + it->second->wait_before_repeating);
-					it->second->repeat_timer = 0.f;
 				}
 
 				++it;
@@ -353,7 +344,6 @@ void MovementManager::updateSprite(float dt)
 					it->first->setRotation(it->second->startingRotation);
 
 					it->second->currentTime -= (it->second->rotationTime + it->second->wait_before_repeating);
-					it->second->repeat_timer = 0.f;
 				}
 
 				++it;
@@ -497,15 +487,11 @@ void MovementManager::undoMovement()
 	}
 
 	for (auto it = this->m_Movements_VA.begin(); it != this->m_Movements_VA.end();) {
-		if (it->first->getVertexCount() != 0) {
-			sf::Vector2f offset = it->first->operator[](0).position - it->second->startingPos;
+		sf::Vector2f offset(it->second->centroid - it->second->originalCentroid);
+		updateMovementCentroidOriginalVertex(it->first, it->second, -offset);
 
-			for (size_t i = 0; i < it->first->getVertexCount(); i++)
-				it->first->operator[](i).position -= offset;
-
-			delete it->second;
-			it = m_Movements_VA.erase(it);
-		}
+		delete it->second;
+		it = m_Movements_VA.erase(it);
 	}
 
 	for (auto it = this->m_Movements_S.begin(); it != this->m_Movements_S.end();) {
@@ -558,26 +544,20 @@ void MovementManager::resetMovement()
 	for (auto it = this->m_Movements_Shape.begin(); it != this->m_Movements_Shape.end();) {
 		it->first->setPosition(it->second->startingPos);
 		it->second->currentTime = 0.f;
-		it->second->repeat_timer = 0.f;
 		++it;
 	}
 
 	for (auto it = this->m_Movements_VA.begin(); it != this->m_Movements_VA.end();) {
-		if (it->first->getVertexCount() != 0) {
-			sf::Vector2f offset = it->first->operator[](0).position - it->second->startingPos;
-
-			for (size_t i = 0; i < it->first->getVertexCount(); i++)
-				it->first->operator[](i).position -= offset;
-		}
+		sf::Vector2f offset(it->second->centroid - it->second->originalCentroid);
+		updateMovementCentroidOriginalVertex(it->first, it->second, -offset);
+		
 		it->second->currentTime = 0.f;
-		it->second->repeat_timer = 0.f;
 		++it;
 	}
 
 	for (auto it = this->m_Movements_S.begin(); it != this->m_Movements_S.end();) {
 		it->first->setPosition(it->second->startingPos);
 		it->second->currentTime = 0.f;
-		it->second->repeat_timer = 0.f;
 		++it;
 	}
 }
@@ -590,7 +570,6 @@ void MovementManager::resetMovement(sf::Shape* _shape)
 	if (movementFound != movementMap.end()) {
 		_shape->setPosition(movementFound->second->startingPos);
 		movementFound->second->currentTime = 0.f;
-		movementFound->second->repeat_timer = 0.f;
 	}
 }
 
@@ -615,7 +594,6 @@ void MovementManager::resetMovement(sf::Sprite* _sprite)
 	if (movementFound != movementMap.end()) {
 		_sprite->setPosition(movementFound->second->startingPos);
 		movementFound->second->currentTime = 0.f;
-		movementFound->second->repeat_timer = 0.f;
 	}
 }
 
@@ -776,7 +754,15 @@ void MovementManager::undoScaling()
 	}
 
 	for (auto it = this->m_Scalings_VA.begin(); it != this->m_Scalings_VA.end();) {
-		it->first->operator= (it->second->originalVertex);
+		it->second->currentScale = it->second->startingScale;
+		updateScalingCentroidOriginalVertex(it->first, it->second);
+
+		auto& rotationMap = sInstance->m_Rotations_VA;
+		auto rotationFound = rotationMap.find(it->first);
+
+		if (rotationFound != rotationMap.end())
+			updateRotationCentroidOriginalVertex(it->first, rotationFound->second);
+
 		delete it->second;
 		it = m_Scalings_VA.erase(it);
 	}
@@ -837,21 +823,26 @@ void MovementManager::resetScaling()
 	for (auto it = this->m_Scalings_Shape.begin(); it != this->m_Scalings_Shape.end();) {
 		it->first->setScale(it->second->startingScale);
 		it->second->currentTime = 0.f;
-		it->second->repeat_timer = 0.f;
 		++it;
 	}
 
 	for (auto it = this->m_Scalings_VA.begin(); it != this->m_Scalings_VA.end();) {
-		it->first->operator= (it->second->originalVertex);
+		it->second->currentScale = it->second->startingScale;
+		updateScalingCentroidOriginalVertex(it->first, it->second);
+
+		auto& rotationMap = sInstance->m_Rotations_VA;
+		auto rotationFound = rotationMap.find(it->first);
+
+		if (rotationFound != rotationMap.end())
+			updateRotationCentroidOriginalVertex(it->first, rotationFound->second);
+
 		it->second->currentTime = 0.f;
-		it->second->repeat_timer = 0.f;
 		++it;
 	}
 
 	for (auto it = this->m_Scalings_S.begin(); it != this->m_Scalings_S.end();) {
 		it->first->setScale(it->second->startingScale);
 		it->second->currentTime = 0.f;
-		it->second->repeat_timer = 0.f;
 		++it;
 	}
 }
@@ -864,7 +855,6 @@ void MovementManager::resetScaling(sf::Shape* _shape)
 	if (scalingFound != scalingMap.end()) {
 		_shape->setScale(scalingFound->second->startingScale);
 		scalingFound->second->currentTime = 0.f;
-		scalingFound->second->repeat_timer = 0.f;
 	}
 }
 
@@ -895,7 +885,6 @@ void MovementManager::resetScaling(sf::Sprite* _sprite)
 	if (scalingFound != scalingMap.end()) {
 		_sprite->setScale(scalingFound->second->startingScale);
 		scalingFound->second->currentTime = 0.f;
-		scalingFound->second->repeat_timer = 0.f;
 	}
 }
 
@@ -1055,7 +1044,9 @@ void MovementManager::undoRotation()
 	}
 
 	for (auto it = this->m_Rotations_VA.begin(); it != this->m_Rotations_VA.end();) {
-		it->first->operator= (it->second->originalVertex);
+		it->second->current_rotation = it->second->startingRotation;
+		updateRotationCentroidOriginalVertex(it->first, it->second);
+
 		delete it->second;
 		it = m_Rotations_VA.erase(it);
 	}
@@ -1074,6 +1065,7 @@ void MovementManager::undoRotation(sf::Shape* _shape)
 
 	if (rotationFound != rotationMap.end()) {
 		_shape->setRotation(rotationFound->second->startingRotation);
+
 		delete rotationFound->second;
 		rotationMap.erase(rotationFound);
 	}
@@ -1110,22 +1102,20 @@ void MovementManager::resetRotation()
 	for (auto it = this->m_Rotations_Shape.begin(); it != this->m_Rotations_Shape.end();) {
 		it->first->setRotation(it->second->startingRotation);
 		it->second->currentTime = 0.f;
-		it->second->repeat_timer = 0.f;
 		++it;
 	}
 
 	for (auto it = this->m_Rotations_VA.begin(); it != this->m_Rotations_VA.end();) {
-		it->first->operator= (it->second->originalVertex);
 		it->second->current_rotation = it->second->startingRotation;
+		updateRotationCentroidOriginalVertex(it->first, it->second);
+
 		it->second->currentTime = 0.f;
-		it->second->repeat_timer = 0.f;
 		++it;
 	}
 
 	for (auto it = this->m_Rotations_S.begin(); it != this->m_Rotations_S.end();) {
 		it->first->setRotation(it->second->startingRotation);
 		it->second->currentTime = 0.f;
-		it->second->repeat_timer = 0.f;
 		++it;
 	}
 }
@@ -1138,7 +1128,6 @@ void MovementManager::resetRotation(sf::Shape* _shape)
 	if (rotationFound != rotationMap.end()) {
 		_shape->setRotation(rotationFound->second->startingRotation);
 		rotationFound->second->currentTime = 0.f;
-		rotationFound->second->repeat_timer = 0.f;
 	}
 }
 
@@ -1163,7 +1152,6 @@ void MovementManager::resetRotation(sf::Sprite* _sprite)
 	if (rotationFound != rotationMap.end()) {
 		_sprite->setRotation(rotationFound->second->startingRotation);
 		rotationFound->second->currentTime = 0.f;
-		rotationFound->second->repeat_timer = 0.f;
 	}
 }
 
@@ -1175,6 +1163,36 @@ void MovementManager::stopRotation()
 	}
 
 	for (auto it = this->m_Rotations_VA.begin(); it != this->m_Rotations_VA.end();) {
+		auto& movementMap = sInstance->m_Movements_VA;
+		auto movementFound = movementMap.find(it->first);
+
+		if (movementFound != movementMap.end()) {
+			float sine = static_cast<float>(sin(static_cast<double>(it->second->current_rotation) * M_RAD)),
+				cosine = static_cast<float>(cos(static_cast<double>(it->second->current_rotation) * M_RAD));
+
+			for (size_t i = 0; i < it->first->getVertexCount(); ++i) {
+				float x = movementFound->second->originalVertex.operator[](i).position.x - movementFound->second->centroid.x;
+				float y = movementFound->second->originalVertex.operator[](i).position.y - movementFound->second->centroid.y;
+				movementFound->second->originalVertex.operator[](i).position.x = movementFound->second->centroid.x + x * cosine - y * sine;
+				movementFound->second->originalVertex.operator[](i).position.y = movementFound->second->centroid.y + x * sine + y * cosine;
+			}
+		}
+
+		auto& scalingMap = sInstance->m_Scalings_VA;
+		auto scalingFound = scalingMap.find(it->first);
+
+		if (scalingFound != scalingMap.end()) {
+			float sine = static_cast<float>(sin(static_cast<double>(it->second->current_rotation) * M_RAD)),
+				cosine = static_cast<float>(cos(static_cast<double>(it->second->current_rotation) * M_RAD));
+
+			for (size_t i = 0; i < it->first->getVertexCount(); ++i) {
+				float x = scalingFound->second->originalVertex.operator[](i).position.x - scalingFound->second->centroid.x;
+				float y = scalingFound->second->originalVertex.operator[](i).position.y - scalingFound->second->centroid.y;
+				scalingFound->second->originalVertex.operator[](i).position.x = scalingFound->second->centroid.x + x * cosine - y * sine;
+				scalingFound->second->originalVertex.operator[](i).position.y = scalingFound->second->centroid.y + x * sine + y * cosine;
+			}
+		}
+
 		delete it->second;
 		it = m_Rotations_VA.erase(it);
 	}

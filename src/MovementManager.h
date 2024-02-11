@@ -8,31 +8,68 @@ private:
 	constexpr static double M_RAD = 3.14159265358979323846 / 180.0;
 
 	// Movement info struct
-	struct movementInfo {
-		sf::Vector2f startingPos{};
-		sf::Vector2f endingPos{};
-		float		 currentTime{};
-		float		 movementTime{};
+	struct transformationInfo {
+	protected:
 		bool		 repeat = false;
-		float		 repeat_timer{};
+		float		 currentTime{};
 		float		 wait_before_repeating{};
 		double (*used_function)(double) {};
 
-		movementInfo(sf::Vector2f _startingPos, sf::Vector2f _endingPos, float _movementTime, double(*_used_function)(double), bool _repeat, float _wait_before_repeating) :
-			startingPos(_startingPos), endingPos(_endingPos), movementTime(_movementTime), currentTime(0.f), used_function(_used_function), repeat(_repeat), wait_before_repeating(_wait_before_repeating) {};
+		transformationInfo() = default;
 
-		movementInfo(const movementInfo& _movementInfo) {
-			startingPos = _movementInfo.startingPos;
-			endingPos = _movementInfo.endingPos;
-			currentTime = _movementInfo.currentTime;
-			movementTime = _movementInfo.movementTime;
-			repeat = _movementInfo.repeat;
-			repeat_timer = _movementInfo.repeat_timer;
-			wait_before_repeating = _movementInfo.wait_before_repeating;
-			used_function = _movementInfo.used_function;
-		}
+		transformationInfo(bool _repeat, float _wait_before_repeating, double (*_used_function)(double)) : 
+			repeat(_repeat), wait_before_repeating(_wait_before_repeating), used_function(_used_function) {}
 
-		const bool isDone() const { return currentTime >= movementTime; }
+		transformationInfo(bool _repeat, float _currentTime, float _wait_before_repeating, double (*_used_function)(double)) : 
+			repeat(_repeat), currentTime(_currentTime), wait_before_repeating(_wait_before_repeating), used_function(_used_function) {}
+
+		transformationInfo(const transformationInfo& obj) : 
+			repeat(obj.repeat), currentTime(obj.currentTime), wait_before_repeating(obj.wait_before_repeating), used_function(obj.used_function) {}
+
+		virtual ~transformationInfo() = default;
+	};
+
+	struct movementInfo : public transformationInfo {
+		sf::Vector2f startingPos{};
+		sf::Vector2f endingPos{};
+		float		 movementTime{};
+
+		movementInfo(sf::Vector2f _startingPos, sf::Vector2f _endingPos, float _movementTime, double (*_used_function)(double), bool _repeat, float _wait_before_repeating) : 
+			transformationInfo{ _repeat, _wait_before_repeating, _used_function }, startingPos(_startingPos), endingPos(_endingPos), movementTime(_movementTime) {}
+
+		movementInfo(const movementInfo& obj) : 
+			transformationInfo{obj.repeat, obj.currentTime, obj.wait_before_repeating, obj.used_function}, startingPos(obj.startingPos), endingPos(obj.endingPos), movementTime(obj.movementTime) {}
+
+		const bool isDone() const { return this->currentTime >= this->movementTime; }
+	};
+
+	struct scalingInfo : public transformationInfo {
+		sf::Vector2f startingScale{};
+		sf::Vector2f endingScale{};
+		float		 scalingTime{};
+
+		scalingInfo(sf::Vector2f _startingScale, sf::Vector2f _endingScale, float _scalingTime, double(*_used_function)(double), bool _repeat, float _wait_before_repeating) :
+			transformationInfo{ _repeat, _wait_before_repeating, _used_function }, startingScale(_startingScale), endingScale(_endingScale), scalingTime(_scalingTime) {}
+
+		scalingInfo(const scalingInfo& obj) : 
+			transformationInfo{obj.repeat, obj.currentTime, obj.wait_before_repeating, obj.used_function}, startingScale(obj.startingScale), endingScale(obj.endingScale), scalingTime(obj.scalingTime) {}
+
+		const bool isDone() const { return currentTime >= scalingTime; }
+	};
+
+	struct rotationInfo : public transformationInfo {
+		float startingRotation{};
+		float endingRotation{};
+		float rotationTime{};
+		bool clockwise = true;
+
+		rotationInfo(float _startingRotation, float _endingRotation, float _rotationTime, double(*_used_function)(double), bool _repeat, float _wait_before_repeating, bool _clockwise) :
+			transformationInfo{ _repeat, _wait_before_repeating, _used_function }, startingRotation(_startingRotation), endingRotation(_endingRotation), rotationTime(_rotationTime), clockwise(_clockwise) {}
+
+		rotationInfo(const rotationInfo& obj) :
+			transformationInfo{obj.repeat, obj.currentTime, obj.wait_before_repeating, obj.used_function}, startingRotation(obj.startingRotation), endingRotation(obj.endingRotation), rotationTime(obj.rotationTime), clockwise(obj.clockwise) {}
+
+		const bool isDone() const { return currentTime >= rotationTime; }
 	};
 
 	struct movementInfoVA {
@@ -44,7 +81,6 @@ private:
 		float		 currentTime{};
 		float		 movementTime{};
 		bool		 repeat = false;
-		float		 repeat_timer{};
 		float		 wait_before_repeating{};
 		double (*used_function)(double) {};
 
@@ -67,7 +103,6 @@ private:
 			currentTime = _movementInfoVA.currentTime;
 			movementTime = _movementInfoVA.movementTime;
 			repeat = _movementInfoVA.repeat;
-			repeat_timer = _movementInfoVA.repeat_timer;
 			wait_before_repeating = _movementInfoVA.wait_before_repeating;
 			used_function = _movementInfoVA.used_function;
 		}
@@ -75,32 +110,7 @@ private:
 		const bool isDone() const { return currentTime >= movementTime; }
 	};
 
-	struct scalingInfo {
-		sf::Vector2f startingScale{};
-		sf::Vector2f endingScale{};
-		float		 currentTime{};
-		float		 scalingTime{};
-		bool		 repeat = false;
-		float		 repeat_timer{};
-		float		 wait_before_repeating{};
-		double (*used_function)(double) {};
-
-		scalingInfo(sf::Vector2f _startingScale, sf::Vector2f _endingScale, float _scalingTime, double(*_used_function)(double), bool _repeat, bool _wait_before_repeating) :
-			startingScale(_startingScale), endingScale(_endingScale), scalingTime(_scalingTime), currentTime(0.f), used_function(_used_function), repeat(_repeat), wait_before_repeating(_wait_before_repeating) {};
-
-		scalingInfo(const scalingInfo& _scalingInfo) {
-			startingScale = _scalingInfo.startingScale;
-			endingScale = _scalingInfo.endingScale;
-			currentTime = _scalingInfo.currentTime;
-			scalingTime = _scalingInfo.scalingTime;
-			repeat = _scalingInfo.repeat;
-			repeat_timer = _scalingInfo.repeat_timer;
-			wait_before_repeating = _scalingInfo.wait_before_repeating;
-			used_function = _scalingInfo.used_function;
-		}
-
-		const bool isDone() const { return currentTime >= scalingTime; }
-	};
+	
 
 	struct scalingInfoVA {
 		sf::Vector2f startingScale{};
@@ -111,7 +121,6 @@ private:
 		float		 currentTime{};
 		float		 scalingTime{};
 		bool		 repeat = false;
-		float		 repeat_timer{};
 		float		 wait_before_repeating{};
 		double (*used_function)(double) {};
 
@@ -133,41 +142,11 @@ private:
 			currentTime = _scalingInfoVA.currentTime;
 			scalingTime = _scalingInfoVA.scalingTime;
 			repeat = _scalingInfoVA.repeat;
-			repeat_timer = _scalingInfoVA.repeat_timer;
 			wait_before_repeating = _scalingInfoVA.wait_before_repeating;
 			used_function = _scalingInfoVA.used_function;
 		}
 
 		const bool isDone() const { return currentTime >= scalingTime; }
-	};
-
-	struct rotationInfo {
-		float		 startingRotation{};
-		float		 endingRotation{};
-		float		 currentTime{};
-		float		 rotationTime{};
-		bool		 repeat = false;
-		bool		 clockwise = true;
-		float		 repeat_timer{};
-		float		 wait_before_repeating{};
-		double (*used_function)(double) {};
-
-		rotationInfo(float _startingRotation, float _endingRotation, float _rotationTime, double(*_used_function)(double), bool _repeat, float _wait_before_repeating, bool _clockwise) :
-			startingRotation(_startingRotation), endingRotation(_endingRotation), rotationTime(_rotationTime), currentTime(0.f), used_function(_used_function), repeat(_repeat), wait_before_repeating(_wait_before_repeating), clockwise(_clockwise) {};
-
-		rotationInfo(const rotationInfo& _rotationInfo) {
-			startingRotation = _rotationInfo.startingRotation;
-			endingRotation = _rotationInfo.endingRotation;
-			currentTime = _rotationInfo.currentTime;
-			rotationTime = _rotationInfo.rotationTime;
-			repeat = _rotationInfo.repeat;
-			clockwise = _rotationInfo.clockwise;
-			repeat_timer = _rotationInfo.repeat_timer;
-			wait_before_repeating = _rotationInfo.wait_before_repeating;
-			used_function = _rotationInfo.used_function;
-		}
-
-		const bool isDone() const { return currentTime >= rotationTime; }
 	};
 
 	struct rotationInfoVA {
@@ -180,7 +159,6 @@ private:
 		bool		 clockwise = true;
 		sf::VertexArray originalVertex{};
 		float		 current_rotation{};
-		float		 repeat_timer{};
 		float		 wait_before_repeating{};
 		double (*used_function)(double) {};
 
@@ -202,7 +180,6 @@ private:
 			clockwise = _rotationInfoVA.clockwise;
 			originalVertex = _rotationInfoVA.originalVertex;
 			current_rotation = _rotationInfoVA.current_rotation;
-			repeat_timer = _rotationInfoVA.repeat_timer;
 			wait_before_repeating = _rotationInfoVA.wait_before_repeating;
 			used_function = _rotationInfoVA.used_function;
 		}

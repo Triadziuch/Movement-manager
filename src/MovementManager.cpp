@@ -543,7 +543,6 @@ void MovementManager::undoMovement(sf::VertexArray* _vertexarray)
 
 	if (movementFound != movementMap.end()) {
 		sf::Vector2f offset(movementFound->second->centroid - movementFound->second->originalCentroid);
-
 		updateMovementCentroidOriginalVertex(_vertexarray, movementFound->second, -offset);
 
 		delete movementFound->second;
@@ -609,8 +608,12 @@ void MovementManager::resetMovement(sf::VertexArray* _vertexarray)
 	auto& movementMap = sInstance->m_Movements_VA;
 	auto movementFound = movementMap.find(_vertexarray);
 
-	if (movementFound != movementMap.end()) 
+	if (movementFound != movementMap.end()) {
+		sf::Vector2f offset(movementFound->second->centroid - movementFound->second->originalCentroid);
+		updateMovementCentroidOriginalVertex(_vertexarray, movementFound->second, -offset);
+
 		movementFound->second->currentTime = 0.f;
+	}	
 }
 
 void MovementManager::resetMovement(sf::Sprite* _sprite)
@@ -812,7 +815,15 @@ void MovementManager::undoScaling(sf::VertexArray* _vertexarray)
 	auto scalingFound = scalingMap.find(_vertexarray);
 
 	if (scalingFound != scalingMap.end()) {
-		_vertexarray->operator= (scalingFound->second->originalVertex);
+		scalingFound->second->currentScale = scalingFound->second->startingScale;
+		updateScalingCentroidOriginalVertex(_vertexarray, scalingFound->second);
+
+		auto& rotationMap = sInstance->m_Rotations_VA;
+		auto rotationFound = rotationMap.find(_vertexarray);
+
+		if (rotationFound != rotationMap.end())
+			updateRotationCentroidOriginalVertex(_vertexarray, rotationFound->second);
+
 		delete scalingFound->second;
 		scalingMap.erase(scalingFound);
 	}
@@ -872,9 +883,16 @@ void MovementManager::resetScaling(sf::VertexArray* _vertexarray)
 	auto scalingFound = scalingMap.find(_vertexarray);
 
 	if (scalingFound != scalingMap.end()) {
-		_vertexarray->operator= (scalingFound->second->originalVertex);
+		scalingFound->second->currentScale = scalingFound->second->startingScale;
+		updateScalingCentroidOriginalVertex(_vertexarray, scalingFound->second);
+
+		auto& rotationMap = sInstance->m_Rotations_VA;
+		auto rotationFound = rotationMap.find(_vertexarray);
+
+		if (rotationFound != rotationMap.end())
+			updateRotationCentroidOriginalVertex(_vertexarray, rotationFound->second);
+
 		scalingFound->second->currentTime = 0.f;
-		scalingFound->second->repeat_timer = 0.f;
 	}
 }
 

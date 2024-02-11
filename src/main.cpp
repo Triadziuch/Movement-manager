@@ -162,8 +162,8 @@ int main()
 					movementManager.addRotation(&shapes[i], 360.f, animation_time, easeType[current_ease_type + i].second, true, true, 1.f);
 				}
 
-				movementManager.undoScaling(&up_arrow);
-				movementManager.undoScaling(&down_arrow);
+				movementManager.stopScaling(&up_arrow);
+				movementManager.stopScaling(&down_arrow);
 				//movementManager.stopScaling(&up_arrow);
 				//movementManager.stopScaling(&down_arrow);
 				//movementManager.undoRotation(&up_arrow);
@@ -188,8 +188,8 @@ int main()
 					movementManager.addRotation(&shapes[i], 360.f, animation_time, easeType[current_ease_type + i].second, true, true, 1.f);
 				}
 
-				movementManager.undoScaling(&up_arrow);
-				movementManager.undoScaling(&down_arrow);
+				movementManager.stopScaling(&up_arrow);
+				movementManager.stopScaling(&down_arrow);
 				//movementManager.stopScaling(&up_arrow);
 				//movementManager.stopScaling(&down_arrow);
 				//movementManager.undoRotation(&up_arrow);

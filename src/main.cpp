@@ -108,13 +108,13 @@ int main()
 	down_arrow[1].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f, static_cast<float>(window.getSize().y) - 30.f);
 	down_arrow[2].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f + 40.f, static_cast<float>(window.getSize().y) - 60.f);
 
-	float arrow_movement_time = 3.f;
+	float arrow_movement_time = 1.f;
 	float arrow_scaling_time = 2.f;
 	float arrow_rotation_time = 1.f;
 	float arrow_wait_time = 1.f;
 
-	movementManager.addMovement(&up_arrow, up_arrow[0].position, up_arrow[0].position + sf::Vector2f(0.f, -20.f), arrow_movement_time,movement_type::IN_OUT_SINE, true, arrow_wait_time);
-	movementManager.addMovement(&down_arrow, down_arrow[0].position, down_arrow[0].position + sf::Vector2f(0.f, 20.f), arrow_movement_time, movement_type::IN_OUT_SINE, true, arrow_wait_time);
+	movementManager.addMovement(&up_arrow, sf::Vector2f(960.f, 50.f), sf::Vector2f(960.f, 30.f), arrow_movement_time, movement_type::IN_OUT_SINE, true, arrow_wait_time);
+	movementManager.addMovement(&down_arrow, sf::Vector2f(960.f, 1030.f), sf::Vector2f(960.f, 1050.f), arrow_movement_time, movement_type::IN_OUT_SINE, true, arrow_wait_time);
 	movementManager.addScaling(&up_arrow, { 1.5f, 1.5f }, arrow_scaling_time, movement_type::IN_OUT_SINE, true, arrow_wait_time);
 	movementManager.addScaling(&down_arrow, { 1.5f, 1.5f }, arrow_scaling_time, movement_type::IN_OUT_SINE, true, arrow_wait_time);
 	movementManager.addRotation(&up_arrow, 90.f, arrow_rotation_time, movement_type::IN_OUT_SINE, true, true, arrow_wait_time);
@@ -162,12 +162,12 @@ int main()
 					movementManager.addRotation(&shapes[i], 360.f, animation_time, easeType[current_ease_type + i].second, true, true, 1.f);
 				}
 
-				movementManager.resetMovement(&up_arrow);
-				movementManager.resetMovement(&down_arrow);
-				movementManager.stopScaling(&up_arrow);
-				movementManager.stopScaling(&down_arrow);
-				movementManager.undoRotation(&up_arrow);
-				movementManager.undoRotation(&down_arrow);
+				movementManager.undoScaling(&up_arrow);
+				movementManager.undoScaling(&down_arrow);
+				//movementManager.stopScaling(&up_arrow);
+				//movementManager.stopScaling(&down_arrow);
+				//movementManager.undoRotation(&up_arrow);
+				//movementManager.undoRotation(&down_arrow);
 			}
 			else if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::Down || event.key.code == sf::Keyboard::S)) {
 				current_ease_type -= rows;
@@ -188,12 +188,12 @@ int main()
 					movementManager.addRotation(&shapes[i], 360.f, animation_time, easeType[current_ease_type + i].second, true, true, 1.f);
 				}
 
-				movementManager.resetMovement(&up_arrow);
-				movementManager.resetMovement(&down_arrow);
-				movementManager.stopScaling(&up_arrow);
-				movementManager.stopScaling(&down_arrow);
-				movementManager.undoRotation(&up_arrow);
-				movementManager.undoRotation(&down_arrow);
+				movementManager.undoScaling(&up_arrow);
+				movementManager.undoScaling(&down_arrow);
+				//movementManager.stopScaling(&up_arrow);
+				//movementManager.stopScaling(&down_arrow);
+				//movementManager.undoRotation(&up_arrow);
+				//movementManager.undoRotation(&down_arrow);
 			}
 		}
 
@@ -207,6 +207,9 @@ int main()
 			window.draw(up_arrow);
 			window.draw(down_arrow);
 		}
+
+		movementManager.renderCentroid(window);
+
 		window.display();
 	}
 

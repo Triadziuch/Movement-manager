@@ -1,5 +1,5 @@
 #include <iostream>
-#include "MovementManager.h"
+#include "MovementContainer.h"
 #include "SFML\Graphics.hpp"
 #include "Graph.h"
 #include <Windows.h>
@@ -11,7 +11,7 @@ int main()
 	sf::RenderWindow window(sf::VideoMode(1920, 1080), "Ease functions", sf::Style::Fullscreen, settings);
 	window.setFramerateLimit(60);
 	window.setVerticalSyncEnabled(true);
-	MovementManager movementManager;
+	MovementContainer MovementContainer;
 
 	// Configuration
 	constexpr size_t easeTypeSize = 30;
@@ -80,7 +80,7 @@ int main()
 		graphs[i].setPrecision(200);
 		graphs[i].setSize(200.f, 200.f);
 		graphs[i].setPosition(sf::Vector2f(end_pos[i].x + 150.f, end_pos[i].y + graphs[i].getSize().y / 2.f));
-		graphs[i].setFunction(movementManager.getFunctionPointer(easeType[current_ease_type + i].second));
+		graphs[i].setFunction(MovementContainer.getFunctionPointer(easeType[current_ease_type + i].second));
 	}
 
 	// GUI Initialization
@@ -114,21 +114,21 @@ int main()
 	float arrow_wait_time = 1.f;
 
 	// TODO: Dodaæ lepsze zarz¹dzanie pocz¹tkiem i koñcem animacji
-	movementManager.addMovement(&up_arrow, sf::Vector2f(960.f, 50.f), sf::Vector2f(960.f, 30.f), arrow_movement_time, movement_type::IN_OUT_SINE, true, arrow_wait_time);
-	movementManager.addMovement(&down_arrow, sf::Vector2f(960.f, 1030.f), sf::Vector2f(960.f, 1050.f), arrow_movement_time, movement_type::IN_OUT_SINE, true, arrow_wait_time);
-	movementManager.addScaling(&up_arrow, { 1.5f, 1.5f }, arrow_scaling_time, movement_type::IN_OUT_SINE, true, arrow_wait_time);
-	movementManager.addScaling(&down_arrow, { 1.5f, 1.5f }, arrow_scaling_time, movement_type::IN_OUT_SINE, true, arrow_wait_time);
-	movementManager.addRotation(&up_arrow, 90.f, arrow_rotation_time, movement_type::IN_OUT_SINE, true, true, arrow_wait_time);
-	movementManager.addRotation(&down_arrow, 90.f, arrow_rotation_time, movement_type::IN_OUT_SINE, false, true, arrow_wait_time);
+	MovementContainer.addMovement(&up_arrow, sf::Vector2f(960.f, 50.f), sf::Vector2f(960.f, 30.f), arrow_movement_time, movement_type::IN_OUT_SINE, true, arrow_wait_time);
+	MovementContainer.addMovement(&down_arrow, sf::Vector2f(960.f, 1030.f), sf::Vector2f(960.f, 1050.f), arrow_movement_time, movement_type::IN_OUT_SINE, true, arrow_wait_time);
+	MovementContainer.addScaling(&up_arrow, { 1.5f, 1.5f }, arrow_scaling_time, movement_type::IN_OUT_SINE, true, arrow_wait_time);
+	MovementContainer.addScaling(&down_arrow, { 1.5f, 1.5f }, arrow_scaling_time, movement_type::IN_OUT_SINE, true, arrow_wait_time);
+	MovementContainer.addRotation(&up_arrow, 90.f, arrow_rotation_time, movement_type::IN_OUT_SINE, true, true, arrow_wait_time);
+	MovementContainer.addRotation(&down_arrow, 90.f, arrow_rotation_time, movement_type::IN_OUT_SINE, false, true, arrow_wait_time);
 
 	sf::Clock dt_clock;
 	float dt;
 	float wait_time = 0.5f;
 
 	for (int i = 0; i < rows; i++) {
-		movementManager.addMovement(&shapes[i], start_pos[i], end_pos[i], animation_time, easeType[current_ease_type + i].second, true, 1.f);
-		movementManager.addScaling(&shapes[i], {1.5f, 1.5f}, animation_time, easeType[current_ease_type + i].second, true, 1.f);
-		movementManager.addRotation(&shapes[i], 360.f, animation_time, easeType[current_ease_type + i].second, false, true, 1.f);
+		MovementContainer.addMovement(&shapes[i], start_pos[i], end_pos[i], animation_time, easeType[current_ease_type + i].second, true, 1.f);
+		MovementContainer.addScaling(&shapes[i], {1.5f, 1.5f}, animation_time, easeType[current_ease_type + i].second, true, 1.f);
+		MovementContainer.addRotation(&shapes[i], 360.f, animation_time, easeType[current_ease_type + i].second, false, true, 1.f);
 	}
 		
 
@@ -136,7 +136,7 @@ int main()
 	{
 		dt = dt_clock.restart().asSeconds();
 		
-		movementManager.update(dt);
+		MovementContainer.update(dt);
 
 		sf::Event event;
 		if (window.pollEvent(event))
@@ -151,24 +151,24 @@ int main()
 
 				for (int i = 0; i < rows; i++) {
 					text[i].setString(easeType[current_ease_type + i].first);
-					graphs[i].setFunction(movementManager.getFunctionPointer(easeType[current_ease_type + i].second));
+					graphs[i].setFunction(MovementContainer.getFunctionPointer(easeType[current_ease_type + i].second));
 				}
 
 				for (int i = 0; i < rows; i++) {
-					movementManager.undoMovement(&shapes[i]);
-					movementManager.undoScaling(&shapes[i]);
-					movementManager.undoRotation(&shapes[i]);
-					movementManager.addMovement(&shapes[i], start_pos[i], end_pos[i], animation_time, easeType[current_ease_type + i].second, true, 1.f);
-					movementManager.addScaling(&shapes[i], { 1.5f, 1.5f }, animation_time, easeType[current_ease_type + i].second, true, 1.f);
-					movementManager.addRotation(&shapes[i], 360.f, animation_time, easeType[current_ease_type + i].second, false, true, 1.f);
+					MovementContainer.undoMovement(&shapes[i]);
+					MovementContainer.undoScaling(&shapes[i]);
+					MovementContainer.undoRotation(&shapes[i]);
+					MovementContainer.addMovement(&shapes[i], start_pos[i], end_pos[i], animation_time, easeType[current_ease_type + i].second, true, 1.f);
+					MovementContainer.addScaling(&shapes[i], { 1.5f, 1.5f }, animation_time, easeType[current_ease_type + i].second, true, 1.f);
+					MovementContainer.addRotation(&shapes[i], 360.f, animation_time, easeType[current_ease_type + i].second, false, true, 1.f);
 				}
 
-				/*movementManager.resetMovement(&up_arrow);
-				movementManager.resetMovement(&down_arrow);
-				movementManager.stopScaling(&up_arrow);
-				movementManager.stopScaling(&down_arrow);
-				movementManager.undoRotation(&up_arrow);
-				movementManager.undoRotation(&down_arrow);*/
+				/*MovementContainer.resetMovement(&up_arrow);
+				MovementContainer.resetMovement(&down_arrow);
+				MovementContainer.stopScaling(&up_arrow);
+				MovementContainer.stopScaling(&down_arrow);
+				MovementContainer.undoRotation(&up_arrow);
+				MovementContainer.undoRotation(&down_arrow);*/
 
 			}
 			else if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::Down || event.key.code == sf::Keyboard::S)) {
@@ -178,24 +178,24 @@ int main()
 
 				for (int i = 0; i < rows; i++) {
 					text[i].setString(easeType[current_ease_type + i].first);
-					graphs[i].setFunction(movementManager.getFunctionPointer(easeType[current_ease_type + i].second));
+					graphs[i].setFunction(MovementContainer.getFunctionPointer(easeType[current_ease_type + i].second));
 				}
 
 				for (int i = 0; i < rows; i++) {
-					movementManager.undoMovement(&shapes[i]);
-					movementManager.undoScaling(&shapes[i]);
-					movementManager.undoRotation(&shapes[i]);
-					movementManager.addMovement(&shapes[i], start_pos[i], end_pos[i], animation_time, easeType[current_ease_type + i].second, true, 1.f);
-					movementManager.addScaling(&shapes[i], { 1.5f, 1.5f }, animation_time, easeType[current_ease_type + i].second, true, 1.f);
-					movementManager.addRotation(&shapes[i], 360.f, animation_time, easeType[current_ease_type + i].second, false, true, 1.f);
+					MovementContainer.undoMovement(&shapes[i]);
+					MovementContainer.undoScaling(&shapes[i]);
+					MovementContainer.undoRotation(&shapes[i]);
+					MovementContainer.addMovement(&shapes[i], start_pos[i], end_pos[i], animation_time, easeType[current_ease_type + i].second, true, 1.f);
+					MovementContainer.addScaling(&shapes[i], { 1.5f, 1.5f }, animation_time, easeType[current_ease_type + i].second, true, 1.f);
+					MovementContainer.addRotation(&shapes[i], 360.f, animation_time, easeType[current_ease_type + i].second, false, true, 1.f);
 				}
 
-				/*movementManager.resetMovement(&up_arrow);
-				movementManager.resetMovement(&down_arrow);
-				movementManager.stopScaling(&up_arrow);
-				movementManager.stopScaling(&down_arrow);
-				movementManager.undoRotation(&up_arrow);
-				movementManager.undoRotation(&down_arrow);*/
+				/*MovementContainer.resetMovement(&up_arrow);
+				MovementContainer.resetMovement(&down_arrow);
+				MovementContainer.stopScaling(&up_arrow);
+				MovementContainer.stopScaling(&down_arrow);
+				MovementContainer.undoRotation(&up_arrow);
+				MovementContainer.undoRotation(&down_arrow);*/
 			}
 		}
 

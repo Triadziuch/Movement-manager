@@ -145,14 +145,14 @@ struct movementInfoVA : public transformationInfoVA {
 struct scalingInfoVA : public transformationInfoVA {
 	sf::Vector2f starting_scale{};
 	sf::Vector2f ending_scale{};
-	sf::Vector2f currentScale{};
+	sf::Vector2f current_scale{};
 	float		 scaling_time{};
 
 	scalingInfoVA(sf::Vector2f _starting_scale, sf::Vector2f _ending_scale, float _scaling_time, double(*_used_function)(double), bool _repeat, float _wait_before_repeating, sf::VertexArray* _vertexarray) :
-		transformationInfoVA{ _repeat, _wait_before_repeating, _used_function, _vertexarray }, starting_scale(_starting_scale), ending_scale(_ending_scale), currentScale(_starting_scale), scaling_time(_scaling_time) {}
+		transformationInfoVA{ _repeat, _wait_before_repeating, _used_function, _vertexarray }, starting_scale(_starting_scale), ending_scale(_ending_scale), current_scale(_starting_scale), scaling_time(_scaling_time) {}
 
 	scalingInfoVA(const scalingInfoVA& obj) :
-		transformationInfoVA{ obj.repeat, obj.current_time, obj.wait_before_repeating, obj.used_function, const_cast<sf::VertexArray*>(&obj.originalVertex) }, starting_scale(obj.starting_scale), ending_scale(obj.ending_scale), currentScale(obj.currentScale), scaling_time(obj.scaling_time) {}
+		transformationInfoVA{ obj.repeat, obj.current_time, obj.wait_before_repeating, obj.used_function, const_cast<sf::VertexArray*>(&obj.originalVertex) }, starting_scale(obj.starting_scale), ending_scale(obj.ending_scale), current_scale(obj.current_scale), scaling_time(obj.scaling_time) {}
 
 	const bool isDone() const override { return current_time >= scaling_time; }
 };

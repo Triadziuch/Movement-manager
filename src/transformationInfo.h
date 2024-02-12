@@ -1,5 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <math.h>
 
 // Movement info struct
 struct transformationInfo {
@@ -65,6 +66,17 @@ struct rotationInfo : public transformationInfo {
 		transformationInfo{ obj.repeat, obj.current_time, obj.wait_before_repeating, obj.used_function }, starting_rotation(obj.starting_rotation), ending_rotation(obj.ending_rotation), rotation_time(obj.rotation_time), clockwise(obj.clockwise) {}
 
 	const bool isDone() const override { return current_time >= rotation_time; }
+
+	const float getRotation() const { 
+		if (this->clockwise)
+			return static_cast<float>(this->used_function(static_cast<double>(this->current_time / this->rotation_time))) * (this->ending_rotation - this->starting_rotation) + this->starting_rotation;
+		else {
+			float new_rotation = static_cast<float>(this->used_function(static_cast<double>(this->current_time / this->rotation_time))) * (this->ending_rotation - this->starting_rotation) + this->starting_rotation;
+			new_rotation = 360.f - new_rotation;
+			new_rotation = fmod(new_rotation, 360.f);
+			return new_rotation;
+		}
+	}
 };
 
 struct transformationInfoVA : public transformationInfo {
@@ -139,4 +151,15 @@ struct rotationInfoVA : public transformationInfoVA {
 		transformationInfoVA{ obj.repeat, obj.current_time, obj.wait_before_repeating, obj.used_function, const_cast<sf::VertexArray*>(&obj.originalVertex) }, starting_rotation(obj.starting_rotation), ending_rotation(obj.ending_rotation), current_rotation(obj.current_rotation), rotation_time(obj.rotation_time), clockwise(obj.clockwise) {}
 
 	const bool isDone() const override { return current_time >= rotation_time; }
+
+	const float getRotation() const {
+		if (this->clockwise)
+			return static_cast<float>(this->used_function(static_cast<double>(this->current_time / this->rotation_time))) * (this->ending_rotation - this->starting_rotation) + this->starting_rotation;
+		else {
+			float new_rotation = static_cast<float>(this->used_function(static_cast<double>(this->current_time / this->rotation_time))) * (this->ending_rotation - this->starting_rotation) + this->starting_rotation;
+			new_rotation = 360.f - new_rotation;
+			new_rotation = fmod(new_rotation, 360.f);
+			return new_rotation;
+		}
+	}
 };

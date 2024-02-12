@@ -119,7 +119,7 @@ int main()
 	movementManager.addScaling(&up_arrow, { 1.5f, 1.5f }, arrow_scaling_time, movement_type::IN_OUT_SINE, true, arrow_wait_time);
 	movementManager.addScaling(&down_arrow, { 1.5f, 1.5f }, arrow_scaling_time, movement_type::IN_OUT_SINE, true, arrow_wait_time);
 	movementManager.addRotation(&up_arrow, 90.f, arrow_rotation_time, movement_type::IN_OUT_SINE, true, true, arrow_wait_time);
-	movementManager.addRotation(&down_arrow, 90.f, arrow_rotation_time, movement_type::IN_OUT_SINE, true, true, arrow_wait_time);
+	movementManager.addRotation(&down_arrow, 90.f, arrow_rotation_time, movement_type::IN_OUT_SINE, false, true, arrow_wait_time);
 
 	sf::Clock dt_clock;
 	float dt;
@@ -128,7 +128,7 @@ int main()
 	for (int i = 0; i < rows; i++) {
 		movementManager.addMovement(&shapes[i], start_pos[i], end_pos[i], animation_time, easeType[current_ease_type + i].second, true, 1.f);
 		movementManager.addScaling(&shapes[i], {1.5f, 1.5f}, animation_time, easeType[current_ease_type + i].second, true, 1.f);
-		movementManager.addRotation(&shapes[i], 360.f, animation_time, easeType[current_ease_type + i].second, false, true, 1.f);
+		movementManager.addRotation(&shapes[i], 360.f, animation_time, easeType[current_ease_type + i].second, true, true, 1.f);
 	}
 		
 

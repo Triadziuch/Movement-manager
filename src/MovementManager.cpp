@@ -148,14 +148,7 @@ void MovementManager::updateShape(float dt)
 			}
 		}
 		else {
-			float new_rotation = static_cast<float>(rotation->second->used_function(static_cast<double>(rotation->second->current_time / rotation->second->rotation_time))) * (rotation->second->ending_rotation - rotation->second->starting_rotation) + rotation->second->starting_rotation;
-			
-			if (!rotation->second->clockwise) {
-				new_rotation = 360.f - new_rotation;
-				new_rotation = fmod(new_rotation, 360.f);
-			}
-
-			rotation->first->setRotation(new_rotation);
+			rotation->first->setRotation(rotation->second->getRotation());
 			++rotation;
 		}
 	}
@@ -272,7 +265,7 @@ void MovementManager::updateVertexArray(float dt)
 				}
 			}
 			else {
-				rotation->second->current_rotation = static_cast<float>(rotation->second->used_function(static_cast<double>(rotation->second->current_time / rotation->second->rotation_time))) * (rotation->second->ending_rotation - rotation->second->starting_rotation) + rotation->second->starting_rotation;
+				rotation->second->current_rotation = rotation->second->getRotation();
 				updateRotationInfoVA(rotation->first, rotation->second);
 
 				++rotation;
@@ -365,14 +358,7 @@ void MovementManager::updateSprite(float dt)
 			}
 		}
 		else {
-			float new_rotation = static_cast<float>(rotation->second->used_function(static_cast<double>(rotation->second->current_time / rotation->second->rotation_time))) * (rotation->second->ending_rotation - rotation->second->starting_rotation) + rotation->second->starting_rotation;
-
-			if (!rotation->second->clockwise) {
-				new_rotation = 360.f - new_rotation;
-				new_rotation = fmod(new_rotation, 360.f);
-			}
-
-			rotation->first->setRotation(new_rotation);
+			rotation->first->setRotation(rotation->second->getRotation());
 			++rotation;
 		}
 	}

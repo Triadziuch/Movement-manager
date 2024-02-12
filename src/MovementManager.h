@@ -9,7 +9,6 @@ private:
 
 	// Movement info struct
 	struct transformationInfo {
-	protected:
 		bool		 repeat = false;
 		float		 currentTime{};
 		float		 wait_before_repeating{};
@@ -27,6 +26,8 @@ private:
 			repeat(obj.repeat), currentTime(obj.currentTime), wait_before_repeating(obj.wait_before_repeating), used_function(obj.used_function) {}
 
 		virtual ~transformationInfo() = default;
+
+		virtual const bool isDone() const = 0;
 	};
 
 	struct movementInfo : public transformationInfo {
@@ -40,7 +41,7 @@ private:
 		movementInfo(const movementInfo& obj) : 
 			transformationInfo{obj.repeat, obj.currentTime, obj.wait_before_repeating, obj.used_function}, startingPos(obj.startingPos), endingPos(obj.endingPos), movementTime(obj.movementTime) {}
 
-		const bool isDone() const { return this->currentTime >= this->movementTime; }
+		const bool isDone() const override { return this->currentTime >= this->movementTime; }
 	};
 
 	struct scalingInfo : public transformationInfo {
@@ -54,14 +55,14 @@ private:
 		scalingInfo(const scalingInfo& obj) : 
 			transformationInfo{obj.repeat, obj.currentTime, obj.wait_before_repeating, obj.used_function}, startingScale(obj.startingScale), endingScale(obj.endingScale), scalingTime(obj.scalingTime) {}
 
-		const bool isDone() const { return currentTime >= scalingTime; }
+		const bool isDone() const override { return currentTime >= scalingTime; }
 	};
 
 	struct rotationInfo : public transformationInfo {
 		float startingRotation{};
 		float endingRotation{};
 		float rotationTime{};
-		bool clockwise = true;
+		bool  clockwise = true;
 
 		rotationInfo(float _startingRotation, float _endingRotation, float _rotationTime, double(*_used_function)(double), bool _repeat, float _wait_before_repeating, bool _clockwise) :
 			transformationInfo{ _repeat, _wait_before_repeating, _used_function }, startingRotation(_startingRotation), endingRotation(_endingRotation), rotationTime(_rotationTime), clockwise(_clockwise) {}
@@ -69,122 +70,79 @@ private:
 		rotationInfo(const rotationInfo& obj) :
 			transformationInfo{obj.repeat, obj.currentTime, obj.wait_before_repeating, obj.used_function}, startingRotation(obj.startingRotation), endingRotation(obj.endingRotation), rotationTime(obj.rotationTime), clockwise(obj.clockwise) {}
 
-		const bool isDone() const { return currentTime >= rotationTime; }
+		const bool isDone() const override { return currentTime >= rotationTime; }
 	};
 
-	struct movementInfoVA {
+	struct transformationInfoVA : public transformationInfo {
+		sf::VertexArray	 originalVertex{};
+		sf::Vector2f	 centroid{};
+
+		transformationInfoVA() = default;
+
+		transformationInfoVA(bool _repeat, float _wait_before_repeating, double (*_used_function)(double), sf::VertexArray* _vertexarray) :
+			transformationInfo{ _repeat, _wait_before_repeating, _used_function }, originalVertex(*_vertexarray) {
+
+			for (size_t i = 0; i < _vertexarray->getVertexCount(); i++)
+				centroid += _vertexarray->operator[](i).position;
+			centroid /= static_cast<float>(_vertexarray->getVertexCount());
+		}
+
+		transformationInfoVA(bool _repeat, float _currentTime, float _wait_before_repeating, double (*_used_function)(double), sf::VertexArray* _vertexarray) :
+			transformationInfo{ _repeat, _currentTime, _wait_before_repeating, _used_function }, originalVertex(*_vertexarray) {
+
+			for (size_t i = 0; i < _vertexarray->getVertexCount(); i++)
+				centroid += _vertexarray->operator[](i).position;
+			centroid /= static_cast<float>(_vertexarray->getVertexCount());
+		}
+
+		transformationInfoVA(const transformationInfoVA& obj) :
+			transformationInfo{ obj.repeat, obj.currentTime, obj.wait_before_repeating, obj.used_function }, originalVertex(obj.originalVertex), centroid(obj.centroid) {}
+	};
+
+	struct movementInfoVA : public transformationInfoVA {
 		sf::Vector2f startingPos{};
 		sf::Vector2f endingPos{};
-		sf::VertexArray originalVertex{};
-		sf::Vector2f originalCentroid{};
-		sf::Vector2f centroid{};
-		float		 currentTime{};
 		float		 movementTime{};
-		bool		 repeat = false;
-		float		 wait_before_repeating{};
-		double (*used_function)(double) {};
+		sf::Vector2f originalCentroid{};
 
 		movementInfoVA(sf::Vector2f _startingPos, sf::Vector2f _endingPos, float _movementTime, double(*_used_function)(double), bool _repeat, float _wait_before_repeating, sf::VertexArray* _vertexarray) :
-			startingPos(_startingPos), endingPos(_endingPos), movementTime(_movementTime), currentTime(0.f), used_function(_used_function), repeat(_repeat), wait_before_repeating(_wait_before_repeating), originalVertex(*_vertexarray) {
-			
-			for (size_t i = 0; i < _vertexarray->getVertexCount(); i++)
-				centroid += _vertexarray->operator[](i).position;
-			centroid /= static_cast<float>(_vertexarray->getVertexCount());
+			transformationInfoVA{ _repeat, _wait_before_repeating, _used_function, _vertexarray }, startingPos(_startingPos), endingPos(_endingPos), movementTime(_movementTime) { this->originalCentroid = this->centroid; }
 
-			originalCentroid = centroid;
-		};
+		movementInfoVA(const movementInfoVA& obj) :
+			transformationInfoVA{ obj.repeat, obj.currentTime, obj.wait_before_repeating, obj.used_function, const_cast<sf::VertexArray*>(&obj.originalVertex)}, startingPos(obj.startingPos), endingPos(obj.endingPos), movementTime(obj.movementTime), originalCentroid(obj.originalCentroid) {}
 
-		movementInfoVA(const movementInfoVA& _movementInfoVA) {
-			startingPos = _movementInfoVA.startingPos;
-			endingPos = _movementInfoVA.endingPos;
-			originalVertex = _movementInfoVA.originalVertex;
-			centroid = _movementInfoVA.centroid;
-			originalCentroid = _movementInfoVA.originalCentroid;
-			currentTime = _movementInfoVA.currentTime;
-			movementTime = _movementInfoVA.movementTime;
-			repeat = _movementInfoVA.repeat;
-			wait_before_repeating = _movementInfoVA.wait_before_repeating;
-			used_function = _movementInfoVA.used_function;
-		}
-
-		const bool isDone() const { return currentTime >= movementTime; }
+		const bool isDone() const override { return currentTime >= movementTime; }
 	};
 
-	
-
-	struct scalingInfoVA {
+	struct scalingInfoVA : public transformationInfoVA {
 		sf::Vector2f startingScale{};
 		sf::Vector2f endingScale{};
-		sf::Vector2f centroid{};
-		sf::VertexArray originalVertex{};
 		sf::Vector2f currentScale{};
-		float		 currentTime{};
 		float		 scalingTime{};
-		bool		 repeat = false;
-		float		 wait_before_repeating{};
-		double (*used_function)(double) {};
 
 		scalingInfoVA(sf::Vector2f _startingScale, sf::Vector2f _endingScale, float _scalingTime, double(*_used_function)(double), bool _repeat, float _wait_before_repeating, sf::VertexArray* _vertexarray) :
-			startingScale(_startingScale), endingScale(_endingScale), scalingTime(_scalingTime), currentTime(0.f), used_function(_used_function), repeat(_repeat), wait_before_repeating(_wait_before_repeating), originalVertex(*_vertexarray) {
-			
-			for (size_t i = 0; i < _vertexarray->getVertexCount(); i++)
-				centroid += _vertexarray->operator[](i).position;
-			centroid /= static_cast<float>(_vertexarray->getVertexCount());
+			transformationInfoVA{ _repeat, _wait_before_repeating, _used_function, _vertexarray }, startingScale(_startingScale), endingScale(_endingScale), currentScale(_startingScale), scalingTime(_scalingTime) {}
 
-			currentScale = startingScale;
-		};
+		scalingInfoVA(const scalingInfoVA& obj) :
+			transformationInfoVA{ obj.repeat, obj.currentTime, obj.wait_before_repeating, obj.used_function, const_cast<sf::VertexArray*>(&obj.originalVertex) }, startingScale(obj.startingScale), endingScale(obj.endingScale), currentScale(obj.currentScale), scalingTime(obj.scalingTime) {}
 
-		scalingInfoVA(const scalingInfoVA& _scalingInfoVA) {
-			startingScale = _scalingInfoVA.startingScale;
-			endingScale = _scalingInfoVA.endingScale;
-			centroid = _scalingInfoVA.centroid;
-			originalVertex = _scalingInfoVA.originalVertex;
-			currentTime = _scalingInfoVA.currentTime;
-			scalingTime = _scalingInfoVA.scalingTime;
-			repeat = _scalingInfoVA.repeat;
-			wait_before_repeating = _scalingInfoVA.wait_before_repeating;
-			used_function = _scalingInfoVA.used_function;
-		}
-
-		const bool isDone() const { return currentTime >= scalingTime; }
+		const bool isDone() const override { return currentTime >= scalingTime; }
 	};
 
-	struct rotationInfoVA {
-		float		 startingRotation{};
-		float		 endingRotation{};
-		sf::Vector2f centroid{};
-		float		 currentTime{};
-		float		 rotationTime{};
-		bool		 repeat = false;
-		bool		 clockwise = true;
-		sf::VertexArray originalVertex{};
-		float		 current_rotation{};
-		float		 wait_before_repeating{};
-		double (*used_function)(double) {};
+	struct rotationInfoVA : public transformationInfoVA {
+		float startingRotation{};
+		float endingRotation{};
+		float current_rotation{};
+		float rotationTime{};
+		bool  clockwise = true;
 
 		rotationInfoVA(float _startingRotation, float _endingRotation, float _rotationTime, double(*_used_function)(double), sf::VertexArray* _vertexarray, bool _repeat, float _wait_before_repeating, bool _clockwise) :
-			startingRotation(_startingRotation), endingRotation(_endingRotation), rotationTime(_rotationTime), currentTime(0.f), used_function(_used_function), originalVertex(*_vertexarray), repeat(_repeat), wait_before_repeating(_wait_before_repeating), clockwise(_clockwise) {
-			
-			for (size_t i = 0; i < _vertexarray->getVertexCount(); i++)
-				centroid += _vertexarray->operator[](i).position;
-			centroid /= static_cast<float>(_vertexarray->getVertexCount());
-		};
+			transformationInfoVA{ _repeat, _wait_before_repeating, _used_function, _vertexarray }, startingRotation(_startingRotation), endingRotation(_endingRotation), current_rotation(_startingRotation), rotationTime(_rotationTime), clockwise(_clockwise) {}
 
-		rotationInfoVA(const rotationInfoVA& _rotationInfoVA) {
-			startingRotation = _rotationInfoVA.startingRotation;
-			endingRotation = _rotationInfoVA.endingRotation;
-			centroid = _rotationInfoVA.centroid;
-			currentTime = _rotationInfoVA.currentTime;
-			rotationTime = _rotationInfoVA.rotationTime;
-			repeat = _rotationInfoVA.repeat;
-			clockwise = _rotationInfoVA.clockwise;
-			originalVertex = _rotationInfoVA.originalVertex;
-			current_rotation = _rotationInfoVA.current_rotation;
-			wait_before_repeating = _rotationInfoVA.wait_before_repeating;
-			used_function = _rotationInfoVA.used_function;
-		}
+		rotationInfoVA(const rotationInfoVA& obj) :
+			transformationInfoVA{ obj.repeat, obj.currentTime, obj.wait_before_repeating, obj.used_function, const_cast<sf::VertexArray*>(&obj.originalVertex) }, startingRotation(obj.startingRotation), endingRotation(obj.endingRotation), current_rotation(obj.current_rotation), rotationTime(obj.rotationTime), clockwise(obj.clockwise) {}
 
-		const bool isDone() const { return currentTime >= rotationTime; }
+		const bool isDone() const override { return currentTime >= rotationTime; }
 	};
 
 	std::map<movement_type, double(*)(double)>		movement_functions = {
@@ -333,23 +291,4 @@ public:
 	int getScalingCount() { return m_Scalings_Shape.size() + m_Scalings_VA.size() + m_Scalings_S.size(); }
 
 	double (*getFunctionPointer(movement_type _movement_type))(double) { return movement_functions[_movement_type]; }
-
-	void renderCentroid(sf::RenderWindow& _window) {
-		for (auto& movement : m_Movements_VA) {
-			sf::CircleShape centroid(7.f);
-			centroid.setFillColor(sf::Color::Red);
-			centroid.setOrigin(centroid.getRadius(), centroid.getRadius());
-			centroid.setPosition(movement.second->centroid);
-			_window.draw(centroid);
-		}
-
-		for (auto& movement : m_Movements_VA) {
-			sf::CircleShape centroid(4.f);
-			centroid.setFillColor(sf::Color::Blue);
-			centroid.setOrigin(centroid.getRadius(), centroid.getRadius());
-			centroid.setPosition(movement.second->originalCentroid);
-			_window.draw(centroid);
-		}
-
-	}
 };

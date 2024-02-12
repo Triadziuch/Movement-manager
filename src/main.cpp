@@ -210,8 +210,6 @@ int main()
 			window.draw(down_arrow);
 		}
 
-		movementManager.renderCentroid(window);
-
 		window.display();
 	}
 

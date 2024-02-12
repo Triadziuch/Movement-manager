@@ -77,6 +77,26 @@ struct rotationInfo : public transformationInfo {
 			return new_rotation;
 		}
 	}
+
+	const float getStartingRotation() const {
+		if (this->clockwise)
+			return this->starting_rotation;
+		else {
+			float new_rotation = 360.f - this->starting_rotation;
+			new_rotation = fmod(new_rotation, 360.f);
+			return new_rotation;
+		}
+	}
+
+	const float getEndingRotation() const {
+		if (this->clockwise)
+			return this->ending_rotation;
+		else {
+			float new_rotation = 360.f - this->ending_rotation;
+			new_rotation = fmod(new_rotation, 360.f);
+			return new_rotation;
+		}
+	}
 };
 
 struct transformationInfoVA : public transformationInfo {
@@ -158,6 +178,26 @@ struct rotationInfoVA : public transformationInfoVA {
 		else {
 			float new_rotation = static_cast<float>(this->used_function(static_cast<double>(this->current_time / this->rotation_time))) * (this->ending_rotation - this->starting_rotation) + this->starting_rotation;
 			new_rotation = 360.f - new_rotation;
+			new_rotation = fmod(new_rotation, 360.f);
+			return new_rotation;
+		}
+	}
+
+	const float getStartingRotation() const {
+		if (this->clockwise)
+			return this->starting_rotation;
+		else {
+			float new_rotation = 360.f - this->starting_rotation;
+			new_rotation = fmod(new_rotation, 360.f);
+			return new_rotation;
+		}
+	}
+
+	const float getEndingRotation() const {
+		if (this->clockwise)
+			return this->ending_rotation;
+		else {
+			float new_rotation = 360.f - this->ending_rotation;
 			new_rotation = fmod(new_rotation, 360.f);
 			return new_rotation;
 		}

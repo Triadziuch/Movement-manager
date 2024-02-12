@@ -132,11 +132,11 @@ void MovementManager::updateShape(float dt)
 
 		if (rotation->second->isDone()) {
 			if (rotation->second->current_time - dt < rotation->second->rotation_time)
-				rotation->first->setRotation(rotation->second->ending_rotation);
+				rotation->first->setRotation(rotation->second->getEndingRotation());
 
 			if (rotation->second->repeat) {
 				if (rotation->second->current_time - rotation->second->rotation_time >= rotation->second->wait_before_repeating) {
-					rotation->first->setRotation(rotation->second->starting_rotation);
+					rotation->first->setRotation(rotation->second->getStartingRotation());
 
 					rotation->second->current_time -= (rotation->second->rotation_time + rotation->second->wait_before_repeating);
 				}
@@ -240,18 +240,18 @@ void MovementManager::updateVertexArray(float dt)
 		if (rotation->first->getVertexCount() != 0) {
 			if (rotation->second->isDone()) {
 				if (rotation->second->current_time - dt < rotation->second->rotation_time) {
-					rotation->second->current_rotation = rotation->second->ending_rotation;
+					rotation->second->current_rotation = rotation->second->getEndingRotation();
 					updateRotationInfoVA(rotation->first, rotation->second);
 				}
 
 				if (rotation->second->repeat) {
 					if (rotation->second->current_time - rotation->second->rotation_time < rotation->second->wait_before_repeating) {
-						rotation->second->current_rotation = rotation->second->ending_rotation;
+						rotation->second->current_rotation = rotation->second->getEndingRotation();
 						updateRotationInfoVA(rotation->first, rotation->second);
 					}
 						
 					else {
-						rotation->second->current_rotation = rotation->second->starting_rotation;
+						rotation->second->current_rotation = rotation->second->getStartingRotation();
 						updateRotationInfoVA(rotation->first, rotation->second);
 
 						rotation->second->current_time -= (rotation->second->rotation_time + rotation->second->wait_before_repeating);
@@ -341,11 +341,11 @@ void MovementManager::updateSprite(float dt)
 
 		if (rotation->second->isDone()) {
 			if (rotation->second->current_time - dt < rotation->second->rotation_time)
-				rotation->first->setRotation(rotation->second->ending_rotation);
+				rotation->first->setRotation(rotation->second->getEndingRotation());
 
 			if (rotation->second->repeat) {
 				if (rotation->second->current_time - rotation->second->rotation_time >= rotation->second->wait_before_repeating){
-					rotation->first->setRotation(rotation->second->starting_rotation);
+					rotation->first->setRotation(rotation->second->getStartingRotation());
 
 					rotation->second->current_time -= (rotation->second->rotation_time + rotation->second->wait_before_repeating);
 				}
@@ -1038,13 +1038,13 @@ const bool MovementManager::addRotation(sf::Sprite* _sprite, float starting_rota
 void MovementManager::undoRotation()
 {
 	for (auto rotation = this->m_Rotations_Shape.begin(); rotation != this->m_Rotations_Shape.end();) {
-		rotation->first->setRotation(rotation->second->starting_rotation);
+		rotation->first->setRotation(rotation->second->getStartingRotation());
 		delete rotation->second;
 		rotation = m_Rotations_Shape.erase(rotation);
 	}
 
 	for (auto rotation = this->m_Rotations_VA.begin(); rotation != this->m_Rotations_VA.end();) {
-		rotation->second->current_rotation = rotation->second->starting_rotation;
+		rotation->second->current_rotation = rotation->second->getStartingRotation();
 		updateRotationInfoVA(rotation->first, rotation->second);
 
 		delete rotation->second;
@@ -1052,7 +1052,7 @@ void MovementManager::undoRotation()
 	}
 
 	for (auto rotation = this->m_Rotations_S.begin(); rotation != this->m_Rotations_S.end();) {
-		rotation->first->setRotation(rotation->second->starting_rotation);
+		rotation->first->setRotation(rotation->second->getStartingRotation());
 		delete rotation->second;
 		rotation = m_Rotations_S.erase(rotation);
 	}
@@ -1064,7 +1064,7 @@ void MovementManager::undoRotation(sf::Shape* _shape)
 	auto rotationFound = rotationMap.find(_shape);
 
 	if (rotationFound != rotationMap.end()) {
-		_shape->setRotation(rotationFound->second->starting_rotation);
+		_shape->setRotation(rotationFound->second->getStartingRotation());
 
 		delete rotationFound->second;
 		rotationMap.erase(rotationFound);
@@ -1077,7 +1077,7 @@ void MovementManager::undoRotation(sf::VertexArray* _vertexarray)
 	auto rotationFound = rotationMap.find(_vertexarray);
 
 	if (rotationFound != rotationMap.end()) {
-		rotationFound->second->current_rotation = rotationFound->second->starting_rotation;
+		rotationFound->second->current_rotation = rotationFound->second->getStartingRotation();
 		updateRotationInfoVA(_vertexarray, rotationFound->second);
 
 		delete rotationFound->second;
@@ -1091,7 +1091,7 @@ void MovementManager::undoRotation(sf::Sprite* _sprite)
 	auto rotationFound = rotationMap.find(_sprite);
 
 	if (rotationFound != rotationMap.end()) {
-		_sprite->setRotation(rotationFound->second->starting_rotation);
+		_sprite->setRotation(rotationFound->second->getStartingRotation());
 		delete rotationFound->second;
 		rotationMap.erase(rotationFound);
 	}
@@ -1100,13 +1100,13 @@ void MovementManager::undoRotation(sf::Sprite* _sprite)
 void MovementManager::resetRotation()
 {
 	for (auto rotation = this->m_Rotations_Shape.begin(); rotation != this->m_Rotations_Shape.end();) {
-		rotation->first->setRotation(rotation->second->starting_rotation);
+		rotation->first->setRotation(rotation->second->getStartingRotation());
 		rotation->second->current_time = 0.f;
 		++rotation;
 	}
 
 	for (auto rotation = this->m_Rotations_VA.begin(); rotation != this->m_Rotations_VA.end();) {
-		rotation->second->current_rotation = rotation->second->starting_rotation;
+		rotation->second->current_rotation = rotation->second->getStartingRotation();
 		updateRotationInfoVA(rotation->first, rotation->second);
 
 		rotation->second->current_time = 0.f;
@@ -1114,7 +1114,7 @@ void MovementManager::resetRotation()
 	}
 
 	for (auto rotation = this->m_Rotations_S.begin(); rotation != this->m_Rotations_S.end();) {
-		rotation->first->setRotation(rotation->second->starting_rotation);
+		rotation->first->setRotation(rotation->second->getStartingRotation());
 		rotation->second->current_time = 0.f;
 		++rotation;
 	}
@@ -1126,7 +1126,7 @@ void MovementManager::resetRotation(sf::Shape* _shape)
 	auto rotationFound = rotationMap.find(_shape);
 
 	if (rotationFound != rotationMap.end()) {
-		_shape->setRotation(rotationFound->second->starting_rotation);
+		_shape->setRotation(rotationFound->second->getStartingRotation());
 		rotationFound->second->current_time = 0.f;
 	}
 }
@@ -1137,7 +1137,7 @@ void MovementManager::resetRotation(sf::VertexArray* _vertexarray)
 	auto rotationFound = rotationMap.find(_vertexarray);
 
 	if (rotationFound != rotationMap.end()) {
-		rotationFound->second->current_rotation = rotationFound->second->starting_rotation;
+		rotationFound->second->current_rotation = rotationFound->second->getStartingRotation();
 		updateRotationInfoVA(_vertexarray, rotationFound->second);
 
 		rotationFound->second->current_time = 0.f;
@@ -1150,7 +1150,7 @@ void MovementManager::resetRotation(sf::Sprite* _sprite)
 	auto rotationFound = rotationMap.find(_sprite);
 
 	if (rotationFound != rotationMap.end()) {
-		_sprite->setRotation(rotationFound->second->starting_rotation);
+		_sprite->setRotation(rotationFound->second->getStartingRotation());
 		rotationFound->second->current_time = 0.f;
 	}
 }
@@ -1167,8 +1167,8 @@ void MovementManager::stopRotation()
 		auto movementFound = movementMap.find(rotation->first);
 
 		if (movementFound != movementMap.end()) {
-			float sine = static_cast<float>(sin(static_cast<double>(rotation->second->current_rotation) * M_RAD)),
-				cosine = static_cast<float>(cos(static_cast<double>(rotation->second->current_rotation) * M_RAD));
+			float sine   = static_cast<float>(sin(static_cast<double>(rotation->second->current_rotation) * M_RAD)),
+				  cosine = static_cast<float>(cos(static_cast<double>(rotation->second->current_rotation) * M_RAD));
 
 			for (size_t i = 0; i < rotation->first->getVertexCount(); ++i) {
 				float x = movementFound->second->originalVertex.operator[](i).position.x - movementFound->second->centroid.x;
@@ -1182,8 +1182,8 @@ void MovementManager::stopRotation()
 		auto scalingFound = scalingMap.find(rotation->first);
 
 		if (scalingFound != scalingMap.end()) {
-			float sine = static_cast<float>(sin(static_cast<double>(rotation->second->current_rotation) * M_RAD)),
-				cosine = static_cast<float>(cos(static_cast<double>(rotation->second->current_rotation) * M_RAD));
+			float sine   = static_cast<float>(sin(static_cast<double>(rotation->second->current_rotation) * M_RAD)),
+				  cosine = static_cast<float>(cos(static_cast<double>(rotation->second->current_rotation) * M_RAD));
 
 			for (size_t i = 0; i < rotation->first->getVertexCount(); ++i) {
 				float x = scalingFound->second->originalVertex.operator[](i).position.x - scalingFound->second->centroid.x;
@@ -1224,7 +1224,7 @@ void MovementManager::stopRotation(sf::VertexArray* _vertexarray)
 		auto movementFound = movementMap.find(_vertexarray);
 
 		if (movementFound != movementMap.end()) {
-			float sine = static_cast<float>(sin(static_cast<double>(rotationFound->second->current_rotation) * M_RAD)),
+			float sine   = static_cast<float>(sin(static_cast<double>(rotationFound->second->current_rotation) * M_RAD)),
 				  cosine = static_cast<float>(cos(static_cast<double>(rotationFound->second->current_rotation) * M_RAD));
 
 			for (size_t i = 0; i < _vertexarray->getVertexCount(); ++i) {
@@ -1239,7 +1239,7 @@ void MovementManager::stopRotation(sf::VertexArray* _vertexarray)
 		auto scalingFound = scalingMap.find(_vertexarray);
 
 		if (scalingFound != scalingMap.end()) {
-			float sine = static_cast<float>(sin(static_cast<double>(rotationFound->second->current_rotation) * M_RAD)),
+			float sine   = static_cast<float>(sin(static_cast<double>(rotationFound->second->current_rotation) * M_RAD)),
 				  cosine = static_cast<float>(cos(static_cast<double>(rotationFound->second->current_rotation) * M_RAD));
 
 			for (size_t i = 0; i < _vertexarray->getVertexCount(); ++i) {

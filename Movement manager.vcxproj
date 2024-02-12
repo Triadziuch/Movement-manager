@@ -143,6 +143,7 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="src\Graph.h" />
     <ClInclude Include="src\MovementManager.h" />
+    <ClInclude Include="src\transformationInfo.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

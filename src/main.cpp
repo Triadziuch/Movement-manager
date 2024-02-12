@@ -128,7 +128,7 @@ int main()
 	for (int i = 0; i < rows; i++) {
 		movementManager.addMovement(&shapes[i], start_pos[i], end_pos[i], animation_time, easeType[current_ease_type + i].second, true, 1.f);
 		movementManager.addScaling(&shapes[i], {1.5f, 1.5f}, animation_time, easeType[current_ease_type + i].second, true, 1.f);
-		movementManager.addRotation(&shapes[i], 360.f, animation_time, easeType[current_ease_type + i].second, true, true, 1.f);
+		movementManager.addRotation(&shapes[i], 360.f, animation_time, easeType[current_ease_type + i].second, false, true, 1.f);
 	}
 		
 

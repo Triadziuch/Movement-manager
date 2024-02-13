@@ -2,6 +2,7 @@
 #include "easeFunctions.cpp"
 #include "transformationInfo.h"
 #include <map>
+#include <assert.h>
 
 class MovementContainer {
 private:

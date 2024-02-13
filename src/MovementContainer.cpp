@@ -1,5 +1,4 @@
 #include "MovementContainer.h"
-#include <assert.h>
 
 // Singleton initialization
 MovementContainer* MovementContainer::sInstance = nullptr;

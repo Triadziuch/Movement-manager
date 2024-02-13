@@ -9,8 +9,6 @@ struct MovementRoutine {
 	bool is_active{};
 	bool is_looping{};
 	bool is_paused{};
-
-
 };
 
 class MovementManager {

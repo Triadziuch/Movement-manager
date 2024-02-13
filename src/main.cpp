@@ -4,6 +4,7 @@
 #include "Graph.h"
 #include <Windows.h>
 int iterator = 0;
+
 int main()
 {
 	sf::ContextSettings settings;
@@ -114,12 +115,12 @@ int main()
 	float arrow_wait_time = 1.f;
 
 	// TODO: Dodaæ lepsze zarz¹dzanie pocz¹tkiem i koñcem animacji
-	MovementContainer.addMovement(&up_arrow, sf::Vector2f(960.f, 50.f), sf::Vector2f(960.f, 30.f), arrow_movement_time, movement_type::IN_OUT_SINE, true, arrow_wait_time);
-	MovementContainer.addMovement(&down_arrow, sf::Vector2f(960.f, 1030.f), sf::Vector2f(960.f, 1050.f), arrow_movement_time, movement_type::IN_OUT_SINE, true, arrow_wait_time);
-	MovementContainer.addScaling(&up_arrow, { 1.5f, 1.5f }, arrow_scaling_time, movement_type::IN_OUT_SINE, true, arrow_wait_time);
-	MovementContainer.addScaling(&down_arrow, { 1.5f, 1.5f }, arrow_scaling_time, movement_type::IN_OUT_SINE, true, arrow_wait_time);
-	MovementContainer.addRotation(&up_arrow, 90.f, arrow_rotation_time, movement_type::IN_OUT_SINE, true, true, arrow_wait_time);
-	MovementContainer.addRotation(&down_arrow, 90.f, arrow_rotation_time, movement_type::IN_OUT_SINE, false, true, arrow_wait_time);
+	//MovementContainer.addMovement(&up_arrow, sf::Vector2f(960.f, 50.f), sf::Vector2f(960.f, 30.f), arrow_movement_time, movement_type::IN_OUT_SINE, true, arrow_wait_time);
+	//MovementContainer.addMovement(&down_arrow, sf::Vector2f(960.f, 1030.f), sf::Vector2f(960.f, 1050.f), arrow_movement_time, movement_type::IN_OUT_SINE, true, arrow_wait_time);
+	MovementContainer.addScaling(&up_arrow, { 1.1f, 1.1f }, arrow_scaling_time, movement_type::IN_OUT_SINE, true, arrow_wait_time);
+	MovementContainer.addScaling(&down_arrow, { 1.1f, 1.1f }, arrow_scaling_time, movement_type::IN_OUT_SINE, true, arrow_wait_time);
+	MovementContainer.addRotation(&up_arrow, -10.f, 10.f, arrow_rotation_time, movement_type::IN_OUT_SINE, true, true, arrow_wait_time);
+	MovementContainer.addRotation(&down_arrow, -10.f, 10.f, arrow_rotation_time, movement_type::IN_OUT_SINE, false, true, arrow_wait_time);
 
 	sf::Clock dt_clock;
 	float dt;
@@ -130,7 +131,6 @@ int main()
 		MovementContainer.addScaling(&shapes[i], {1.5f, 1.5f}, animation_time, easeType[current_ease_type + i].second, true, 1.f);
 		MovementContainer.addRotation(&shapes[i], 360.f, animation_time, easeType[current_ease_type + i].second, false, true, 1.f);
 	}
-		
 
 	while (window.isOpen())
 	{

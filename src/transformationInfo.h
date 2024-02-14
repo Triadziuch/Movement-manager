@@ -9,22 +9,23 @@ struct transformationInfo {
 	float		 motion_duration{};
 	float		 delay_before{};
 	float		 delay_after{};
+	float		 total_duration{};
 	double (*used_function)(double) {};
 
 	transformationInfo() = default;
 
 	transformationInfo(bool _repeat, float _motion_duration, float _delay_before, float _delay_after, double (*_used_function)(double)) :
-		repeat(_repeat), motion_duration(_motion_duration), delay_before(_delay_before), delay_after(_delay_after), used_function(_used_function) {}
+		repeat(_repeat), motion_duration(_motion_duration), delay_before(_delay_before), delay_after(_delay_after), used_function(_used_function), total_duration(_delay_before + _motion_duration + _delay_after) {}
 
 	transformationInfo(bool _repeat, float _current_time, float _motion_duration, float _delay_before, float _delay_after, double (*_used_function)(double)) :
-		repeat(_repeat), current_time(_current_time), motion_duration(_motion_duration), delay_before(_delay_before), delay_after(_delay_after), used_function(_used_function) {}
+		repeat(_repeat), current_time(_current_time), motion_duration(_motion_duration), delay_before(_delay_before), delay_after(_delay_after), used_function(_used_function), total_duration(_delay_before + _motion_duration + _delay_after) {}
 
 	transformationInfo(const transformationInfo& obj) :
-		repeat(obj.repeat), current_time(obj.current_time), motion_duration(obj.motion_duration), delay_before(obj.delay_before), delay_after(obj.delay_after), used_function(obj.used_function) {}
+		repeat(obj.repeat), current_time(obj.current_time), motion_duration(obj.motion_duration), delay_before(obj.delay_before), delay_after(obj.delay_after), used_function(obj.used_function), total_duration(delay_before + motion_duration + delay_after) {}
 
 	virtual ~transformationInfo() = default;
 
-	const bool isDone() const { return this->current_time >= this->motion_duration; }
+	const bool isDone() const { return (this->current_time - this->delay_before >= this->motion_duration); }
 };
 
 struct movementInfo : public transformationInfo {

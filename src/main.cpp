@@ -112,24 +112,24 @@ int main()
 	float arrow_movement_time = 1.f;
 	float arrow_scaling_time = 1.f;
 	float arrow_rotation_time = 1.f;
-	float arrow_wait_time = 1.f;
+	float arrow_delay_before = 1.f, arrow_delay_after = 1.f;
 
 	// TODO: Dodaæ lepsze zarz¹dzanie pocz¹tkiem i koñcem animacji
-	//MovementContainer.addMovement(&up_arrow, sf::Vector2f(960.f, 50.f), sf::Vector2f(960.f, 30.f), arrow_movement_time, movement_type::IN_OUT_SINE, true, arrow_wait_time);
-	//MovementContainer.addMovement(&down_arrow, sf::Vector2f(960.f, 1030.f), sf::Vector2f(960.f, 1050.f), arrow_movement_time, movement_type::IN_OUT_SINE, true, arrow_wait_time);
-	MovementContainer.addScaling(&up_arrow, { 1.1f, 1.1f }, arrow_scaling_time, movement_type::IN_OUT_SINE, true, arrow_wait_time);
-	MovementContainer.addScaling(&down_arrow, { 1.1f, 1.1f }, arrow_scaling_time, movement_type::IN_OUT_SINE, true, arrow_wait_time);
-	MovementContainer.addRotation(&up_arrow, -10.f, 10.f, arrow_rotation_time, movement_type::IN_OUT_SINE, true, true, arrow_wait_time);
-	MovementContainer.addRotation(&down_arrow, -10.f, 10.f, arrow_rotation_time, movement_type::IN_OUT_SINE, false, true, arrow_wait_time);
+	//MovementContainer.addMovement(&up_arrow, sf::Vector2f(960.f, 50.f), sf::Vector2f(960.f, 30.f), arrow_movement_time, movement_type::IN_OUT_SINE, true, arrow_delay_before, arrow_delay_after);
+	//MovementContainer.addMovement(&down_arrow, sf::Vector2f(960.f, 1030.f), sf::Vector2f(960.f, 1050.f), arrow_movement_time, movement_type::IN_OUT_SINE, true, arrow_delay_before, arrow_delay_after);
+	MovementContainer.addScaling(&up_arrow, { 1.1f, 1.1f }, arrow_scaling_time, movement_type::IN_OUT_SINE, true, arrow_delay_before, arrow_delay_after);
+	MovementContainer.addScaling(&down_arrow, { 1.5f, 1.5f }, arrow_scaling_time, movement_type::IN_OUT_SINE, true, arrow_delay_before, arrow_delay_after);
+	MovementContainer.addRotation(&up_arrow, -10.f, 10.f, arrow_rotation_time, movement_type::IN_OUT_SINE, true, true, arrow_delay_before, arrow_delay_after);
+	MovementContainer.addRotation(&down_arrow, -10.f, 10.f, arrow_rotation_time, movement_type::IN_OUT_SINE, false, true, arrow_delay_before, arrow_delay_after);
 
 	sf::Clock dt_clock;
 	float dt;
 	float wait_time = 0.5f;
 
 	for (int i = 0; i < rows; i++) {
-		MovementContainer.addMovement(&shapes[i], start_pos[i], end_pos[i], animation_time, easeType[current_ease_type + i].second, true, 1.f);
-		MovementContainer.addScaling(&shapes[i], {1.5f, 1.5f}, animation_time, easeType[current_ease_type + i].second, true, 1.f);
-		MovementContainer.addRotation(&shapes[i], 360.f, animation_time, easeType[current_ease_type + i].second, false, true, 1.f);
+		MovementContainer.addMovement(&shapes[i], start_pos[i], end_pos[i], animation_time, easeType[current_ease_type + i].second, true, 0.5f, 0.5f);
+		MovementContainer.addScaling(&shapes[i], {1.5f, 1.5f}, animation_time, easeType[current_ease_type + i].second, true, 0.5f, 0.5f);
+		MovementContainer.addRotation(&shapes[i], 360.f, animation_time, easeType[current_ease_type + i].second, false, true, 0.5f, 0.5f);
 	}
 
 	while (window.isOpen())
@@ -158,9 +158,9 @@ int main()
 					MovementContainer.undoMovement(&shapes[i]);
 					MovementContainer.undoScaling(&shapes[i]);
 					MovementContainer.undoRotation(&shapes[i]);
-					MovementContainer.addMovement(&shapes[i], start_pos[i], end_pos[i], animation_time, easeType[current_ease_type + i].second, true, 1.f);
-					MovementContainer.addScaling(&shapes[i], { 1.5f, 1.5f }, animation_time, easeType[current_ease_type + i].second, true, 1.f);
-					MovementContainer.addRotation(&shapes[i], 360.f, animation_time, easeType[current_ease_type + i].second, false, true, 1.f);
+					MovementContainer.addMovement(&shapes[i], start_pos[i], end_pos[i], animation_time, easeType[current_ease_type + i].second, true, 0.5f, 0.5f);
+					MovementContainer.addScaling(&shapes[i], { 1.5f, 1.5f }, animation_time, easeType[current_ease_type + i].second, true, 0.5f, 0.5f);
+					MovementContainer.addRotation(&shapes[i], 360.f, animation_time, easeType[current_ease_type + i].second, false, true, 0.5f, 0.5f);
 				}
 
 				/*MovementContainer.resetMovement(&up_arrow);
@@ -185,9 +185,9 @@ int main()
 					MovementContainer.undoMovement(&shapes[i]);
 					MovementContainer.undoScaling(&shapes[i]);
 					MovementContainer.undoRotation(&shapes[i]);
-					MovementContainer.addMovement(&shapes[i], start_pos[i], end_pos[i], animation_time, easeType[current_ease_type + i].second, true, 1.f);
-					MovementContainer.addScaling(&shapes[i], { 1.5f, 1.5f }, animation_time, easeType[current_ease_type + i].second, true, 1.f);
-					MovementContainer.addRotation(&shapes[i], 360.f, animation_time, easeType[current_ease_type + i].second, false, true, 1.f);
+					MovementContainer.addMovement(&shapes[i], start_pos[i], end_pos[i], animation_time, easeType[current_ease_type + i].second, 0.5f, 0.5f);
+					MovementContainer.addScaling(&shapes[i], { 1.5f, 1.5f }, animation_time, easeType[current_ease_type + i].second, 0.5f, 0.5f);
+					MovementContainer.addRotation(&shapes[i], 360.f, animation_time, easeType[current_ease_type + i].second, false, 0.5f, 0.5f);
 				}
 
 				/*MovementContainer.resetMovement(&up_arrow);

@@ -91,6 +91,8 @@ struct rotationInfo : public transformationInfo {
 	}
 };
 
+// TODO: Dodaæ sprawdzanie, czy przypadkiem nie zmieniliœmy liczby wierzcho³ków i w razie potrzeby zaktualizowaæ centroid i originalVertex
+
 struct transformationInfoVA : public transformationInfo {
 	sf::VertexArray	 originalVertex{};
 	sf::Vector2f	 centroid{};

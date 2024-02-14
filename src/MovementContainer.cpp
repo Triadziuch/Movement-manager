@@ -72,14 +72,14 @@ void MovementContainer::updateShape(float dt)
 		movement->second->current_time += dt;
 
 		if (movement->second->isDone()) {
-			if (movement->second->current_time - dt < movement->second->motion_duration)
+			if (movement->second->current_time - movement->second->delay_before - dt < movement->second->motion_duration)
 				movement->first->setPosition(movement->second->ending_pos);
 
 			if (movement->second->repeat) {
-				if (movement->second->current_time - movement->second->motion_duration >= movement->second->wait_before_repeating) {
+				if (movement->second->current_time - movement->second->motion_duration - movement->second->delay_before >= movement->second->delay_after) {
 					movement->first->setPosition(movement->second->starting_pos);
 
-					movement->second->current_time -= (movement->second->motion_duration + movement->second->wait_before_repeating);
+					movement->second->current_time -= (movement->second->delay_before + movement->second->motion_duration + movement->second->delay_after);
 				}
 				++movement;
 			}
@@ -89,8 +89,8 @@ void MovementContainer::updateShape(float dt)
 			}
 		}
 		else {
-			sf::Vector2f new_position(static_cast<float>(movement->second->used_function(static_cast<double>(movement->second->current_time / movement->second->motion_duration))) * (movement->second->ending_pos.x - movement->second->starting_pos.x) + movement->second->starting_pos.x,
-									  static_cast<float>(movement->second->used_function(static_cast<double>(movement->second->current_time / movement->second->motion_duration))) * (movement->second->ending_pos.y - movement->second->starting_pos.y) + movement->second->starting_pos.y);
+			sf::Vector2f new_position(static_cast<float>(movement->second->used_function(static_cast<double>((movement->second->current_time - movement->second->delay_before) / movement->second->motion_duration))) * (movement->second->ending_pos.x - movement->second->starting_pos.x) + movement->second->starting_pos.x,
+									  static_cast<float>(movement->second->used_function(static_cast<double>((movement->second->current_time - movement->second->delay_before) / movement->second->motion_duration))) * (movement->second->ending_pos.y - movement->second->starting_pos.y) + movement->second->starting_pos.y);
 
 			movement->first->setPosition(new_position);
 			++movement;
@@ -101,14 +101,14 @@ void MovementContainer::updateShape(float dt)
 		scaling->second->current_time += dt;
 
 		if (scaling->second->isDone()) {
-			if (scaling->second->current_time - dt < scaling->second->motion_duration)
+			if (scaling->second->current_time - scaling->second->delay_before - dt < scaling->second->motion_duration)
 				scaling->first->setScale(scaling->second->ending_scale);
 
 			if (scaling->second->repeat) {
-				if (scaling->second->current_time - scaling->second->motion_duration >= scaling->second->wait_before_repeating) {
+				if (scaling->second->current_time - scaling->second->motion_duration - scaling->second->delay_before >= scaling->second->delay_after) {
 					scaling->first->setScale(scaling->second->starting_scale);
 					
-					scaling->second->current_time -= (scaling->second->motion_duration + scaling->second->wait_before_repeating);
+					scaling->second->current_time -= (scaling->second->delay_before + scaling->second->motion_duration + scaling->second->delay_after);
 				}
 				++scaling;
 			}
@@ -118,8 +118,8 @@ void MovementContainer::updateShape(float dt)
 			}
 		}
 		else {
-			sf::Vector2f new_scale(static_cast<float>(scaling->second->used_function(static_cast<double>(scaling->second->current_time / scaling->second->motion_duration))) * (scaling->second->ending_scale.x - scaling->second->starting_scale.x) + scaling->second->starting_scale.x,
-								   static_cast<float>(scaling->second->used_function(static_cast<double>(scaling->second->current_time / scaling->second->motion_duration))) * (scaling->second->ending_scale.y - scaling->second->starting_scale.y) + scaling->second->starting_scale.y);
+			sf::Vector2f new_scale(static_cast<float>(scaling->second->used_function(static_cast<double>((scaling->second->current_time - scaling->second->delay_before) / scaling->second->motion_duration))) * (scaling->second->ending_scale.x - scaling->second->starting_scale.x) + scaling->second->starting_scale.x,
+								   static_cast<float>(scaling->second->used_function(static_cast<double>((scaling->second->current_time - scaling->second->delay_before) / scaling->second->motion_duration))) * (scaling->second->ending_scale.y - scaling->second->starting_scale.y) + scaling->second->starting_scale.y);
 
 			scaling->first->setScale(new_scale);
 			++scaling;
@@ -130,14 +130,14 @@ void MovementContainer::updateShape(float dt)
 		rotation->second->current_time += dt;
 
 		if (rotation->second->isDone()) {
-			if (rotation->second->current_time - dt < rotation->second->motion_duration)
+			if (rotation->second->current_time - rotation->second->delay_before - dt < rotation->second->motion_duration)
 				rotation->first->setRotation(rotation->second->getEndingRotation());
 
 			if (rotation->second->repeat) {
-				if (rotation->second->current_time - rotation->second->motion_duration >= rotation->second->wait_before_repeating) {
+				if (rotation->second->current_time - rotation->second->motion_duration - rotation->second->delay_before >= rotation->second->delay_after) {
 					rotation->first->setRotation(rotation->second->getStartingRotation());
 
-					rotation->second->current_time -= (rotation->second->motion_duration + rotation->second->wait_before_repeating);
+					rotation->second->current_time -= (rotation->second->delay_before + rotation->second->motion_duration + rotation->second->delay_after);
 				}
 				++rotation;
 			}
@@ -147,7 +147,7 @@ void MovementContainer::updateShape(float dt)
 			}
 		}
 		else {
-			rotation->first->setRotation(rotation->second->getRotation());
+			rotation->first->setRotation(rotation->second->updateRotation());
 			++rotation;
 		}
 	}
@@ -264,7 +264,7 @@ void MovementContainer::updateVertexArray(float dt)
 				}
 			}
 			else {
-				rotation->second->current_rotation = rotation->second->getRotation();
+				rotation->second->current_rotation = rotation->second->updateRotation();
 				updateRotationInfoVA(rotation->first, rotation->second);
 
 				++rotation;
@@ -357,7 +357,7 @@ void MovementContainer::updateSprite(float dt)
 			}
 		}
 		else {
-			rotation->first->setRotation(rotation->second->getRotation());
+			rotation->first->setRotation(rotation->second->updateRotation());
 			++rotation;
 		}
 	}
@@ -381,100 +381,119 @@ void MovementContainer::update(float dt)
 // Public functions
 
 // Movement functions
-const bool MovementContainer::addMovement(sf::Shape* _shape, sf::Vector2f _ending_pos, float _movement_time, movement_type _used_function, bool _repeat, float _wait_before_repeating)
+const movementInfo* MovementContainer::addMovement(sf::Shape* _shape, sf::Vector2f _ending_pos, float _movement_time, movement_type _used_function, bool _repeat, float _delay_before, float _delay_after)
 {
 	auto& movementMap = sInstance->m_Movements_Shape;
 	auto movementFound = movementMap.find(_shape);
 
 	if (movementFound != movementMap.end()) {
 		printf("ERROR: Movement for sf::Shape* object already exists!\n");
-		return 0;
+		return nullptr;
 	}
-	else {
-		movementInfo* newMovement = new movementInfo(_shape->getPosition(), _ending_pos, _movement_time, sInstance->movement_functions[_used_function], _repeat, _wait_before_repeating);
-		movementMap.insert(std::make_pair(_shape, newMovement));
-	}
-	return 1;
+	
+	movementInfo* newMovement = new movementInfo(_shape->getPosition(), _ending_pos, _movement_time, sInstance->movement_functions[_used_function], _repeat, _delay_before, _delay_after);
+	movementMap.insert(std::make_pair(_shape, newMovement));
+
+	return newMovement;
 }
 
-const bool MovementContainer::addMovement(sf::Shape* _shape, sf::Vector2f _starting_pos, sf::Vector2f _ending_pos, float _movement_time, movement_type _used_function, bool _repeat, float _wait_before_repeating)
+const movementInfo* MovementContainer::addMovement(sf::Shape* _shape, sf::Vector2f _starting_pos, sf::Vector2f _ending_pos, float _movement_time, movement_type _used_function, bool _repeat, float _delay_before, float _delay_after)
 {
 	auto& movementMap = sInstance->m_Movements_Shape;
 	auto movementFound = movementMap.find(_shape);
 
 	if (movementFound != movementMap.end()) {
 		printf("ERROR: Movement for sf::Shape* object already exists!\n");
-		return 0;
+		return nullptr;
 	}
-	else {
-		movementInfo* newMovement = new movementInfo(_starting_pos, _ending_pos, _movement_time, sInstance->movement_functions[_used_function], _repeat, _wait_before_repeating);
-		movementMap.insert(std::make_pair(_shape, newMovement));
-	}
-	return 1;
+	
+	movementInfo* newMovement = new movementInfo(_starting_pos, _ending_pos, _movement_time, sInstance->movement_functions[_used_function], _repeat, _delay_before, _delay_after);
+	movementMap.insert(std::make_pair(_shape, newMovement));
+
+	return newMovement;
 }
 
-const bool MovementContainer::addMovement(sf::VertexArray* _vertexarray, sf::Vector2f _ending_pos, float _movement_time, movement_type _used_function, bool _repeat, float _wait_before_repeating)
+const movementInfo* MovementContainer::addMovement(sf::Shape* _shape, float _offset_x, float _offset_y, float _movement_time, movement_type _used_function, bool _repeat, float _delay_before, float _delay_after)
+{
+	return this->addMovement(_shape, _shape->getPosition() + sf::Vector2f(_offset_x, _offset_y), _movement_time, _used_function, _repeat, _delay_before, _delay_after);
+}
+
+const movementInfoVA* MovementContainer::addMovement(sf::VertexArray* _vertexarray, sf::Vector2f _ending_pos, float _movement_time, movement_type _used_function, bool _repeat, float _delay_before, float _delay_after)
 {
 	auto& movementMap = sInstance->m_Movements_VA;
 	auto movementFound = movementMap.find(_vertexarray);
 
 	if (movementFound != movementMap.end()) {
 		printf("ERROR: Movement for sf::VertexArray* object already exists!\n");
-		return 0;
+		return nullptr;
 	}
-	else if (_vertexarray->getVertexCount() != 0) {
-		movementInfoVA* newMovement = new movementInfoVA(_vertexarray->operator[](0).position, _ending_pos, _movement_time, sInstance->movement_functions[_used_function], _repeat, _wait_before_repeating, _vertexarray);
-		movementMap.insert(std::make_pair(_vertexarray, newMovement));
-	}
-	return 1;
+
+	movementInfoVA* newMovement = new movementInfoVA(_vertexarray->operator[](0).position, _ending_pos, _movement_time, sInstance->movement_functions[_used_function], _repeat, _delay_before, _delay_after, _vertexarray);
+	movementMap.insert(std::make_pair(_vertexarray, newMovement));
+
+	return newMovement;
 }
 
-const bool MovementContainer::addMovement(sf::VertexArray* _vertexarray, sf::Vector2f _starting_pos, sf::Vector2f _ending_pos, float _movement_time, movement_type _used_function, bool _repeat, float _wait_before_repeating)
+const movementInfoVA* MovementContainer::addMovement(sf::VertexArray* _vertexarray, sf::Vector2f _starting_pos, sf::Vector2f _ending_pos, float _movement_time, movement_type _used_function, bool _repeat, float _delay_before, float _delay_after)
 {
 	auto& movementMap = sInstance->m_Movements_VA;
 	auto movementFound = movementMap.find(_vertexarray);
 
 	if (movementFound != movementMap.end()) {
 		printf("ERROR: Movement for sf::VertexArray* object already exists!\n");
-		return 0;
+		return nullptr;
 	}
-	else if (_vertexarray->getVertexCount() != 0){
-		movementInfoVA* newMovement = new movementInfoVA(_starting_pos, _ending_pos, _movement_time, sInstance->movement_functions[_used_function], _repeat, _wait_before_repeating, _vertexarray);
-		movementMap.insert(std::make_pair(_vertexarray, newMovement));
-	}
-	return 1;
+
+	movementInfoVA* newMovement = new movementInfoVA(_starting_pos, _ending_pos, _movement_time, sInstance->movement_functions[_used_function], _repeat, _delay_before, _delay_after, _vertexarray);
+	movementMap.insert(std::make_pair(_vertexarray, newMovement));
+
+	return newMovement;
 }
 
-const bool MovementContainer::addMovement(sf::Sprite* _sprite, sf::Vector2f _ending_pos, float _movement_time, movement_type _used_function, bool _repeat, float _wait_before_repeating)
+const movementInfoVA* MovementContainer::addMovement(sf::VertexArray* _vertexarray, float _offset_x, float _offset_y, float _movement_time, movement_type _used_function, bool _repeat, float _delay_before, float _delay_after)
+{
+	if (_vertexarray->getVertexCount() == 0) {
+		printf("ERROR: VertexArray has no vertices!\n");
+		return nullptr;
+	}
+	return this->addMovement(_vertexarray, _vertexarray->operator[](0).position + sf::Vector2f(_offset_x, _offset_y), _movement_time, _used_function, _repeat, _delay_before, _delay_after);
+}
+
+const movementInfo* MovementContainer::addMovement(sf::Sprite* _sprite, sf::Vector2f _ending_pos, float _movement_time, movement_type _used_function, bool _repeat, float _delay_before, float _delay_after)
 {
 	auto& movementMap = sInstance->m_Movements_S;
 	auto movementFound = movementMap.find(_sprite);
 
 	if (movementFound != movementMap.end()) {
 		printf("ERROR: Movement for sf::Sprite* object already exists!\n");
-		return 0;
+		return nullptr;
 	}
-	else {
-		movementInfo* newMovement = new movementInfo(_sprite->getPosition(), _ending_pos, _movement_time, sInstance->movement_functions[_used_function], _repeat, _wait_before_repeating);
-		movementMap.insert(std::make_pair(_sprite, newMovement));
-	}
-	return 1;
+	
+	movementInfo* newMovement = new movementInfo(_sprite->getPosition(), _ending_pos, _movement_time, sInstance->movement_functions[_used_function], _repeat, _delay_before, _delay_after);
+	movementMap.insert(std::make_pair(_sprite, newMovement));
+
+	return newMovement;
 }
 
-const bool MovementContainer::addMovement(sf::Sprite* _sprite, sf::Vector2f _starting_pos, sf::Vector2f _ending_pos, float _movement_time, movement_type _used_function, bool _repeat, float _wait_before_repeating)
+const movementInfo* MovementContainer::addMovement(sf::Sprite* _sprite, sf::Vector2f _starting_pos, sf::Vector2f _ending_pos, float _movement_time, movement_type _used_function, bool _repeat, float _delay_before, float _delay_after)
 {
 	auto& movementMap = sInstance->m_Movements_S;
 	auto movementFound = movementMap.find(_sprite);
 
 	if (movementFound != movementMap.end()) {
 		printf("ERROR: Movement for sf::Sprite* object already exists!\n");
-		return 0;
+		return nullptr;
 	}
-	else {
-		movementInfo* newMovement = new movementInfo(_starting_pos, _ending_pos, _movement_time, sInstance->movement_functions[_used_function], _repeat, _wait_before_repeating);
-		movementMap.insert(std::make_pair(_sprite, newMovement));
-	}
-	return 1;
+
+	movementInfo* newMovement = new movementInfo(_starting_pos, _ending_pos, _movement_time, sInstance->movement_functions[_used_function], _repeat, _delay_before, _delay_after);
+	movementMap.insert(std::make_pair(_sprite, newMovement));
+
+	return newMovement;
+}
+
+const movementInfo* MovementContainer::addMovement(sf::Sprite* _sprite, float _offset_x, float _offset_y, float _movement_time, movement_type _used_function, bool _repeat, float _delay_before, float _delay_after)
+{
+	return this->addMovement(_sprite, _sprite->getPosition() + sf::Vector2f(_offset_x, _offset_y), _movement_time, _used_function, _repeat, _delay_before, _delay_after);
 }
 
 void MovementContainer::undoMovement()
@@ -648,7 +667,7 @@ void MovementContainer::stopMovement(sf::Sprite* _sprite)
 }
 
 // Scaling functions
-const bool MovementContainer::addScaling(sf::Shape* _shape, sf::Vector2f _ending_scale, float _scaling_time, movement_type _used_function, bool _repeat, float _wait_before_repeating)
+const bool MovementContainer::addScaling(sf::Shape* _shape, sf::Vector2f _ending_scale, float _scaling_time, movement_type _used_function, bool _repeat, float _delay_before, float _delay_after)
 {
 	auto& scalingMap = sInstance->m_Scalings_Shape;
 	auto scalingFound = scalingMap.find(_shape);
@@ -658,13 +677,13 @@ const bool MovementContainer::addScaling(sf::Shape* _shape, sf::Vector2f _ending
 		return 0;
 	}
 	else {
-		scalingInfo* newScaling = new scalingInfo(_shape->getScale(), _ending_scale, _scaling_time, sInstance->movement_functions[_used_function], _repeat, _wait_before_repeating);
+		scalingInfo* newScaling = new scalingInfo(_shape->getScale(), _ending_scale, _scaling_time, sInstance->movement_functions[_used_function], _repeat, _delay_before, _delay_after);
 		scalingMap.insert(std::make_pair(_shape, newScaling));
 	}
 	return 1;
 }
 
-const bool MovementContainer::addScaling(sf::Shape* _shape, sf::Vector2f _starting_scale, sf::Vector2f _ending_scale, float _scaling_time, movement_type _used_function, bool _repeat, float _wait_before_repeating)
+const bool MovementContainer::addScaling(sf::Shape* _shape, sf::Vector2f _starting_scale, sf::Vector2f _ending_scale, float _scaling_time, movement_type _used_function, bool _repeat, float _delay_before, float _delay_after)
 {
 	auto& scalingMap = sInstance->m_Scalings_Shape;
 	auto scalingFound = scalingMap.find(_shape);
@@ -674,13 +693,13 @@ const bool MovementContainer::addScaling(sf::Shape* _shape, sf::Vector2f _starti
 		return 0;
 	}
 	else {
-		scalingInfo* newScaling = new scalingInfo(_starting_scale, _ending_scale, _scaling_time, sInstance->movement_functions[_used_function], _repeat, _wait_before_repeating);
+		scalingInfo* newScaling = new scalingInfo(_starting_scale, _ending_scale, _scaling_time, sInstance->movement_functions[_used_function], _repeat, _delay_before, _delay_after);
 		scalingMap.insert(std::make_pair(_shape, newScaling));
 	}
 	return 1;
 }
 
-const bool MovementContainer::addScaling(sf::VertexArray* _vertexarray, sf::Vector2f _ending_scale, float _scaling_time, movement_type _used_function, bool _repeat, float _wait_before_repeating)
+const bool MovementContainer::addScaling(sf::VertexArray* _vertexarray, sf::Vector2f _ending_scale, float _scaling_time, movement_type _used_function, bool _repeat, float _delay_before, float _delay_after)
 {
 	auto& scalingMap = sInstance->m_Scalings_VA;
 	auto scalingFound = scalingMap.find(_vertexarray);
@@ -690,13 +709,13 @@ const bool MovementContainer::addScaling(sf::VertexArray* _vertexarray, sf::Vect
 		return 0;
 	}
 	else if (_vertexarray->getVertexCount() != 0){
-		scalingInfoVA* newScaling = new scalingInfoVA({ 1.f, 1.f }, _ending_scale, _scaling_time, sInstance->movement_functions[_used_function], _repeat, _wait_before_repeating, _vertexarray);
+		scalingInfoVA* newScaling = new scalingInfoVA({ 1.f, 1.f }, _ending_scale, _scaling_time, sInstance->movement_functions[_used_function], _repeat, _delay_before, _delay_after, _vertexarray);
 		scalingMap.insert(std::make_pair(_vertexarray, newScaling));
 	}
 	return 1;
 }
 
-const bool MovementContainer::addScaling(sf::VertexArray* _vertexarray, sf::Vector2f _starting_scale, sf::Vector2f _ending_scale, float _scaling_time, movement_type _used_function, bool _repeat, float _wait_before_repeating)
+const bool MovementContainer::addScaling(sf::VertexArray* _vertexarray, sf::Vector2f _starting_scale, sf::Vector2f _ending_scale, float _scaling_time, movement_type _used_function, bool _repeat, float _delay_before, float _delay_after)
 {
 	auto& scalingMap = sInstance->m_Scalings_VA;
 	auto scalingFound = scalingMap.find(_vertexarray);
@@ -706,13 +725,13 @@ const bool MovementContainer::addScaling(sf::VertexArray* _vertexarray, sf::Vect
 		return 0;
 	}
 	else if (_vertexarray->getVertexCount() != 0) {
-		scalingInfoVA* newScaling = new scalingInfoVA(_starting_scale, _ending_scale, _scaling_time, sInstance->movement_functions[_used_function], _repeat, _wait_before_repeating, _vertexarray);
+		scalingInfoVA* newScaling = new scalingInfoVA(_starting_scale, _ending_scale, _scaling_time, sInstance->movement_functions[_used_function], _repeat, _delay_before, _delay_after, _vertexarray);
 		scalingMap.insert(std::make_pair(_vertexarray, newScaling));
 	}
 	return 1;
 }
 
-const bool MovementContainer::addScaling(sf::Sprite* _sprite, sf::Vector2f _ending_scale, float _scaling_time, movement_type _used_function, bool _repeat, float _wait_before_repeating)
+const bool MovementContainer::addScaling(sf::Sprite* _sprite, sf::Vector2f _ending_scale, float _scaling_time, movement_type _used_function, bool _repeat, float _delay_before, float _delay_after)
 {
 	auto& scalingMap = sInstance->m_Scalings_S;
 	auto scalingFound = scalingMap.find(_sprite);
@@ -722,13 +741,13 @@ const bool MovementContainer::addScaling(sf::Sprite* _sprite, sf::Vector2f _endi
 		return 0;
 	}
 	else {
-		scalingInfo* newScaling = new scalingInfo(_sprite->getScale(), _ending_scale, _scaling_time, sInstance->movement_functions[_used_function], _repeat, _wait_before_repeating);
+		scalingInfo* newScaling = new scalingInfo(_sprite->getScale(), _ending_scale, _scaling_time, sInstance->movement_functions[_used_function], _repeat, _delay_before, _delay_after);
 		scalingMap.insert(std::make_pair(_sprite, newScaling));
 	}
 	return 1;
 }
 
-const bool MovementContainer::addScaling(sf::Sprite* _sprite, sf::Vector2f _starting_scale, sf::Vector2f _ending_scale, float _scaling_time, movement_type _used_function, bool _repeat, float _wait_before_repeating)
+const bool MovementContainer::addScaling(sf::Sprite* _sprite, sf::Vector2f _starting_scale, sf::Vector2f _ending_scale, float _scaling_time, movement_type _used_function, bool _repeat, float _delay_before, float _delay_after)
 {
 	auto& scalingMap = sInstance->m_Scalings_S;
 	auto scalingFound = scalingMap.find(_sprite);
@@ -738,7 +757,7 @@ const bool MovementContainer::addScaling(sf::Sprite* _sprite, sf::Vector2f _star
 		return 0;
 	}
 	else {
-		scalingInfo* newScaling = new scalingInfo(_starting_scale, _ending_scale, _scaling_time, sInstance->movement_functions[_used_function], _repeat, _wait_before_repeating);
+		scalingInfo* newScaling = new scalingInfo(_starting_scale, _ending_scale, _scaling_time, sInstance->movement_functions[_used_function], _repeat, _delay_before, _delay_after);
 		scalingMap.insert(std::make_pair(_sprite, newScaling));
 	}
 	return 1;
@@ -939,7 +958,7 @@ void MovementContainer::stopScaling(sf::Sprite* _sprite)
 }
 
 // Rotation functions
-const bool MovementContainer::addRotation(sf::Shape* _shape, float _ending_rotation, float _rotation_time, movement_type _used_function, bool _clockwise, bool _repeat, float _wait_before_repeating)
+const bool MovementContainer::addRotation(sf::Shape* _shape, float _ending_rotation, float _rotation_time, movement_type _used_function, bool _clockwise, bool _repeat, float _delay_before, float _delay_after)
 {
 	auto& rotationMap = sInstance->m_Rotations_Shape;
 	auto rotationFound = rotationMap.find(_shape);
@@ -949,13 +968,13 @@ const bool MovementContainer::addRotation(sf::Shape* _shape, float _ending_rotat
 		return 0;
 	}
 	else {
-		rotationInfo* newRotation = new rotationInfo(_shape->getRotation(), _ending_rotation, _rotation_time, sInstance->movement_functions[_used_function], _repeat, _wait_before_repeating, _clockwise);
+		rotationInfo* newRotation = new rotationInfo(_shape->getRotation(), _ending_rotation, _rotation_time, sInstance->movement_functions[_used_function], _repeat, _delay_before, _delay_after, _clockwise);
 		rotationMap.insert(std::make_pair(_shape, newRotation));
 	}
 	return 1;
 }
 
-const bool MovementContainer::addRotation(sf::Shape* _shape, float _starting_rotation, float _ending_rotation, float _rotation_time, movement_type _used_function, bool _clockwise, bool _repeat, float _wait_before_repeating)
+const bool MovementContainer::addRotation(sf::Shape* _shape, float _starting_rotation, float _ending_rotation, float _rotation_time, movement_type _used_function, bool _clockwise, bool _repeat, float _delay_before, float _delay_after)
 {
 	auto& rotationMap = sInstance->m_Rotations_Shape;
 	auto rotationFound = rotationMap.find(_shape);
@@ -965,13 +984,13 @@ const bool MovementContainer::addRotation(sf::Shape* _shape, float _starting_rot
 		return 0;
 	}
 	else {
-		rotationInfo* newRotation = new rotationInfo(_starting_rotation, _ending_rotation, _rotation_time, sInstance->movement_functions[_used_function], _repeat, _wait_before_repeating, _clockwise);
+		rotationInfo* newRotation = new rotationInfo(_starting_rotation, _ending_rotation, _rotation_time, sInstance->movement_functions[_used_function], _repeat, _delay_before, _delay_after, _clockwise);
 		rotationMap.insert(std::make_pair(_shape, newRotation));
 	}
 	return 1;
 }
 
-const bool MovementContainer::addRotation(sf::VertexArray* _vertexarray, float _ending_rotation, float _rotation_time, movement_type _used_function, bool _clockwise, bool _repeat, float _wait_before_repeating)
+const bool MovementContainer::addRotation(sf::VertexArray* _vertexarray, float _ending_rotation, float _rotation_time, movement_type _used_function, bool _clockwise, bool _repeat, float _delay_before, float _delay_after)
 {
 	auto& rotationMap = sInstance->m_Rotations_VA;
 	auto rotationFound = rotationMap.find(_vertexarray);
@@ -981,13 +1000,13 @@ const bool MovementContainer::addRotation(sf::VertexArray* _vertexarray, float _
 		return 0;
 	}
 	else if (_vertexarray->getVertexCount() != 0) {
-		rotationInfoVA* newRotation = new rotationInfoVA(0.f, _ending_rotation, _rotation_time, sInstance->movement_functions[_used_function], _vertexarray, _repeat, _wait_before_repeating, _clockwise);
+		rotationInfoVA* newRotation = new rotationInfoVA(0.f, _ending_rotation, _rotation_time, sInstance->movement_functions[_used_function], _vertexarray, _repeat, _delay_before, _delay_after, _clockwise);
 		rotationMap.insert(std::make_pair(_vertexarray, newRotation));
 	}
 	return 1;
 }
 
-const bool MovementContainer::addRotation(sf::VertexArray* _vertexarray, float _starting_rotation, float _ending_rotation, float _rotation_time, movement_type _used_function, bool _clockwise, bool _repeat, float _wait_before_repeating)
+const bool MovementContainer::addRotation(sf::VertexArray* _vertexarray, float _starting_rotation, float _ending_rotation, float _rotation_time, movement_type _used_function, bool _clockwise, bool _repeat, float _delay_before, float _delay_after)
 {
 	auto& rotationMap = sInstance->m_Rotations_VA;
 	auto rotationFound = rotationMap.find(_vertexarray);
@@ -997,13 +1016,13 @@ const bool MovementContainer::addRotation(sf::VertexArray* _vertexarray, float _
 		return 0;
 	}
 	else if (_vertexarray->getVertexCount() != 0) {
-		rotationInfoVA* newRotation = new rotationInfoVA(_starting_rotation, _ending_rotation, _rotation_time, sInstance->movement_functions[_used_function], _vertexarray, _repeat, _wait_before_repeating, _clockwise);
+		rotationInfoVA* newRotation = new rotationInfoVA(_starting_rotation, _ending_rotation, _rotation_time, sInstance->movement_functions[_used_function], _vertexarray, _repeat, _delay_before, _delay_after, _clockwise);
 		rotationMap.insert(std::make_pair(_vertexarray, newRotation));
 	}
 	return 1;
 }
 
-const bool MovementContainer::addRotation(sf::Sprite* _sprite, float _ending_rotation, float _rotation_time, movement_type _used_function, bool _clockwise, bool _repeat, float _wait_before_repeating)
+const bool MovementContainer::addRotation(sf::Sprite* _sprite, float _ending_rotation, float _rotation_time, movement_type _used_function, bool _clockwise, bool _repeat, float _delay_before, float _delay_after)
 {
 	auto& rotationMap = sInstance->m_Rotations_S;
 	auto rotationFound = rotationMap.find(_sprite);
@@ -1013,12 +1032,12 @@ const bool MovementContainer::addRotation(sf::Sprite* _sprite, float _ending_rot
 		return 0;
 	}
 	else {
-		rotationInfo* newRotation = new rotationInfo(_sprite->getRotation(), _ending_rotation, _rotation_time, sInstance->movement_functions[_used_function], _repeat, _wait_before_repeating, _clockwise);
+		rotationInfo* newRotation = new rotationInfo(_sprite->getRotation(), _ending_rotation, _rotation_time, sInstance->movement_functions[_used_function], _repeat, _delay_before, _delay_after, _clockwise);
 		rotationMap.insert(std::make_pair(_sprite, newRotation));
 	}
 }
 
-const bool MovementContainer::addRotation(sf::Sprite* _sprite, float _starting_rotation, float _ending_rotation, float _rotation_time, movement_type _used_function, bool _clockwise, bool _repeat, float _wait_before_repeating)
+const bool MovementContainer::addRotation(sf::Sprite* _sprite, float _starting_rotation, float _ending_rotation, float _rotation_time, movement_type _used_function, bool _clockwise, bool _repeat, float _delay_before, float _delay_after)
 {
 	auto& rotationMap = sInstance->m_Rotations_S;
 	auto rotationFound = rotationMap.find(_sprite);
@@ -1028,7 +1047,7 @@ const bool MovementContainer::addRotation(sf::Sprite* _sprite, float _starting_r
 		return 0;
 	}
 	else {
-		rotationInfo* newRotation = new rotationInfo(_starting_rotation, _ending_rotation, _rotation_time, sInstance->movement_functions[_used_function], _repeat, _wait_before_repeating, _clockwise);
+		rotationInfo* newRotation = new rotationInfo(_starting_rotation, _ending_rotation, _rotation_time, sInstance->movement_functions[_used_function], _repeat, _delay_before, _delay_after, _clockwise);
 		rotationMap.insert(std::make_pair(_sprite, newRotation));
 	}
 	return 1;

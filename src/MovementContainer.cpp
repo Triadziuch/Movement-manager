@@ -68,11 +68,8 @@ void MovementContainer::updateRotationInfoVA(sf::VertexArray* _vertexarray, rota
 // Private update functions
 void MovementContainer::updateShape(float dt)
 {
-	int i = 0;
 	for (auto movement = this->m_Movements_Shape.begin(); movement != this->m_Movements_Shape.end();) {
 		movement->second->current_time += dt;
-		if (i++ == 0)
-			printf("M: CT: %f\tDB: %f\tDT: %f\tTD: %f\n", movement->second->current_time, movement->second->delay_before, dt, movement->second->total_duration);
 
 		if (movement->second->isDone()) {
 			if (movement->second->current_time - movement->second->delay_before - dt < movement->second->motion_duration)

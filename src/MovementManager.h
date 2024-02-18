@@ -1,8 +1,6 @@
 #pragma once
 #include "MovementContainer.h"
 
-
-
 struct TransformationRoutine {
 public:
 	std::string	 routine_name{};

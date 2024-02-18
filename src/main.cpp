@@ -21,37 +21,37 @@ int main()
 	int current_ease_type = 0;
 	float wait_time_max = 0.5f;
 
-	std::pair<std::string, movement_type> easeType[easeTypeSize] = {
-		{"IN_SINE", movement_type::IN_SINE},
-		{"OUT_SINE", movement_type::OUT_SINE},
-		{"IN_OUT_SINE", movement_type::IN_OUT_SINE},
-		{"IN_QUAD", movement_type::IN_QUAD},
-		{"OUT_QUAD", movement_type::OUT_QUAD},
-		{"IN_OUT_QUAD", movement_type::IN_OUT_QUAD},
-		{"IN_CUBIC", movement_type::IN_CUBIC},
-		{"OUT_CUBIC", movement_type::OUT_CUBIC},
-		{"IN_OUT_CUBIC", movement_type::IN_OUT_CUBIC},
-		{"IN_QUART", movement_type::IN_QUART},
-		{"OUT_QUART", movement_type::OUT_QUART},
-		{"IN_OUT_QUART", movement_type::IN_OUT_QUART},
-		{"IN_QUINT", movement_type::IN_QUINT},
-		{"OUT_QUINT", movement_type::OUT_QUINT},
-		{"IN_OUT_QUINT", movement_type::IN_OUT_QUINT},
-		{"IN_EXPO", movement_type::IN_EXPO},
-		{"OUT_EXPO", movement_type::OUT_EXPO},
-		{"IN_OUT_EXPO", movement_type::IN_OUT_EXPO},
-		{"IN_CIRC", movement_type::IN_CIRC},
-		{"OUT_CIRC", movement_type::OUT_CIRC},
-		{"IN_OUT_CIRC", movement_type::IN_OUT_CIRC},
-		{"IN_BACK", movement_type::IN_BACK},
-		{"OUT_BACK", movement_type::OUT_BACK},
-		{"IN_OUT_BACK", movement_type::IN_OUT_BACK},
-		{"IN_ELASTIC", movement_type::IN_ELASTIC},
-		{"OUT_ELASTIC", movement_type::OUT_ELASTIC},
-		{"IN_OUT_ELASTIC", movement_type::IN_OUT_ELASTIC},
-		{"IN_BOUNCE", movement_type::IN_BOUNCE},
-		{"OUT_BOUNCE", movement_type::OUT_BOUNCE},
-		{"IN_OUT_BOUNCE", movement_type::IN_OUT_BOUNCE}
+	std::pair<std::string, MovementContainer::movement_type> easeType[easeTypeSize] = {
+		{"IN_SINE", MovementContainer::IN_SINE},
+		{"OUT_SINE", MovementContainer::OUT_SINE},
+		{"IN_OUT_SINE", MovementContainer::IN_OUT_SINE},
+		{"IN_QUAD", MovementContainer::IN_QUAD},
+		{"OUT_QUAD", MovementContainer::OUT_QUAD},
+		{"IN_OUT_QUAD", MovementContainer::IN_OUT_QUAD},
+		{"IN_CUBIC", MovementContainer::IN_CUBIC},
+		{"OUT_CUBIC", MovementContainer::OUT_CUBIC},
+		{"IN_OUT_CUBIC", MovementContainer::IN_OUT_CUBIC},
+		{"IN_QUART", MovementContainer::IN_QUART},
+		{"OUT_QUART", MovementContainer::OUT_QUART},
+		{"IN_OUT_QUART", MovementContainer::IN_OUT_QUART},
+		{"IN_QUINT", MovementContainer::IN_QUINT},
+		{"OUT_QUINT", MovementContainer::OUT_QUINT},
+		{"IN_OUT_QUINT", MovementContainer::IN_OUT_QUINT},
+		{"IN_EXPO", MovementContainer::IN_EXPO},
+		{"OUT_EXPO", MovementContainer::OUT_EXPO},
+		{"IN_OUT_EXPO", MovementContainer::IN_OUT_EXPO},
+		{"IN_CIRC", MovementContainer::IN_CIRC},
+		{"OUT_CIRC", MovementContainer::OUT_CIRC},
+		{"IN_OUT_CIRC", MovementContainer::IN_OUT_CIRC},
+		{"IN_BACK", MovementContainer::IN_BACK},
+		{"OUT_BACK", MovementContainer::OUT_BACK},
+		{"IN_OUT_BACK", MovementContainer::IN_OUT_BACK},
+		{"IN_ELASTIC", MovementContainer::IN_ELASTIC},
+		{"OUT_ELASTIC", MovementContainer::OUT_ELASTIC},
+		{"IN_OUT_ELASTIC", MovementContainer::IN_OUT_ELASTIC},
+		{"IN_BOUNCE", MovementContainer::IN_BOUNCE},
+		{"OUT_BOUNCE", MovementContainer::OUT_BOUNCE},
+		{"IN_OUT_BOUNCE", MovementContainer::IN_OUT_BOUNCE}
 	};
 
 	// Start position initialization
@@ -115,12 +115,12 @@ int main()
 	float arrow_delay_before = 1.f, arrow_delay_after = 1.f;
 
 	// TODO: Dodaæ lepsze zarz¹dzanie pocz¹tkiem i koñcem animacji
-	//MovementContainer.addMovement(&up_arrow, sf::Vector2f(960.f, 50.f), sf::Vector2f(960.f, 30.f), arrow_movement_time, movement_type::IN_OUT_SINE, true, arrow_delay_before, arrow_delay_after);
-	//MovementContainer.addMovement(&down_arrow, sf::Vector2f(960.f, 1030.f), sf::Vector2f(960.f, 1050.f), arrow_movement_time, movement_type::IN_OUT_SINE, true, arrow_delay_before, arrow_delay_after);
-	MovementContainer.addScaling(&up_arrow, { 1.1f, 1.1f }, arrow_scaling_time, movement_type::IN_OUT_SINE, true, arrow_delay_before, arrow_delay_after);
-	MovementContainer.addScaling(&down_arrow, { 1.5f, 1.5f }, arrow_scaling_time, movement_type::IN_OUT_SINE, true, arrow_delay_before, arrow_delay_after);
-	MovementContainer.addRotation(&up_arrow, -10.f, 10.f, arrow_rotation_time, movement_type::IN_OUT_SINE, true, true, arrow_delay_before, arrow_delay_after);
-	MovementContainer.addRotation(&down_arrow, -10.f, 10.f, arrow_rotation_time, movement_type::IN_OUT_SINE, false, true, arrow_delay_before, arrow_delay_after);
+	//MovementContainer.addMovement(&up_arrow, sf::Vector2f(960.f, 50.f), sf::Vector2f(960.f, 30.f), arrow_movement_time, MovementContainer::IN_OUT_SINE, true, arrow_delay_before, arrow_delay_after);
+	//MovementContainer.addMovement(&down_arrow, sf::Vector2f(960.f, 1030.f), sf::Vector2f(960.f, 1050.f), arrow_movement_time, MovementContainer::IN_OUT_SINE, true, arrow_delay_before, arrow_delay_after);
+	MovementContainer.addScaling(&up_arrow, { 1.1f, 1.1f }, arrow_scaling_time, MovementContainer::IN_OUT_SINE, true, arrow_delay_before, arrow_delay_after);
+	MovementContainer.addScaling(&down_arrow, { 1.5f, 1.5f }, arrow_scaling_time, MovementContainer::IN_OUT_SINE, true, arrow_delay_before, arrow_delay_after);
+	MovementContainer.addRotation(&up_arrow, -10.f, 10.f, arrow_rotation_time, MovementContainer::IN_OUT_SINE, true, true, arrow_delay_before, arrow_delay_after);
+	MovementContainer.addRotation(&down_arrow, -10.f, 10.f, arrow_rotation_time, MovementContainer::IN_OUT_SINE, false, true, arrow_delay_before, arrow_delay_after);
 
 	sf::Clock dt_clock;
 	float dt;

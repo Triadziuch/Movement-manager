@@ -437,6 +437,20 @@ void MovementContainer::update(float dt)
 
 // Public functions
 
+const movementInfo* MovementContainer::addMovement(sf::Shape* _shape, movementInfo* _movementInfo)
+{
+	auto& movementMap = sInstance->m_Movements_Shape;
+	auto movementFound = movementMap.find(_shape);
+
+	if (movementFound != movementMap.end()) {
+		printf("ERROR: Movement for sf::Shape* object already exists!\n");
+		return nullptr;
+	}
+
+	movementMap.insert(std::make_pair(_shape, _movementInfo));
+	return _movementInfo;
+}
+
 // Movement functions
 const movementInfo* MovementContainer::addMovement(sf::Shape* _shape, sf::Vector2f _ending_pos, float _movement_time, movement_type _used_function, bool _repeat, float _delay_before, float _delay_after)
 {
@@ -473,6 +487,20 @@ const movementInfo* MovementContainer::addMovement(sf::Shape* _shape, sf::Vector
 const movementInfo* MovementContainer::addMovement(sf::Shape* _shape, float _offset_x, float _offset_y, float _movement_time, movement_type _used_function, bool _repeat, float _delay_before, float _delay_after)
 {
 	return this->addMovement(_shape, _shape->getPosition() + sf::Vector2f(_offset_x, _offset_y), _movement_time, _used_function, _repeat, _delay_before, _delay_after);
+}
+
+const movementInfoVA* MovementContainer::addMovement(sf::VertexArray* _vertexarray, movementInfoVA* _movementInfo)
+{
+	auto& movementMap = sInstance->m_Movements_VA;
+	auto movementFound = movementMap.find(_vertexarray);
+
+	if (movementFound != movementMap.end()) {
+		printf("ERROR: Movement for sf::VertexArray* object already exists!\n");
+		return nullptr;
+	}
+
+	movementMap.insert(std::make_pair(_vertexarray, _movementInfo));
+	return _movementInfo;
 }
 
 const movementInfoVA* MovementContainer::addMovement(sf::VertexArray* _vertexarray, sf::Vector2f _ending_pos, float _movement_time, movement_type _used_function, bool _repeat, float _delay_before, float _delay_after)
@@ -514,6 +542,20 @@ const movementInfoVA* MovementContainer::addMovement(sf::VertexArray* _vertexarr
 		return nullptr;
 	}
 	return this->addMovement(_vertexarray, _vertexarray->operator[](0).position + sf::Vector2f(_offset_x, _offset_y), _movement_time, _used_function, _repeat, _delay_before, _delay_after);
+}
+
+const movementInfo* MovementContainer::addMovement(sf::Sprite* _sprite, movementInfo* _movementInfo)
+{
+	auto& movementMap = sInstance->m_Movements_S;
+	auto movementFound = movementMap.find(_sprite);
+
+	if (movementFound != movementMap.end()) {
+		printf("ERROR: Movement for sf::Sprite* object already exists!\n");
+		return nullptr;
+	}
+
+	movementMap.insert(std::make_pair(_sprite, _movementInfo));
+	return _movementInfo;
 }
 
 const movementInfo* MovementContainer::addMovement(sf::Sprite* _sprite, sf::Vector2f _ending_pos, float _movement_time, movement_type _used_function, bool _repeat, float _delay_before, float _delay_after)

@@ -109,14 +109,17 @@ public:
 	// Public functions
 
 	// Movement functions
+	const movementInfo* addMovement(sf::Shape* _shape, movementInfo* _movementInfo);
 	const movementInfo* addMovement(sf::Shape* _shape, sf::Vector2f _ending_pos, float _movement_time, movement_type _used_function, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);
 	const movementInfo* addMovement(sf::Shape* _shape, sf::Vector2f _starting_pos, sf::Vector2f _ending_pos, float _movement_time, movement_type _used_function, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);
 	const movementInfo* addMovement(sf::Shape* _shape, float _offset_x, float _offset_y, float _movement_time, movement_type _used_function, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);
 
+	const movementInfoVA* addMovement(sf::VertexArray* _vertexarray, movementInfoVA* _movementInfo);
 	const movementInfoVA* addMovement(sf::VertexArray* _vertexarray, sf::Vector2f _ending_pos, float _movement_time, movement_type _used_function, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);
 	const movementInfoVA* addMovement(sf::VertexArray* _vertexarray, sf::Vector2f _starting_pos, sf::Vector2f _ending_pos, float _movement_time, movement_type _used_function, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);
 	const movementInfoVA* addMovement(sf::VertexArray* _vertexarray, float _offset_x, float _offset_y, float _movement_time, movement_type _used_function, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);
 
+	const movementInfo* addMovement(sf::Sprite* _sprite, movementInfo* _movementInfo);
 	const movementInfo* addMovement(sf::Sprite* _sprite, sf::Vector2f _ending_pos, float _movement_time, movement_type _used_function, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);
 	const movementInfo* addMovement(sf::Sprite* _sprite, sf::Vector2f _starting_pos, sf::Vector2f _ending_pos, float _movement_time, movement_type _used_function, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);
 	const movementInfo* addMovement(sf::Sprite* _sprite, float _offset_x, float _offset_y, float _movement_time, movement_type _used_function, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);

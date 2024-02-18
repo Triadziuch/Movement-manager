@@ -26,6 +26,8 @@ struct transformationInfo {
 	virtual ~transformationInfo() = default;
 
 	const bool isDone() const { return (this->current_time - this->delay_before >= this->motion_duration); }
+
+	const bool isFinished() const { return (this->current_time >= this->total_duration); }
 };
 
 struct movementInfo : public transformationInfo {

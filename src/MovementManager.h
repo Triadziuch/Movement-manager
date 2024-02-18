@@ -26,7 +26,44 @@ struct MovementRoutine : public TransformationRoutine{
 	MovementRoutine(const MovementRoutine& obj) : TransformationRoutine{ obj }, routine_movements(obj.routine_movements) {}
 	~MovementRoutine() { routine_movements.clear(); }
 
-	void addMovement(movementInfo* movement) { this->routine_movements.emplace_back(movement); }
+	void addMovement(movementInfo* movement) { this->routine_movements.emplace_back(movement); ++this->count; }
+	void removeMovement(movementInfo* movement) {
+		auto it = std::find(this->routine_movements.begin(), this->routine_movements.end(), movement);
+		if (it != this->routine_movements.end()) { this->routine_movements.erase(it); --this->count; }
+	}
+
+	void start(MovementContainer* movementContainer, sf::Shape* _shape) {
+		if (this->routine_movements.size() != 0) {
+			this->current = 0;
+			this->is_active = true;
+			this->is_paused = false;
+
+			movementContainer->addMovement(_shape, this->routine_movements[this->current]);
+		}
+	}
+
+	void update(MovementContainer* movementContainer, sf::Shape* _shape) {
+		if (this->is_active) {
+			if (!this->is_paused) {
+				if (this->routine_movements[this->current]->isFinished()) {
+					if (this->current < this->count - 1) {
+						++this->current;
+						movementContainer->addMovement(_shape, this->routine_movements[this->current]);
+					}
+					else {
+						if (this->is_looping) {
+							this->current = 0;
+							movementContainer->addMovement(_shape, this->routine_movements[this->current]);
+						}
+						else {
+							this->current = 0;
+							this->is_active = false;
+						}
+					}
+				}
+			}
+		}
+	}
 };
 
 class MovementManager {
@@ -34,14 +71,18 @@ private:
 	// Singleton instance
 	static MovementManager* sInstance;
 
+	// Movement container
 	MovementContainer* movementContainer;
 
-	std::map<sf::Shape*, std::vector<MovementRoutine*>> m_Routine_Movement;
+	std::map<sf::Shape*, MovementRoutine*> m_Routine_Movement_Shape_Active;
+	std::map<sf::Shape*, std::vector<MovementRoutine*>> m_Routine_Movement_Shape;
 
 public:
 	MovementManager();
 
-	const MovementRoutine* createMovementRoutine(const sf::Shape* _shape, const std::string& _name);
+	const MovementRoutine* createMovementRoutine(sf::Shape* _shape, const std::string& _name);
+
+	void update(float dt);
 
 	std::map<sf::Shape*, movementInfo*>			    m_Movements_Shape;
 	std::map<sf::VertexArray*, movementInfoVA*>		m_Movements_VA;

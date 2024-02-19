@@ -12,7 +12,7 @@ public:
 	bool				is_paused{};
 
 	TransformationRoutine() {}
-	TransformationRoutine(std::string name, MovementContainer* _movementContainerPtr) { this->routine_name = name; this->movementContainer = _movementContainerPtr }
+	TransformationRoutine(std::string name, MovementContainer* _movementContainerPtr) { this->routine_name = name; this->movementContainer = _movementContainerPtr; }
 	TransformationRoutine(const TransformationRoutine& obj) : 
 		movementContainer(obj.movementContainer), routine_name(obj.routine_name), current(obj.current), count(obj.count), is_active(obj.is_active), is_looping(obj.is_looping), is_paused(obj.is_paused) {}
 
@@ -54,6 +54,9 @@ public:
 
 	// Reset routine
 	void reset() {
+		for (auto& movement : this->routine_movements)
+			movement->reset();
+
 		this->current = 0;
 		this->is_active = false;
 		this->is_paused = false;
@@ -88,28 +91,33 @@ public:
 
 			movementContainer->addMovement(_shape, this->routine_movements[this->current]);
 		}
-	}
+	}*/
 
-	void update(sf::Shape* _shape) {
+	// Returns true if routine is active, false if it should be deleted from m_Routine_Movements_Shape_Active
+	bool update(sf::Shape* _shape) {
 		if (this->is_active) {
 			if (!this->is_paused) {
 				movementInfo *movement = this->routine_movements[this->current];
+				//printf("Current time: %f\t\t Total time: %f\n", movement->current_time, movement->total_duration);
 
 				if (movement->isFinished()) {
+					printf("Movement finished------------------------------------------------------------------\n");
 					movement->reset();
 
 					if (this->current < this->count - 1) {
+						printf("Changed movement to nex------------------------------------------------------------------\t\n");
 						++this->current;
-						movementContainer->addMovement(_shape, this->routine_movements[this->current]);
+						this->movementContainer->swapMovement(_shape, this->routine_movements[this->current]);
 					}
 					else {
-						if (this->is_looping) {
-							this->current = 0;
-							movementContainer->addMovement(_shape, this->routine_movements[this->current]);
-						}
+						printf("Resetting routine------------------------------------------------------------------\\n");
+						this->reset();
+						if (this->is_looping) 
+							this->movementContainer->swapMovement(_shape, this->routine_movements[this->current]);
 						else {
-							this->current = 0;
-							this->is_active = false;
+							printf("Stopping movement------------------------------------------------------------------\\n");
+							this->movementContainer->stopMovement(_shape);
+							return false;
 						}
 					}
 				}
@@ -122,7 +130,8 @@ public:
 				// dany movementInfo o okreœlonej nazwie istnieje czy nie
 			}
 		}
-	}*/
+		return true;
+	}
 };
 
 struct MovementRoutineContainer {
@@ -209,8 +218,7 @@ private:
 	// Singleton instance
 	static MovementManager* sInstance;
 
-	// Movement container
-	MovementContainer* movementContainer;
+	
 
 	std::map<sf::Shape*,  MovementRoutine*> m_Routine_Movement_Shape_Active;
 	std::map<sf::Sprite*, MovementRoutine*> m_Routine_Movement_Sprite_Active;
@@ -221,19 +229,22 @@ private:
 	MovementRoutineContainer* movementRoutineContainer;
 
 public:
+	// Movement container
+	MovementContainer* movementContainer;
+
 	MovementManager();
 
 	MovementRoutine* createMovementRoutine(const std::string& _name) { return this->movementRoutineContainer->createRoutine(_name); }
 	MovementRoutine* getMovementRoutine(const std::string& _name)    { return this->movementRoutineContainer->getRoutinePtr(_name); }
 
-	MovementRoutine* linkMovementRoutine(sf::Shape* _shape, const std::string& _name);
+	MovementRoutine* linkMovementRoutine(sf::Shape* _shape, const std::string& _name); // Dodaæ mo¿liwoœæ linkowania po wskaŸniku do routine
 	MovementRoutine* linkMovementRoutine(sf::Sprite* _sprite, const std::string& _name);
 
 	void startMovementRoutine(sf::Shape* _shape, const std::string& _name);
 	void startMovementRoutine(sf::Sprite* _sprite, const std::string& _name);
 
 	void update(float dt);
-	void updateShape(float dt);
+	void updateShape();
 
 	std::map<sf::Shape*, movementInfo*>			    m_Movements_Shape;
 	std::map<sf::VertexArray*, movementInfoVA*>		m_Movements_VA;

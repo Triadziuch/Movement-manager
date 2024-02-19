@@ -12,6 +12,9 @@ int main()
 	sf::RenderWindow window(sf::VideoMode(1920, 1080), "Ease functions", sf::Style::Fullscreen, settings);
 	window.setFramerateLimit(60);
 	window.setVerticalSyncEnabled(true);
+
+	
+
 	MovementContainer MovementContainer;
 
 	// Configuration
@@ -139,27 +142,29 @@ int main()
 	test_shape.setPosition(200.f, 200.f);
 
 	MovementManager movementManager;
-	auto* routine = movementManager.createMovementRoutine(&test_shape, "Testowa");
-	movementInfo* movement = new movementInfo(sf::Vector2f(200.f, 200.f), sf::Vector2f(500.f, 500.f), 3.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f);
-	routine->addMovement(movement);
-
-	movement = new movementInfo(sf::Vector2f(500.f, 500.f), sf::Vector2f(400.f, 800.f), 3.f, MovementContainer.getFunctionPointer(MovementContainer::IN_BOUNCE), false, 0.5f, 0.5f);
-	routine->addMovement(movement);
-
-	routine->setLooping(true);
-
+	auto* routine = movementManager.createMovementRoutine("Testowy");
+	routine->addMovement(new movementInfo(sf::Vector2f(200.f, 200.f), sf::Vector2f(500.f, 500.f), 3.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f));
+	routine->addMovement(new movementInfo(sf::Vector2f(500.f, 500.f), sf::Vector2f(400.f, 800.f), 3.f, MovementContainer.getFunctionPointer(MovementContainer::IN_BOUNCE), false, 0.5f, 0.5f));
+	movementManager.linkMovementRoutine(&test_shape, "Testowy");
+	
 
 	while (window.isOpen())
 	{
 		dt = dt_clock.restart().asSeconds();
 		
-		MovementContainer.update(dt);
+		//MovementContainer.update(dt);
+		movementManager.update(dt);
 
 		sf::Event event;
 		if (window.pollEvent(event))
 		{
 			if (event.type == sf::Event::Closed || (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape))
 				window.close();
+
+			if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::Space)) {
+				printf("STARTED\n");
+				movementManager.startMovementRoutine(&test_shape, "Testowy");
+			}
 
 			if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::Up || event.key.code ==sf::Keyboard::W)) {
 				current_ease_type += rows;

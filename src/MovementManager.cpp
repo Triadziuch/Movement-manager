@@ -89,7 +89,11 @@ void MovementManager::startMovementRoutine(sf::Shape* _shape, const std::string&
 		auto* movementRoutineFound = movementRoutineContainerFound->second->exists(_name);
 		if (movementRoutineFound != nullptr) {
 			movementRoutineFound->start();
+			this->movementContainer->addMovement(_shape, movementRoutineFound->getCurrentMovement());
 			m_Routine_Movement_Shape_Active.insert(std::make_pair(_shape, movementRoutineFound));
+			printf("MovementManager::startMovementRoutine: Routine with name %s started\n", _name.c_str());
+			printf("m_Routine_Movement_Shape_Active size: %d\n", m_Routine_Movement_Shape_Active.size());
+			printf("Movements in routine: %d\n", movementRoutineFound->count);
 		}
 		else
 			printf("MovementManager::startMovementRoutine: Routine with name %s not found\n", _name.c_str());
@@ -105,9 +109,11 @@ void MovementManager::startMovementRoutine(sf::Sprite* _sprite, const std::strin
 
 		auto* movementRoutineFound = movementRoutineContainerFound->second->exists(_name);
 		if (movementRoutineFound != nullptr) {
-			movementRoutineFound->reset();
+			movementRoutineFound->start();
 			this->movementContainer->addMovement(_sprite, movementRoutineFound->getCurrentMovement());
 			m_Routine_Movement_Sprite_Active.insert(std::make_pair(_sprite, movementRoutineFound));
+			printf("MovementManager::startMovementRoutine: Routine with name %s started\n", _name.c_str());
+			printf("m_Routine_Movement_Sprite_Active size: %d\n", m_Routine_Movement_Sprite_Active.size());
 		}
 		else
 			printf("MovementManager::startMovementRoutine: Routine with name %s not found\n", _name.c_str());
@@ -118,14 +124,18 @@ void MovementManager::startMovementRoutine(sf::Sprite* _sprite, const std::strin
 
 void MovementManager::update(float dt)
 {
-	this->updateShape(dt);
+	this->updateShape();
 
-	//this->movementContainer->update(dt);
+	this->movementContainer->update(dt, true);
 }
 
-void MovementManager::updateShape(float dt)
+void MovementManager::updateShape()
 {
 	for (auto& movementRoutine : m_Routine_Movement_Shape_Active) {
-		movementRoutine.second->update(dt);
+		if (!movementRoutine.second->update(movementRoutine.first)) {
+			printf("ERASING MOVEMENT AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n");
+			m_Routine_Movement_Shape_Active.erase(movementRoutine.first);
+		}
+			
 	}
 }

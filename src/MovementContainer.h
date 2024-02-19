@@ -95,16 +95,16 @@ private:
 	void updateScalingInfoVA(sf::VertexArray* _vertexarray, scalingInfoVA* _scalingInfo);
 	void updateRotationInfoVA(sf::VertexArray* _vertexarray, rotationInfoVA* _rotationInfo);
 	
-	void updateShape(float dt);
-	void updateVertexArray(float dt);
-	void updateSprite(float dt);
+	void updateShape(float dt, bool routine = true);
+	void updateVertexArray(float dt, bool routine = true);
+	void updateSprite(float dt, bool routine = true);
 
 public:
 	// Default constructor
 	MovementContainer();
 
 	// Update functions
-	void update(float dt);
+	void update(float dt, bool routine = true);
 
 	// Public functions
 

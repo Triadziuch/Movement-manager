@@ -25,6 +25,8 @@ struct transformationInfo {
 
 	virtual ~transformationInfo() = default;
 
+	void reset() { this->current_time = 0.f; }
+
 	const bool isDone() const { return (this->current_time - this->delay_before >= this->motion_duration); }
 
 	const bool isFinished() const { return (this->current_time >= this->total_duration); }
@@ -39,6 +41,39 @@ struct movementInfo : public transformationInfo {
 
 	movementInfo(const movementInfo& obj) :
 		transformationInfo{ obj.repeat, obj.current_time, obj.motion_duration, obj.delay_before, obj.delay_after, obj.used_function }, starting_pos(obj.starting_pos), ending_pos(obj.ending_pos) {}
+
+	bool update(float dt, sf::Shape* _shape) {
+		this->current_time += dt;
+
+		if (this->isDone()) {
+			if (this->current_time - this->delay_before - dt < this->motion_duration)
+				this->ending_pos = this->ending_pos;
+
+			if (this->repeat) {
+				if (this->current_time - this->motion_duration - this->delay_before >= this->delay_after) {
+					this->starting_pos = this->ending_pos;
+
+					this->current_time -= this->total_duration;
+				}
+			}
+			else {
+				_shape->setPosition(this->ending_pos);
+				return false;
+			}
+		}
+		else {
+			if (this->current_time > this->delay_before) {
+				sf::Vector2f new_position(static_cast<float>(this->used_function(static_cast<double>((this->current_time - this->delay_before) / this->motion_duration))) * (this->ending_pos.x - this->starting_pos.x) + this->starting_pos.x,
+					static_cast<float>(this->used_function(static_cast<double>((this->current_time - this->delay_before) / this->motion_duration))) * (this->ending_pos.y - this->starting_pos.y) + this->starting_pos.y);
+
+				_shape->setPosition(new_position);
+			}
+			else if (this->current_time - dt == 0.f)
+				_shape->setPosition(this->starting_pos);
+		}
+
+		return true;
+	}
 };
 
 struct scalingInfo : public transformationInfo {

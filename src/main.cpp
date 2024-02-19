@@ -1,5 +1,5 @@
 #include <iostream>
-#include "MovementContainer.h"
+#include "MovementManager.h"
 #include "SFML\Graphics.hpp"
 #include "Graph.h"
 #include <Windows.h>
@@ -126,11 +126,28 @@ int main()
 	float dt;
 	float wait_time = 0.5f;
 
-	for (int i = 0; i < rows; i++) {
+	/*for (int i = 0; i < rows; i++) {
 		MovementContainer.addMovement(&shapes[i], start_pos[i], end_pos[i], animation_time, easeType[current_ease_type + i].second, true, 0.5f, 0.5f);
 		MovementContainer.addScaling(&shapes[i], {1.5f, 1.5f}, animation_time, easeType[current_ease_type + i].second, true, 0.5f, 0.5f);
 		MovementContainer.addRotation(&shapes[i], 360.f, animation_time, easeType[current_ease_type + i].second, false, true, 0.5f, 0.5f);
-	}
+	}*/
+
+	// ----- Movement Container testing ----- //
+	sf::RectangleShape test_shape;
+	test_shape.setSize(sf::Vector2f(100.f, 50.f));
+	test_shape.setFillColor(sf::Color::Red);
+	test_shape.setPosition(200.f, 200.f);
+
+	MovementManager movementManager;
+	auto* routine = movementManager.createMovementRoutine(&test_shape, "Testowa");
+	movementInfo* movement = new movementInfo(sf::Vector2f(200.f, 200.f), sf::Vector2f(500.f, 500.f), 3.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f);
+	routine->addMovement(movement);
+
+	movement = new movementInfo(sf::Vector2f(500.f, 500.f), sf::Vector2f(400.f, 800.f), 3.f, MovementContainer.getFunctionPointer(MovementContainer::IN_BOUNCE), false, 0.5f, 0.5f);
+	routine->addMovement(movement);
+
+	routine->setLooping(true);
+
 
 	while (window.isOpen())
 	{
@@ -154,14 +171,14 @@ int main()
 					graphs[i].setFunction(MovementContainer.getFunctionPointer(easeType[current_ease_type + i].second));
 				}
 
-				for (int i = 0; i < rows; i++) {
+				/*for (int i = 0; i < rows; i++) {
 					MovementContainer.undoMovement(&shapes[i]);
 					MovementContainer.undoScaling(&shapes[i]);
 					MovementContainer.undoRotation(&shapes[i]);
 					MovementContainer.addMovement(&shapes[i], start_pos[i], end_pos[i], animation_time, easeType[current_ease_type + i].second, true, 0.5f, 0.5f);
 					MovementContainer.addScaling(&shapes[i], { 1.5f, 1.5f }, animation_time, easeType[current_ease_type + i].second, true, 0.5f, 0.5f);
 					MovementContainer.addRotation(&shapes[i], 360.f, animation_time, easeType[current_ease_type + i].second, false, true, 0.5f, 0.5f);
-				}
+				}*/
 
 				/*MovementContainer.resetMovement(&up_arrow);
 				MovementContainer.resetMovement(&down_arrow);
@@ -181,14 +198,14 @@ int main()
 					graphs[i].setFunction(MovementContainer.getFunctionPointer(easeType[current_ease_type + i].second));
 				}
 
-				for (int i = 0; i < rows; i++) {
+				/*for (int i = 0; i < rows; i++) {
 					MovementContainer.undoMovement(&shapes[i]);
 					MovementContainer.undoScaling(&shapes[i]);
 					MovementContainer.undoRotation(&shapes[i]);
 					MovementContainer.addMovement(&shapes[i], start_pos[i], end_pos[i], animation_time, easeType[current_ease_type + i].second, 0.5f, 0.5f);
 					MovementContainer.addScaling(&shapes[i], { 1.5f, 1.5f }, animation_time, easeType[current_ease_type + i].second, 0.5f, 0.5f);
 					MovementContainer.addRotation(&shapes[i], 360.f, animation_time, easeType[current_ease_type + i].second, false, 0.5f, 0.5f);
-				}
+				}*/
 
 				/*MovementContainer.resetMovement(&up_arrow);
 				MovementContainer.resetMovement(&down_arrow);
@@ -201,14 +218,16 @@ int main()
 
 		window.clear();
 		for (int i = 0; i < rows; i++) {
-			window.draw(text[i]);
-			window.draw(shapes[i]);
+			//window.draw(text[i]);
+			//window.draw(shapes[i]);
 
-			graphs[i].draw(window);
+			//graphs[i].draw(window);
 
-			window.draw(up_arrow);
-			window.draw(down_arrow);
+			//window.draw(up_arrow);
+			//window.draw(down_arrow);
 		}
+
+		window.draw(test_shape);
 
 		window.display();
 	}

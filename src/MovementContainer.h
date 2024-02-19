@@ -139,6 +139,8 @@ public:
 	void stopMovement(sf::VertexArray* _vertexarray);
 	void stopMovement(sf::Sprite* _sprite);
 
+	void swapMovement(sf::Shape* _shape, movementInfo* _newMovementInfo);
+
 	// Scaling functions
 	const bool addScaling(sf::Shape* _shape, sf::Vector2f _ending_scale, float _scaling_time, movement_type _used_function, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);
 	const bool addScaling(sf::Shape* _shape, sf::Vector2f _starting_scale, sf::Vector2f _ending_scale, float _scaling_time, movement_type _used_function, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);

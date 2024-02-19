@@ -765,6 +765,19 @@ void MovementContainer::stopMovement(sf::Sprite* _sprite)
 	}
 }
 
+void MovementContainer::swapMovement(sf::Shape* _shape, movementInfo* _newMovementInfo)
+{
+	auto& movementMap = sInstance->m_Movements_Shape;
+	auto movementFound = movementMap.find(_shape);
+
+	if (movementFound != movementMap.end()) 
+		movementFound->second = _newMovementInfo;
+	else {
+		printf("MovementContainer::swapMovement: Movement for sf::Shape* object does not exist!\n");
+		movementMap.insert(std::make_pair(_shape, _newMovementInfo));
+	}
+}
+
 // Scaling functions
 const bool MovementContainer::addScaling(sf::Shape* _shape, sf::Vector2f _ending_scale, float _scaling_time, movement_type _used_function, bool _repeat, float _delay_before, float _delay_after)
 {

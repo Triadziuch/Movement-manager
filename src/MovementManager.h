@@ -52,6 +52,34 @@ public:
 		this->is_looping = false;
 	}
 
+	// Reset routine
+	void reset() {
+		this->current = 0;
+		this->is_active = false;
+		this->is_paused = false;
+	}
+
+	// Start routine
+	void start() {
+		if (this->routine_movements.size() != 0) {
+			this->current = 0;
+			this->is_active = true;
+			this->is_paused = false;
+		}
+		else
+			printf("MovementRoutine::start: Routine is empty\n");
+	}
+
+	// Get current movement pointer
+	movementInfo* getCurrentMovement() {
+		if (this->current < this->count)
+			return this->routine_movements[this->current];
+		else {
+			printf("MovementRoutine::getCurrentMovement: Current movement index out of range\n");
+			return nullptr;
+		}
+	}
+
 	/*void start(sf::Shape* _shape) {
 		if (this->routine_movements.size() != 0) {
 			this->current = 0;
@@ -105,6 +133,7 @@ private:
 public:
 	MovementRoutineContainer() {}
 	MovementRoutineContainer(MovementContainer* _movementContainerPtr) { this->movementContainer = _movementContainerPtr; }
+	~MovementRoutineContainer() { movementRoutines.clear(); movementContainer = nullptr; }
 
 	// Check if routine with given name already exists
 	MovementRoutine* exists(const std::string& _name) {
@@ -183,8 +212,8 @@ private:
 	// Movement container
 	MovementContainer* movementContainer;
 
-	std::map<sf::Shape*, MovementRoutineContainer*>  m_Routine_Movement_Shape_Active;
-	std::map<sf::Sprite*, MovementRoutineContainer*> m_Routine_Movement_Sprite_Active;
+	std::map<sf::Shape*,  MovementRoutine*> m_Routine_Movement_Shape_Active;
+	std::map<sf::Sprite*, MovementRoutine*> m_Routine_Movement_Sprite_Active;
 
 	std::map<sf::Shape*,  MovementRoutineContainer*>  m_Routine_Movement_Shape;
 	std::map<sf::Sprite*, MovementRoutineContainer*> m_Routine_Movement_Sprite;
@@ -195,10 +224,16 @@ public:
 	MovementManager();
 
 	MovementRoutine* createMovementRoutine(const std::string& _name) { return this->movementRoutineContainer->createRoutine(_name); }
+	MovementRoutine* getMovementRoutine(const std::string& _name)    { return this->movementRoutineContainer->getRoutinePtr(_name); }
+
 	MovementRoutine* linkMovementRoutine(sf::Shape* _shape, const std::string& _name);
 	MovementRoutine* linkMovementRoutine(sf::Sprite* _sprite, const std::string& _name);
 
+	void startMovementRoutine(sf::Shape* _shape, const std::string& _name);
+	void startMovementRoutine(sf::Sprite* _sprite, const std::string& _name);
+
 	void update(float dt);
+	void updateShape(float dt);
 
 	std::map<sf::Shape*, movementInfo*>			    m_Movements_Shape;
 	std::map<sf::VertexArray*, movementInfoVA*>		m_Movements_VA;

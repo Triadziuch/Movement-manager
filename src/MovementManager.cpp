@@ -81,11 +81,51 @@ MovementRoutine* MovementManager::linkMovementRoutine(sf::Sprite* _sprite, const
 	return movementRoutineContainerFound->second->createRoutine(_name, newMovementRoutine);
 }
 
+void MovementManager::startMovementRoutine(sf::Shape* _shape, const std::string& _name)
+{
+	auto movementRoutineContainerFound = m_Routine_Movement_Shape.find(_shape);
+	if (movementRoutineContainerFound != m_Routine_Movement_Shape.end()) {
+
+		auto* movementRoutineFound = movementRoutineContainerFound->second->exists(_name);
+		if (movementRoutineFound != nullptr) {
+			movementRoutineFound->start();
+			m_Routine_Movement_Shape_Active.insert(std::make_pair(_shape, movementRoutineFound));
+		}
+		else
+			printf("MovementManager::startMovementRoutine: Routine with name %s not found\n", _name.c_str());
+	}
+	else
+		printf("MovementManager::startMovementRoutine: Routine for shape not found\n");
+}
+
+void MovementManager::startMovementRoutine(sf::Sprite* _sprite, const std::string& _name)
+{
+	auto movementRoutineContainerFound = m_Routine_Movement_Sprite.find(_sprite);
+	if (movementRoutineContainerFound != m_Routine_Movement_Sprite.end()) {
+
+		auto* movementRoutineFound = movementRoutineContainerFound->second->exists(_name);
+		if (movementRoutineFound != nullptr) {
+			movementRoutineFound->reset();
+			this->movementContainer->addMovement(_sprite, movementRoutineFound->getCurrentMovement());
+			m_Routine_Movement_Sprite_Active.insert(std::make_pair(_sprite, movementRoutineFound));
+		}
+		else
+			printf("MovementManager::startMovementRoutine: Routine with name %s not found\n", _name.c_str());
+	}
+	else
+		printf("MovementManager::startMovementRoutine: Routine for sprite not found\n");
+}
+
 void MovementManager::update(float dt)
 {
-	for (auto& movementRoutine : m_Routine_Movement_Shape_Active){
-		movementRoutine.second->update(movementRoutine.first);
-	}
+	this->updateShape(dt);
 
 	//this->movementContainer->update(dt);
+}
+
+void MovementManager::updateShape(float dt)
+{
+	for (auto& movementRoutine : m_Routine_Movement_Shape_Active) {
+		movementRoutine.second->update(dt);
+	}
 }

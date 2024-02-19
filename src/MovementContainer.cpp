@@ -66,10 +66,9 @@ void MovementContainer::updateRotationInfoVA(sf::VertexArray* _vertexarray, rota
 }
 
 // Private update functions
-void MovementContainer::updateShape(float dt, bool routine)
+void MovementContainer::updateShape(float dt)
 {
 	for (auto movement = this->m_Movements_Shape.begin(); movement != this->m_Movements_Shape.end();) {
-		printf("Current time: %f\n", movement->second->current_time);
 		movement->second->current_time += dt;
 
 		if (movement->second->isDone()) {
@@ -86,16 +85,9 @@ void MovementContainer::updateShape(float dt, bool routine)
 				++movement;
 			}
 			else if (movement->second->isFinished()) {
-				if (routine) {
-					movement->second = nullptr;
-					movement = m_Movements_Shape.erase(movement);
-				}
-				else {
-					delete movement->second;
-					movement = m_Movements_Shape.erase(movement);
-				}
+				delete movement->second;
+				movement = m_Movements_Shape.erase(movement);
 			}
-			
 		}
 		else {
 			if (movement->second->current_time > movement->second->delay_before) {
@@ -127,7 +119,7 @@ void MovementContainer::updateShape(float dt, bool routine)
 
 				++scaling;
 			}
-			else if (routine) {
+			else if (scaling->second->isFinished()) {
 				delete scaling->second;
 				scaling = m_Scalings_Shape.erase(scaling);
 			}
@@ -162,7 +154,7 @@ void MovementContainer::updateShape(float dt, bool routine)
 
 				++rotation;
 			}
-			else if (routine) {
+			else if (rotation->second->isFinished()) {
 				delete rotation->second;
 				rotation = m_Rotations_Shape.erase(rotation);
 			}
@@ -178,7 +170,7 @@ void MovementContainer::updateShape(float dt, bool routine)
 	}
 }
 
-void MovementContainer::updateVertexArray(float dt, bool routine)
+void MovementContainer::updateVertexArray(float dt)
 {
 	for (auto movement = this->m_Movements_VA.begin(); movement != this->m_Movements_VA.end();) {
 		movement->second->current_time += dt;
@@ -202,7 +194,7 @@ void MovementContainer::updateVertexArray(float dt, bool routine)
 					}
 					++movement;
 				}
-				else if (routine) {
+				else if (movement->second->isFinished()) {
 					delete movement->second;
 					movement = m_Movements_VA.erase(movement);
 				}
@@ -251,7 +243,7 @@ void MovementContainer::updateVertexArray(float dt, bool routine)
 
 					++scaling;
 				}
-				else if (routine) {
+				else if (scaling->second->isFinished()) {
 					delete scaling->second;
 					scaling = m_Scalings_VA.erase(scaling);
 				}
@@ -301,7 +293,7 @@ void MovementContainer::updateVertexArray(float dt, bool routine)
 
 					++rotation;
 				}
-				else if (routine) {
+				else if (rotation->second->isFinished()) {
 					delete rotation->second;
 					rotation = m_Rotations_VA.erase(rotation);
 				}
@@ -324,7 +316,7 @@ void MovementContainer::updateVertexArray(float dt, bool routine)
 	}
 }
 
-void MovementContainer::updateSprite(float dt, bool routine)
+void MovementContainer::updateSprite(float dt)
 {
 	for (auto movement = this->m_Movements_S.begin(); movement != this->m_Movements_S.end();) {
 		movement->second->current_time += dt;
@@ -342,7 +334,7 @@ void MovementContainer::updateSprite(float dt, bool routine)
 
 				++movement;
 			}
-			else if (routine) {
+			else if (movement->second->isFinished()) {
 				delete movement->second;
 				movement = m_Movements_S.erase(movement);
 			}
@@ -377,7 +369,7 @@ void MovementContainer::updateSprite(float dt, bool routine)
 
 				++scaling;
 			}
-			else if (routine) {
+			else if (scaling->second->isFinished()) {
 				delete scaling->second;
 				scaling = m_Scalings_S.erase(scaling);
 			}
@@ -412,7 +404,7 @@ void MovementContainer::updateSprite(float dt, bool routine)
 
 				++rotation;
 			}
-			else if (routine) {
+			else if (rotation->second->isFinished()) {
 				delete rotation->second;
 				rotation = m_Rotations_S.erase(rotation);
 			}
@@ -435,8 +427,12 @@ MovementContainer::MovementContainer()
 	sInstance = this;
 }
 
+void MovementContainer::updateRoutine(float dt)
+{
+}
+
 // Update functions
-void MovementContainer::update(float dt, bool routine)
+void MovementContainer::update(float dt)
 {
 	this->updateShape(dt, routine);
 	this->updateVertexArray(dt, routine);

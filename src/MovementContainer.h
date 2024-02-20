@@ -1,8 +1,16 @@
 #pragma once
 #include "easeFunctions.cpp"
-#include "TransformationRoutine.h"
+#include "transformationInfo.h"
 #include <map>
 #include <assert.h>
+
+struct TransformationRoutine;
+struct MovementRoutine;
+struct MovementRoutineVA;
+struct ScalingRoutine;
+struct ScalingRoutineVA;
+struct RotationRoutine;
+struct RotationRoutineVA;
 
 class MovementContainerBase {
 public:
@@ -77,7 +85,7 @@ protected:
 												};
 };
 
-class MovementContainer : protected MovementContainerBase{
+class MovementContainer : public MovementContainerBase{
 private:
 	std::map<sf::Shape*, movementInfo*>			    m_Movements_Shape;
 	std::map<sf::VertexArray*, movementInfoVA*>		m_Movements_VA;

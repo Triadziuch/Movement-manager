@@ -10,7 +10,6 @@ int main()
 	sf::ContextSettings settings;
 	settings.antialiasingLevel = 16;
 	sf::RenderWindow window(sf::VideoMode(1920, 1080), "Ease functions", sf::Style::Fullscreen, settings);
-	window.setFramerateLimit(60);
 	window.setVerticalSyncEnabled(true);
 
 	

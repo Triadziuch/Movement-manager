@@ -214,6 +214,51 @@ void MovementManager::resumeMovementRoutine(sf::VertexArray* _vertexarray, const
 		printf("MovementManager::resumeMovementRoutine: Routine for vertexarray not found\n");
 }
 
+void MovementManager::stopMovementRoutine(sf::Shape* _shape, const std::string& _name)
+{
+	auto movementRoutineFound = m_Routine_Movement_Shape_Active.find(_shape);
+	if (movementRoutineFound != m_Routine_Movement_Shape_Active.end()) {
+		if (movementRoutineFound->second->routine_name == _name) {
+			movementRoutineFound->second->stop(_shape);
+			m_Routine_Movement_Shape_Active.erase(movementRoutineFound);
+		}
+		else
+			printf("MovementManager::stopMovementRoutine: Routine with name %s not found\n", _name.c_str());
+	}
+	else
+		printf("MovementManager::stopMovementRoutine: Routine for shape not found\n");
+}
+
+void MovementManager::stopMovementRoutine(sf::Sprite* _sprite, const std::string& _name)
+{
+	auto movementRoutineFound = m_Routine_Movement_Sprite_Active.find(_sprite);
+	if (movementRoutineFound != m_Routine_Movement_Sprite_Active.end()) {
+		if (movementRoutineFound->second->routine_name == _name) {
+			movementRoutineFound->second->stop(_sprite);
+			m_Routine_Movement_Sprite_Active.erase(movementRoutineFound);
+		}
+		else
+			printf("MovementManager::stopMovementRoutine: Routine with name %s not found\n", _name.c_str());
+	}
+	else
+		printf("MovementManager::stopMovementRoutine: Routine for sprite not found\n");
+}
+
+void MovementManager::stopMovementRoutine(sf::VertexArray* _vertexarray, const std::string& _name)
+{
+	auto movementRoutineFound = m_Routine_Movement_VertexArray_Active.find(_vertexarray);
+	if (movementRoutineFound != m_Routine_Movement_VertexArray_Active.end()) {
+		if (movementRoutineFound->second->routine_name == _name) {
+			movementRoutineFound->second->stop(_vertexarray);
+			m_Routine_Movement_VertexArray_Active.erase(movementRoutineFound);
+		}
+		else
+			printf("MovementManager::stopMovementRoutine: Routine with name %s not found\n", _name.c_str());
+	}
+	else
+		printf("MovementManager::stopMovementRoutine: Routine for vertexarray not found\n");
+}
+
 void MovementManager::update(float dt)
 {
 	this->movementRoutineEngine->update(dt);

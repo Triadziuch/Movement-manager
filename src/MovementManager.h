@@ -1,5 +1,6 @@
 #pragma once
 #include "MovementContainer.h"
+#include "TransformationRoutine.h"
 
 class MovementManager {
 private:
@@ -41,6 +42,10 @@ public:
 	void resumeMovementRoutine(sf::Shape* _shape, const std::string& _name);
 	void resumeMovementRoutine(sf::Sprite* _sprite, const std::string& _name);
 	void resumeMovementRoutine(sf::VertexArray* _vertexarray, const std::string& _name);
+
+	void stopMovementRoutine(sf::Shape* _shape, const std::string& _name);
+	void stopMovementRoutine(sf::Sprite* _sprite, const std::string& _name);
+	void stopMovementRoutine(sf::VertexArray* _vertexarray, const std::string& _name);
 
 	void update(float dt);
 };

@@ -1,10 +1,12 @@
 #pragma once
 #include "transformationInfo.h"
-#include "MovementContainer.h"
+
+class MovementContainerBase;
+class MovementRoutineEngine;
 
 struct TransformationRoutine {
 public:
-	MovementRoutineEngine*  movementRoutineEngine{};
+	MovementRoutineEngine*  movementRoutineEngine;
 	std::string			routine_name{};
 	size_t				current{};
 	size_t				count{};
@@ -38,119 +40,29 @@ struct MovementRoutine : public TransformationRoutine {
 
 public:
 	// Add movement to routine
-	void addMovement(movementInfo* movement) {
-		this->routine_movements.emplace_back(movement);
-		++this->count;
-	}
+	void addMovement(movementInfo* movement);
 
 	// Remove movement from routine
-	void removeMovement(movementInfo* movement) {
-		auto it = std::find(this->routine_movements.begin(), this->routine_movements.end(), movement);
-		if (it != this->routine_movements.end()) { this->routine_movements.erase(it); --this->count; }
-	}
+	void removeMovement(movementInfo* movement);
 
 	// Clear routine
-	void clear() {
-		this->routine_movements.clear();
-		this->current = 0;
-		this->count = 0;
-		this->is_active = false;
-		this->is_paused = false;
-		this->is_looping = false;
-	}
+	void clear();
 
 	// Reset routine
-	void reset() {
-		for (auto& movement : this->routine_movements)
-			movement->reset();
-
-		this->current = 0;
-		this->is_active = false;
-		this->is_paused = false;
-	}
+	void reset();
 
 	// Start routine
-	const bool start(sf::Shape* shape) {
-		if (this->routine_movements.size() != 0) {
-			this->reset();
+	const bool start(sf::Shape* shape);
+	const bool start(sf::Sprite* sprite);
 
-			this->current = 0;
-			this->is_active = true;
-			this->is_paused = false;
-			this->movementRoutineEngine->addMovement(shape, this);
-			return true;
-		}
-		
-		printf("MovementRoutine::start: Routine is empty\n");
-		return false;
-	}
-
-	const bool start(sf::Sprite* sprite) {
-		if (this->routine_movements.size() != 0) {
-			this->reset();
-
-			this->current = 0;
-			this->is_active = true;
-			this->is_paused = false;
-			this->movementRoutineEngine->addMovement(sprite, this);
-			return true;
-		}
-
-		printf("MovementRoutine::start: Routine is empty\n");
-		return false;
-	}
+	// Stop routine
+	void stop(sf::Shape* shape);
+	void stop(sf::Sprite* sprite);
 
 	// Get current movement pointer
-	movementInfo* getCurrentMovement() {
-		if (this->current < this->count)
-			return this->routine_movements[this->current];
-		else {
-			printf("MovementRoutine::getCurrentMovement: Current movement index out of range\n");
-			return nullptr;
-		}
-	}
+	movementInfo* getCurrentMovement();
 
-	/*// Returns true if routine is active, false if it should be deleted from m_Routine_Movements_Shape_Active
-	bool update(sf::Shape* _shape) {
-		if (this->is_active) {
-			if (!this->is_paused) {
-				movementInfo* movement = this->routine_movements[this->current];
-
-				if (movement->isFinished()) {
-					printf("Movement finished\n");
-					movement->reset();
-
-					if (this->current < this->count - 1) {
-						printf("Changed movement to next\n");
-						++this->current;
-						this->movementRoutineEngine->addMovement(_shape, this->routine_movements[this->current]);
-					}
-					else {
-						printf("Resetting routine\n");
-						this->reset();
-						if (this->is_looping) {
-							printf("Looping routine\n");
-							this->start();
-							this->movementRoutineEngine->addMovement(_shape, this->routine_movements[this->current]);
-						}
-						else {
-							printf("Stopping movement\n");
-							this->movementRoutineEngine->stopMovement(_shape);
-							return false;
-						}
-					}
-				}
-
-
-				// W tym miejscu wywo³ujemy update dla konkretnego movementInfo
-				// Wiêc trzeba dodaæ funkcjê sk³adow¹ update do klasy transformationInfo
-
-				// Dodatkowo trzeba zaimplementowaæ jakiœ pojemnik na TransformationRoutine który bêdzie pozwala³ na sprawdzenie np czy 
-				// dany movementInfo o okreœlonej nazwie istnieje czy nie
-			}
-		}
-		return true;
-	}*/
+	const bool goToNextMovement();
 };
 
 struct MovementRoutineVA : public TransformationRoutine {
@@ -165,62 +77,27 @@ struct MovementRoutineVA : public TransformationRoutine {
 
 public:
 	// Add movement to routine
-	void addMovement(movementInfoVA* movement) {
-		this->routine_movements.emplace_back(movement);
-		++this->count;
-	}
+	void addMovement(movementInfoVA* movement);
 
 	// Remove movement from routine
-	void removeMovement(movementInfoVA* movement) {
-		auto it = std::find(this->routine_movements.begin(), this->routine_movements.end(), movement);
-		if (it != this->routine_movements.end()) { this->routine_movements.erase(it); --this->count; }
-	}
+	void removeMovement(movementInfoVA* movement);
 
 	// Clear routine
-	void clear() {
-		this->routine_movements.clear();
-		this->current = 0;
-		this->count = 0;
-		this->is_active = false;
-		this->is_paused = false;
-		this->is_looping = false;
-	}
+	void clear();
 
 	// Reset routine
-	void reset() {
-		for (auto& movement : this->routine_movements)
-			movement->reset();
-
-		this->current = 0;
-		this->is_active = false;
-		this->is_paused = false;
-	}
+	void reset();
 
 	// Start routine
-	const bool start(sf::VertexArray* vertexarray) {
-		if (this->routine_movements.size() != 0) {
-			this->reset();
+	const bool start(sf::VertexArray* vertexarray);
 
-			this->current = 0;
-			this->is_active = true;
-			this->is_paused = false;
-			this->movementRoutineEngine->addMovement(vertexarray, this);
-			return true;
-		}
-		
-		printf("MovementRoutineVA::start: Routine is empty\n");
-		return false;
-	}
+	// Stop routine
+	void stop(sf::VertexArray* vertexarray);
 
 	// Get current movement pointer
-	movementInfoVA* getCurrentMovement() {
-		if (this->current < this->count)
-			return this->routine_movements[this->current];
-		else {
-			printf("MovementRoutineVA::getCurrentMovement: Current movement index out of range\n");
-			return nullptr;
-		}
-	}
+	movementInfoVA* getCurrentMovement();
+
+	const bool goToNextMovement();
 };
 
 struct ScalingRoutine : public TransformationRoutine {
@@ -235,77 +112,29 @@ struct ScalingRoutine : public TransformationRoutine {
 
 public:
 	// Add scaling to routine
-	void addScaling(scalingInfo* scaling) {
-		this->routine_scalings.emplace_back(scaling);
-		++this->count;
-	}
+	void addScaling(scalingInfo* scaling);
 
 	// Remove scaling from routine
-	void removeScaling(scalingInfo* scaling) {
-		auto it = std::find(this->routine_scalings.begin(), this->routine_scalings.end(), scaling);
-		if (it != this->routine_scalings.end()) { this->routine_scalings.erase(it); --this->count; }
-	}
+	void removeScaling(scalingInfo* scaling);
 
 	// Clear routine
-	void clear() {
-		this->routine_scalings.clear();
-		this->current = 0;
-		this->count = 0;
-		this->is_active = false;
-		this->is_paused = false;
-		this->is_looping = false;
-	}
+	void clear();
 
 	// Reset routine
-	void reset() {
-		for (auto& scaling : this->routine_scalings)
-			scaling->reset();
-
-		this->current = 0;
-		this->is_active = false;
-		this->is_paused = false;
-	}
+	void reset();
 
 	// Start routine
-	const bool start(sf::Shape* shape) {
-		if (this->routine_scalings.size() != 0) {
-			this->reset();
+	const bool start(sf::Shape* shape);
+	const bool start(sf::Sprite* sprite);
 
-			this->current = 0;
-			this->is_active = true;
-			this->is_paused = false;
-			this->movementRoutineEngine->addScaling(shape, this);
-			return true;
-		}
-		
-		printf("ScalingRoutine::start: Routine is empty\n");
-		return false;
-	}
-
-	const bool start(sf::Sprite* sprite) {
-		if (this->routine_scalings.size() != 0) {
-			this->reset();
-
-			this->current = 0;
-			this->is_active = true;
-			this->is_paused = false;
-			this->movementRoutineEngine->addScaling(sprite, this);
-			return true;
-		}
-
-		printf("ScalingRoutine::start: Routine is empty\n");
-		return false;
-	}
+	// Stop routine
+	void stop(sf::Shape* shape);
+	void stop(sf::Sprite* sprite);
 
 	// Get current scaling pointer
-	scalingInfo* getCurrentScaling() {
-		if (this->current < this->count)
-			return this->routine_scalings[this->current];
-		else {
-			printf("ScalingRoutine::getCurrentScaling: Current scaling index out of range\n");
-			return nullptr;
-		}
-	}
+	scalingInfo* getCurrentScaling();
+
+	const bool goToNextScaling();
 };
 
 struct ScalingRoutineVA : public TransformationRoutine {
@@ -320,62 +149,27 @@ struct ScalingRoutineVA : public TransformationRoutine {
 
 public:
 	// Add scaling to routine
-	void addScaling(scalingInfoVA* scaling) {
-		this->routine_scalings.emplace_back(scaling);
-		++this->count;
-	}
+	void addScaling(scalingInfoVA* scaling);
 
 	// Remove scaling from routine
-	void removeScaling(scalingInfoVA* scaling) {
-		auto it = std::find(this->routine_scalings.begin(), this->routine_scalings.end(), scaling);
-		if (it != this->routine_scalings.end()) { this->routine_scalings.erase(it); --this->count; }
-	}
+	void removeScaling(scalingInfoVA* scaling);
 
 	// Clear routine
-	void clear() {
-		this->routine_scalings.clear();
-		this->current = 0;
-		this->count = 0;
-		this->is_active = false;
-		this->is_paused = false;
-		this->is_looping = false;
-	}
+	void clear();
 
 	// Reset routine
-	void reset() {
-		for (auto& scaling : this->routine_scalings)
-			scaling->reset();
-
-		this->current = 0;
-		this->is_active = false;
-		this->is_paused = false;
-	}
+	void reset();
 
 	// Start routine
-	const bool start(sf::VertexArray* vertexarray) {
-		if (this->routine_scalings.size() != 0) {
-			this->reset();
+	const bool start(sf::VertexArray* vertexarray);
 
-			this->current = 0;
-			this->is_active = true;
-			this->is_paused = false;
-			this->movementRoutineEngine->addScaling(vertexarray, this);
-			return true;
-		}
-		
-		printf("ScalingRoutineVA::start: Routine is empty\n");
-		return false;
-	}
+	// Stop routine
+	void stop(sf::VertexArray* vertexarray);
 
 	// Get current scaling pointer
-	scalingInfoVA* getCurrentScaling() {
-		if (this->current < this->count)
-			return this->routine_scalings[this->current];
-		else {
-			printf("ScalingRoutineVA::getCurrentScaling: Current scaling index out of range\n");
-			return nullptr;
-		}
-	}
+	scalingInfoVA* getCurrentScaling();
+
+	const bool goToNextScaling();
 };
 
 struct RotationRoutine : public TransformationRoutine {
@@ -390,77 +184,29 @@ struct RotationRoutine : public TransformationRoutine {
 
 public:
 	// Add rotation to routine
-	void addRotation(rotationInfo* rotation) {
-		this->routine_rotations.emplace_back(rotation);
-		++this->count;
-	}
+	void addRotation(rotationInfo* rotation);
 
 	// Remove rotation from routine
-	void removeRotation(rotationInfo* rotation) {
-		auto it = std::find(this->routine_rotations.begin(), this->routine_rotations.end(), rotation);
-		if (it != this->routine_rotations.end()) { this->routine_rotations.erase(it); --this->count; }
-	}
+	void removeRotation(rotationInfo* rotation);
 
 	// Clear routine
-	void clear() {
-		this->routine_rotations.clear();
-		this->current = 0;
-		this->count = 0;
-		this->is_active = false;
-		this->is_paused = false;
-		this->is_looping = false;
-	}
+	void clear();
 
 	// Reset routine
-	void reset() {
-		for (auto& rotation : this->routine_rotations)
-			rotation->reset();
-
-		this->current = 0;
-		this->is_active = false;
-		this->is_paused = false;
-	}
+	void reset();
 
 	// Start routine
-	const bool start(sf::Shape* shape) {
-		if (this->routine_rotations.size() != 0) {
-			this->reset();
+	const bool start(sf::Shape* shape);
+	const bool start(sf::Sprite* sprite);
 
-			this->current = 0;
-			this->is_active = true;
-			this->is_paused = false;
-			this->movementRoutineEngine->addRotation(shape, this);
-			return true;
-		}
-		
-		printf("RotationRoutine::start: Routine is empty\n");
-		return false;
-	}
-
-	const bool start(sf::Sprite* sprite) {
-		if (this->routine_rotations.size() != 0) {
-			this->reset();
-
-			this->current = 0;
-			this->is_active = true;
-			this->is_paused = false;
-			this->movementRoutineEngine->addRotation(sprite, this);
-			return true;
-		}
-
-		printf("RotationRoutine::start: Routine is empty\n");
-		return false;
-	}
+	// Stop routine
+	void stop(sf::Shape* shape);
+	void stop(sf::Sprite* sprite);
 
 	// Get current rotation pointer
-	rotationInfo* getCurrentRotation() {
-		if (this->current < this->count)
-			return this->routine_rotations[this->current];
-		else {
-			printf("RotationRoutine::getCurrentRotation: Current rotation index out of range\n");
-			return nullptr;
-		}
-	}
+	rotationInfo* getCurrentRotation();
+
+	const bool goToNextRotation();
 };
 
 struct RotationRoutineVA : public TransformationRoutine {
@@ -475,62 +221,27 @@ struct RotationRoutineVA : public TransformationRoutine {
 
 public:
 	// Add rotation to routine
-	void addRotation(rotationInfoVA* rotation) {
-		this->routine_rotations.emplace_back(rotation);
-		++this->count;
-	}
+	void addRotation(rotationInfoVA* rotation);
 
 	// Remove rotation from routine
-	void removeRotation(rotationInfoVA* rotation) {
-		auto it = std::find(this->routine_rotations.begin(), this->routine_rotations.end(), rotation);
-		if (it != this->routine_rotations.end()) { this->routine_rotations.erase(it); --this->count; }
-	}
+	void removeRotation(rotationInfoVA* rotation);
 
 	// Clear routine
-	void clear() {
-		this->routine_rotations.clear();
-		this->current = 0;
-		this->count = 0;
-		this->is_active = false;
-		this->is_paused = false;
-		this->is_looping = false;
-	}
+	void clear();
 
 	// Reset routine
-	void reset() {
-		for (auto& rotation : this->routine_rotations)
-			rotation->reset();
-
-		this->current = 0;
-		this->is_active = false;
-		this->is_paused = false;
-	}
+	void reset();
 
 	// Start routine
-	const bool start(sf::VertexArray* vertexarray) {
-		if (this->routine_rotations.size() != 0) {
-			this->reset();
+	const bool start(sf::VertexArray* vertexarray);
 
-			this->current = 0;
-			this->is_active = true;
-			this->is_paused = false;
-			this->movementRoutineEngine->addRotation(vertexarray, this);
-			return true;
-		}
-		
-		printf("RotationRoutineVA::start: Routine is empty\n");
-		return false;
-	}
+	// Stop routine
+	void stop(sf::VertexArray* vertexarray);
 
 	// Get current rotation pointer
-	rotationInfoVA* getCurrentRotation() {
-		if (this->current < this->count)
-			return this->routine_rotations[this->current];
-		else {
-			printf("RotationRoutineVA::getCurrentRotation: Current rotation index out of range\n");
-			return nullptr;
-		}
-	}
+	rotationInfoVA* getCurrentRotation();
+
+	const bool goToNextRotation();
 };
 
 struct MovementRoutineContainer {

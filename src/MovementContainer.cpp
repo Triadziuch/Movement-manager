@@ -1,4 +1,6 @@
+#pragma once
 #include "MovementContainer.h"
+#include "TransformationRoutine.h"
 
 // Singleton initialization
 MovementContainer* MovementContainer::sInstance = nullptr;
@@ -1554,8 +1556,10 @@ void MovementRoutineEngine::updateShape(float dt)
 					++movementRoutine;
 				}
 				else if (movement->isFinished()) {
-					movementRoutine->second = nullptr;
-					movementRoutine = m_Movement_Routines_Shape.erase(movementRoutine);
+					if (!movementRoutine->second->goToNextMovement()) {
+						movementRoutine->second = nullptr;
+						movementRoutine = m_Movement_Routines_Shape.erase(movementRoutine);
+					}
 				}
 			}
 			else {
@@ -1596,8 +1600,10 @@ void MovementRoutineEngine::updateShape(float dt)
 					++scalingRoutine;
 				}
 				else if (scaling->isFinished()) {
-					scalingRoutine->second = nullptr;
-					scalingRoutine = m_Scaling_Routines_Shape.erase(scalingRoutine);
+					if (!scalingRoutine->second->goToNextScaling()) {
+						scalingRoutine->second = nullptr;
+						scalingRoutine = m_Scaling_Routines_Shape.erase(scalingRoutine);
+					}
 				}
 			}
 			else {
@@ -1638,8 +1644,10 @@ void MovementRoutineEngine::updateShape(float dt)
 					++rotationRoutine;
 				}
 				else if (rotation->isFinished()) {
-					rotationRoutine->second = nullptr;
-					rotationRoutine = m_Rotation_Routines_Shape.erase(rotationRoutine);
+					if (!rotationRoutine->second->goToNextRotation()) {
+						rotationRoutine->second = nullptr;
+						rotationRoutine = m_Rotation_Routines_Shape.erase(rotationRoutine);
+					}
 				}
 			}
 			else {
@@ -1685,8 +1693,10 @@ void MovementRoutineEngine::updateVertexArray(float dt)
 						++movementRoutine;
 					}
 					else if (movement->isFinished()) {
-						movementRoutine->second = nullptr;
-						movementRoutine = m_Movement_Routines_VA.erase(movementRoutine);
+						if (!movementRoutine->second->goToNextMovement()) {
+							movementRoutine->second = nullptr;
+							movementRoutine = m_Movement_Routines_VA.erase(movementRoutine);
+						}
 					}
 				}
 				else {
@@ -1741,8 +1751,10 @@ void MovementRoutineEngine::updateVertexArray(float dt)
 						++scalingRoutine;
 					}
 					else if (scaling->isFinished()) {
-						scalingRoutine->second = nullptr;
-						scalingRoutine = m_Scaling_Routines_VA.erase(scalingRoutine);
+						if (!scalingRoutine->second->goToNextScaling()) {
+							scalingRoutine->second = nullptr;
+							scalingRoutine = m_Scaling_Routines_VA.erase(scalingRoutine);
+						}
 					}
 				}
 				else {
@@ -1798,8 +1810,10 @@ void MovementRoutineEngine::updateVertexArray(float dt)
 						++rotationRoutine;
 					}
 					else if (rotation->isFinished()) {
-						rotationRoutine->second = nullptr;
-						rotationRoutine = m_Rotation_Routines_VA.erase(rotationRoutine);
+						if (!rotationRoutine->second->goToNextRotation()) {
+							rotationRoutine->second = nullptr;
+							rotationRoutine = m_Rotation_Routines_VA.erase(rotationRoutine);
+						}
 					}
 				}
 				else {
@@ -1846,8 +1860,10 @@ void MovementRoutineEngine::updateSprite(float dt)
 					++movementRoutine;
 				}
 				else if (movement->isFinished()) {
-					movementRoutine->second = nullptr;
-					movementRoutine = m_Movement_Routines_S.erase(movementRoutine);
+					if (!movementRoutine->second->goToNextMovement()) {
+						movementRoutine->second = nullptr;
+						movementRoutine = m_Movement_Routines_S.erase(movementRoutine);
+					}
 				}
 			}
 			else {
@@ -1888,8 +1904,10 @@ void MovementRoutineEngine::updateSprite(float dt)
 					++scalingRoutine;
 				}
 				else if (scaling->isFinished()) {
-					scalingRoutine->second = nullptr;
-					scalingRoutine = m_Scaling_Routines_S.erase(scalingRoutine);
+					if (!scalingRoutine->second->goToNextScaling()) {
+						scalingRoutine->second = nullptr;
+						scalingRoutine = m_Scaling_Routines_S.erase(scalingRoutine);
+					}
 				}
 			}
 			else {
@@ -1930,8 +1948,10 @@ void MovementRoutineEngine::updateSprite(float dt)
 					++rotationRoutine;
 				}
 				else if (rotation->isFinished()) {
-					rotationRoutine->second = nullptr;
-					rotationRoutine = m_Rotation_Routines_S.erase(rotationRoutine);
+					if (!rotationRoutine->second->goToNextRotation()) {
+						rotationRoutine->second = nullptr;
+						rotationRoutine = m_Rotation_Routines_S.erase(rotationRoutine);
+					}
 				}
 			}
 			else {
@@ -2151,7 +2171,7 @@ void MovementRoutineEngine::stopScaling(sf::Sprite* _sprite)
 
 const RotationRoutine* MovementRoutineEngine::addRotation(sf::Shape* _shape, RotationRoutine* _rotationRoutine)
 {
-
+	return nullptr;
 }
 
 const RotationRoutineVA* MovementRoutineEngine::addRotation(sf::VertexArray* _vertexarray, RotationRoutineVA* _rotationRoutine)

@@ -122,20 +122,44 @@ void MovementManager::startMovementRoutine(sf::Sprite* _sprite, const std::strin
 		printf("MovementManager::startMovementRoutine: Routine for sprite not found\n");
 }
 
+void MovementManager::pauseMovementRoutine(sf::Shape* _shape, const std::string& _name)
+{
+	auto movementRoutineFound = m_Routine_Movement_Shape_Active.find(_shape);
+	if (movementRoutineFound != m_Routine_Movement_Shape_Active.end()) {
+		if (movementRoutineFound->second->routine_name == _name) {
+			movementRoutineFound->second->pause();
+			this->movementContainer->stopMovement(_shape);
+		}
+		else
+			printf("MovementManager::pauseMovementRoutine: Routine with name %s not found\n", _name.c_str());
+	}
+	else
+		printf("MovementManager::pauseMovementRoutine: Routine for shape not found\n");
+}
+
+void MovementManager::pauseMovementRoutine(sf::Sprite* _sprite, const std::string& _name)
+{
+}
+
+void MovementManager::resumeMovementRoutine(sf::Shape* _shape, const std::string& _name)
+{
+}
+
+void MovementManager::resumeMovementRoutine(sf::Sprite* _sprite, const std::string& _name)
+{
+}
+
 void MovementManager::update(float dt)
 {
 	this->updateShape();
 
-	this->movementContainer->update(dt, true);
+	this->movementContainer->updateRoutine(dt);
 }
 
 void MovementManager::updateShape()
 {
 	for (auto& movementRoutine : m_Routine_Movement_Shape_Active) {
-		if (!movementRoutine.second->update(movementRoutine.first)) {
-			printf("ERASING MOVEMENT AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n");
+		if (!movementRoutine.second->update(movementRoutine.first)) 
 			m_Routine_Movement_Shape_Active.erase(movementRoutine.first);
-		}
-			
 	}
 }

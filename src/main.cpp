@@ -143,8 +143,10 @@ int main()
 
 	MovementManager movementManager;
 	auto* routine = movementManager.createMovementRoutine("Testowy");
-	routine->addMovement(new movementInfo(sf::Vector2f(200.f, 200.f), sf::Vector2f(500.f, 500.f), 3.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f));
-	routine->addMovement(new movementInfo(sf::Vector2f(500.f, 500.f), sf::Vector2f(400.f, 800.f), 3.f, MovementContainer.getFunctionPointer(MovementContainer::IN_BOUNCE), false, 0.5f, 0.5f));
+	routine->addMovement(new movementInfo(sf::Vector2f(200.f, 200.f), sf::Vector2f(500.f, 500.f), 2.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 1.f));
+	routine->addMovement(new movementInfo(sf::Vector2f(500.f, 500.f), sf::Vector2f(400.f, 800.f), 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_BOUNCE), false, 0.f, 0.5f));
+	routine->addMovement(new movementInfo(sf::Vector2f(400.f, 800.f), sf::Vector2f(200.f, 200.f), 3.f, MovementContainer.getFunctionPointer(MovementContainer::OUT_EXPO), false, 2.f, 0.f));
+	routine->setLooping(true);
 	movementManager.linkMovementRoutine(&test_shape, "Testowy");
 	
 

@@ -73,6 +73,9 @@ public:
 			printf("MovementRoutine::start: Routine is empty\n");
 	}
 
+	// Pause routine
+	void pause() { this->is_paused = true; }
+
 	// Get current movement pointer
 	movementInfo* getCurrentMovement() {
 		if (this->current < this->count)
@@ -83,39 +86,31 @@ public:
 		}
 	}
 
-	/*void start(sf::Shape* _shape) {
-		if (this->routine_movements.size() != 0) {
-			this->current = 0;
-			this->is_active = true;
-			this->is_paused = false;
-
-			movementContainer->addMovement(_shape, this->routine_movements[this->current]);
-		}
-	}*/
-
 	// Returns true if routine is active, false if it should be deleted from m_Routine_Movements_Shape_Active
 	bool update(sf::Shape* _shape) {
 		if (this->is_active) {
 			if (!this->is_paused) {
 				movementInfo *movement = this->routine_movements[this->current];
-				//printf("Current time: %f\t\t Total time: %f\n", movement->current_time, movement->total_duration);
 
 				if (movement->isFinished()) {
-					printf("Movement finished------------------------------------------------------------------\n");
+					printf("Movement finished\n");
 					movement->reset();
 
 					if (this->current < this->count - 1) {
-						printf("Changed movement to nex------------------------------------------------------------------\t\n");
+						printf("Changed movement to next\n");
 						++this->current;
-						this->movementContainer->swapMovement(_shape, this->routine_movements[this->current]);
+						this->movementContainer->addMovement(_shape, this->routine_movements[this->current]);
 					}
 					else {
-						printf("Resetting routine------------------------------------------------------------------\\n");
+						printf("Resetting routine\n");
 						this->reset();
-						if (this->is_looping) 
-							this->movementContainer->swapMovement(_shape, this->routine_movements[this->current]);
+						if (this->is_looping) {
+							printf("Looping routine\n");
+							this->start();
+							this->movementContainer->addMovement(_shape, this->routine_movements[this->current]);
+						}
 						else {
-							printf("Stopping movement------------------------------------------------------------------\\n");
+							printf("Stopping movement\n");
 							this->movementContainer->stopMovement(_shape);
 							return false;
 						}
@@ -136,8 +131,8 @@ public:
 
 struct MovementRoutineContainer {
 private:
-	std::map<std::string, MovementRoutine*> movementRoutines;
-	MovementContainer* movementContainer;
+	std::map<std::string, MovementRoutine*> movementRoutines{};
+	MovementContainer* movementContainer{};
 
 public:
 	MovementRoutineContainer() {}
@@ -242,6 +237,12 @@ public:
 
 	void startMovementRoutine(sf::Shape* _shape, const std::string& _name);
 	void startMovementRoutine(sf::Sprite* _sprite, const std::string& _name);
+
+	void pauseMovementRoutine(sf::Shape* _shape, const std::string& _name);
+	void pauseMovementRoutine(sf::Sprite* _sprite, const std::string& _name);
+
+	void resumeMovementRoutine(sf::Shape* _shape, const std::string& _name);
+	void resumeMovementRoutine(sf::Sprite* _sprite, const std::string& _name);
 
 	void update(float dt);
 	void updateShape();

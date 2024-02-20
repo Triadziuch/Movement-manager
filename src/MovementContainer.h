@@ -249,9 +249,9 @@ public:
 	// Public functions
 
 	// Movement functions
-	const movementInfo*   addMovement(sf::Shape* _shape, movementInfo* _movementInfo);
-	const movementInfoVA* addMovement(sf::VertexArray* _vertexarray, movementInfoVA* _movementInfo);
-	const movementInfo*   addMovement(sf::Sprite* _sprite, movementInfo* _movementInfo);
+	const MovementRoutine*   addMovement(sf::Shape* _shape, MovementRoutine* _movementRoutine);
+	const MovementRoutineVA* addMovement(sf::VertexArray* _vertexarray, MovementRoutineVA* _movementRoutine);
+	const MovementRoutine*   addMovement(sf::Sprite* _sprite, MovementRoutine* _movementRoutine);
 
 	void undoMovement();
 	void undoMovement(sf::Shape* _shape);
@@ -271,9 +271,9 @@ public:
 	void swapMovement(sf::Shape* _shape, movementInfo* _newMovementInfo);
 
 	// Scaling functions
-	const scalingInfo*   addScaling(sf::Shape* _shape, scalingInfo* _scalingInfo);
-	const scalingInfoVA* addScaling(sf::VertexArray* _vertexarray, scalingInfoVA* _scalingInfo);
-	const scalingInfo*   addScaling(sf::Sprite* _sprite, scalingInfo* _scalingInfo);
+	const ScalingRoutine*   addScaling(sf::Shape* _shape, ScalingRoutine* _scalingRoutine);
+	const ScalingRoutineVA* addScaling(sf::VertexArray* _vertexarray, ScalingRoutineVA* _scalingRoutine);
+	const ScalingRoutine*   addScaling(sf::Sprite* _sprite, ScalingRoutine* _scalingRoutine);
 
 	void undoScaling();
 	void undoScaling(sf::Shape* _shape);
@@ -291,9 +291,9 @@ public:
 	void stopScaling(sf::Sprite* _sprite);
 
 	// Rotation functions
-	const rotationInfo*   addRotation(sf::Shape* _shape, rotationInfo* _rotationInfo);
-	const rotationInfoVA* addRotation(sf::VertexArray* _vertexarray, rotationInfoVA* _rotationInfo);
-	const rotationInfo*   addRotation(sf::Sprite* _sprite, rotationInfo* _rotationInfo);
+	const RotationRoutine*   addRotation(sf::Shape* _shape, RotationRoutine* _rotationRoutine);
+	const RotationRoutineVA* addRotation(sf::VertexArray* _vertexarray, RotationRoutineVA* _rotationRoutine);
+	const RotationRoutine*   addRotation(sf::Sprite* _sprite, RotationRoutine* _rotationRoutine);
 
 	void undoRotation();
 	void undoRotation(sf::Shape* _shape);

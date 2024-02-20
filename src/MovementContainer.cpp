@@ -1910,17 +1910,17 @@ void MovementRoutineEngine::update(float dt)
 	this->updateSprite(dt);
 }
 
-const movementInfo* MovementRoutineEngine::addMovement(sf::Shape* _shape, movementInfo* _movementInfo)
+const MovementRoutine* MovementRoutineEngine::addMovement(sf::Shape* _shape, MovementRoutine* _movementRoutine)
 {
 	return nullptr;
 }
 
-const movementInfoVA* MovementRoutineEngine::addMovement(sf::VertexArray* _vertexarray, movementInfoVA* _movementInfo)
+const MovementRoutineVA* MovementRoutineEngine::addMovement(sf::VertexArray* _vertexarray, MovementRoutineVA* _movementRoutine)
 {
 	return nullptr;
 }
 
-const movementInfo* MovementRoutineEngine::addMovement(sf::Sprite* _sprite, movementInfo* _movementInfo)
+const MovementRoutine* MovementRoutineEngine::addMovement(sf::Sprite* _sprite, MovementRoutine* _movementRoutine)
 {
 	return nullptr;
 }
@@ -1977,17 +1977,17 @@ void MovementRoutineEngine::swapMovement(sf::Shape* _shape, movementInfo* _newMo
 {
 }
 
-const scalingInfo* MovementRoutineEngine::addScaling(sf::Shape* _shape, scalingInfo* _scalingInfo)
+const ScalingRoutine* MovementRoutineEngine::addScaling(sf::Shape* _shape, ScalingRoutine* _scalingRoutine)
 {
 	return nullptr;
 }
 
-const scalingInfoVA* MovementRoutineEngine::addScaling(sf::VertexArray* _vertexarray, scalingInfoVA* _scalingInfo)
+const ScalingRoutineVA* MovementRoutineEngine::addScaling(sf::VertexArray* _vertexarray, ScalingRoutineVA* _scalingRoutine)
 {
 	return nullptr;
 }
 
-const scalingInfo* MovementRoutineEngine::addScaling(sf::Sprite* _sprite, scalingInfo* _scalingInfo)
+const ScalingRoutine* MovementRoutineEngine::addScaling(sf::Sprite* _sprite, ScalingRoutine* _scalingRoutine)
 {
 	return nullptr;
 }
@@ -2040,17 +2040,17 @@ void MovementRoutineEngine::stopScaling(sf::Sprite* _sprite)
 {
 }
 
-const rotationInfo* MovementRoutineEngine::addRotation(sf::Shape* _shape, rotationInfo* _rotationInfo)
+const RotationRoutine* MovementRoutineEngine::addRotation(sf::Shape* _shape, RotationRoutine* _rotationRoutine)
 {
 	return nullptr;
 }
 
-const rotationInfoVA* MovementRoutineEngine::addRotation(sf::VertexArray* _vertexarray, rotationInfoVA* _rotationInfo)
+const RotationRoutineVA* MovementRoutineEngine::addRotation(sf::VertexArray* _vertexarray, RotationRoutineVA* _rotationRoutine)
 {
 	return nullptr;
 }
 
-const rotationInfo* MovementRoutineEngine::addRotation(sf::Sprite* _sprite, rotationInfo* _rotationInfo)
+const RotationRoutine* MovementRoutineEngine::addRotation(sf::Sprite* _sprite, RotationRoutine* _rotationRoutine)
 {
 	return nullptr;
 }

@@ -67,7 +67,7 @@ public:
 	}
 
 	// Start routine
-	void start(sf::Shape* shape) {
+	const bool start(sf::Shape* shape) {
 		if (this->routine_movements.size() != 0) {
 			this->reset();
 
@@ -75,9 +75,26 @@ public:
 			this->is_active = true;
 			this->is_paused = false;
 			this->movementRoutineEngine->addMovement(shape, this);
+			return true;
 		}
-		else
-			printf("MovementRoutine::start: Routine is empty\n");
+		
+		printf("MovementRoutine::start: Routine is empty\n");
+		return false;
+	}
+
+	const bool start(sf::Sprite* sprite) {
+		if (this->routine_movements.size() != 0) {
+			this->reset();
+
+			this->current = 0;
+			this->is_active = true;
+			this->is_paused = false;
+			this->movementRoutineEngine->addMovement(sprite, this);
+			return true;
+		}
+
+		printf("MovementRoutine::start: Routine is empty\n");
+		return false;
 	}
 
 	// Get current movement pointer
@@ -177,7 +194,7 @@ public:
 	}
 
 	// Start routine
-	void start(sf::VertexArray* vertexarray) {
+	const bool start(sf::VertexArray* vertexarray) {
 		if (this->routine_movements.size() != 0) {
 			this->reset();
 
@@ -185,9 +202,11 @@ public:
 			this->is_active = true;
 			this->is_paused = false;
 			this->movementRoutineEngine->addMovement(vertexarray, this);
+			return true;
 		}
-		else
-			printf("MovementRoutineVA::start: Routine is empty\n");
+		
+		printf("MovementRoutineVA::start: Routine is empty\n");
+		return false;
 	}
 
 	// Get current movement pointer
@@ -245,7 +264,7 @@ public:
 	}
 
 	// Start routine
-	void start(sf::Shape* shape) {
+	const bool start(sf::Shape* shape) {
 		if (this->routine_scalings.size() != 0) {
 			this->reset();
 
@@ -253,9 +272,26 @@ public:
 			this->is_active = true;
 			this->is_paused = false;
 			this->movementRoutineEngine->addScaling(shape, this);
+			return true;
 		}
-		else
-			printf("ScalingRoutine::start: Routine is empty\n");
+		
+		printf("ScalingRoutine::start: Routine is empty\n");
+		return false;
+	}
+
+	const bool start(sf::Sprite* sprite) {
+		if (this->routine_scalings.size() != 0) {
+			this->reset();
+
+			this->current = 0;
+			this->is_active = true;
+			this->is_paused = false;
+			this->movementRoutineEngine->addScaling(sprite, this);
+			return true;
+		}
+
+		printf("ScalingRoutine::start: Routine is empty\n");
+		return false;
 	}
 
 	// Get current scaling pointer
@@ -313,7 +349,7 @@ public:
 	}
 
 	// Start routine
-	void start(sf::VertexArray* vertexarray) {
+	const bool start(sf::VertexArray* vertexarray) {
 		if (this->routine_scalings.size() != 0) {
 			this->reset();
 
@@ -321,9 +357,11 @@ public:
 			this->is_active = true;
 			this->is_paused = false;
 			this->movementRoutineEngine->addScaling(vertexarray, this);
+			return true;
 		}
-		else
-			printf("ScalingRoutineVA::start: Routine is empty\n");
+		
+		printf("ScalingRoutineVA::start: Routine is empty\n");
+		return false;
 	}
 
 	// Get current scaling pointer
@@ -381,7 +419,7 @@ public:
 	}
 
 	// Start routine
-	void start(sf::Shape* shape) {
+	const bool start(sf::Shape* shape) {
 		if (this->routine_rotations.size() != 0) {
 			this->reset();
 
@@ -389,9 +427,26 @@ public:
 			this->is_active = true;
 			this->is_paused = false;
 			this->movementRoutineEngine->addRotation(shape, this);
+			return true;
 		}
-		else
-			printf("RotationRoutine::start: Routine is empty\n");
+		
+		printf("RotationRoutine::start: Routine is empty\n");
+		return false;
+	}
+
+	const bool start(sf::Sprite* sprite) {
+		if (this->routine_rotations.size() != 0) {
+			this->reset();
+
+			this->current = 0;
+			this->is_active = true;
+			this->is_paused = false;
+			this->movementRoutineEngine->addRotation(sprite, this);
+			return true;
+		}
+
+		printf("RotationRoutine::start: Routine is empty\n");
+		return false;
 	}
 
 	// Get current rotation pointer
@@ -449,7 +504,7 @@ public:
 	}
 
 	// Start routine
-	void start(sf::VertexArray* vertexarray) {
+	const bool start(sf::VertexArray* vertexarray) {
 		if (this->routine_rotations.size() != 0) {
 			this->reset();
 
@@ -457,9 +512,11 @@ public:
 			this->is_active = true;
 			this->is_paused = false;
 			this->movementRoutineEngine->addRotation(vertexarray, this);
+			return true;
 		}
-		else
-			printf("RotationRoutineVA::start: Routine is empty\n");
+		
+		printf("RotationRoutineVA::start: Routine is empty\n");
+		return false;
 	}
 
 	// Get current rotation pointer

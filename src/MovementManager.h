@@ -38,17 +38,4 @@ public:
 	void resumeMovementRoutine(sf::Sprite* _sprite, const std::string& _name);
 
 	void update(float dt);
-	void updateShape();
-
-	std::map<sf::Shape*, movementInfo*>			    m_Movements_Shape;
-	std::map<sf::VertexArray*, movementInfoVA*>		m_Movements_VA;
-	std::map<sf::Sprite*, movementInfo*>			m_Movements_S;
-
-	std::map<sf::Shape*, scalingInfo*>				m_Scalings_Shape;
-	std::map<sf::VertexArray*, scalingInfoVA*>		m_Scalings_VA;
-	std::map<sf::Sprite*, scalingInfo*>				m_Scalings_S;
-
-	std::map<sf::Shape*, rotationInfo*>				m_Rotations_Shape;
-	std::map<sf::VertexArray*, rotationInfoVA*>		m_Rotations_VA;
-	std::map<sf::Sprite*, rotationInfo*>			m_Rotations_S;
 };

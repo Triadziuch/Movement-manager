@@ -1,6 +1,6 @@
 #pragma once
 #include "easeFunctions.cpp"
-#include "transformationInfo.h"
+#include "TransformationRoutine.h"
 #include <map>
 #include <assert.h>
 
@@ -109,7 +109,6 @@ public:
 
 	// Update functions
 	void update(float dt);
-	void updateRoutine(float dt);
 
 	// Public functions
 
@@ -214,22 +213,22 @@ public:
 	const bool isRotating(sf::Sprite* _sprite);
 };
 
-class MovementRoutineContainer : protected MovementContainerBase {
+class MovementRoutineEngine : protected MovementContainerBase {
 private:
-	std::map<sf::Shape*, movementInfo*>			    m_Movements_Shape;
-	std::map<sf::VertexArray*, movementInfoVA*>		m_Movements_VA;
-	std::map<sf::Sprite*, movementInfo*>			m_Movements_S;
+	std::map<sf::Shape*, MovementRoutine*>			m_Movement_Routines_Shape;
+	std::map<sf::VertexArray*, MovementRoutineVA*>		m_Movement_Routines_VA;
+	std::map<sf::Sprite*, MovementRoutine*>			m_Movement_Routines_S;
 
-	std::map<sf::Shape*, scalingInfo*>				m_Scalings_Shape;
-	std::map<sf::VertexArray*, scalingInfoVA*>		m_Scalings_VA;
-	std::map<sf::Sprite*, scalingInfo*>				m_Scalings_S;
+	std::map<sf::Shape*, ScalingRoutine*>				m_Scaling_Routines_Shape;
+	std::map<sf::VertexArray*, ScalingRoutineVA*>		m_Scaling_Routines_VA;
+	std::map<sf::Sprite*, ScalingRoutine*>				m_Scaling_Routines_S;
 
-	std::map<sf::Shape*, rotationInfo*>				m_Rotations_Shape;
-	std::map<sf::VertexArray*, rotationInfoVA*>		m_Rotations_VA;
-	std::map<sf::Sprite*, rotationInfo*>			m_Rotations_S;
+	std::map<sf::Shape*, RotationRoutine*>				m_Rotation_Routines_Shape;
+	std::map<sf::VertexArray*, RotationRoutineVA*>		m_Rotation_Routines_VA;
+	std::map<sf::Sprite*, RotationRoutine*>			m_Rotation_Routines_S;
 
 	// Singleton instance
-	static MovementRoutineContainer* sInstance;
+	static MovementRoutineEngine* sInstance;
 
 	// Private update functions
 	void updateMovementInfoVA(sf::VertexArray* _vertexarray, movementInfoVA* _movementInfo, sf::Vector2f _offset);
@@ -242,7 +241,7 @@ private:
 
 public:
 	// Default constructor
-	MovementRoutineContainer();
+	MovementRoutineEngine();
 
 	// Update functions
 	void update(float dt);
@@ -312,9 +311,9 @@ public:
 	void stopRotation(sf::Sprite* _sprite);
 
 	// Accessors / Mutators
-	int getMovementCount() { return m_Movements_Shape.size() + m_Movements_VA.size() + m_Movements_S.size(); }
-	int getScalingCount() { return m_Scalings_Shape.size() + m_Scalings_VA.size() + m_Scalings_S.size(); }
-	int getRotationCount() { return m_Rotations_Shape.size() + m_Rotations_VA.size() + m_Rotations_S.size(); }
+	int getMovementCount() { return m_Movement_Routines_Shape.size() + m_Movement_Routines_VA.size() + m_Movement_Routines_S.size(); }
+	int getScalingCount() { return m_Scaling_Routines_Shape.size() + m_Scaling_Routines_VA.size() + m_Scaling_Routines_S.size(); }
+	int getRotationCount() { return m_Rotation_Routines_Shape.size() + m_Rotation_Routines_VA.size() + m_Rotation_Routines_S.size(); }
 
 	const bool isMoving(sf::Shape* _shape);
 	const bool isMoving(sf::VertexArray* _vertexarray);

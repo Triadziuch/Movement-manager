@@ -67,7 +67,7 @@ public:
 	}
 
 	// Start routine
-	void start(sf::Shape shape) {
+	void start(sf::Shape* shape) {
 		if (this->routine_movements.size() != 0) {
 			this->reset();
 
@@ -90,7 +90,7 @@ public:
 		}
 	}
 
-	// Returns true if routine is active, false if it should be deleted from m_Routine_Movements_Shape_Active
+	/*// Returns true if routine is active, false if it should be deleted from m_Routine_Movements_Shape_Active
 	bool update(sf::Shape* _shape) {
 		if (this->is_active) {
 			if (!this->is_paused) {
@@ -130,7 +130,7 @@ public:
 			}
 		}
 		return true;
-	}
+	}*/
 };
 
 struct MovementRoutineVA : public TransformationRoutine {
@@ -177,14 +177,17 @@ public:
 	}
 
 	// Start routine
-	void start() {
+	void start(sf::VertexArray* vertexarray) {
 		if (this->routine_movements.size() != 0) {
+			this->reset();
+
 			this->current = 0;
 			this->is_active = true;
 			this->is_paused = false;
+			this->movementRoutineEngine->addMovement(vertexarray, this);
 		}
 		else
-			printf("MovementRoutine::start: Routine is empty\n");
+			printf("MovementRoutineVA::start: Routine is empty\n");
 	}
 
 	// Get current movement pointer
@@ -192,51 +195,9 @@ public:
 		if (this->current < this->count)
 			return this->routine_movements[this->current];
 		else {
-			printf("MovementRoutine::getCurrentMovement: Current movement index out of range\n");
+			printf("MovementRoutineVA::getCurrentMovement: Current movement index out of range\n");
 			return nullptr;
 		}
-	}
-
-	// Returns true if routine is active, false if it should be deleted from m_Routine_Movements_Shape_Active
-	bool update(sf::Shape* _shape) {
-		if (this->is_active) {
-			if (!this->is_paused) {
-				movementInfoVA* movement = this->routine_movements[this->current];
-
-				if (movement->isFinished()) {
-					printf("Movement finished\n");
-					movement->reset();
-
-					if (this->current < this->count - 1) {
-						printf("Changed movement to next\n");
-						++this->current;
-						this->movementRoutineEngine->addMovement(_shape, this->routine_movements[this->current]);
-					}
-					else {
-						printf("Resetting routine\n");
-						this->reset();
-						if (this->is_looping) {
-							printf("Looping routine\n");
-							this->start();
-							this->movementRoutineEngine->addMovement(_shape, this->routine_movements[this->current]);
-						}
-						else {
-							printf("Stopping movement\n");
-							this->movementRoutineEngine->stopMovement(_shape);
-							return false;
-						}
-					}
-				}
-
-
-				// W tym miejscu wywo³ujemy update dla konkretnego movementInfo
-				// Wiêc trzeba dodaæ funkcjê sk³adow¹ update do klasy transformationInfo
-
-				// Dodatkowo trzeba zaimplementowaæ jakiœ pojemnik na TransformationRoutine który bêdzie pozwala³ na sprawdzenie np czy 
-				// dany movementInfo o okreœlonej nazwie istnieje czy nie
-			}
-		}
-		return true;
 	}
 };
 
@@ -284,11 +245,14 @@ public:
 	}
 
 	// Start routine
-	void start() {
+	void start(sf::Shape* shape) {
 		if (this->routine_scalings.size() != 0) {
+			this->reset();
+
 			this->current = 0;
 			this->is_active = true;
 			this->is_paused = false;
+			this->movementRoutineEngine->addScaling(shape, this);
 		}
 		else
 			printf("ScalingRoutine::start: Routine is empty\n");
@@ -302,41 +266,6 @@ public:
 			printf("ScalingRoutine::getCurrentScaling: Current scaling index out of range\n");
 			return nullptr;
 		}
-	}
-
-	// Returns true if routine is active, false if it should be deleted from m_Routine_Scalings_Shape_Active
-	bool update(sf::Shape* _shape) {
-		if (this->is_active) {
-			if (!this->is_paused) {
-				scalingInfo* scaling = this->routine_scalings[this->current];
-
-				if (scaling->isFinished()) {
-					printf("Scaling finished\n");
-					scaling->reset();
-
-					if (this->current < this->count - 1) {
-						printf("Changed scaling to next\n");
-						++this->current;
-						this->movementRoutineEngine->addScaling(_shape, this->routine_scalings[this->current]);
-					}
-					else {
-						printf("Resetting routine\n");
-						this->reset();
-						if (this->is_looping) {
-							printf("Looping routine\n");
-							this->start();
-							this->movementRoutineEngine->addScaling(_shape, this->routine_scalings[this->current]);
-						}
-						else {
-							printf("Stopping scaling\n");
-							this->movementRoutineEngine->stopScaling(_shape);
-							return false;
-						}
-					}
-				}
-			}
-		}
-		return true;
 	}
 };
 
@@ -384,14 +313,17 @@ public:
 	}
 
 	// Start routine
-	void start() {
+	void start(sf::VertexArray* vertexarray) {
 		if (this->routine_scalings.size() != 0) {
+			this->reset();
+
 			this->current = 0;
 			this->is_active = true;
 			this->is_paused = false;
+			this->movementRoutineEngine->addScaling(vertexarray, this);
 		}
 		else
-			printf("ScalingRoutine::start: Routine is empty\n");
+			printf("ScalingRoutineVA::start: Routine is empty\n");
 	}
 
 	// Get current scaling pointer
@@ -399,44 +331,9 @@ public:
 		if (this->current < this->count)
 			return this->routine_scalings[this->current];
 		else {
-			printf("ScalingRoutine::getCurrentScaling: Current scaling index out of range\n");
+			printf("ScalingRoutineVA::getCurrentScaling: Current scaling index out of range\n");
 			return nullptr;
 		}
-	}
-
-	// Returns true if routine is active, false if it should be deleted from m_Routine_Scalings_Shape_Active
-	bool update(sf::VertexArray* _vertex_array) {
-		if (this->is_active) {
-			if (!this->is_paused) {
-				scalingInfoVA* scaling = this->routine_scalings[this->current];
-
-				if (scaling->isFinished()) {
-					printf("Scaling finished\n");
-					scaling->reset();
-
-					if (this->current < this->count - 1) {
-						printf("Changed scaling to next\n");
-						++this->current;
-						this->movementRoutineEngine->addScaling(_vertex_array, this->routine_scalings[this->current]);
-					}
-					else {
-						printf("Resetting routine\n");
-						this->reset();
-						if (this->is_looping) {
-							printf("Looping routine\n");
-							this->start();
-							this->movementRoutineEngine->addScaling(_vertex_array, this->routine_scalings[this->current]);
-						}
-						else {
-							printf("Stopping scaling\n");
-							this->movementRoutineEngine->stopScaling(_vertex_array);
-							return false;
-						}
-					}
-				}
-			}
-		}
-		return true;
 	}
 };
 
@@ -484,11 +381,14 @@ public:
 	}
 
 	// Start routine
-	void start() {
+	void start(sf::Shape* shape) {
 		if (this->routine_rotations.size() != 0) {
+			this->reset();
+
 			this->current = 0;
 			this->is_active = true;
 			this->is_paused = false;
+			this->movementRoutineEngine->addRotation(shape, this);
 		}
 		else
 			printf("RotationRoutine::start: Routine is empty\n");
@@ -502,41 +402,6 @@ public:
 			printf("RotationRoutine::getCurrentRotation: Current rotation index out of range\n");
 			return nullptr;
 		}
-	}
-
-	// Returns true if routine is active, false if it should be deleted from m_Routine_Rotations_Shape_Active
-	bool update(sf::Shape* _shape) {
-		if (this->is_active) {
-			if (!this->is_paused) {
-				rotationInfo* rotation = this->routine_rotations[this->current];
-
-				if (rotation->isFinished()) {
-					printf("Rotation finished\n");
-					rotation->reset();
-
-					if (this->current < this->count - 1) {
-						printf("Changed rotation to next\n");
-						++this->current;
-						this->movementRoutineEngine->addRotation(_shape, this->routine_rotations[this->current]);
-					}
-					else {
-						printf("Resetting routine\n");
-						this->reset();
-						if (this->is_looping) {
-							printf("Looping routine\n");
-							this->start();
-							this->movementRoutineEngine->addRotation(_shape, this->routine_rotations[this->current]);
-						}
-						else {
-							printf("Stopping rotation\n");
-							this->movementRoutineEngine->stopRotation(_shape);
-							return false;
-						}
-					}
-				}
-			}
-		}
-		return true;
 	}
 };
 
@@ -584,14 +449,17 @@ public:
 	}
 
 	// Start routine
-	void start() {
+	void start(sf::VertexArray* vertexarray) {
 		if (this->routine_rotations.size() != 0) {
+			this->reset();
+
 			this->current = 0;
 			this->is_active = true;
 			this->is_paused = false;
+			this->movementRoutineEngine->addRotation(vertexarray, this);
 		}
 		else
-			printf("RotationRoutine::start: Routine is empty\n");
+			printf("RotationRoutineVA::start: Routine is empty\n");
 	}
 
 	// Get current rotation pointer
@@ -599,44 +467,9 @@ public:
 		if (this->current < this->count)
 			return this->routine_rotations[this->current];
 		else {
-			printf("RotationRoutine::getCurrentRotation: Current rotation index out of range\n");
+			printf("RotationRoutineVA::getCurrentRotation: Current rotation index out of range\n");
 			return nullptr;
 		}
-	}
-
-	// Returns true if routine is active, false if it should be deleted from m_Routine_Rotations_Shape_Active
-	bool update(sf::VertexArray* _vertex_array) {
-		if (this->is_active) {
-			if (!this->is_paused) {
-				rotationInfoVA* rotation = this->routine_rotations[this->current];
-
-				if (rotation->isFinished()) {
-					printf("Rotation finished\n");
-					rotation->reset();
-
-					if (this->current < this->count - 1) {
-						printf("Changed rotation to next\n");
-						++this->current;
-						this->movementRoutineEngine->addRotation(_vertex_array, this->routine_rotations[this->current]);
-					}
-					else {
-						printf("Resetting routine\n");
-						this->reset();
-						if (this->is_looping) {
-							printf("Looping routine\n");
-							this->start();
-							this->movementRoutineEngine->addRotation(_vertex_array, this->routine_rotations[this->current]);
-						}
-						else {
-							printf("Stopping rotation\n");
-							this->movementRoutineEngine->stopRotation(_vertex_array);
-							return false;
-						}
-					}
-				}
-			}
-		}
-		return true;
 	}
 };
 

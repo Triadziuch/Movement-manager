@@ -9,7 +9,7 @@ MovementManager::MovementManager()
 	assert(this->sInstance == nullptr);
 	sInstance = this;
 
-	movementContainer = new MovementContainer();
+	movementRoutineEngine = new MovementRoutineEngine();
 	movementRoutineContainer = new MovementRoutineContainer();
 }
 
@@ -35,7 +35,7 @@ MovementRoutine* MovementManager::linkMovementRoutine(sf::Shape* _shape, const s
 	}
 	else {
 		// If not, create a new movement routine container for this shape and link the movement routine to it
-		MovementRoutineContainer* newMovementRoutineContainer = new MovementRoutineContainer(this->movementContainer);
+		MovementRoutineContainer* newMovementRoutineContainer = new MovementRoutineContainer(this->movementRoutineEngine);
 		m_Routine_Movement_Shape.insert(std::make_pair(_shape, newMovementRoutineContainer));
 
 		MovementRoutine* newMovementRoutine = new MovementRoutine(*movementRoutineOriginal);
@@ -69,7 +69,7 @@ MovementRoutine* MovementManager::linkMovementRoutine(sf::Sprite* _sprite, const
 	}
 	else {
 		// If not, create a new movement routine container for this shape and link the movement routine to it
-		MovementRoutineContainer* newMovementRoutineContainer = new MovementRoutineContainer(this->movementContainer);
+		MovementRoutineContainer* newMovementRoutineContainer = new MovementRoutineContainer(this->movementRoutineEngine);
 		m_Routine_Movement_Sprite.insert(std::make_pair(_sprite, newMovementRoutineContainer));
 
 		MovementRoutine* newMovementRoutine = new MovementRoutine(*movementRoutineOriginal);
@@ -88,12 +88,8 @@ void MovementManager::startMovementRoutine(sf::Shape* _shape, const std::string&
 
 		auto* movementRoutineFound = movementRoutineContainerFound->second->exists(_name);
 		if (movementRoutineFound != nullptr) {
-			movementRoutineFound->start();
-			this->movementContainer->addMovement(_shape, movementRoutineFound->getCurrentMovement());
+			movementRoutineFound->start(_shape);
 			m_Routine_Movement_Shape_Active.insert(std::make_pair(_shape, movementRoutineFound));
-			printf("MovementManager::startMovementRoutine: Routine with name %s started\n", _name.c_str());
-			printf("m_Routine_Movement_Shape_Active size: %d\n", m_Routine_Movement_Shape_Active.size());
-			printf("Movements in routine: %d\n", movementRoutineFound->count);
 		}
 		else
 			printf("MovementManager::startMovementRoutine: Routine with name %s not found\n", _name.c_str());
@@ -109,11 +105,8 @@ void MovementManager::startMovementRoutine(sf::Sprite* _sprite, const std::strin
 
 		auto* movementRoutineFound = movementRoutineContainerFound->second->exists(_name);
 		if (movementRoutineFound != nullptr) {
-			movementRoutineFound->start();
-			this->movementContainer->addMovement(_sprite, movementRoutineFound->getCurrentMovement());
+			movementRoutineFound->start(_sprite);
 			m_Routine_Movement_Sprite_Active.insert(std::make_pair(_sprite, movementRoutineFound));
-			printf("MovementManager::startMovementRoutine: Routine with name %s started\n", _name.c_str());
-			printf("m_Routine_Movement_Sprite_Active size: %d\n", m_Routine_Movement_Sprite_Active.size());
 		}
 		else
 			printf("MovementManager::startMovementRoutine: Routine with name %s not found\n", _name.c_str());
@@ -128,7 +121,7 @@ void MovementManager::pauseMovementRoutine(sf::Shape* _shape, const std::string&
 	if (movementRoutineFound != m_Routine_Movement_Shape_Active.end()) {
 		if (movementRoutineFound->second->routine_name == _name) {
 			movementRoutineFound->second->pause();
-			this->movementContainer->stopMovement(_shape);
+			this->movementRoutineEngine->stopMovement(_shape);
 		}
 		else
 			printf("MovementManager::pauseMovementRoutine: Routine with name %s not found\n", _name.c_str());
@@ -153,7 +146,7 @@ void MovementManager::update(float dt)
 {
 	this->updateShape();
 
-	this->movementContainer->updateRoutine(dt);
+	this->movementRoutineEngine->update(dt);
 }
 
 void MovementManager::updateShape()

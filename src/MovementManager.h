@@ -18,7 +18,7 @@ private:
 
 public:
 	// Movement container
-	MovementContainer* movementContainer;
+	MovementRoutineEngine* movementRoutineEngine;
 
 	MovementManager();
 

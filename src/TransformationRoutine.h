@@ -21,6 +21,9 @@ public:
 
 	// Pause routine
 	void pause() { this->is_paused = true; }
+
+	// Resume routine
+	void resume() { this->is_paused = false; }
 };
 
 struct MovementRoutine : public TransformationRoutine {

@@ -268,8 +268,6 @@ public:
 	void stopMovement(sf::VertexArray* _vertexarray);
 	void stopMovement(sf::Sprite* _sprite);
 
-	void swapMovement(sf::Shape* _shape, movementInfo* _newMovementInfo);
-
 	// Scaling functions
 	const ScalingRoutine*   addScaling(sf::Shape* _shape, ScalingRoutine* _scalingRoutine);
 	const ScalingRoutineVA* addScaling(sf::VertexArray* _vertexarray, ScalingRoutineVA* _scalingRoutine);

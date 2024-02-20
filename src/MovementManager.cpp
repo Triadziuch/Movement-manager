@@ -117,14 +117,30 @@ void MovementManager::startMovementRoutine(sf::Sprite* _sprite, const std::strin
 		printf("MovementManager::startMovementRoutine: Routine for sprite not found\n");
 }
 
+void MovementManager::startMovementRoutine(sf::VertexArray* _vertexarray, const std::string& _name)
+{
+	auto movementRoutineContainerFound = m_Routine_Movement_VertexArray.find(_vertexarray);
+	if (movementRoutineContainerFound != m_Routine_Movement_VertexArray.end()) {
+
+		auto* movementRoutineFound = movementRoutineContainerFound->second->exists(_name);
+		if (movementRoutineFound != nullptr) {
+
+			if (movementRoutineFound->start(_vertexarray))
+				m_Routine_Movement_VertexArray_Active.insert(std::make_pair(_vertexarray, movementRoutineFound));
+		}
+		else
+			printf("MovementManager::startMovementRoutine: Routine with name %s not found\n", _name.c_str());
+	}
+	else
+		printf("MovementManager::startMovementRoutine: Routine for vertexarray not found\n");
+}
+
 void MovementManager::pauseMovementRoutine(sf::Shape* _shape, const std::string& _name)
 {
 	auto movementRoutineFound = m_Routine_Movement_Shape_Active.find(_shape);
 	if (movementRoutineFound != m_Routine_Movement_Shape_Active.end()) {
-		if (movementRoutineFound->second->routine_name == _name) {
+		if (movementRoutineFound->second->routine_name == _name) 
 			movementRoutineFound->second->pause();
-			this->movementRoutineEngine->stopMovement(_shape);
-		}
 		else
 			printf("MovementManager::pauseMovementRoutine: Routine with name %s not found\n", _name.c_str());
 	}
@@ -134,14 +150,68 @@ void MovementManager::pauseMovementRoutine(sf::Shape* _shape, const std::string&
 
 void MovementManager::pauseMovementRoutine(sf::Sprite* _sprite, const std::string& _name)
 {
+	auto movementRoutineFound = m_Routine_Movement_Sprite_Active.find(_sprite);
+	if (movementRoutineFound != m_Routine_Movement_Sprite_Active.end()) {
+		if (movementRoutineFound->second->routine_name == _name) 
+			movementRoutineFound->second->pause();
+		else
+			printf("MovementManager::pauseMovementRoutine: Routine with name %s not found\n", _name.c_str());
+	}
+	else
+		printf("MovementManager::pauseMovementRoutine: Routine for sprite not found\n");
+}
+
+void MovementManager::pauseMovementRoutine(sf::VertexArray* _vertexarray, const std::string& _name)
+{
+	auto movementRoutineFound = m_Routine_Movement_VertexArray_Active.find(_vertexarray);
+	if (movementRoutineFound != m_Routine_Movement_VertexArray_Active.end()) {
+		if (movementRoutineFound->second->routine_name == _name) 
+			movementRoutineFound->second->pause();
+		else
+			printf("MovementManager::pauseMovementRoutine: Routine with name %s not found\n", _name.c_str());
+	}
+	else
+		printf("MovementManager::pauseMovementRoutine: Routine for vertexarray not found\n");
 }
 
 void MovementManager::resumeMovementRoutine(sf::Shape* _shape, const std::string& _name)
 {
+	auto movementRoutineFound = m_Routine_Movement_Shape_Active.find(_shape);
+	if (movementRoutineFound != m_Routine_Movement_Shape_Active.end()) {
+		if (movementRoutineFound->second->routine_name == _name) 
+			movementRoutineFound->second->resume();
+		else
+			printf("MovementManager::resumeMovementRoutine: Routine with name %s not found\n", _name.c_str());
+	}
+	else
+		printf("MovementManager::resumeMovementRoutine: Routine for shape not found\n");
 }
+
 
 void MovementManager::resumeMovementRoutine(sf::Sprite* _sprite, const std::string& _name)
 {
+	auto movementRoutineFound = m_Routine_Movement_Sprite_Active.find(_sprite);
+	if (movementRoutineFound != m_Routine_Movement_Sprite_Active.end()) {
+		if (movementRoutineFound->second->routine_name == _name) 
+			movementRoutineFound->second->resume();
+		else
+			printf("MovementManager::resumeMovementRoutine: Routine with name %s not found\n", _name.c_str());
+	}
+	else
+		printf("MovementManager::resumeMovementRoutine: Routine for sprite not found\n");
+}
+
+void MovementManager::resumeMovementRoutine(sf::VertexArray* _vertexarray, const std::string& _name)
+{
+	auto movementRoutineFound = m_Routine_Movement_VertexArray_Active.find(_vertexarray);
+	if (movementRoutineFound != m_Routine_Movement_VertexArray_Active.end()) {
+		if (movementRoutineFound->second->routine_name == _name) 
+			movementRoutineFound->second->resume();
+		else
+			printf("MovementManager::resumeMovementRoutine: Routine with name %s not found\n", _name.c_str());
+	}
+	else
+		printf("MovementManager::resumeMovementRoutine: Routine for vertexarray not found\n");
 }
 
 void MovementManager::update(float dt)

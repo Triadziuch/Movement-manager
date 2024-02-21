@@ -6,7 +6,7 @@ class MovementRoutineEngine;
 
 class TransformationRoutine {
 public:
-	MovementRoutineEngine*  movementRoutineEngine;
+	MovementRoutineEngine* movementRoutineEngine{};
 	std::string			routine_name{};
 	size_t				current{};
 	size_t				count{};
@@ -23,7 +23,6 @@ public:
 		movementRoutineEngine(obj.movementRoutineEngine), routine_name(obj.routine_name), current(obj.current), count(obj.count), is_active(obj.is_active), is_looping(obj.is_looping), is_paused(obj.is_paused), adjust_start_to_current_transform(obj.adjust_start_to_current_transform), adjust_all_to_current_transform(obj.adjust_all_to_current_transform) {}
 
 	void setLooping(bool _looping) { this->is_looping = _looping; }
-
 	void adjustStartToCurrentTransform(bool _adjust) { this->adjust_start_to_current_transform = _adjust; }
 	void adjustAllToCurrentTransform(bool _adjust) { this->adjust_all_to_current_transform = _adjust; }
 

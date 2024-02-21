@@ -237,7 +237,7 @@ void MovementRoutineVA::reset()
 const bool MovementRoutineVA::start(sf::VertexArray* vertexArray)
 {
 	if (this->routine_movements.size() != 0) {
-		if (this->adjust_all_to_current_transform) { this->adjustAllToCurrent(vertexArray); }
+		if (this->adjust_all_to_current_transform)		  { this->adjustAllToCurrent(vertexArray); }
 		else if (this->adjust_start_to_current_transform) { this->adjustStartToCurrent(vertexArray); }
 
 		this->reset();

@@ -149,15 +149,14 @@ int main()
 	//movementManager.linkMovementRoutine(&up_arrow, "Testowy");
 
 	sf::RectangleShape test_shape;
-	test_shape.setSize(sf::Vector2f(100.f, 50.f));
+	test_shape.setSize(sf::Vector2f(50.f, 50.f));
 	test_shape.setFillColor(sf::Color::Red);
 	test_shape.setPosition(100.f, 100.f);
 
 	
 	auto* routine = movementManager.createMovementRoutine("Testowy");
-	routine->addMovement(new movementInfo(sf::Vector2f(200.f, 200.f), sf::Vector2f(500.f, 500.f), 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 1.f));
-	routine->addMovement(new movementInfo(sf::Vector2f(500.f, 500.f), sf::Vector2f(400.f, 800.f), 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_BOUNCE), false, 0.f, 0.5f));
-	routine->addMovement(new movementInfo(sf::Vector2f(400.f, 800.f), sf::Vector2f(200.f, 800.f), 1.f, MovementContainer.getFunctionPointer(MovementContainer::OUT_EXPO), false, 2.f, 0.f));
+	routine->addMovement(new movementInfo(sf::Vector2f(50.f, 50.f), sf::Vector2f(100.f, 100.f), 0.5f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.f, 0.f));
+	routine->addMovement(new movementInfo(sf::Vector2f(100.f, 100.f), sf::Vector2f(100.f, 50.f), 0.5f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.f, 0.0f));
 	routine->adjustAllToCurrentTransform(true);
 	routine->setLooping(true);
 	movementManager.linkMovementRoutine(&test_shape, "Testowy");

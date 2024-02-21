@@ -3,10 +3,13 @@
 #include "SFML\Graphics.hpp"
 #include "Graph.h"
 #include <Windows.h>
+#include <random>
+
 int iterator = 0;
 
 int main()
 {
+	srand(time(NULL));
 	sf::ContextSettings settings;
 	settings.antialiasingLevel = 16;
 	sf::RenderWindow window(sf::VideoMode(1920, 1080), "Ease functions", sf::Style::Fullscreen, settings);
@@ -119,10 +122,10 @@ int main()
 	// TODO: Dodaæ lepsze zarz¹dzanie pocz¹tkiem i koñcem animacji
 	//MovementContainer.addMovement(&up_arrow, sf::Vector2f(960.f, 50.f), sf::Vector2f(960.f, 30.f), arrow_movement_time, MovementContainer::IN_OUT_SINE, true, arrow_delay_before, arrow_delay_after);
 	//MovementContainer.addMovement(&down_arrow, sf::Vector2f(960.f, 1030.f), sf::Vector2f(960.f, 1050.f), arrow_movement_time, MovementContainer::IN_OUT_SINE, true, arrow_delay_before, arrow_delay_after);
-	MovementContainer.addScaling(&up_arrow, { 1.1f, 1.1f }, arrow_scaling_time, MovementContainer::IN_OUT_SINE, true, arrow_delay_before, arrow_delay_after);
+	/*MovementContainer.addScaling(&up_arrow, { 1.1f, 1.1f }, arrow_scaling_time, MovementContainer::IN_OUT_SINE, true, arrow_delay_before, arrow_delay_after);
 	MovementContainer.addScaling(&down_arrow, { 1.5f, 1.5f }, arrow_scaling_time, MovementContainer::IN_OUT_SINE, true, arrow_delay_before, arrow_delay_after);
 	MovementContainer.addRotation(&up_arrow, -10.f, 10.f, arrow_rotation_time, MovementContainer::IN_OUT_SINE, true, true, arrow_delay_before, arrow_delay_after);
-	MovementContainer.addRotation(&down_arrow, -10.f, 10.f, arrow_rotation_time, MovementContainer::IN_OUT_SINE, false, true, arrow_delay_before, arrow_delay_after);
+	MovementContainer.addRotation(&down_arrow, -10.f, 10.f, arrow_rotation_time, MovementContainer::IN_OUT_SINE, false, true, arrow_delay_before, arrow_delay_after);*/
 
 	sf::Clock dt_clock;
 	float dt;
@@ -135,19 +138,77 @@ int main()
 	}*/
 
 	// ----- Movement Container testing ----- //
-	sf::RectangleShape test_shape;
+	MovementManager movementManager;
+	auto* routine = movementManager.createMovementRoutineVA("Testowy");
+	routine->addMovement(new movementInfoVA(sf::Vector2f(500.f, 500.f), sf::Vector2f(700.f, 700.f), 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_SINE), false, 1.f, 1.f, &up_arrow));
+	//routine->addMovement(new movementInfoVA(sf::Vector2f(200.f, 200.f), sf::Vector2f(500.f, 500.f), 2.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, &up_arrow));
+	//routine->addMovement(new movementInfoVA(sf::Vector2f(500.f, 500.f), sf::Vector2f(400.f, 800.f), 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, &up_arrow));
+	//routine->addMovement(new movementInfoVA(sf::Vector2f(400.f, 800.f), sf::Vector2f(100.f, 100.f), 3.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, &up_arrow));
+	movementManager.linkMovementRoutine(&up_arrow, "Testowy");
+	movementManager.startMovementRoutine(&up_arrow, "Testowy");
+
+	/*sf::RectangleShape test_shape;
 	test_shape.setSize(sf::Vector2f(100.f, 50.f));
 	test_shape.setFillColor(sf::Color::Red);
-	test_shape.setPosition(200.f, 200.f);
+	test_shape.setPosition(100.f, 100.f);
 
-	MovementManager movementManager;
+	
 	auto* routine = movementManager.createMovementRoutine("Testowy");
 	routine->addMovement(new movementInfo(sf::Vector2f(200.f, 200.f), sf::Vector2f(500.f, 500.f), 2.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 1.f));
 	routine->addMovement(new movementInfo(sf::Vector2f(500.f, 500.f), sf::Vector2f(400.f, 800.f), 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_BOUNCE), false, 0.f, 0.5f));
 	routine->addMovement(new movementInfo(sf::Vector2f(400.f, 800.f), sf::Vector2f(200.f, 200.f), 3.f, MovementContainer.getFunctionPointer(MovementContainer::OUT_EXPO), false, 2.f, 0.f));
-	//routine->setLooping(true);
-	movementManager.linkMovementRoutine(&test_shape, "Testowy");
-	
+	routine->adjustAllToCurrentTransform(true);
+	routine->setLooping(true);
+	movementManager.linkMovementRoutine(&test_shape, "Testowy");*/
+
+	constexpr int test_shape_size = 10000;
+	constexpr int test_routine_size = 10000;
+	constexpr int max_movements_in_routine = 10;
+
+	printf("Size before:\n");
+	printf("Active: %lld\n", movementManager.getSizeShapeActive());
+	printf("Shape: %lld\n", movementManager.getSizeShape());
+	printf("Container: %lld\n", movementManager.getSizeContainer());
+
+
+
+	//sf::RectangleShape *test_shape = new sf::RectangleShape[test_shape_size];
+
+	/*for (int i = 0; i < test_shape_size; i++) {
+		test_shape[i].setSize(sf::Vector2f(5.f, 5.f));
+		test_shape[i].setFillColor(sf::Color::Blue);
+		test_shape[i].setPosition(100.f, 100.f);
+	}
+
+	for (size_t i = 0; i < test_routine_size; ++i) {
+		auto* routine = movementManager.createMovementRoutine("T" + std::to_string(i));
+		int count = 10;
+
+		sf::Vector2f previous = sf::Vector2f(100.f, 100.f);
+		for (size_t j = 0; j < count; ++j) {
+			sf::Vector2f end = sf::Vector2f(static_cast<float>(rand() % 1920), static_cast<float>(rand() % 1080));
+			routine->addMovement(new movementInfo(previous, end, 2.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.2f, 0.2f));
+			previous = end;
+		}
+			
+
+		routine->adjustAllToCurrentTransform(true);
+		routine->setLooping(true);
+
+	}
+
+	for (size_t i = 0; i < test_shape_size; ++i)
+		movementManager.linkMovementRoutine(&test_shape[i], "T" + std::to_string(i));
+
+	for (size_t i = 0; i < test_shape_size; ++i)
+		movementManager.startMovementRoutine(&test_shape[i], "T" + std::to_string(i));
+
+	printf("Size after:\n");
+	printf("Active: %lld\n", movementManager.getSizeShapeActive());
+	printf("Shape: %lld\n", movementManager.getSizeShape());
+	printf("Container: %lld\n", movementManager.getSizeContainer());*/
+
+	//movementManager.printAllRoutines();
 
 	while (window.isOpen())
 	{
@@ -163,6 +224,21 @@ int main()
 				window.close();
 
 			if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::Space)) {
+				
+				printf("Size before:\n");
+				printf("Active: %lld\n", movementManager.getSizeShapeActive());
+				printf("Shape: %lld\n", movementManager.getSizeShape());
+				printf("Container: %lld\n", movementManager.getSizeContainer());
+				movementManager.deleteMovementRoutine();
+				printf("Size after:\n");
+				printf("Active: %lld\n", movementManager.getSizeShapeActive());
+				printf("Shape: %lld\n", movementManager.getSizeShape());
+				printf("Container: %lld\n", movementManager.getSizeContainer());
+				//for (size_t i = 0; i < test_routine_size; ++i)
+				//	movementManager.deleteMovementRoutine("T" + std::to_string(i));
+			}
+
+			/*if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::Space)) {
 				printf("STARTED\n");
 				movementManager.startMovementRoutine(&test_shape, "Testowy");
 			}
@@ -181,6 +257,11 @@ int main()
 				printf("RESUMED\n");
 				movementManager.resumeMovementRoutine(&test_shape, "Testowy");
 			}
+
+			if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::U)) {
+				printf("UNLINKED\n");
+				movementManager.unlinkMovementRoutine(&test_shape, "Testowy");
+			}*/
 
 			if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::Up || event.key.code ==sf::Keyboard::W)) {
 				current_ease_type += rows;
@@ -247,11 +328,16 @@ int main()
 			//window.draw(up_arrow);
 			//window.draw(down_arrow);
 		}
+		window.draw(up_arrow);
+		//for(int i = 0; i < test_shape_size; ++i)
+		//	window.draw(test_shape[i]);
 
-		window.draw(test_shape);
+		//window.draw(test_shape);
 
 		window.display();
 	}
+
+	//delete[] test_shape;
 
 	return 0;
 }

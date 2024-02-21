@@ -1704,6 +1704,7 @@ void MovementRoutineEngine::updateVertexArray(float dt)
 						sf::Vector2f offset(static_cast<float>(movement->used_function(static_cast<double>(movement->current_time / movement->motion_duration))) * (movement->ending_pos.x - movement->starting_pos.x) + movement->starting_pos.x - movement->centroid.x,
 							static_cast<float>(movement->used_function(static_cast<double>(movement->current_time / movement->motion_duration))) * (movement->ending_pos.y - movement->starting_pos.y) + movement->starting_pos.y - movement->centroid.y);
 
+						printf("Offset: %f, %f\n", offset.x, offset.y);
 						this->updateMovementInfoVA(vertexarray, movement, offset);
 					}
 					else if (movement->current_time - dt == 0.f) {

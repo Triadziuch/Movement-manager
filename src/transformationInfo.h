@@ -2,8 +2,9 @@
 #include <SFML/Graphics.hpp>
 #include <math.h>
 
-// Movement info struct
-struct transformationInfo {
+// Movement info class
+class transformationInfo {
+public:
 	bool		 repeat = false;
 	float		 current_time{};
 	float		 motion_duration{};
@@ -32,9 +33,11 @@ struct transformationInfo {
 	const bool isFinished() const { return (this->current_time >= this->total_duration); }
 };
 
-struct movementInfo : public transformationInfo {
+class movementInfo : public transformationInfo {
+public:
 	sf::Vector2f starting_pos{};
 	sf::Vector2f ending_pos{};
+
 
 	movementInfo(sf::Vector2f _starting_pos, sf::Vector2f _ending_pos, float _motion_duration, double (*_used_function)(double), bool _repeat, float _delay_before, float _delay_after) :
 		transformationInfo{ _repeat, _motion_duration, _delay_before, _delay_after, _used_function }, starting_pos(_starting_pos), ending_pos(_ending_pos) {}
@@ -42,43 +45,19 @@ struct movementInfo : public transformationInfo {
 	movementInfo(const movementInfo& obj) :
 		transformationInfo{ obj.repeat, obj.current_time, obj.motion_duration, obj.delay_before, obj.delay_after, obj.used_function }, starting_pos(obj.starting_pos), ending_pos(obj.ending_pos) {}
 
-	bool update(float dt, sf::Shape* _shape) {
-		this->current_time += dt;
+	const sf::Vector2f getStartingPos() const { return this->starting_pos; }
+	const sf::Vector2f getEndingPos()	const { return this->ending_pos; }
 
-		if (this->isDone()) {
-			if (this->current_time - this->delay_before - dt < this->motion_duration)
-				this->ending_pos = this->ending_pos;
-
-			if (this->repeat) {
-				if (this->current_time - this->motion_duration - this->delay_before >= this->delay_after) {
-					this->starting_pos = this->ending_pos;
-
-					this->current_time -= this->total_duration;
-				}
-			}
-			else {
-				_shape->setPosition(this->ending_pos);
-				return false;
-			}
-		}
-		else {
-			if (this->current_time > this->delay_before) {
-				sf::Vector2f new_position(static_cast<float>(this->used_function(static_cast<double>((this->current_time - this->delay_before) / this->motion_duration))) * (this->ending_pos.x - this->starting_pos.x) + this->starting_pos.x,
-					static_cast<float>(this->used_function(static_cast<double>((this->current_time - this->delay_before) / this->motion_duration))) * (this->ending_pos.y - this->starting_pos.y) + this->starting_pos.y);
-
-				_shape->setPosition(new_position);
-			}
-			else if (this->current_time - dt == 0.f)
-				_shape->setPosition(this->starting_pos);
-		}
-
-		return true;
-	}
+	void adjustStartingPositionByOffset(const sf::Vector2f& _offset) { this->starting_pos += _offset; }
+	void adjustEndingPositionByOffset(const sf::Vector2f& _offset)	 { this->ending_pos += _offset; }
+	void adjustMovementByOffset(const sf::Vector2f& _offset)		 { this->starting_pos += _offset; this->ending_pos += _offset; }
 };
 
-struct scalingInfo : public transformationInfo {
+class scalingInfo : public transformationInfo {
+public:
 	sf::Vector2f starting_scale{};
 	sf::Vector2f ending_scale{};
+
 
 	scalingInfo(sf::Vector2f _starting_scale, sf::Vector2f _ending_scale, float _motion_duration, double(*_used_function)(double), bool _repeat, float _delay_before, float _delay_after) :
 		transformationInfo{ _repeat, _motion_duration, _delay_before, _delay_after, _used_function }, starting_scale(_starting_scale), ending_scale(_ending_scale) {}
@@ -87,10 +66,12 @@ struct scalingInfo : public transformationInfo {
 		transformationInfo{ obj.repeat, obj.current_time, obj.motion_duration, obj.delay_before, obj.delay_after, obj.used_function }, starting_scale(obj.starting_scale), ending_scale(obj.ending_scale) {}
 };
 
-struct rotationInfo : public transformationInfo {
+class rotationInfo : public transformationInfo {
+public:
 	float starting_rotation{};
 	float ending_rotation{};
 	bool  clockwise = true;
+
 
 	rotationInfo(float _starting_rotation, float _ending_rotation, float _motion_duration, double(*_used_function)(double), bool _repeat, float _delay_before, float _delay_after, bool _clockwise) :
 		transformationInfo{ _repeat, _motion_duration, _delay_before, _delay_after, _used_function }, starting_rotation(_starting_rotation), ending_rotation(_ending_rotation), clockwise(_clockwise) {}
@@ -132,9 +113,11 @@ struct rotationInfo : public transformationInfo {
 
 // TODO: Dodaæ sprawdzanie, czy przypadkiem nie zmieniliœmy liczby wierzcho³ków i w razie potrzeby zaktualizowaæ centroid i originalVertex
 
-struct transformationInfoVA : public transformationInfo {
+class transformationInfoVA : public transformationInfo {
+public:
 	sf::VertexArray	 originalVertex{};
 	sf::Vector2f	 centroid{};
+
 
 	transformationInfoVA() = default;
 
@@ -156,12 +139,21 @@ struct transformationInfoVA : public transformationInfo {
 
 	transformationInfoVA(const transformationInfoVA& obj) :
 		transformationInfo{ obj.repeat, obj.current_time, obj.motion_duration, obj.delay_before, obj.delay_after, obj.used_function }, originalVertex(obj.originalVertex), centroid(obj.centroid) {}
+
+	void moveCentroid(const sf::Vector2f& _offset) { this->centroid += _offset; }
+
+	void moveOriginalVertex(const sf::Vector2f& _offset) {
+		for (size_t i = 0; i < this->originalVertex.getVertexCount(); i++)
+			this->originalVertex.operator[](i).position += _offset;
+	}
 };
 
-struct movementInfoVA : public transformationInfoVA {
+class movementInfoVA : public transformationInfoVA {
+public:
 	sf::Vector2f starting_pos{};
 	sf::Vector2f ending_pos{};
 	sf::Vector2f originalCentroid{};
+
 
 	movementInfoVA(sf::Vector2f _starting_pos, sf::Vector2f _ending_pos, float _motion_duration, double(*_used_function)(double), bool _repeat, float _delay_before, float _delay_after, sf::VertexArray* _vertexarray) :
 		transformationInfoVA{ _repeat, _motion_duration, _delay_before, _delay_after, _used_function, _vertexarray }, starting_pos(_starting_pos), ending_pos(_ending_pos) {
@@ -170,12 +162,16 @@ struct movementInfoVA : public transformationInfoVA {
 
 	movementInfoVA(const movementInfoVA& obj) :
 		transformationInfoVA{ obj.repeat, obj.current_time, obj.motion_duration, obj.delay_before, obj.delay_after, obj.used_function, const_cast<sf::VertexArray*>(&obj.originalVertex) }, starting_pos(obj.starting_pos), ending_pos(obj.ending_pos), originalCentroid(obj.originalCentroid) {}
+
+	void recalculateOriginalCentroid() { this->originalCentroid = this->centroid; }
 };
 
-struct scalingInfoVA : public transformationInfoVA {
+class scalingInfoVA : public transformationInfoVA {
+public:
 	sf::Vector2f starting_scale{};
 	sf::Vector2f ending_scale{};
 	sf::Vector2f current_scale{};
+
 
 	scalingInfoVA(sf::Vector2f _starting_scale, sf::Vector2f _ending_scale, float _motion_duration, double(*_used_function)(double), bool _repeat, float _delay_before, float _delay_after, sf::VertexArray* _vertexarray) :
 		transformationInfoVA{ _repeat, _motion_duration, _delay_before, _delay_after, _used_function, _vertexarray }, starting_scale(_starting_scale), ending_scale(_ending_scale), current_scale(_starting_scale) {}
@@ -184,11 +180,13 @@ struct scalingInfoVA : public transformationInfoVA {
 		transformationInfoVA{ obj.repeat, obj.current_time, obj.motion_duration, obj.delay_before, obj.delay_after, obj.used_function, const_cast<sf::VertexArray*>(&obj.originalVertex) }, starting_scale(obj.starting_scale), ending_scale(obj.ending_scale), current_scale(obj.current_scale) {}
 };
 
-struct rotationInfoVA : public transformationInfoVA {
+class rotationInfoVA : public transformationInfoVA {
+public:
 	float starting_rotation{};
 	float ending_rotation{};
 	float current_rotation{};
 	bool  clockwise = true;
+
 
 	rotationInfoVA(float _starting_rotation, float _ending_rotation, float _motion_duration, double(*_used_function)(double), sf::VertexArray* _vertexarray, bool _repeat, float _delay_before, float _delay_after, bool _clockwise) :
 		transformationInfoVA{ _repeat, _motion_duration, _delay_before, _delay_after, _used_function, _vertexarray }, starting_rotation(_starting_rotation), ending_rotation(_ending_rotation), current_rotation(_starting_rotation), clockwise(_clockwise) {}

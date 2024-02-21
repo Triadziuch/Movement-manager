@@ -63,17 +63,18 @@ MovementRoutine* MovementRoutineContainer::createRoutine(const std::string& _nam
 
 void MovementRoutineContainer::clear()
 {
+	for (auto routine : movementRoutines) delete routine.second;
 	movementRoutines.clear();
 }
 
-void MovementRoutineContainer::removeRoutine(const std::string& _name)
+void MovementRoutineContainer::deleteRoutine(const std::string& _name)
 {
-	auto* movementRoutineExists = exists(_name);
+	auto movementRoutineFound = this->movementRoutines.find(_name);
 
-	if (movementRoutineExists != nullptr)
-		movementRoutines.erase(_name);
-	else
-		printf("MovementRoutineContainer::removeRoutine: Routine with given name does not exist\n");
+	if (movementRoutineFound != this->movementRoutines.end()) {
+		delete movementRoutineFound->second;
+		this->movementRoutines.erase(movementRoutineFound);
+	}
 }
 
 // - - - - - - - - - - - - - - - - - - - - MovementRoutineVAContainer - - - - - - - - - - - - - - - - - - - - \\
@@ -139,17 +140,18 @@ MovementRoutineVA* MovementRoutineVAContainer::createRoutine(const std::string& 
 
 void MovementRoutineVAContainer::clear()
 {
+	for (auto& routine : movementRoutines) delete routine.second;
 	movementRoutines.clear();
 }
 
-void MovementRoutineVAContainer::removeRoutine(const std::string& _name)
+void MovementRoutineVAContainer::deleteRoutine(const std::string& _name)
 {
-	auto* movementRoutineExists = exists(_name);
+	auto movementRoutineFound = this->movementRoutines.find(_name);
 
-	if (movementRoutineExists != nullptr)
-		movementRoutines.erase(_name);
-	else
-		printf("MovementRoutineVAContainer::removeRoutine: Routine with given name does not exist\n");
+	if (movementRoutineFound != this->movementRoutines.end()){
+		delete movementRoutineFound->second;
+		this->movementRoutines.erase(movementRoutineFound);
+	}
 }
 
 // - - - - - - - - - - - - - - - - - - - - ScalingRoutineContainer - - - - - - - - - - - - - - - - - - - - \\
@@ -218,14 +220,16 @@ void ScalingRoutineContainer::clear()
 	scalingRoutines.clear();
 }
 
-void ScalingRoutineContainer::removeRoutine(const std::string& _name)
+void ScalingRoutineContainer::deleteRoutine(const std::string& _name)
 {
-	auto* scalingRoutineExists = exists(_name);
+	auto scalingRoutineFound = this->scalingRoutines.find(_name);
 
-	if (scalingRoutineExists != nullptr)
-		scalingRoutines.erase(_name);
+	if (scalingRoutineFound != this->scalingRoutines.end()) {
+		delete scalingRoutineFound->second;
+		this->scalingRoutines.erase(scalingRoutineFound);
+	}
 	else
-		printf("ScalingRoutineContainer::removeRoutine: Routine with given name does not exist\n");
+		printf("ScalingRoutineContainer::deleteRoutine: Routine with given name does not exist\n");
 }
 
 // - - - - - - - - - - - - - - - - - - - - ScalingRoutineVAContainer - - - - - - - - - - - - - - - - - - - - \\
@@ -294,14 +298,16 @@ void ScalingRoutineVAContainer::clear()
 	scalingRoutines.clear();
 }
 
-void ScalingRoutineVAContainer::removeRoutine(const std::string& _name)
+void ScalingRoutineVAContainer::deleteRoutine(const std::string& _name)
 {
-	auto* scalingRoutineExists = exists(_name);
+	auto scalingRoutineFound = this->scalingRoutines.find(_name);
 
-	if (scalingRoutineExists != nullptr)
-		scalingRoutines.erase(_name);
+	if (scalingRoutineFound != this->scalingRoutines.end()) {
+		delete scalingRoutineFound->second;
+		this->scalingRoutines.erase(scalingRoutineFound);
+	}
 	else
-		printf("ScalingRoutineVAContainer::removeRoutine: Routine with given name does not exist\n");
+		printf("ScalingRoutineVAContainer::deleteRoutine: Routine with given name does not exist\n");
 }
 
 // - - - - - - - - - - - - - - - - - - - - RotationRoutineContainer - - - - - - - - - - - - - - - - - - - - \\
@@ -370,14 +376,14 @@ void RotationRoutineContainer::clear()
 	rotationRoutines.clear();
 }
 
-void RotationRoutineContainer::removeRoutine(const std::string& _name)
+void RotationRoutineContainer::deleteRoutine(const std::string& _name)
 {
-	auto* rotationRoutineExists = exists(_name);
+	auto rotationRoutineFound = this->rotationRoutines.find(_name);
 
-	if (rotationRoutineExists != nullptr)
-		rotationRoutines.erase(_name);
-	else
-		printf("RotationRoutineContainer::removeRoutine: Routine with given name does not exist\n");
+	if (rotationRoutineFound != this->rotationRoutines.end()) {
+		delete rotationRoutineFound->second;
+		this->rotationRoutines.erase(rotationRoutineFound);
+	}
 }
 
 
@@ -447,12 +453,14 @@ void RotationRoutineVAContainer::clear()
 	rotationRoutines.clear();
 }
 
-void RotationRoutineVAContainer::removeRoutine(const std::string& _name)
+void RotationRoutineVAContainer::deleteRoutine(const std::string& _name)
 {
-	auto* rotationRoutineExists = exists(_name);
+	auto rotationRoutineFound = this->rotationRoutines.find(_name);
 
-	if (rotationRoutineExists != nullptr)
-		rotationRoutines.erase(_name);
+	if (rotationRoutineFound != this->rotationRoutines.end()) {
+		delete rotationRoutineFound->second;
+		this->rotationRoutines.erase(rotationRoutineFound);
+	}
 	else
-		printf("RotationRoutineVAContainer::removeRoutine: Routine with given name does not exist\n");
+		printf("RotationRoutineVAContainer::deleteRoutine: Routine with given name does not exist\n");
 }

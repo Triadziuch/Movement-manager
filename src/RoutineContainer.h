@@ -17,7 +17,10 @@ private:
 public:
 	MovementRoutineContainer() {}
 	MovementRoutineContainer(MovementRoutineEngine* _movementRoutineEnginePtr) : RoutineContainer{ _movementRoutineEnginePtr } {}
-	~MovementRoutineContainer() { movementRoutines.clear(); }
+	~MovementRoutineContainer() { 
+		for (auto routine : movementRoutines) delete routine.second;
+		movementRoutines.clear(); 
+	}
 
 	// Check if routine with given name already exists
 	MovementRoutine* exists(const std::string& _name);
@@ -36,7 +39,17 @@ public:
 	void clear();
 
 	// Remove routine with given name
-	void removeRoutine(const std::string& _name);
+	void deleteRoutine(const std::string& _name);
+
+	// Get routine count
+	size_t routineCount() { return movementRoutines.size(); }
+
+	// Get size
+	long long int size() {
+		long long int size = 0;
+		for (auto& routine : movementRoutines) size += routine.second->size();
+		return size + sizeof(movementRoutines);
+	}
 };
 
 class MovementRoutineVAContainer : protected RoutineContainer {
@@ -46,7 +59,10 @@ private:
 public:
 	MovementRoutineVAContainer() {}
 	MovementRoutineVAContainer(MovementRoutineEngine* _movementRoutineEnginePtr) : RoutineContainer{ _movementRoutineEnginePtr } {}
-	~MovementRoutineVAContainer() { movementRoutines.clear(); }
+	~MovementRoutineVAContainer() {
+		for (auto& routine : movementRoutines) delete routine.second;
+		movementRoutines.clear();
+	}
 
 	// Check if routine with given name already exists
 	MovementRoutineVA* exists(const std::string& _name);
@@ -65,7 +81,10 @@ public:
 	void clear();
 
 	// Remove routine with given name
-	void removeRoutine(const std::string& _name);
+	void deleteRoutine(const std::string& _name);
+
+	// Get routine count
+	size_t routineCount() { return movementRoutines.size(); }
 };
 
 class ScalingRoutineContainer : protected RoutineContainer {
@@ -94,7 +113,7 @@ public:
 	void clear();
 
 	// Remove routine with given name
-	void removeRoutine(const std::string& _name);
+	void deleteRoutine(const std::string& _name);
 };
 
 class ScalingRoutineVAContainer : protected RoutineContainer {
@@ -124,7 +143,7 @@ public:
 	void clear();
 
 	// Remove routine with given name
-	void removeRoutine(const std::string& _name);
+	void deleteRoutine(const std::string& _name);
 };
 
 class RotationRoutineContainer : protected RoutineContainer {
@@ -154,7 +173,7 @@ public:
 	void clear();
 
 	// Remove routine with given name
-	void removeRoutine(const std::string& _name);
+	void deleteRoutine(const std::string& _name);
 };
 
 class RotationRoutineVAContainer : protected RoutineContainer {
@@ -184,5 +203,5 @@ public:
 	void clear();
 
 	// Remove routine with given name
-	void removeRoutine(const std::string& _name);
+	void deleteRoutine(const std::string& _name);
 };

@@ -5,7 +5,7 @@ class MovementContainerBase;
 class MovementRoutineEngine;
 
 class TransformationRoutine {
-protected:
+public:
 	MovementRoutineEngine*  movementRoutineEngine;
 	std::string			routine_name{};
 	size_t				current{};
@@ -13,17 +13,19 @@ protected:
 	bool				is_active{};
 	bool				is_looping{};
 	bool				is_paused{};
-	bool				adjust_to_current_transform{};
+	bool				adjust_start_to_current_transform{};
+	bool				adjust_all_to_current_transform{};
 
 public:
 	TransformationRoutine() {}
 	TransformationRoutine(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr) { this->routine_name = name; this->movementRoutineEngine = _movementRoutineEnginePtr; }
 	TransformationRoutine(const TransformationRoutine& obj) :
-		movementRoutineEngine(obj.movementRoutineEngine), routine_name(obj.routine_name), current(obj.current), count(obj.count), is_active(obj.is_active), is_looping(obj.is_looping), is_paused(obj.is_paused) {}
+		movementRoutineEngine(obj.movementRoutineEngine), routine_name(obj.routine_name), current(obj.current), count(obj.count), is_active(obj.is_active), is_looping(obj.is_looping), is_paused(obj.is_paused), adjust_start_to_current_transform(obj.adjust_start_to_current_transform), adjust_all_to_current_transform(obj.adjust_all_to_current_transform) {}
 
 	void setLooping(bool _looping) { this->is_looping = _looping; }
 
-	void setAdjustToCurrentTransform(bool _adjust) { this->adjust_to_current_transform = _adjust; }
+	void adjustStartToCurrentTransform(bool _adjust) { this->adjust_start_to_current_transform = _adjust; }
+	void adjustAllToCurrentTransform(bool _adjust) { this->adjust_all_to_current_transform = _adjust; }
 
 	// Pause routine
 	void pause() { this->is_paused = true; }
@@ -32,17 +34,24 @@ public:
 	void resume() { this->is_paused = false; }
 };
 
-class MovementRoutine : protected TransformationRoutine {
+class MovementRoutine : public TransformationRoutine {
+private:
 	std::vector <movementInfo*> routine_movements;
 
+	void adjustStartToCurrent(sf::Vector2f current_position);
+	void adjustAllToCurrent(sf::Vector2f current_position);
+
+public:
 	MovementRoutine() {}
 	MovementRoutine(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr) : TransformationRoutine{ name, _movementRoutineEnginePtr } {};
 	MovementRoutine(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr, movementInfo* movement) : TransformationRoutine{ name, _movementRoutineEnginePtr } { this->routine_movements.emplace_back(movement); }
 	MovementRoutine(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr, std::vector<movementInfo*> movements) : TransformationRoutine{ name, _movementRoutineEnginePtr } { this->routine_movements = movements; }
-	MovementRoutine(const MovementRoutine& obj) : TransformationRoutine{ obj }, routine_movements(obj.routine_movements) {}
-	~MovementRoutine() { routine_movements.clear(); }
+	MovementRoutine(const MovementRoutine& obj) : TransformationRoutine{ obj } {
+		for (auto movement : obj.routine_movements) 
+			this->routine_movements.push_back(new movementInfo(*movement));
+	}
+	~MovementRoutine() { for (auto movement : routine_movements) delete movement; routine_movements.clear(); }
 
-public:
 	// Add movement to routine
 	void addMovement(movementInfo* movement);
 
@@ -67,19 +76,33 @@ public:
 	movementInfo* getCurrentMovement();
 
 	const bool goToNextMovement();
+
+	// get size
+	long long int size() {
+		long long int size = 0;
+		for (auto movement : routine_movements) size += sizeof(*movement);
+		return size + sizeof(routine_movements);
+	}
 };
 
-class MovementRoutineVA : protected TransformationRoutine {
+class MovementRoutineVA : public TransformationRoutine {
+private:
 	std::vector <movementInfoVA*> routine_movements;
 
+	void calculateCentroids(sf::VertexArray* vertexarray);
+
+public:
 	MovementRoutineVA() {}
 	MovementRoutineVA(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr) : TransformationRoutine{ name, _movementRoutineEnginePtr } {};
 	MovementRoutineVA(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr, movementInfoVA* movement) : TransformationRoutine{ name, _movementRoutineEnginePtr } { this->routine_movements.emplace_back(movement); }
 	MovementRoutineVA(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr, std::vector<movementInfoVA*> movements) : TransformationRoutine{ name, _movementRoutineEnginePtr } { this->routine_movements = movements; }
-	MovementRoutineVA(const MovementRoutineVA& obj) : TransformationRoutine{ obj }, routine_movements(obj.routine_movements) {}
-	~MovementRoutineVA() { routine_movements.clear(); }
+	MovementRoutineVA(const MovementRoutineVA& obj) : TransformationRoutine{ obj } {
+		for (auto movement : obj.routine_movements)
+			this->routine_movements.push_back(new movementInfoVA(*movement));
+	}
 
-public:
+	~MovementRoutineVA() { for (auto& movement : routine_movements) delete movement; routine_movements.clear(); }
+
 	// Add movement to routine
 	void addMovement(movementInfoVA* movement);
 
@@ -104,9 +127,11 @@ public:
 	const bool goToNextMovement();
 };
 
-class ScalingRoutine : protected TransformationRoutine {
+class ScalingRoutine : public TransformationRoutine {
+private:
 	std::vector <scalingInfo*> routine_scalings;
 
+public:
 	ScalingRoutine() {}
 	ScalingRoutine(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr) : TransformationRoutine{ name, _movementRoutineEnginePtr } {};
 	ScalingRoutine(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr, scalingInfo* scaling) : TransformationRoutine{ name, _movementRoutineEnginePtr } { this->routine_scalings.emplace_back(scaling); }
@@ -114,7 +139,6 @@ class ScalingRoutine : protected TransformationRoutine {
 	ScalingRoutine(const ScalingRoutine& obj) : TransformationRoutine{ obj }, routine_scalings(obj.routine_scalings) {}
 	~ScalingRoutine() { routine_scalings.clear(); }
 
-public:
 	// Add scaling to routine
 	void addScaling(scalingInfo* scaling);
 
@@ -141,9 +165,11 @@ public:
 	const bool goToNextScaling();
 };
 
-class ScalingRoutineVA : protected TransformationRoutine {
+class ScalingRoutineVA : public TransformationRoutine {
+private:
 	std::vector <scalingInfoVA*> routine_scalings;
 
+public:
 	ScalingRoutineVA() {}
 	ScalingRoutineVA(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr) : TransformationRoutine{ name, _movementRoutineEnginePtr } {};
 	ScalingRoutineVA(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr, scalingInfoVA* scaling) : TransformationRoutine{ name, _movementRoutineEnginePtr } { this->routine_scalings.emplace_back(scaling); }
@@ -151,7 +177,6 @@ class ScalingRoutineVA : protected TransformationRoutine {
 	ScalingRoutineVA(const ScalingRoutineVA& obj) : TransformationRoutine{ obj }, routine_scalings(obj.routine_scalings) {}
 	~ScalingRoutineVA() { routine_scalings.clear(); }
 
-public:
 	// Add scaling to routine
 	void addScaling(scalingInfoVA* scaling);
 
@@ -176,9 +201,11 @@ public:
 	const bool goToNextScaling();
 };
 
-class RotationRoutine : protected TransformationRoutine {
+class RotationRoutine : public TransformationRoutine {
+private:
 	std::vector <rotationInfo*> routine_rotations;
 
+public:
 	RotationRoutine() {}
 	RotationRoutine(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr) : TransformationRoutine{ name, _movementRoutineEnginePtr } {};
 	RotationRoutine(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr, rotationInfo* rotation) : TransformationRoutine{ name, _movementRoutineEnginePtr } { this->routine_rotations.emplace_back(rotation); }
@@ -186,7 +213,6 @@ class RotationRoutine : protected TransformationRoutine {
 	RotationRoutine(const RotationRoutine& obj) : TransformationRoutine{ obj }, routine_rotations(obj.routine_rotations) {}
 	~RotationRoutine() { routine_rotations.clear(); }
 
-public:
 	// Add rotation to routine
 	void addRotation(rotationInfo* rotation);
 
@@ -213,9 +239,11 @@ public:
 	const bool goToNextRotation();
 };
 
-class RotationRoutineVA : protected TransformationRoutine {
+class RotationRoutineVA : public TransformationRoutine {
+private:
 	std::vector <rotationInfoVA*> routine_rotations;
 
+public:
 	RotationRoutineVA() {}
 	RotationRoutineVA(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr) : TransformationRoutine{ name, _movementRoutineEnginePtr } {};
 	RotationRoutineVA(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr, rotationInfoVA* rotation) : TransformationRoutine{ name, _movementRoutineEnginePtr } { this->routine_rotations.emplace_back(rotation); }
@@ -223,7 +251,6 @@ class RotationRoutineVA : protected TransformationRoutine {
 	RotationRoutineVA(const RotationRoutineVA& obj) : TransformationRoutine{ obj }, routine_rotations(obj.routine_rotations) {}
 	~RotationRoutineVA() { routine_rotations.clear(); }
 
-public:
 	// Add rotation to routine
 	void addRotation(rotationInfoVA* rotation);
 

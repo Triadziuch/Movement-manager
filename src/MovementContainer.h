@@ -4,13 +4,13 @@
 #include <map>
 #include <assert.h>
 
-struct TransformationRoutine;
-struct MovementRoutine;
-struct MovementRoutineVA;
-struct ScalingRoutine;
-struct ScalingRoutineVA;
-struct RotationRoutine;
-struct RotationRoutineVA;
+class TransformationRoutine;
+class MovementRoutine;
+class MovementRoutineVA;
+class ScalingRoutine;
+class ScalingRoutineVA;
+class RotationRoutine;
+class RotationRoutineVA;
 
 class MovementContainerBase {
 public:

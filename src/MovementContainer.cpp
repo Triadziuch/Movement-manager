@@ -83,12 +83,11 @@ void MovementContainer::updateShape(float dt)
 
 					movement->second->current_time -= movement->second->total_duration;
 				}
-
-				++movement;
 			}
 			else if (movement->second->isFinished()) {
 				delete movement->second;
 				movement = m_Movements_Shape.erase(movement);
+				continue;
 			}
 		}
 		else {
@@ -100,9 +99,9 @@ void MovementContainer::updateShape(float dt)
 			}
 			else if (movement->second->current_time - dt == 0.f)
 				movement->first->setPosition(movement->second->starting_pos);
-
-			++movement;
 		}
+
+		++movement;
 	}
 
 	for (auto scaling = this->m_Scalings_Shape.begin(); scaling != this->m_Scalings_Shape.end();) {
@@ -118,12 +117,11 @@ void MovementContainer::updateShape(float dt)
 					
 					scaling->second->current_time -= scaling->second->total_duration;
 				}
-
-				++scaling;
 			}
 			else if (scaling->second->isFinished()) {
 				delete scaling->second;
 				scaling = m_Scalings_Shape.erase(scaling);
+				continue;
 			}
 		}
 		else {
@@ -135,9 +133,9 @@ void MovementContainer::updateShape(float dt)
 			}
 			else if (scaling->second->current_time - dt == 0.f)
 				scaling->first->setScale(scaling->second->starting_scale);
-
-			++scaling;
 		}
+
+		++scaling;
 	}
 
 	for (auto rotation = this->m_Rotations_Shape.begin(); rotation != this->m_Rotations_Shape.end();) {
@@ -153,12 +151,11 @@ void MovementContainer::updateShape(float dt)
 
 					rotation->second->current_time -= rotation->second->total_duration;
 				}
-
-				++rotation;
 			}
 			else if (rotation->second->isFinished()) {
 				delete rotation->second;
 				rotation = m_Rotations_Shape.erase(rotation);
+				continue;
 			}
 		}
 		else{
@@ -166,9 +163,9 @@ void MovementContainer::updateShape(float dt)
 				rotation->first->setRotation(rotation->second->updateRotation());
 			else if (rotation->second->current_time - dt == 0.f)
 				rotation->first->setRotation(rotation->second->getStartingRotation());
-
-			++rotation;
 		}
+
+		++rotation;
 	}
 }
 
@@ -194,11 +191,11 @@ void MovementContainer::updateVertexArray(float dt)
 
 						movement->second->current_time -= movement->second->total_duration;
 					}
-					++movement;
 				}
 				else if (movement->second->isFinished()) {
 					delete movement->second;
 					movement = m_Movements_VA.erase(movement);
+					continue;
 				}
 			}
 			else {
@@ -212,12 +209,10 @@ void MovementContainer::updateVertexArray(float dt)
 					sf::Vector2f offset(movement->second->starting_pos - movement->second->centroid);
 					this->updateMovementInfoVA(movement->first, movement->second, offset);
 				}
-
-				++movement;
 			}
 		}
-		else
-			++movement;
+
+		++movement;
 	}
 
 	for (auto scaling = this->m_Scalings_VA.begin(); scaling != this->m_Scalings_VA.end();) {
@@ -242,12 +237,11 @@ void MovementContainer::updateVertexArray(float dt)
 
 						scaling->second->current_time -= scaling->second->total_duration;
 					}
-
-					++scaling;
 				}
 				else if (scaling->second->isFinished()) {
 					delete scaling->second;
 					scaling = m_Scalings_VA.erase(scaling);
+					continue;
 				}
 			}
 			else {
@@ -262,12 +256,10 @@ void MovementContainer::updateVertexArray(float dt)
 					scaling->second->current_scale = scaling->second->starting_scale;
 					updateScalingInfoVA(scaling->first, scaling->second);
 				}
-
-				++scaling;
 			}
 		}
-		else
-			++scaling;
+
+		++scaling;
 	}
 
 	for (auto rotation = this->m_Rotations_VA.begin(); rotation != this->m_Rotations_VA.end();) {
@@ -292,12 +284,11 @@ void MovementContainer::updateVertexArray(float dt)
 
 						rotation->second->current_time -= rotation->second->total_duration;
 					}
-
-					++rotation;
 				}
 				else if (rotation->second->isFinished()) {
 					delete rotation->second;
 					rotation = m_Rotations_VA.erase(rotation);
+					continue;
 				}
 			}
 			else{
@@ -309,12 +300,10 @@ void MovementContainer::updateVertexArray(float dt)
 					rotation->second->current_rotation = rotation->second->getStartingRotation();
 					updateRotationInfoVA(rotation->first, rotation->second);
 				}
-
-				++rotation;
 			}
 		}
-		else
-			++rotation;
+
+		++rotation;
 	}
 }
 
@@ -333,12 +322,11 @@ void MovementContainer::updateSprite(float dt)
 
 					movement->second->current_time -= movement->second->total_duration;
 				}
-
-				++movement;
 			}
 			else if (movement->second->isFinished()) {
 				delete movement->second;
 				movement = m_Movements_S.erase(movement);
+				continue;
 			}
 		}
 		else {
@@ -350,9 +338,8 @@ void MovementContainer::updateSprite(float dt)
 			}
 			else if (movement->second->current_time - dt == 0.f)
 				movement->first->setPosition(movement->second->starting_pos);
-
-			++movement;
 		}
+		++movement;
 	}
 
 	for (auto scaling = this->m_Scalings_S.begin(); scaling != this->m_Scalings_S.end();) {
@@ -368,12 +355,11 @@ void MovementContainer::updateSprite(float dt)
 
 					scaling->second->current_time -= scaling->second->total_duration;
 				}
-
-				++scaling;
 			}
 			else if (scaling->second->isFinished()) {
 				delete scaling->second;
 				scaling = m_Scalings_S.erase(scaling);
+				continue;
 			}
 		}
 		else {
@@ -385,9 +371,9 @@ void MovementContainer::updateSprite(float dt)
 			}
 			else if (scaling->second->current_time - dt == 0.f)
 				scaling->first->setScale(scaling->second->starting_scale);
-
-			++scaling;
 		}
+
+		++scaling;
 	}
 
 	for (auto rotation = this->m_Rotations_S.begin(); rotation != this->m_Rotations_S.end();) {
@@ -403,12 +389,11 @@ void MovementContainer::updateSprite(float dt)
 
 					rotation->second->current_time -= rotation->second->total_duration;
 				}
-
-				++rotation;
 			}
 			else if (rotation->second->isFinished()) {
 				delete rotation->second;
 				rotation = m_Rotations_S.erase(rotation);
+				continue;
 			}
 		}
 		else {
@@ -416,9 +401,9 @@ void MovementContainer::updateSprite(float dt)
 				rotation->first->setRotation(rotation->second->updateRotation());
 			else if (rotation->second->current_time - dt == 0.f)
 				rotation->first->setRotation(rotation->second->getStartingRotation());
-
-			++rotation;
 		}
+
+		++rotation;
 	}
 }
 
@@ -1552,13 +1537,12 @@ void MovementRoutineEngine::updateShape(float dt)
 
 						movement->current_time -= movement->total_duration;
 					}
-
-					++movementRoutine;
 				}
 				else if (movement->isFinished()) {
 					if (!movementRoutine->second->goToNextMovement()) {
 						movementRoutine->second = nullptr;
 						movementRoutine = m_Movement_Routines_Shape.erase(movementRoutine);
+						continue;
 					}
 				}
 			}
@@ -1571,12 +1555,10 @@ void MovementRoutineEngine::updateShape(float dt)
 				}
 				else if (movement->current_time - dt == 0.f)
 					shape->setPosition(movement->starting_pos);
-
-				++movementRoutine;
 			}
 		}
-		else
-			++movementRoutine;
+
+		++movementRoutine;
 	}
 
 	for (auto scalingRoutine = this->m_Scaling_Routines_Shape.begin(); scalingRoutine != this->m_Scaling_Routines_Shape.end();) {

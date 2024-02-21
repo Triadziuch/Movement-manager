@@ -139,6 +139,7 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\MovementContainer.cpp" />
     <ClCompile Include="src\MovementManager.cpp" />
+    <ClCompile Include="src\RoutineContainer.cpp" />
     <ClCompile Include="src\TransformationRoutine.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -146,6 +147,7 @@
     <ClInclude Include="src\Graph.h" />
     <ClInclude Include="src\MovementContainer.h" />
     <ClInclude Include="src\MovementManager.h" />
+    <ClInclude Include="src\RoutineContainer.h" />
     <ClInclude Include="src\transformationInfo.h" />
     <ClInclude Include="src\TransformationRoutine.h" />
   </ItemGroup>

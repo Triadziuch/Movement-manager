@@ -2,7 +2,7 @@
 #include "TransformationRoutine.h"
 #include "MovementContainer.h"
 
-// - - - - - - - - - - MovementRoutine - - - - - - - - - - \\
+// - - - - - - - - - - - - - - - - - - - - MovementRoutine - - - - - - - - - - - - - - - - - - - - \\
 
 void MovementRoutine::addMovement(movementInfo* movement) 
 {
@@ -42,7 +42,7 @@ void MovementRoutine::reset()
 
 const bool MovementRoutine::start(sf::Shape* shape) 
 {
-	if (this->routine_movements.size() != 0) {
+	if (!this->is_active && this->routine_movements.size() != 0) {
 		this->reset();
 
 		this->current = 0;
@@ -108,7 +108,7 @@ const bool MovementRoutine::goToNextMovement()
 	}
 }
 
-// - - - - - - - - - - MovementRoutineVA - - - - - - - - - - \\
+// - - - - - - - - - - - - - - - - - - - - MovementRoutineVA - - - - - - - - - - - - - - - - - - - - \\
 
 void MovementRoutineVA::addMovement(movementInfoVA * movement)
 {
@@ -190,7 +190,7 @@ const bool MovementRoutineVA::goToNextMovement()
 	}
 }
 
-// - - - - - - - - - - ScalingRoutine - - - - - - - - - - \\
+// - - - - - - - - - - - - - - - - - - - - ScalingRoutine - - - - - - - - - - - - - - - - - - - - \\
 
 void ScalingRoutine::addScaling(scalingInfo* scaling)
 {
@@ -293,7 +293,7 @@ const bool ScalingRoutine::goToNextScaling()
 	}
 }
 
-// - - - - - - - - - - ScalingRoutineVA - - - - - - - - - - \\
+// - - - - - - - - - - - - - - - - - - - - ScalingRoutineVA - - - - - - - - - - - - - - - - - - - - \\
 
 void ScalingRoutineVA::addScaling(scalingInfoVA* scaling)
 {
@@ -375,7 +375,7 @@ const bool ScalingRoutineVA::goToNextScaling()
 	}
 }
 
-// - - - - - - - - - - RotationRoutine - - - - - - - - - - \\
+// - - - - - - - - - - - - - - - - - - - - RotationRoutine - - - - - - - - - - - - - - - - - - - - \\
 
 void RotationRoutine::addRotation(rotationInfo* rotation)
 {
@@ -478,7 +478,7 @@ const bool RotationRoutine::goToNextRotation()
 	}
 }
 
-// - - - - - - - - - - RotationVARoutine - - - - - - - - - - \\
+// - - - - - - - - - - - - - - - - - - - - RotationVARoutine - - - - - - - - - - - - - - - - - - - - \\
 
 void RotationRoutineVA::addRotation(rotationInfoVA* rotation)
 {

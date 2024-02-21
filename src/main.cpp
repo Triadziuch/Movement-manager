@@ -145,7 +145,7 @@ int main()
 	routine->addMovement(new movementInfo(sf::Vector2f(200.f, 200.f), sf::Vector2f(500.f, 500.f), 2.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 1.f));
 	routine->addMovement(new movementInfo(sf::Vector2f(500.f, 500.f), sf::Vector2f(400.f, 800.f), 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_BOUNCE), false, 0.f, 0.5f));
 	routine->addMovement(new movementInfo(sf::Vector2f(400.f, 800.f), sf::Vector2f(200.f, 200.f), 3.f, MovementContainer.getFunctionPointer(MovementContainer::OUT_EXPO), false, 2.f, 0.f));
-	routine->setLooping(true);
+	//routine->setLooping(true);
 	movementManager.linkMovementRoutine(&test_shape, "Testowy");
 	
 
@@ -165,6 +165,21 @@ int main()
 			if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::Space)) {
 				printf("STARTED\n");
 				movementManager.startMovementRoutine(&test_shape, "Testowy");
+			}
+
+			if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::S)) {
+				printf("STOPPED\n");
+				movementManager.stopMovementRoutine(&test_shape, "Testowy");
+			}
+
+			if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::P)) {
+				printf("PAUSED\n");
+				movementManager.pauseMovementRoutine(&test_shape, "Testowy");
+			}
+
+			if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::R)) {
+				printf("RESUMED\n");
+				movementManager.resumeMovementRoutine(&test_shape, "Testowy");
 			}
 
 			if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::Up || event.key.code ==sf::Keyboard::W)) {

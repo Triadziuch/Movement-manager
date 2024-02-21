@@ -4,8 +4,8 @@
 class MovementContainerBase;
 class MovementRoutineEngine;
 
-struct TransformationRoutine {
-public:
+class TransformationRoutine {
+protected:
 	MovementRoutineEngine*  movementRoutineEngine;
 	std::string			routine_name{};
 	size_t				current{};
@@ -13,13 +13,17 @@ public:
 	bool				is_active{};
 	bool				is_looping{};
 	bool				is_paused{};
+	bool				adjust_to_current_transform{};
 
+public:
 	TransformationRoutine() {}
 	TransformationRoutine(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr) { this->routine_name = name; this->movementRoutineEngine = _movementRoutineEnginePtr; }
 	TransformationRoutine(const TransformationRoutine& obj) :
 		movementRoutineEngine(obj.movementRoutineEngine), routine_name(obj.routine_name), current(obj.current), count(obj.count), is_active(obj.is_active), is_looping(obj.is_looping), is_paused(obj.is_paused) {}
 
 	void setLooping(bool _looping) { this->is_looping = _looping; }
+
+	void setAdjustToCurrentTransform(bool _adjust) { this->adjust_to_current_transform = _adjust; }
 
 	// Pause routine
 	void pause() { this->is_paused = true; }
@@ -28,7 +32,7 @@ public:
 	void resume() { this->is_paused = false; }
 };
 
-struct MovementRoutine : public TransformationRoutine {
+class MovementRoutine : protected TransformationRoutine {
 	std::vector <movementInfo*> routine_movements;
 
 	MovementRoutine() {}
@@ -65,7 +69,7 @@ public:
 	const bool goToNextMovement();
 };
 
-struct MovementRoutineVA : public TransformationRoutine {
+class MovementRoutineVA : protected TransformationRoutine {
 	std::vector <movementInfoVA*> routine_movements;
 
 	MovementRoutineVA() {}
@@ -100,7 +104,7 @@ public:
 	const bool goToNextMovement();
 };
 
-struct ScalingRoutine : public TransformationRoutine {
+class ScalingRoutine : protected TransformationRoutine {
 	std::vector <scalingInfo*> routine_scalings;
 
 	ScalingRoutine() {}
@@ -137,7 +141,7 @@ public:
 	const bool goToNextScaling();
 };
 
-struct ScalingRoutineVA : public TransformationRoutine {
+class ScalingRoutineVA : protected TransformationRoutine {
 	std::vector <scalingInfoVA*> routine_scalings;
 
 	ScalingRoutineVA() {}
@@ -172,7 +176,7 @@ public:
 	const bool goToNextScaling();
 };
 
-struct RotationRoutine : public TransformationRoutine {
+class RotationRoutine : protected TransformationRoutine {
 	std::vector <rotationInfo*> routine_rotations;
 
 	RotationRoutine() {}
@@ -209,7 +213,7 @@ public:
 	const bool goToNextRotation();
 };
 
-struct RotationRoutineVA : public TransformationRoutine {
+class RotationRoutineVA : protected TransformationRoutine {
 	std::vector <rotationInfoVA*> routine_rotations;
 
 	RotationRoutineVA() {}
@@ -242,427 +246,4 @@ public:
 	rotationInfoVA* getCurrentRotation();
 
 	const bool goToNextRotation();
-};
-
-struct MovementRoutineContainer {
-private:
-	std::map<std::string, MovementRoutine*> movementRoutines{};
-	MovementRoutineEngine* movementRoutineEngine{};
-
-public:
-	MovementRoutineContainer() {}
-	MovementRoutineContainer(MovementRoutineEngine* _movementRoutineEnginePtr) { this->movementRoutineEngine = _movementRoutineEnginePtr; }
-	~MovementRoutineContainer() { movementRoutines.clear(); movementRoutineEngine = nullptr; }
-
-	// Check if routine with given name already exists
-	MovementRoutine* exists(const std::string& _name) {
-		auto movementRoutineFound = movementRoutines.find(_name);
-
-		if (movementRoutineFound != movementRoutines.end())
-			return movementRoutineFound->second;
-		else
-			return nullptr;
-	}
-
-	// Get routine value by name
-	MovementRoutine getRoutine(const std::string& _name) {
-		if (exists(_name) != nullptr)
-			return *movementRoutines[_name];
-		else {
-			printf("MovementRoutineContainer::getRoutine: Routine with given name does not exist\n");
-			return MovementRoutine();
-		}
-	}
-
-	// Get routine pointer by name
-	MovementRoutine* getRoutinePtr(const std::string& _name) {
-		auto* movementRoutineExists = exists(_name);
-
-		if (movementRoutineExists == nullptr)
-			printf("MovementRoutineContainer::getRoutine: Routine with given name does not exist\n");
-
-		return movementRoutineExists;
-	}
-
-	// Create routine with given name. If routine with given name already exists, return pointer to it. Else, create new routine.
-	MovementRoutine* createRoutine(const std::string& _name) {
-		auto* movementRoutineExists = exists(_name);
-
-		if (movementRoutineExists != nullptr) {
-			printf("MovementRoutineContainer::createRoutine: Routine with given name already exists 1\n");
-			return movementRoutineExists;
-		}
-		else {
-			MovementRoutine* newMovementRoutine = new MovementRoutine(_name, movementRoutineEngine);
-			movementRoutines.insert(std::make_pair(_name, newMovementRoutine));
-			return newMovementRoutine;
-		}
-	}
-
-	MovementRoutine* createRoutine(const std::string& _name, MovementRoutine* _movement_routine) {
-		auto* movementRoutineExists = exists(_name);
-
-		if (movementRoutineExists != nullptr) {
-			printf("MovementRoutineContainer::createRoutine: Routine with given name already exists 2\n");
-			return movementRoutineExists;
-		}
-		else {
-			movementRoutines.insert(std::make_pair(_name, _movement_routine));
-			return _movement_routine;
-		}
-	}
-
-	// Remove routine with given name
-	void removeRoutine(const std::string& _name) {
-		auto* movementRoutineExists = exists(_name);
-
-		if (movementRoutineExists != nullptr)
-			movementRoutines.erase(_name);
-		else
-			printf("MovementRoutineContainer::removeRoutine: Routine with given name does not exist\n");
-	}
-};
-
-struct MovementRoutineVAContainer {
-private:
-	std::map<std::string, MovementRoutineVA*> movementRoutines{};
-	MovementRoutineEngine* movementRoutineEngine{};
-public:
-	MovementRoutineVAContainer() {}
-	MovementRoutineVAContainer(MovementRoutineEngine* _movementRoutineEnginePtr) { this->movementRoutineEngine = _movementRoutineEnginePtr; }
-	~MovementRoutineVAContainer() { movementRoutines.clear(); movementRoutineEngine = nullptr; }
-
-	// Check if routine with given name already exists
-	MovementRoutineVA* exists(const std::string& _name) {
-		auto movementRoutineFound = movementRoutines.find(_name);
-
-		if (movementRoutineFound != movementRoutines.end())
-			return movementRoutineFound->second;
-		else
-			return nullptr;
-	}
-
-	// Get routine value by name
-	MovementRoutineVA getRoutine(const std::string& _name) {
-		if (exists(_name) != nullptr)
-			return *movementRoutines[_name];
-		else {
-			printf("MovementRoutineVAContainer::getRoutine: Routine with given name does not exist\n");
-			return MovementRoutineVA();
-		}
-	}
-
-	// Get routine pointer by name
-	MovementRoutineVA* getRoutinePtr(const std::string& _name) {
-		auto* movementRoutineExists = exists(_name);
-
-		if (movementRoutineExists == nullptr)
-			printf("MovementRoutineVAContainer::getRoutine: Routine with given name does not exist\n");
-
-		return movementRoutineExists;
-	}
-
-	// Create routine with given name. If routine with given name already exists, return pointer to it. Else, create new routine.
-	MovementRoutineVA* createRoutine(const std::string& _name) {
-		auto* movementRoutineExists = exists(_name);
-
-		if (movementRoutineExists != nullptr) {
-			printf("MovementRoutineVAContainer::createRoutine: Routine with given name already exists 1\n");
-			return movementRoutineExists;
-		}
-		else {
-			MovementRoutineVA* newMovementRoutine = new MovementRoutineVA(_name, movementRoutineEngine);
-			movementRoutines.insert(std::make_pair(_name, newMovementRoutine));
-			return newMovementRoutine;
-		}
-	}
-
-	MovementRoutineVA* createRoutine(const std::string& _name, MovementRoutineVA* _movement_routine) {
-		auto* movementRoutineExists = exists(_name);
-
-		if (movementRoutineExists != nullptr) {
-			printf("MovementRoutineVAContainer::createRoutine: Routine with given name already exists 2\n");
-			return movementRoutineExists;
-		}
-		else {
-			movementRoutines.insert(std::make_pair(_name, _movement_routine));
-			return _movement_routine;
-		}
-	}
-};
-
-struct ScalingRoutineContainer {
-private:
-	std::map<std::string, ScalingRoutine*> scalingRoutines{};
-	MovementRoutineEngine* movementRoutineEngine{};
-
-public:
-	ScalingRoutineContainer() {}
-	ScalingRoutineContainer(MovementRoutineEngine* _movementRoutineEnginePtr) { this->movementRoutineEngine = _movementRoutineEnginePtr; }
-	~ScalingRoutineContainer() { scalingRoutines.clear(); movementRoutineEngine = nullptr; }
-
-	// Check if routine with given name already exists
-	ScalingRoutine* exists(const std::string& _name) {
-		auto scalingRoutineFound = scalingRoutines.find(_name);
-
-		if (scalingRoutineFound != scalingRoutines.end())
-			return scalingRoutineFound->second;
-		else
-			return nullptr;
-	}
-
-	// Get routine value by name
-	ScalingRoutine getRoutine(const std::string& _name) {
-		if (exists(_name) != nullptr)
-			return *scalingRoutines[_name];
-		else {
-			printf("ScalingRoutineContainer::getRoutine: Routine with given name does not exist\n");
-			return ScalingRoutine();
-		}
-	}
-
-	// Get routine pointer by name
-	ScalingRoutine* getRoutinePtr(const std::string& _name) {
-		auto* scalingRoutineExists = exists(_name);
-
-		if (scalingRoutineExists == nullptr)
-			printf("ScalingRoutineContainer::getRoutine: Routine with given name does not exist\n");
-
-		return scalingRoutineExists;
-	}
-
-	// Create routine with given name. If routine with given name already exists, return pointer to it. Else, create new routine.
-	ScalingRoutine* createRoutine(const std::string& _name) {
-		auto* scalingRoutineExists = exists(_name);
-
-		if (scalingRoutineExists != nullptr) {
-			printf("ScalingRoutineContainer::createRoutine: Routine with given name already exists 1\n");
-			return scalingRoutineExists;
-		}
-		else {
-			ScalingRoutine* newScalingRoutine = new ScalingRoutine(_name, movementRoutineEngine);
-			scalingRoutines.insert(std::make_pair(_name, newScalingRoutine));
-			return newScalingRoutine;
-		}
-	}
-
-	ScalingRoutine* createRoutine(const std::string& _name, ScalingRoutine* _scaling_routine) {
-		auto* scalingRoutineExists = exists(_name);
-
-		if (scalingRoutineExists != nullptr) {
-			printf("ScalingRoutineContainer::createRoutine: Routine with given name already exists 2\n");
-			return scalingRoutineExists;
-		}
-		else {
-			scalingRoutines.insert(std::make_pair(_name, _scaling_routine));
-			return _scaling_routine;
-		}
-	}
-};
-
-struct ScalingRoutineVAContainer {
-private:
-	std::map<std::string, ScalingRoutineVA*> scalingRoutines{};
-	MovementRoutineEngine* movementRoutineEngine{};
-
-public:
-	ScalingRoutineVAContainer() {}
-	ScalingRoutineVAContainer(MovementRoutineEngine* _movementRoutineEnginePtr) { this->movementRoutineEngine = _movementRoutineEnginePtr; }
-	~ScalingRoutineVAContainer() { scalingRoutines.clear(); movementRoutineEngine = nullptr; }
-
-	// Check if routine with given name already exists
-	ScalingRoutineVA* exists(const std::string& _name) {
-		auto scalingRoutineFound = scalingRoutines.find(_name);
-
-		if (scalingRoutineFound != scalingRoutines.end())
-			return scalingRoutineFound->second;
-		else
-			return nullptr;
-	}
-
-	// Get routine value by name
-	ScalingRoutineVA getRoutine(const std::string& _name) {
-		if (exists(_name) != nullptr)
-			return *scalingRoutines[_name];
-		else {
-			printf("ScalingRoutineVAContainer::getRoutine: Routine with given name does not exist\n");
-			return ScalingRoutineVA();
-		}
-	}
-
-	// Get routine pointer by name
-	ScalingRoutineVA* getRoutinePtr(const std::string& _name) {
-		auto* scalingRoutineExists = exists(_name);
-
-		if (scalingRoutineExists == nullptr)
-			printf("ScalingRoutineVAContainer::getRoutine: Routine with given name does not exist\n");
-
-		return scalingRoutineExists;
-	}
-
-	// Create routine with given name. If routine with given name already exists, return pointer to it. Else, create new routine.
-	ScalingRoutineVA* createRoutine(const std::string& _name) {
-		auto* scalingRoutineExists = exists(_name);
-
-		if (scalingRoutineExists != nullptr) {
-			printf("ScalingRoutineVAContainer::createRoutine: Routine with given name already exists 1\n");
-			return scalingRoutineExists;
-		}
-		else {
-			ScalingRoutineVA* newScalingRoutine = new ScalingRoutineVA(_name, movementRoutineEngine);
-			scalingRoutines.insert(std::make_pair(_name, newScalingRoutine));
-			return newScalingRoutine;
-		}
-	}
-
-	ScalingRoutineVA* createRoutine(const std::string& _name, ScalingRoutineVA* _scaling_routine) {
-		auto* scalingRoutineExists = exists(_name);
-
-		if (scalingRoutineExists != nullptr) {
-			printf("ScalingRoutineVAContainer::createRoutine: Routine with given name already exists 2\n");
-			return scalingRoutineExists;
-		}
-		else {
-			scalingRoutines.insert(std::make_pair(_name, _scaling_routine));
-			return _scaling_routine;
-		}
-	}
-};
-
-struct RotationRoutineContainer {
-private:
-	std::map<std::string, RotationRoutine*> rotationRoutines{};
-	MovementRoutineEngine* movementRoutineEngine{};
-
-public:
-	RotationRoutineContainer() {}
-	RotationRoutineContainer(MovementRoutineEngine* _movementRoutineEnginePtr) { this->movementRoutineEngine = _movementRoutineEnginePtr; }
-	~RotationRoutineContainer() { rotationRoutines.clear(); movementRoutineEngine = nullptr; }
-
-	// Check if routine with given name already exists
-	RotationRoutine* exists(const std::string& _name) {
-		auto rotationRoutineFound = rotationRoutines.find(_name);
-
-		if (rotationRoutineFound != rotationRoutines.end())
-			return rotationRoutineFound->second;
-		else
-			return nullptr;
-	}
-
-	// Get routine value by name
-	RotationRoutine getRoutine(const std::string& _name) {
-		if (exists(_name) != nullptr)
-			return *rotationRoutines[_name];
-		else {
-			printf("RotationRoutineContainer::getRoutine: Routine with given name does not exist\n");
-			return RotationRoutine();
-		}
-	}
-
-	// Get routine pointer by name
-	RotationRoutine* getRoutinePtr(const std::string& _name) {
-		auto* rotationRoutineExists = exists(_name);
-
-		if (rotationRoutineExists == nullptr)
-			printf("RotationRoutineContainer::getRoutine: Routine with given name does not exist\n");
-
-		return rotationRoutineExists;
-	}
-
-	// Create routine with given name. If routine with given name already exists, return pointer to it. Else, create new routine.
-	RotationRoutine* createRoutine(const std::string& _name) {
-		auto* rotationRoutineExists = exists(_name);
-
-		if (rotationRoutineExists != nullptr) {
-			printf("RotationRoutineContainer::createRoutine: Routine with given name already exists 1\n");
-			return rotationRoutineExists;
-		}
-		else {
-			RotationRoutine* newRotationRoutine = new RotationRoutine(_name, movementRoutineEngine);
-			rotationRoutines.insert(std::make_pair(_name, newRotationRoutine));
-			return newRotationRoutine;
-		}
-	}
-
-	RotationRoutine* createRoutine(const std::string& _name, RotationRoutine* _rotation_routine) {
-		auto* rotationRoutineExists = exists(_name);
-
-		if (rotationRoutineExists != nullptr) {
-			printf("RotationRoutineContainer::createRoutine: Routine with given name already exists 2\n");
-			return rotationRoutineExists;
-		}
-		else {
-			rotationRoutines.insert(std::make_pair(_name, _rotation_routine));
-			return _rotation_routine;
-		}
-	}
-};
-
-struct RotationRoutineVAContainer {
-private:
-	std::map<std::string, RotationRoutineVA*> rotationRoutines{};
-	MovementRoutineEngine* movementRoutineEngine{};
-
-public:
-	RotationRoutineVAContainer() {}
-	RotationRoutineVAContainer(MovementRoutineEngine* _movementRoutineEnginePtr) { this->movementRoutineEngine = _movementRoutineEnginePtr; }
-	~RotationRoutineVAContainer() { rotationRoutines.clear(); movementRoutineEngine = nullptr; }
-
-	// Check if routine with given name already exists
-	RotationRoutineVA* exists(const std::string& _name) {
-		auto rotationRoutineFound = rotationRoutines.find(_name);
-
-		if (rotationRoutineFound != rotationRoutines.end())
-			return rotationRoutineFound->second;
-		else
-			return nullptr;
-	}
-
-	// Get routine value by name
-	RotationRoutineVA getRoutine(const std::string& _name) {
-		if (exists(_name) != nullptr)
-			return *rotationRoutines[_name];
-		else {
-			printf("RotationRoutineVAContainer::getRoutine: Routine with given name does not exist\n");
-			return RotationRoutineVA();
-		}
-	}
-
-	// Get routine pointer by name
-	RotationRoutineVA* getRoutinePtr(const std::string& _name) {
-		auto* rotationRoutineExists = exists(_name);
-
-		if (rotationRoutineExists == nullptr)
-			printf("RotationRoutineVAContainer::getRoutine: Routine with given name does not exist\n");
-
-		return rotationRoutineExists;
-	}
-
-	// Create routine with given name. If routine with given name already exists, return pointer to it. Else, create new routine.
-	RotationRoutineVA* createRoutine(const std::string& _name) {
-		auto* rotationRoutineExists = exists(_name);
-
-		if (rotationRoutineExists != nullptr) {
-			printf("RotationRoutineVAContainer::createRoutine: Routine with given name already exists 1\n");
-			return rotationRoutineExists;
-		}
-		else {
-			RotationRoutineVA* newRotationRoutine = new RotationRoutineVA(_name, movementRoutineEngine);
-			rotationRoutines.insert(std::make_pair(_name, newRotationRoutine));
-			return newRotationRoutine;
-		}
-	}
-
-	RotationRoutineVA* createRoutine(const std::string& _name, RotationRoutineVA* _rotation_routine) {
-		auto* rotationRoutineExists = exists(_name);
-
-		if (rotationRoutineExists != nullptr) {
-			printf("RotationRoutineVAContainer::createRoutine: Routine with given name already exists 2\n");
-			return rotationRoutineExists;
-		}
-		else {
-			rotationRoutines.insert(std::make_pair(_name, _rotation_routine));
-			return _rotation_routine;
-		}
-	}
 };

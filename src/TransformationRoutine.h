@@ -75,7 +75,8 @@ public:
 	// Get current movement pointer
 	movementInfo* getCurrentMovement();
 
-	const bool goToNextMovement();
+	const bool goToNextMovement(sf::Shape* shape);
+	const bool goToNextMovement(sf::Sprite* sprite);
 
 	// get size
 	long long int size() {
@@ -90,6 +91,8 @@ private:
 	std::vector <movementInfoVA*> routine_movements;
 
 	void adjustVertexarrayToStartingPosition(sf::VertexArray* vertexarray);
+	void adjustStartToCurrent(sf::VertexArray* vertexArray);
+	void adjustAllToCurrent(sf::VertexArray* vertexArray);
 
 public:
 	MovementRoutineVA() {}

@@ -139,28 +139,28 @@ int main()
 
 	// ----- Movement Container testing ----- //
 	MovementManager movementManager;
-	auto* routine = movementManager.createMovementRoutineVA("Testowy");
-	routine->addMovement(new movementInfoVA(sf::Vector2f(500.f, 500.f), sf::Vector2f(700.f, 700.f), 2.f, MovementContainer.getFunctionPointer(MovementContainer::IN_SINE), false, 1.f, 3.f, &up_arrow));
-	//routine->addMovement(new movementInfoVA(sf::Vector2f(700.f, 700.f), sf::Vector2f(1000.f, 700.f), 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, &up_arrow));
-	routine->addMovement(new movementInfoVA(sf::Vector2f(1000.f, 700.f), sf::Vector2f(1000.f, 1000.f), 3.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_BOUNCE), false, 0.5f, 3.f, &up_arrow));
-	//routine->addMovement(new movementInfoVA(sf::Vector2f(1000.f, 1000.f), sf::Vector2f(500.f, 500.f), 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_EXPO), false, 0.5f, 0.5f, &up_arrow));
-	routine->setLooping(true);
-	movementManager.linkMovementRoutine(&up_arrow, "Testowy");
-	movementManager.startMovementRoutine(&up_arrow, "Testowy");
+	//auto* routine = movementManager.createMovementRoutineVA("Testowy");
+	//routine->addMovement(new movementInfoVA(sf::Vector2f(500.f, 500.f), sf::Vector2f(700.f, 700.f), 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_SINE), false, 1.f, 1.f, &up_arrow));
+	//routine->addMovement(new movementInfoVA(sf::Vector2f(700.f, 700.f), sf::Vector2f(800.f, 700.f), 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, &up_arrow));
+	//routine->addMovement(new movementInfoVA(sf::Vector2f(800.f, 700.f), sf::Vector2f(800.f, 800.f), 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_BOUNCE), false, 0.5f, 1.f, &up_arrow));
+	////routine->addMovement(new movementInfoVA(sf::Vector2f(1000.f, 1000.f), sf::Vector2f(500.f, 500.f), 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_EXPO), false, 0.5f, 0.5f, &up_arrow));
+	//routine->setLooping(true);
+	//routine->adjustAllToCurrentTransform(true);
+	//movementManager.linkMovementRoutine(&up_arrow, "Testowy");
 
-	/*sf::RectangleShape test_shape;
+	sf::RectangleShape test_shape;
 	test_shape.setSize(sf::Vector2f(100.f, 50.f));
 	test_shape.setFillColor(sf::Color::Red);
 	test_shape.setPosition(100.f, 100.f);
 
 	
 	auto* routine = movementManager.createMovementRoutine("Testowy");
-	routine->addMovement(new movementInfo(sf::Vector2f(200.f, 200.f), sf::Vector2f(500.f, 500.f), 2.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 1.f));
+	routine->addMovement(new movementInfo(sf::Vector2f(200.f, 200.f), sf::Vector2f(500.f, 500.f), 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 1.f));
 	routine->addMovement(new movementInfo(sf::Vector2f(500.f, 500.f), sf::Vector2f(400.f, 800.f), 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_BOUNCE), false, 0.f, 0.5f));
-	routine->addMovement(new movementInfo(sf::Vector2f(400.f, 800.f), sf::Vector2f(200.f, 200.f), 3.f, MovementContainer.getFunctionPointer(MovementContainer::OUT_EXPO), false, 2.f, 0.f));
+	routine->addMovement(new movementInfo(sf::Vector2f(400.f, 800.f), sf::Vector2f(200.f, 800.f), 1.f, MovementContainer.getFunctionPointer(MovementContainer::OUT_EXPO), false, 2.f, 0.f));
 	routine->adjustAllToCurrentTransform(true);
 	routine->setLooping(true);
-	movementManager.linkMovementRoutine(&test_shape, "Testowy");*/
+	movementManager.linkMovementRoutine(&test_shape, "Testowy");
 
 	constexpr int test_shape_size = 10000;
 	constexpr int test_routine_size = 10000;
@@ -224,22 +224,29 @@ int main()
 			if (event.type == sf::Event::Closed || (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape))
 				window.close();
 
-			if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::Space)) {
-				
-				printf("Size before:\n");
-				printf("Active: %lld\n", movementManager.getSizeShapeActive());
-				printf("Shape: %lld\n", movementManager.getSizeShape());
-				printf("Container: %lld\n", movementManager.getSizeContainer());
-				movementManager.deleteMovementRoutine();
-				printf("Size after:\n");
-				printf("Active: %lld\n", movementManager.getSizeShapeActive());
-				printf("Shape: %lld\n", movementManager.getSizeShape());
-				printf("Container: %lld\n", movementManager.getSizeContainer());
-				//for (size_t i = 0; i < test_routine_size; ++i)
-				//	movementManager.deleteMovementRoutine("T" + std::to_string(i));
-			}
+			//// Start
+			//if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::Space)) {
+			//	movementManager.startMovementRoutine(&up_arrow, "Testowy");
+			//}
 
-			/*if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::Space)) {
+			//// Pause
+			//if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::P)) {
+			//	movementManager.pauseMovementRoutine(&up_arrow, "Testowy");
+			//}
+
+			//// Resume
+			//if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::R)) {
+			//	movementManager.resumeMovementRoutine(&up_arrow, "Testowy");
+			//}
+
+			//// Stop
+			//if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::S)) {
+			//	movementManager.stopMovementRoutine(&up_arrow, "Testowy");
+			//}
+
+			
+
+			if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::Space)) {
 				printf("STARTED\n");
 				movementManager.startMovementRoutine(&test_shape, "Testowy");
 			}
@@ -262,7 +269,7 @@ int main()
 			if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::U)) {
 				printf("UNLINKED\n");
 				movementManager.unlinkMovementRoutine(&test_shape, "Testowy");
-			}*/
+			}
 
 			if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::Up || event.key.code ==sf::Keyboard::W)) {
 				current_ease_type += rows;
@@ -329,11 +336,11 @@ int main()
 			//window.draw(up_arrow);
 			//window.draw(down_arrow);
 		}
-		window.draw(up_arrow);
+		//window.draw(up_arrow);
 		//for(int i = 0; i < test_shape_size; ++i)
 		//	window.draw(test_shape[i]);
 
-		//window.draw(test_shape);
+		window.draw(test_shape);
 
 		window.display();
 	}

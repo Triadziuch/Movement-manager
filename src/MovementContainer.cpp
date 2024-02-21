@@ -1539,7 +1539,7 @@ void MovementRoutineEngine::updateShape(float dt)
 					}
 				}
 				else if (movement->isFinished()) {
-					if (!movementRoutine->second->goToNextMovement()) {
+					if (!movementRoutine->second->goToNextMovement(shape)) {
 						movementRoutine->second = nullptr;
 						movementRoutine = m_Movement_Routines_Shape.erase(movementRoutine);
 						continue;
@@ -1821,7 +1821,7 @@ void MovementRoutineEngine::updateSprite(float dt)
 					}
 				}
 				else if (movement->isFinished()) {
-					if (!movementRoutine->second->goToNextMovement()) {
+					if (!movementRoutine->second->goToNextMovement(sprite)) {
 						movementRoutine->second = nullptr;
 						movementRoutine = m_Movement_Routines_S.erase(movementRoutine);
 						continue;

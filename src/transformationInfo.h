@@ -139,13 +139,6 @@ public:
 
 	transformationInfoVA(const transformationInfoVA& obj) :
 		transformationInfo{ obj.repeat, obj.current_time, obj.motion_duration, obj.delay_before, obj.delay_after, obj.used_function }, originalVertex(obj.originalVertex), centroid(obj.centroid) {}
-
-	void moveCentroid(const sf::Vector2f& _offset) { this->centroid += _offset; }
-
-	void moveOriginalVertex(const sf::Vector2f& _offset) {
-		for (size_t i = 0; i < this->originalVertex.getVertexCount(); i++)
-			this->originalVertex.operator[](i).position += _offset;
-	}
 };
 
 class movementInfoVA : public transformationInfoVA {
@@ -163,7 +156,12 @@ public:
 	movementInfoVA(const movementInfoVA& obj) :
 		transformationInfoVA{ obj.repeat, obj.current_time, obj.motion_duration, obj.delay_before, obj.delay_after, obj.used_function, const_cast<sf::VertexArray*>(&obj.originalVertex) }, starting_pos(obj.starting_pos), ending_pos(obj.ending_pos), originalCentroid(obj.originalCentroid) {}
 
-	void recalculateOriginalCentroid() { this->originalCentroid = this->centroid; }
+	void moveCentroidsToStartingPosition() {
+		sf::Vector2f offset = this->starting_pos - this->centroid;
+		for (size_t i = 0; i < this->originalVertex.getVertexCount(); i++)
+			this->originalVertex[i].position += offset;
+		this->centroid += offset;
+	}
 };
 
 class scalingInfoVA : public transformationInfoVA {

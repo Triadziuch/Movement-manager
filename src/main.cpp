@@ -140,10 +140,11 @@ int main()
 	// ----- Movement Container testing ----- //
 	MovementManager movementManager;
 	auto* routine = movementManager.createMovementRoutineVA("Testowy");
-	routine->addMovement(new movementInfoVA(sf::Vector2f(500.f, 500.f), sf::Vector2f(700.f, 700.f), 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_SINE), false, 1.f, 1.f, &up_arrow));
-	//routine->addMovement(new movementInfoVA(sf::Vector2f(200.f, 200.f), sf::Vector2f(500.f, 500.f), 2.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, &up_arrow));
-	//routine->addMovement(new movementInfoVA(sf::Vector2f(500.f, 500.f), sf::Vector2f(400.f, 800.f), 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, &up_arrow));
-	//routine->addMovement(new movementInfoVA(sf::Vector2f(400.f, 800.f), sf::Vector2f(100.f, 100.f), 3.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, &up_arrow));
+	routine->addMovement(new movementInfoVA(sf::Vector2f(500.f, 500.f), sf::Vector2f(700.f, 700.f), 2.f, MovementContainer.getFunctionPointer(MovementContainer::IN_SINE), false, 1.f, 3.f, &up_arrow));
+	//routine->addMovement(new movementInfoVA(sf::Vector2f(700.f, 700.f), sf::Vector2f(1000.f, 700.f), 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, &up_arrow));
+	routine->addMovement(new movementInfoVA(sf::Vector2f(1000.f, 700.f), sf::Vector2f(1000.f, 1000.f), 3.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_BOUNCE), false, 0.5f, 3.f, &up_arrow));
+	//routine->addMovement(new movementInfoVA(sf::Vector2f(1000.f, 1000.f), sf::Vector2f(500.f, 500.f), 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_EXPO), false, 0.5f, 0.5f, &up_arrow));
+	routine->setLooping(true);
 	movementManager.linkMovementRoutine(&up_arrow, "Testowy");
 	movementManager.startMovementRoutine(&up_arrow, "Testowy");
 

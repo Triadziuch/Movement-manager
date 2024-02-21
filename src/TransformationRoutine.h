@@ -89,7 +89,7 @@ class MovementRoutineVA : public TransformationRoutine {
 private:
 	std::vector <movementInfoVA*> routine_movements;
 
-	void calculateCentroids(sf::VertexArray* vertexarray);
+	void adjustVertexarrayToStartingPosition(sf::VertexArray* vertexarray);
 
 public:
 	MovementRoutineVA() {}
@@ -124,7 +124,7 @@ public:
 	// Get current movement pointer
 	movementInfoVA* getCurrentMovement();
 
-	const bool goToNextMovement();
+	const bool goToNextMovement(sf::VertexArray* vertexArray);
 };
 
 class ScalingRoutine : public TransformationRoutine {

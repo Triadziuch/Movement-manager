@@ -94,7 +94,7 @@ void MovementContainer::updateShape(float dt)
 		else {
 			if (movement->second->current_time > movement->second->delay_before) {
 				sf::Vector2f new_position(static_cast<float>(movement->second->used_function(static_cast<double>((movement->second->current_time - movement->second->delay_before) / movement->second->motion_duration))) * (movement->second->ending_pos.x - movement->second->starting_pos.x) + movement->second->starting_pos.x,
-					static_cast<float>(movement->second->used_function(static_cast<double>((movement->second->current_time - movement->second->delay_before) / movement->second->motion_duration))) * (movement->second->ending_pos.y - movement->second->starting_pos.y) + movement->second->starting_pos.y);
+										  static_cast<float>(movement->second->used_function(static_cast<double>((movement->second->current_time - movement->second->delay_before) / movement->second->motion_duration))) * (movement->second->ending_pos.y - movement->second->starting_pos.y) + movement->second->starting_pos.y);
 
 				movement->first->setPosition(new_position);
 			}
@@ -129,7 +129,7 @@ void MovementContainer::updateShape(float dt)
 		else {
 			if (scaling->second->current_time > scaling->second->delay_before) {
 				sf::Vector2f new_scale(static_cast<float>(scaling->second->used_function(static_cast<double>((scaling->second->current_time - scaling->second->delay_before) / scaling->second->motion_duration))) * (scaling->second->ending_scale.x - scaling->second->starting_scale.x) + scaling->second->starting_scale.x,
-					static_cast<float>(scaling->second->used_function(static_cast<double>((scaling->second->current_time - scaling->second->delay_before) / scaling->second->motion_duration))) * (scaling->second->ending_scale.y - scaling->second->starting_scale.y) + scaling->second->starting_scale.y);
+									   static_cast<float>(scaling->second->used_function(static_cast<double>((scaling->second->current_time - scaling->second->delay_before) / scaling->second->motion_duration))) * (scaling->second->ending_scale.y - scaling->second->starting_scale.y) + scaling->second->starting_scale.y);
 
 				scaling->first->setScale(new_scale);
 			}
@@ -343,8 +343,8 @@ void MovementContainer::updateSprite(float dt)
 		}
 		else {
 			if (movement->second->current_time > movement->second->delay_before) {
-				sf::Vector2f new_position(static_cast<float>(movement->second->used_function(static_cast<double>(movement->second->current_time / movement->second->motion_duration))) * (movement->second->ending_pos.x - movement->second->starting_pos.x) + movement->second->starting_pos.x,
-					static_cast<float>(movement->second->used_function(static_cast<double>(movement->second->current_time / movement->second->motion_duration))) * (movement->second->ending_pos.y - movement->second->starting_pos.y) + movement->second->starting_pos.y);
+				sf::Vector2f new_position(static_cast<float>(movement->second->used_function(static_cast<double>((movement->second->current_time - movement->second->delay_before) / movement->second->motion_duration))) * (movement->second->ending_pos.x - movement->second->starting_pos.x) + movement->second->starting_pos.x,
+										  static_cast<float>(movement->second->used_function(static_cast<double>((movement->second->current_time - movement->second->delay_before) / movement->second->motion_duration))) * (movement->second->ending_pos.y - movement->second->starting_pos.y) + movement->second->starting_pos.y);
 
 				movement->first->setPosition(new_position);
 			}
@@ -378,8 +378,8 @@ void MovementContainer::updateSprite(float dt)
 		}
 		else {
 			if (scaling->second->current_time > scaling->second->delay_before) {
-				sf::Vector2f new_scale(static_cast<float>(scaling->second->used_function(static_cast<double>(scaling->second->current_time / scaling->second->motion_duration))) * (scaling->second->ending_scale.x - scaling->second->starting_scale.x) + scaling->second->starting_scale.x,
-					static_cast<float>(scaling->second->used_function(static_cast<double>(scaling->second->current_time / scaling->second->motion_duration))) * (scaling->second->ending_scale.y - scaling->second->starting_scale.y) + scaling->second->starting_scale.y);
+				sf::Vector2f new_scale(static_cast<float>(scaling->second->used_function(static_cast<double>((scaling->second->current_time - scaling->second->delay_before) / scaling->second->motion_duration))) * (scaling->second->ending_scale.x - scaling->second->starting_scale.x) + scaling->second->starting_scale.x,
+									   static_cast<float>(scaling->second->used_function(static_cast<double>((scaling->second->current_time - scaling->second->delay_before) / scaling->second->motion_duration))) * (scaling->second->ending_scale.y - scaling->second->starting_scale.y) + scaling->second->starting_scale.y);
 
 				scaling->first->setScale(new_scale);
 			}
@@ -1565,7 +1565,7 @@ void MovementRoutineEngine::updateShape(float dt)
 			else {
 				if (movement->current_time > movement->delay_before) {
 					sf::Vector2f new_position(static_cast<float>(movement->used_function(static_cast<double>((movement->current_time - movement->delay_before) / movement->motion_duration))) * (movement->ending_pos.x - movement->starting_pos.x) + movement->starting_pos.x,
-						static_cast<float>(movement->used_function(static_cast<double>((movement->current_time - movement->delay_before) / movement->motion_duration))) * (movement->ending_pos.y - movement->starting_pos.y) + movement->starting_pos.y);
+											  static_cast<float>(movement->used_function(static_cast<double>((movement->current_time - movement->delay_before) / movement->motion_duration))) * (movement->ending_pos.y - movement->starting_pos.y) + movement->starting_pos.y);
 
 					shape->setPosition(new_position);
 				}
@@ -1596,31 +1596,28 @@ void MovementRoutineEngine::updateShape(float dt)
 
 						scaling->current_time -= scaling->total_duration;
 					}
-
-					++scalingRoutine;
 				}
 				else if (scaling->isFinished()) {
 					if (!scalingRoutine->second->goToNextScaling()) {
 						scalingRoutine->second = nullptr;
 						scalingRoutine = m_Scaling_Routines_Shape.erase(scalingRoutine);
+						continue;
 					}
 				}
 			}
 			else {
 				if (scaling->current_time > scaling->delay_before) {
 					sf::Vector2f new_scale(static_cast<float>(scaling->used_function(static_cast<double>((scaling->current_time - scaling->delay_before) / scaling->motion_duration))) * (scaling->ending_scale.x - scaling->starting_scale.x) + scaling->starting_scale.x,
-						static_cast<float>(scaling->used_function(static_cast<double>((scaling->current_time - scaling->delay_before) / scaling->motion_duration))) * (scaling->ending_scale.y - scaling->starting_scale.y) + scaling->starting_scale.y);
+										   static_cast<float>(scaling->used_function(static_cast<double>((scaling->current_time - scaling->delay_before) / scaling->motion_duration))) * (scaling->ending_scale.y - scaling->starting_scale.y) + scaling->starting_scale.y);
 
 					shape->setScale(new_scale);
 				}
 				else if (scaling->current_time - dt == 0.f)
 					shape->setScale(scaling->starting_scale);
-
-				++scalingRoutine;
 			}
 		}
-		else
-			++scalingRoutine;
+
+		++scalingRoutine;
 	}
 
 	for (auto rotationRoutine = this->m_Rotation_Routines_Shape.begin(); rotationRoutine != this->m_Rotation_Routines_Shape.end();) {
@@ -1640,13 +1637,12 @@ void MovementRoutineEngine::updateShape(float dt)
 
 						rotation->current_time -= rotation->total_duration;
 					}
-
-					++rotationRoutine;
 				}
 				else if (rotation->isFinished()) {
 					if (!rotationRoutine->second->goToNextRotation()) {
 						rotationRoutine->second = nullptr;
 						rotationRoutine = m_Rotation_Routines_Shape.erase(rotationRoutine);
+						continue;
 					}
 				}
 			}
@@ -1656,11 +1652,10 @@ void MovementRoutineEngine::updateShape(float dt)
 				else if (rotation->current_time - dt == 0.f)
 					shape->setRotation(rotation->getStartingRotation());
 
-				++rotationRoutine;
 			}
 		}
-		else
-			++rotationRoutine;
+
+		++rotationRoutine;
 	}
 }
 
@@ -1677,7 +1672,7 @@ void MovementRoutineEngine::updateVertexArray(float dt)
 				if (movement->isDone()) {
 					if (movement->current_time - movement->delay_before - dt < movement->motion_duration) {
 						sf::Vector2f offset(static_cast<float>(movement->used_function(1.0)) * (movement->ending_pos.x - movement->starting_pos.x) + movement->starting_pos.x - movement->centroid.x,
-							static_cast<float>(movement->used_function(1.0)) * (movement->ending_pos.y - movement->starting_pos.y) + movement->starting_pos.y - movement->centroid.y);
+											static_cast<float>(movement->used_function(1.0)) * (movement->ending_pos.y - movement->starting_pos.y) + movement->starting_pos.y - movement->centroid.y);
 
 						this->updateMovementInfoVA(vertexarray, movement, offset);
 					}
@@ -1690,36 +1685,31 @@ void MovementRoutineEngine::updateVertexArray(float dt)
 
 							movement->current_time -= movement->total_duration;
 						}
-						++movementRoutine;
 					}
 					else if (movement->isFinished()) {
-						if (!movementRoutine->second->goToNextMovement()) {
+						if (!movementRoutine->second->goToNextMovement(vertexarray)) {
 							movementRoutine->second = nullptr;
 							movementRoutine = m_Movement_Routines_VA.erase(movementRoutine);
+							continue;
 						}
-					}
+					}					
 				}
 				else {
 					if (movement->current_time > movement->delay_before) {
-						sf::Vector2f offset(static_cast<float>(movement->used_function(static_cast<double>(movement->current_time / movement->motion_duration))) * (movement->ending_pos.x - movement->starting_pos.x) + movement->starting_pos.x - movement->centroid.x,
-							static_cast<float>(movement->used_function(static_cast<double>(movement->current_time / movement->motion_duration))) * (movement->ending_pos.y - movement->starting_pos.y) + movement->starting_pos.y - movement->centroid.y);
+						sf::Vector2f offset(static_cast<float>(movement->used_function(static_cast<double>((movement->current_time - movement->delay_before) / movement->motion_duration))) * (movement->ending_pos.x - movement->starting_pos.x) + movement->starting_pos.x - movement->centroid.x,
+											static_cast<float>(movement->used_function(static_cast<double>((movement->current_time - movement->delay_before) / movement->motion_duration))) * (movement->ending_pos.y - movement->starting_pos.y) + movement->starting_pos.y - movement->centroid.y);
 
-						printf("Offset: %f, %f\n", offset.x, offset.y);
 						this->updateMovementInfoVA(vertexarray, movement, offset);
 					}
 					else if (movement->current_time - dt == 0.f) {
 						sf::Vector2f offset(movement->starting_pos - movement->centroid);
 						this->updateMovementInfoVA(vertexarray, movement, offset);
 					}
-
-					++movementRoutine;
 				}
 			}
-			else
-				++movementRoutine;
 		}
-		else
-			++movementRoutine;
+
+		++movementRoutine;
 	}
 
 	for (auto scalingRoutine = this->m_Scaling_Routines_VA.begin(); scalingRoutine != this->m_Scaling_Routines_VA.end();) {
@@ -1748,20 +1738,19 @@ void MovementRoutineEngine::updateVertexArray(float dt)
 
 							scaling->current_time -= scaling->total_duration;
 						}
-
-						++scalingRoutine;
 					}
 					else if (scaling->isFinished()) {
 						if (!scalingRoutine->second->goToNextScaling()) {
 							scalingRoutine->second = nullptr;
 							scalingRoutine = m_Scaling_Routines_VA.erase(scalingRoutine);
+							continue;
 						}
 					}
 				}
 				else {
 					if (scaling->current_time > scaling->delay_before) {
 						sf::Vector2f new_scale(scaling->used_function(static_cast<double>((scaling->current_time - scaling->delay_before) / scaling->motion_duration)) * (scaling->ending_scale.x - scaling->starting_scale.x) + scaling->starting_scale.x,
-							scaling->used_function(static_cast<double>((scaling->current_time - scaling->delay_before) / scaling->motion_duration)) * (scaling->ending_scale.y - scaling->starting_scale.y) + scaling->starting_scale.y);
+											   scaling->used_function(static_cast<double>((scaling->current_time - scaling->delay_before) / scaling->motion_duration)) * (scaling->ending_scale.y - scaling->starting_scale.y) + scaling->starting_scale.y);
 
 						scaling->current_scale = new_scale;
 						updateScalingInfoVA(vertexarray, scaling);
@@ -1770,15 +1759,11 @@ void MovementRoutineEngine::updateVertexArray(float dt)
 						scaling->current_scale = scaling->starting_scale;
 						updateScalingInfoVA(vertexarray, scaling);
 					}
-
-					++scalingRoutine;
 				}
 			}
-			else
-				++scalingRoutine;
 		}
-		else
-			++scalingRoutine;
+
+		++scalingRoutine;
 	}
 
 	for (auto rotationRoutine = this->m_Rotation_Routines_VA.begin(); rotationRoutine != this->m_Rotation_Routines_VA.end();) {
@@ -1807,13 +1792,12 @@ void MovementRoutineEngine::updateVertexArray(float dt)
 
 							rotation->current_time -= rotation->total_duration;
 						}
-
-						++rotationRoutine;
 					}
 					else if (rotation->isFinished()) {
 						if (!rotationRoutine->second->goToNextRotation()) {
 							rotationRoutine->second = nullptr;
 							rotationRoutine = m_Rotation_Routines_VA.erase(rotationRoutine);
+							continue;
 						}
 					}
 				}
@@ -1826,15 +1810,11 @@ void MovementRoutineEngine::updateVertexArray(float dt)
 						rotation->current_rotation = rotation->getStartingRotation();
 						updateRotationInfoVA(vertexarray, rotation);
 					}
-
-					++rotationRoutine;
 				}
 			}
-			else
-				++rotationRoutine;
 		}
-		else
-			++rotationRoutine;
+
+		++rotationRoutine;
 	}
 }
 
@@ -1857,31 +1837,28 @@ void MovementRoutineEngine::updateSprite(float dt)
 
 						movement->current_time -= movement->total_duration;
 					}
-
-					++movementRoutine;
 				}
 				else if (movement->isFinished()) {
 					if (!movementRoutine->second->goToNextMovement()) {
 						movementRoutine->second = nullptr;
 						movementRoutine = m_Movement_Routines_S.erase(movementRoutine);
+						continue;
 					}
 				}
 			}
 			else {
 				if (movement->current_time > movement->delay_before) {
-					sf::Vector2f new_position(static_cast<float>(movement->used_function(static_cast<double>(movement->current_time / movement->motion_duration))) * (movement->ending_pos.x - movement->starting_pos.x) + movement->starting_pos.x,
-						static_cast<float>(movement->used_function(static_cast<double>(movement->current_time / movement->motion_duration))) * (movement->ending_pos.y - movement->starting_pos.y) + movement->starting_pos.y);
+					sf::Vector2f new_position(static_cast<float>(movement->used_function(static_cast<double>((movement->current_time - movement->delay_before) / movement->motion_duration))) * (movement->ending_pos.x - movement->starting_pos.x) + movement->starting_pos.x,
+											  static_cast<float>(movement->used_function(static_cast<double>((movement->current_time - movement->delay_before) / movement->motion_duration))) * (movement->ending_pos.y - movement->starting_pos.y) + movement->starting_pos.y);
 
 					sprite->setPosition(new_position);
 				}
 				else if (movement->current_time - dt == 0.f)
 					sprite->setPosition(movement->starting_pos);
-
-				++movementRoutine;
 			}
 		}
-		else
-			++movementRoutine;
+
+		++movementRoutine;
 	}
 
 	for (auto scalingRoutine = this->m_Scaling_Routines_S.begin(); scalingRoutine != this->m_Scaling_Routines_S.end();) {
@@ -1901,31 +1878,28 @@ void MovementRoutineEngine::updateSprite(float dt)
 
 						scaling->current_time -= scaling->total_duration;
 					}
-
-					++scalingRoutine;
 				}
 				else if (scaling->isFinished()) {
 					if (!scalingRoutine->second->goToNextScaling()) {
 						scalingRoutine->second = nullptr;
 						scalingRoutine = m_Scaling_Routines_S.erase(scalingRoutine);
+						continue;
 					}
 				}
 			}
 			else {
 				if (scaling->current_time > scaling->delay_before) {
-					sf::Vector2f new_scale(static_cast<float>(scaling->used_function(static_cast<double>(scaling->current_time / scaling->motion_duration))) * (scaling->ending_scale.x - scaling->starting_scale.x) + scaling->starting_scale.x,
-						static_cast<float>(scaling->used_function(static_cast<double>(scaling->current_time / scaling->motion_duration))) * (scaling->ending_scale.y - scaling->starting_scale.y) + scaling->starting_scale.y);
+					sf::Vector2f new_scale(static_cast<float>(scaling->used_function(static_cast<double>((scaling->current_time - scaling->delay_before) / scaling->motion_duration))) * (scaling->ending_scale.x - scaling->starting_scale.x) + scaling->starting_scale.x,
+										   static_cast<float>(scaling->used_function(static_cast<double>((scaling->current_time - scaling->delay_before) / scaling->motion_duration))) * (scaling->ending_scale.y - scaling->starting_scale.y) + scaling->starting_scale.y);
 
 					sprite->setScale(new_scale);
 				}
 				else if (scaling->current_time - dt == 0.f)
 					sprite->setScale(scaling->starting_scale);
-
-				++scalingRoutine;
 			}
 		}
-		else
-			++scalingRoutine;
+
+		++scalingRoutine;
 	}
 
 	for (auto rotationRoutine = this->m_Rotation_Routines_S.begin(); rotationRoutine != this->m_Rotation_Routines_S.end();) {
@@ -1945,13 +1919,12 @@ void MovementRoutineEngine::updateSprite(float dt)
 
 						rotation->current_time -= rotation->total_duration;
 					}
-
-					++rotationRoutine;
 				}
 				else if (rotation->isFinished()) {
 					if (!rotationRoutine->second->goToNextRotation()) {
 						rotationRoutine->second = nullptr;
 						rotationRoutine = m_Rotation_Routines_S.erase(rotationRoutine);
+						continue;
 					}
 				}
 			}
@@ -1960,12 +1933,10 @@ void MovementRoutineEngine::updateSprite(float dt)
 					sprite->setRotation(rotation->updateRotation());
 				else if (rotation->current_time - dt == 0.f)
 					sprite->setRotation(rotation->getStartingRotation());
-
-				++rotationRoutine;
 			}
 		}
-		else
-			++rotationRoutine;
+		
+		++rotationRoutine;
 	}
 }
 

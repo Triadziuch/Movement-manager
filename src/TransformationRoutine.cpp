@@ -133,16 +133,19 @@ const bool MovementRoutine::goToNextMovement()
 
 // - - - - - - - - - - - - - - - - - - - - MovementRoutineVA - - - - - - - - - - - - - - - - - - - - \\
 
-void MovementRoutineVA::calculateCentroids(sf::VertexArray* vertexarray)
+void MovementRoutineVA::adjustVertexarrayToStartingPosition(sf::VertexArray* vertexarray)
 {
-	if (this->routine_movements.size() == 0) return;
+	movementInfoVA* current_movement = this->getCurrentMovement();
+	if (current_movement == nullptr) return;
 
-	for (auto& movement : this->routine_movements) {
-		sf::Vector2f offset = movement->starting_pos - movement->centroid;
-		//movement->moveCentroid(offset);
-		//movement->moveOriginalVertex(offset);
-		//movement->recalculateOriginalCentroid();
-	}
+	sf::Vector2f centroid{};
+	for (size_t i = 0; i < vertexarray->getVertexCount(); ++i) 
+		centroid += vertexarray->operator[](i).position;
+	centroid /= static_cast<float>(vertexarray->getVertexCount());
+
+	sf::Vector2f offset = current_movement->starting_pos - centroid;
+	for (size_t i = 0; i < vertexarray->getVertexCount(); ++i) 
+		vertexarray->operator[](i).position += offset;
 }
 
 void MovementRoutineVA::addMovement(movementInfoVA * movement)
@@ -169,8 +172,10 @@ void MovementRoutineVA::clear()
 
 void MovementRoutineVA::reset()
 {
-	for (auto& movement : this->routine_movements)
+	for (auto& movement : this->routine_movements) {
 		movement->reset();
+		movement->moveCentroidsToStartingPosition();
+	}
 
 	this->current = 0;
 	this->is_active = false;
@@ -180,8 +185,8 @@ void MovementRoutineVA::reset()
 const bool MovementRoutineVA::start(sf::VertexArray* vertexArray)
 {
 	if (this->routine_movements.size() != 0) {
-		this->calculateCentroids(vertexArray);
 		this->reset();
+		this->adjustVertexarrayToStartingPosition(vertexArray);
 
 		this->current = 0;
 		this->is_active = true;
@@ -209,15 +214,17 @@ movementInfoVA* MovementRoutineVA::getCurrentMovement()
 	}
 }
 
-const bool MovementRoutineVA::goToNextMovement()
+const bool MovementRoutineVA::goToNextMovement(sf::VertexArray* vertexArray)
 {
 	if (this->current < this->count - 1) {
 		++this->current;
+		this->adjustVertexarrayToStartingPosition(vertexArray);
 		return true;
 	}
 	else {
 		this->reset();
 		if (this->is_looping) {
+			this->adjustVertexarrayToStartingPosition(vertexArray);
 			this->is_active = true;
 			return true;
 		}

@@ -21,20 +21,33 @@ private:
 	MovementRoutineContainer* movementRoutineContainer;
 	MovementRoutineVAContainer* movementRoutineVAContainer;
 
+
+
+	std::map<sf::Shape*, ScalingRoutine*> m_Routine_Scaling_Shape_Active;
+	std::map<sf::Sprite*, ScalingRoutine*> m_Routine_Scaling_Sprite_Active;
+	std::map<sf::VertexArray*, ScalingRoutineVA*> m_Routine_Scaling_VertexArray_Active;
+
+	std::map<sf::Shape*, ScalingRoutineContainer*>  m_Routine_Scaling_Shape;
+	std::map<sf::Sprite*, ScalingRoutineContainer*> m_Routine_Scaling_Sprite;
+	std::map<sf::VertexArray*, ScalingRoutineVAContainer*> m_Routine_Scaling_VertexArray;
+
+	ScalingRoutineContainer* scalingRoutineContainer;
+	ScalingRoutineVAContainer* scalingRoutineVAContainer;
+
 public:
 	// Movement container
 	MovementRoutineEngine* movementRoutineEngine;
 
 	MovementManager();
 
-	MovementRoutine* createMovementRoutine(const std::string& _name) { return this->movementRoutineContainer->createRoutine(_name); }
+	MovementRoutine*   createMovementRoutine(const std::string& _name)   { return this->movementRoutineContainer->createRoutine(_name); }
 	MovementRoutineVA* createMovementRoutineVA(const std::string& _name) { return this->movementRoutineVAContainer->createRoutine(_name); }
 
-	MovementRoutine* getMovementRoutine(const std::string& _name)    { return this->movementRoutineContainer->getRoutinePtr(_name); }
-	MovementRoutineVA* getMovementRoutineVA(const std::string& _name) { return this->movementRoutineVAContainer->getRoutinePtr(_name); }
+	MovementRoutine*   getMovementRoutine(const std::string& _name)    { return this->movementRoutineContainer->getRoutinePtr(_name); }
+	MovementRoutineVA* getMovementRoutineVA(const std::string& _name)  { return this->movementRoutineVAContainer->getRoutinePtr(_name); }
 
-	MovementRoutine* linkMovementRoutine(sf::Shape* _shape, const std::string& _name); // Dodaæ mo¿liwoœæ linkowania po wskaŸniku do routine
-	MovementRoutine* linkMovementRoutine(sf::Sprite* _sprite, const std::string& _name);
+	MovementRoutine*   linkMovementRoutine(sf::Shape* _shape, const std::string& _name); // Dodaæ mo¿liwoœæ linkowania po wskaŸniku do routine
+	MovementRoutine*   linkMovementRoutine(sf::Sprite* _sprite, const std::string& _name);
 	MovementRoutineVA* linkMovementRoutine(sf::VertexArray* _vertexarray, const std::string& _name);
 
 	void unlinkMovementRoutine(sf::Shape* _shape, const std::string& _name);
@@ -77,6 +90,39 @@ public:
 		size += movementRoutineContainer->size();
 		return size + sizeof(movementRoutineContainer);
 	}
+
+	ScalingRoutine*   createScalingRoutine(const std::string& _name)   { return this->scalingRoutineContainer->createRoutine(_name); }
+	ScalingRoutineVA* createScalingRoutineVA(const std::string& _name) { return this->scalingRoutineVAContainer->createRoutine(_name); }
+
+	ScalingRoutine*   getScalingRoutine(const std::string& _name)	{ return this->scalingRoutineContainer->getRoutinePtr(_name); }
+	ScalingRoutineVA* getScalingRoutineVA(const std::string& _name) { return this->scalingRoutineVAContainer->getRoutinePtr(_name); }
+
+	ScalingRoutine*   linkScalingRoutine(sf::Shape* _shape, const std::string& _name); // Dodaæ mo¿liwoœæ linkowania po wskaŸniku do routine
+	ScalingRoutine*   linkScalingRoutine(sf::Sprite* _sprite, const std::string& _name);
+	ScalingRoutineVA* linkScalingRoutine(sf::VertexArray* _vertexarray, const std::string& _name);
+
+	void unlinkScalingRoutine(sf::Shape* _shape, const std::string& _name);
+	void unlinkScalingRoutine(sf::Sprite* _sprite, const std::string& _name);
+	void unlinkScalingRoutine(sf::VertexArray* _vertexarray, const std::string& _name);
+
+	void startScalingRoutine(sf::Shape* _shape, const std::string& _name);
+	void startScalingRoutine(sf::Sprite* _sprite, const std::string& _name);
+	void startScalingRoutine(sf::VertexArray* _vertexarray, const std::string& _name);
+
+	void pauseScalingRoutine(sf::Shape* _shape, const std::string& _name);
+	void pauseScalingRoutine(sf::Sprite* _sprite, const std::string& _name);
+	void pauseScalingRoutine(sf::VertexArray* _vertexarray, const std::string& _name);
+
+	void resumeScalingRoutine(sf::Shape* _shape, const std::string& _name);
+	void resumeScalingRoutine(sf::Sprite* _sprite, const std::string& _name);
+	void resumeScalingRoutine(sf::VertexArray* _vertexarray, const std::string& _name);
+
+	void stopScalingRoutine(sf::Shape* _shape, const std::string& _name);
+	void stopScalingRoutine(sf::Sprite* _sprite, const std::string& _name);
+	void stopScalingRoutine(sf::VertexArray* _vertexarray, const std::string& _name);
+
+	void deleteScalingRoutine();
+	void deleteScalingRoutine(const std::string& _name);
 
 	void update(float dt);
 };

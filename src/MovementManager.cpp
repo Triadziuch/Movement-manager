@@ -12,6 +12,9 @@ MovementManager::MovementManager()
 	movementRoutineEngine = new MovementRoutineEngine();
 	movementRoutineContainer = new MovementRoutineContainer();
 	movementRoutineVAContainer = new MovementRoutineVAContainer();
+
+	scalingRoutineContainer = new ScalingRoutineContainer();
+	scalingRoutineVAContainer = new ScalingRoutineVAContainer();
 }
 
 MovementRoutine* MovementManager::linkMovementRoutine(sf::Shape* _shape, const std::string& _name)
@@ -284,7 +287,6 @@ void MovementManager::resumeMovementRoutine(sf::Shape* _shape, const std::string
 		printf("MovementManager::resumeMovementRoutine: Routine for shape not found\n");
 }
 
-
 void MovementManager::resumeMovementRoutine(sf::Sprite* _sprite, const std::string& _name)
 {
 	auto movementRoutineFound = m_Routine_Movement_Sprite_Active.find(_sprite);
@@ -461,4 +463,445 @@ void MovementManager::deleteMovementRoutine(const std::string& _name)
 void MovementManager::update(float dt)
 {
 	this->movementRoutineEngine->update(dt);
+}
+
+ScalingRoutine* MovementManager::linkScalingRoutine(sf::Shape* _shape, const std::string& _name)
+{
+	// Check if routine with given name exists
+	ScalingRoutine* scalingRoutineOriginal = scalingRoutineContainer->getRoutinePtr(_name);
+
+	if (scalingRoutineOriginal == nullptr) {
+		printf("MovementManager::linkScalingRoutine: Routine with name %s not found\n", _name.c_str());
+		return nullptr;
+	}
+
+	// Check if we linked a scaling routine to this shape before
+	auto scalingRoutineContainerFound = m_Routine_Scaling_Shape.find(_shape);
+	if (scalingRoutineContainerFound != m_Routine_Scaling_Shape.end()) {
+
+		auto* scalingRoutineFound = scalingRoutineContainerFound->second->exists(_name);
+		if (scalingRoutineFound != nullptr) {
+			printf("MovementManager::linkScalingRoutine: Routine with name %s already linked to shape\n", _name.c_str());
+			return scalingRoutineFound;
+		}
+	}
+	else {
+		// If not, create a new scaling routine container for this shape and link the scaling routine to it
+		ScalingRoutineContainer* newScalingRoutineContainer = new ScalingRoutineContainer(this->movementRoutineEngine);
+		m_Routine_Scaling_Shape.insert(std::make_pair(_shape, newScalingRoutineContainer));
+
+		ScalingRoutine* newScalingRoutine = new ScalingRoutine(*scalingRoutineOriginal);
+		return newScalingRoutineContainer->createRoutine(_name, newScalingRoutine);
+	}
+
+	// If yes, create a new scaling routine and link it to the existing scaling routine container
+	ScalingRoutine* newScalingRoutine = new ScalingRoutine(*scalingRoutineOriginal);
+	return scalingRoutineContainerFound->second->createRoutine(_name, newScalingRoutine);
+}
+
+ScalingRoutine* MovementManager::linkScalingRoutine(sf::Sprite* _sprite, const std::string& _name)
+{
+	// Check if routine with given name exists
+	ScalingRoutine* scalingRoutineOriginal = scalingRoutineContainer->getRoutinePtr(_name);
+
+	if (scalingRoutineOriginal == nullptr) {
+		printf("MovementManager::linkScalingRoutine: Routine with name %s not found\n", _name.c_str());
+		return nullptr;
+	}
+
+	// Check if we linked a scaling routine to this shape before
+	auto scalingRoutineContainerFound = m_Routine_Scaling_Sprite.find(_sprite);
+	if (scalingRoutineContainerFound != m_Routine_Scaling_Sprite.end()) {
+
+		auto* scalingRoutineFound = scalingRoutineContainerFound->second->exists(_name);
+		if (scalingRoutineFound != nullptr) {
+			printf("MovementManager::linkScalingRoutine: Routine with name %s already linked to shape\n", _name.c_str());
+			return scalingRoutineFound;
+		}
+	}
+	else {
+		// If not, create a new scaling routine container for this shape and link the scaling routine to it
+		ScalingRoutineContainer* newScalingRoutineContainer = new ScalingRoutineContainer(this->movementRoutineEngine);
+		m_Routine_Scaling_Sprite.insert(std::make_pair(_sprite, newScalingRoutineContainer));
+
+		ScalingRoutine* newScalingRoutine = new ScalingRoutine(*scalingRoutineOriginal);
+		return newScalingRoutineContainer->createRoutine(_name, newScalingRoutine);
+	}
+
+	// If yes, create a new scaling routine and link it to the existing scaling routine container
+	ScalingRoutine* newScalingRoutine = new ScalingRoutine(*scalingRoutineOriginal);
+	return scalingRoutineContainerFound->second->createRoutine(_name, newScalingRoutine);
+}
+
+ScalingRoutineVA* MovementManager::linkScalingRoutine(sf::VertexArray* _vertexarray, const std::string& _name)
+{
+	// Check if routine with given name exists
+	ScalingRoutineVA* scalingRoutineVAOriginal = scalingRoutineVAContainer->getRoutinePtr(_name);
+
+	if (scalingRoutineVAOriginal == nullptr) {
+		printf("MovementManager::linkScalingRoutine: Routine with name %s not found\n", _name.c_str());
+		return nullptr;
+	}
+
+	// Check if we linked a scaling routine to this vertexarray before
+	auto scalingRoutineVAContainerFound = m_Routine_Scaling_VertexArray.find(_vertexarray);
+	if (scalingRoutineVAContainerFound != m_Routine_Scaling_VertexArray.end()) {
+
+		auto* scalingRoutineVAFound = scalingRoutineVAContainerFound->second->exists(_name);
+		if (scalingRoutineVAFound != nullptr) {
+			printf("MovementManager::linkScalingRoutine: Routine with name %s already linked to vertexarray\n", _name.c_str());
+			return scalingRoutineVAFound;
+		}
+	}
+	else {
+		// If not, create a new scaling routine container for this vertexarray and link the scaling routine to it
+		ScalingRoutineVAContainer* newScalingRoutineVAContainer = new ScalingRoutineVAContainer(this->movementRoutineEngine);
+		m_Routine_Scaling_VertexArray.insert(std::make_pair(_vertexarray, newScalingRoutineVAContainer));
+
+		ScalingRoutineVA* newScalingRoutineVA = new ScalingRoutineVA(*scalingRoutineVAOriginal);
+		return newScalingRoutineVAContainer->createRoutine(_name, newScalingRoutineVA);
+	}
+
+	// If yes, create a new scaling routine and link it to the existing scaling routine container
+	ScalingRoutineVA* newScalingRoutineVA = new ScalingRoutineVA(*scalingRoutineVAOriginal);
+	return scalingRoutineVAContainerFound->second->createRoutine(_name, newScalingRoutineVA);
+}
+
+void MovementManager::unlinkScalingRoutine(sf::Shape* _shape, const std::string& _name)
+{
+	// Stop the routine if it's active
+	this->stopScalingRoutine(_shape, _name);
+
+	// Delete the routine from m_Routine_Scaling_Shape
+	auto scalingRoutineContainerFound = m_Routine_Scaling_Shape.find(_shape);
+	if (scalingRoutineContainerFound != m_Routine_Scaling_Shape.end()) {
+
+		auto* scalingRoutineFound = scalingRoutineContainerFound->second->exists(_name);
+		if (scalingRoutineFound != nullptr) {
+			scalingRoutineContainerFound->second->deleteRoutine(_name);
+		}
+		else
+			printf("MovementManager::unlinkScalingRoutine: Routine with name %s not found\n", _name.c_str());
+	}
+	else
+		printf("MovementManager::unlinkScalingRoutine: Routine for shape not found\n");
+}
+
+void MovementManager::unlinkScalingRoutine(sf::Sprite* _sprite, const std::string& _name)
+{
+	// Stop the routine if it's active
+	this->stopScalingRoutine(_sprite, _name);
+
+	// Delete the routine from m_Routine_Scaling_Sprite
+	auto scalingRoutineContainerFound = m_Routine_Scaling_Sprite.find(_sprite);
+	if (scalingRoutineContainerFound != m_Routine_Scaling_Sprite.end()) {
+
+		auto* scalingRoutineFound = scalingRoutineContainerFound->second->exists(_name);
+		if (scalingRoutineFound != nullptr) {
+			scalingRoutineContainerFound->second->deleteRoutine(_name);
+		}
+		else
+			printf("MovementManager::unlinkScalingRoutine: Routine with name %s not found\n", _name.c_str());
+	}
+	else
+		printf("MovementManager::unlinkScalingRoutine: Routine for sprite not found\n");
+}
+
+void MovementManager::unlinkScalingRoutine(sf::VertexArray* _vertexarray, const std::string& _name)
+{
+	// Stop the routine if it's active
+	this->stopScalingRoutine(_vertexarray, _name);
+
+	// Delete the routine from m_Routine_Scaling_VertexArray
+	auto scalingRoutineContainerFound = m_Routine_Scaling_VertexArray.find(_vertexarray);
+	if (scalingRoutineContainerFound != m_Routine_Scaling_VertexArray.end()) {
+
+		auto* scalingRoutineFound = scalingRoutineContainerFound->second->exists(_name);
+		if (scalingRoutineFound != nullptr) {
+			scalingRoutineContainerFound->second->deleteRoutine(_name);
+		}
+		else
+			printf("MovementManager::unlinkScalingRoutine: Routine with name %s not found\n", _name.c_str());
+	}
+	else
+		printf("MovementManager::unlinkScalingRoutine: Routine for vertexarray not found\n");
+}
+
+void MovementManager::startScalingRoutine(sf::Shape* _shape, const std::string& _name)
+{
+	auto scalingRoutineContainerFound = m_Routine_Scaling_Shape.find(_shape);
+	if (scalingRoutineContainerFound != m_Routine_Scaling_Shape.end()) {
+
+		auto* scalingRoutineFound = scalingRoutineContainerFound->second->exists(_name);
+		if (scalingRoutineFound != nullptr) {
+
+			if (scalingRoutineFound->start(_shape))
+				m_Routine_Scaling_Shape_Active.insert(std::make_pair(_shape, scalingRoutineFound));
+		}
+		else
+			printf("MovementManager::startScalingRoutine: Routine with name %s not found\n", _name.c_str());
+	}
+	else
+		printf("MovementManager::startScalingRoutine: Routine for shape not found\n");
+}
+
+void MovementManager::startScalingRoutine(sf::Sprite* _sprite, const std::string& _name)
+{
+	auto scalingRoutineContainerFound = m_Routine_Scaling_Sprite.find(_sprite);
+	if (scalingRoutineContainerFound != m_Routine_Scaling_Sprite.end()) {
+
+		auto* scalingRoutineFound = scalingRoutineContainerFound->second->exists(_name);
+		if (scalingRoutineFound != nullptr) {
+
+			if (scalingRoutineFound->start(_sprite))
+				m_Routine_Scaling_Sprite_Active.insert(std::make_pair(_sprite, scalingRoutineFound));
+		}
+		else
+			printf("MovementManager::startScalingRoutine: Routine with name %s not found\n", _name.c_str());
+	}
+	else
+		printf("MovementManager::startScalingRoutine: Routine for sprite not found\n");
+}
+
+void MovementManager::startScalingRoutine(sf::VertexArray* _vertexarray, const std::string& _name)
+{
+	auto scalingRoutineContainerFound = m_Routine_Scaling_VertexArray.find(_vertexarray);
+	if (scalingRoutineContainerFound != m_Routine_Scaling_VertexArray.end()) {
+
+		auto* scalingRoutineFound = scalingRoutineContainerFound->second->exists(_name);
+		if (scalingRoutineFound != nullptr) {
+
+			if (scalingRoutineFound->start(_vertexarray))
+				m_Routine_Scaling_VertexArray_Active.insert(std::make_pair(_vertexarray, scalingRoutineFound));
+		}
+		else
+			printf("MovementManager::startScalingRoutine: Routine with name %s not found\n", _name.c_str());
+	}
+	else
+		printf("MovementManager::startScalingRoutine: Routine for vertexarray not found\n");
+}
+
+void MovementManager::pauseScalingRoutine(sf::Shape* _shape, const std::string& _name)
+{
+	auto scalingRoutineFound = m_Routine_Scaling_Shape_Active.find(_shape);
+	if (scalingRoutineFound != m_Routine_Scaling_Shape_Active.end()) {
+		if (scalingRoutineFound->second->routine_name == _name) 
+			scalingRoutineFound->second->pause();
+		else
+			printf("MovementManager::pauseScalingRoutine: Routine with name %s not found\n", _name.c_str());
+	}
+	else
+		printf("MovementManager::pauseScalingRoutine: Routine for shape not found\n");
+}
+
+void MovementManager::pauseScalingRoutine(sf::Sprite* _sprite, const std::string& _name)
+{
+	auto scalingRoutineFound = m_Routine_Scaling_Sprite_Active.find(_sprite);
+	if (scalingRoutineFound != m_Routine_Scaling_Sprite_Active.end()) {
+		if (scalingRoutineFound->second->routine_name == _name) 
+			scalingRoutineFound->second->pause();
+		else
+			printf("MovementManager::pauseScalingRoutine: Routine with name %s not found\n", _name.c_str());
+	}
+	else
+		printf("MovementManager::pauseScalingRoutine: Routine for sprite not found\n");
+}
+
+void MovementManager::pauseScalingRoutine(sf::VertexArray* _vertexarray, const std::string& _name)
+{
+	auto scalingRoutineFound = m_Routine_Scaling_VertexArray_Active.find(_vertexarray);
+	if (scalingRoutineFound != m_Routine_Scaling_VertexArray_Active.end()) {
+		if (scalingRoutineFound->second->routine_name == _name) 
+			scalingRoutineFound->second->pause();
+		else
+			printf("MovementManager::pauseScalingRoutine: Routine with name %s not found\n", _name.c_str());
+	}
+	else
+		printf("MovementManager::pauseScalingRoutine: Routine for vertexarray not found\n");
+}
+
+void MovementManager::resumeScalingRoutine(sf::Shape* _shape, const std::string& _name)
+{
+	auto scalingRoutineFound = m_Routine_Scaling_Shape_Active.find(_shape);
+	if (scalingRoutineFound != m_Routine_Scaling_Shape_Active.end()) {
+		if (scalingRoutineFound->second->routine_name == _name) 
+			scalingRoutineFound->second->resume();
+		else
+			printf("MovementManager::resumeScalingRoutine: Routine with name %s not found\n", _name.c_str());
+	}
+	else
+		printf("MovementManager::resumeScalingRoutine: Routine for shape not found\n");
+}
+
+void MovementManager::resumeScalingRoutine(sf::Sprite* _sprite, const std::string& _name)
+{
+	auto scalingRoutineFound = m_Routine_Scaling_Sprite_Active.find(_sprite);
+	if (scalingRoutineFound != m_Routine_Scaling_Sprite_Active.end()) {
+		if (scalingRoutineFound->second->routine_name == _name) 
+			scalingRoutineFound->second->resume();
+		else
+			printf("MovementManager::resumeScalingRoutine: Routine with name %s not found\n", _name.c_str());
+	}
+	else
+		printf("MovementManager::resumeScalingRoutine: Routine for sprite not found\n");
+}
+
+void MovementManager::resumeScalingRoutine(sf::VertexArray* _vertexarray, const std::string& _name)
+{
+	auto scalingRoutineFound = m_Routine_Scaling_VertexArray_Active.find(_vertexarray);
+	if (scalingRoutineFound != m_Routine_Scaling_VertexArray_Active.end()) {
+		if (scalingRoutineFound->second->routine_name == _name) 
+			scalingRoutineFound->second->resume();
+		else
+			printf("MovementManager::resumeScalingRoutine: Routine with name %s not found\n", _name.c_str());
+	}
+	else
+		printf("MovementManager::resumeScalingRoutine: Routine for vertexarray not found\n");
+}
+
+void MovementManager::stopScalingRoutine(sf::Shape* _shape, const std::string& _name)
+{
+	auto scalingRoutineFound = m_Routine_Scaling_Shape_Active.find(_shape);
+	if (scalingRoutineFound != m_Routine_Scaling_Shape_Active.end()) {
+		if (scalingRoutineFound->second->routine_name == _name) {
+			scalingRoutineFound->second->stop(_shape);
+			m_Routine_Scaling_Shape_Active.erase(scalingRoutineFound);
+		}
+		else
+			printf("MovementManager::stopScalingRoutine: Routine with name %s not found\n", _name.c_str());
+	}
+	else
+		printf("MovementManager::stopScalingRoutine: Routine for shape not found\n");
+}
+
+void MovementManager::stopScalingRoutine(sf::Sprite* _sprite, const std::string& _name)
+{
+	auto scalingRoutineFound = m_Routine_Scaling_Sprite_Active.find(_sprite);
+	if (scalingRoutineFound != m_Routine_Scaling_Sprite_Active.end()) {
+		if (scalingRoutineFound->second->routine_name == _name) {
+			scalingRoutineFound->second->stop(_sprite);
+			m_Routine_Scaling_Sprite_Active.erase(scalingRoutineFound);
+		}
+		else
+			printf("MovementManager::stopScalingRoutine: Routine with name %s not found\n", _name.c_str());
+	}
+	else
+		printf("MovementManager::stopScalingRoutine: Routine for sprite not found\n");
+}
+
+void MovementManager::stopScalingRoutine(sf::VertexArray* _vertexarray, const std::string& _name)
+{
+	auto scalingRoutineFound = m_Routine_Scaling_VertexArray_Active.find(_vertexarray);
+	if (scalingRoutineFound != m_Routine_Scaling_VertexArray_Active.end()) {
+		if (scalingRoutineFound->second->routine_name == _name) {
+			scalingRoutineFound->second->stop(_vertexarray);
+			m_Routine_Scaling_VertexArray_Active.erase(scalingRoutineFound);
+		}
+		else
+			printf("MovementManager::stopScalingRoutine: Routine with name %s not found\n", _name.c_str());
+	}
+	else
+		printf("MovementManager::stopScalingRoutine: Routine for vertexarray not found\n");
+}
+
+void MovementManager::deleteScalingRoutine()
+{
+	for (auto routine_active = m_Routine_Scaling_Shape_Active.begin(); routine_active != m_Routine_Scaling_Shape_Active.end();) {
+		routine_active->second->stop(routine_active->first);
+		routine_active = m_Routine_Scaling_Shape_Active.erase(routine_active);
+	}
+
+	for (auto routine_active = m_Routine_Scaling_Sprite_Active.begin(); routine_active != m_Routine_Scaling_Sprite_Active.end();) {
+		routine_active->second->stop(routine_active->first);
+		routine_active = m_Routine_Scaling_Sprite_Active.erase(routine_active);
+	}
+
+	for (auto routine_active = m_Routine_Scaling_VertexArray_Active.begin(); routine_active != m_Routine_Scaling_VertexArray_Active.end();) {
+		routine_active->second->stop(routine_active->first);
+		routine_active = m_Routine_Scaling_VertexArray_Active.erase(routine_active);
+	}
+
+	for (auto routineContainer = m_Routine_Scaling_Shape.begin(); routineContainer != m_Routine_Scaling_Shape.end();) {
+		routineContainer->second->clear();
+		delete routineContainer->second;
+		routineContainer = m_Routine_Scaling_Shape.erase(routineContainer);
+	}
+
+	for (auto routineContainer = m_Routine_Scaling_Sprite.begin(); routineContainer != m_Routine_Scaling_Sprite.end();) {
+		routineContainer->second->clear();
+		delete routineContainer->second;
+		routineContainer = m_Routine_Scaling_Sprite.erase(routineContainer);
+	}
+
+	for (auto routineContainer = m_Routine_Scaling_VertexArray.begin(); routineContainer != m_Routine_Scaling_VertexArray.end();) {
+		routineContainer->second->clear();
+		delete routineContainer->second;
+		routineContainer = m_Routine_Scaling_VertexArray.erase(routineContainer);
+	}
+
+	scalingRoutineContainer->clear();
+	scalingRoutineVAContainer->clear();
+}
+
+void MovementManager::deleteScalingRoutine(const std::string& _name)
+{
+	for (auto routine_active = m_Routine_Scaling_Shape_Active.begin(); routine_active != m_Routine_Scaling_Shape_Active.end();) {
+		if (routine_active->second->routine_name == _name) {
+			routine_active->second->stop(routine_active->first);
+			routine_active = m_Routine_Scaling_Shape_Active.erase(routine_active);
+		}
+		else
+			++routine_active;
+	}
+
+	for (auto routine_active = m_Routine_Scaling_Sprite_Active.begin(); routine_active != m_Routine_Scaling_Sprite_Active.end();) {
+		if (routine_active->second->routine_name == _name) {
+			routine_active->second->stop(routine_active->first);
+			routine_active = m_Routine_Scaling_Sprite_Active.erase(routine_active);
+		}
+		else
+			++routine_active;
+	}
+
+	for (auto routine_active = m_Routine_Scaling_VertexArray_Active.begin(); routine_active != m_Routine_Scaling_VertexArray_Active.end();) {
+		if (routine_active->second->routine_name == _name) {
+			routine_active->second->stop(routine_active->first);
+			routine_active = m_Routine_Scaling_VertexArray_Active.erase(routine_active);
+		}
+		else
+			++routine_active;
+	}
+
+	for (auto routineContainer = m_Routine_Scaling_Shape.begin(); routineContainer != m_Routine_Scaling_Shape.end();) {
+		routineContainer->second->deleteRoutine(_name);
+		if (routineContainer->second->routineCount() == 0) {
+			delete routineContainer->second;
+			routineContainer = m_Routine_Scaling_Shape.erase(routineContainer);
+		}
+		else
+			++routineContainer;
+	}
+
+	for (auto routineContainer = m_Routine_Scaling_Sprite.begin(); routineContainer != m_Routine_Scaling_Sprite.end();) {
+		routineContainer->second->deleteRoutine(_name);
+		if (routineContainer->second->routineCount() == 0) {
+			delete routineContainer->second;
+			routineContainer = m_Routine_Scaling_Sprite.erase(routineContainer);
+		}
+		else
+			++routineContainer;
+	}
+
+	for (auto routineContainer = m_Routine_Scaling_VertexArray.begin(); routineContainer != m_Routine_Scaling_VertexArray.end();) {
+		routineContainer->second->deleteRoutine(_name);
+		if (routineContainer->second->routineCount() == 0) {
+			delete routineContainer->second;
+			routineContainer = m_Routine_Scaling_VertexArray.erase(routineContainer);
+		}
+		else
+			++routineContainer;
+	}
+
+	scalingRoutineContainer->deleteRoutine(_name);
+	scalingRoutineVAContainer->deleteRoutine(_name);
 }

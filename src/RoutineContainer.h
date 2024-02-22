@@ -85,6 +85,13 @@ public:
 
 	// Get routine count
 	size_t routineCount() { return movementRoutines.size(); }
+
+	// Get size
+	long long int size() {
+		long long int size = 0;
+		for (auto& routine : movementRoutines) size += routine.second->size();
+		return size + sizeof(movementRoutines);
+	}
 };
 
 class ScalingRoutineContainer : protected RoutineContainer {
@@ -94,7 +101,10 @@ private:
 public:
 	ScalingRoutineContainer() {}
 	ScalingRoutineContainer(MovementRoutineEngine* _movementRoutineEnginePtr) { this->movementRoutineEngine = _movementRoutineEnginePtr; }
-	~ScalingRoutineContainer() { scalingRoutines.clear(); }
+	~ScalingRoutineContainer() {
+		for (auto& routine : scalingRoutines) delete routine.second;
+		scalingRoutines.clear();
+	}
 
 	// Check if routine with given name already exists
 	ScalingRoutine* exists(const std::string& _name);
@@ -114,6 +124,16 @@ public:
 
 	// Remove routine with given name
 	void deleteRoutine(const std::string& _name);
+
+	// Get routine count
+	size_t routineCount() { return scalingRoutines.size(); }
+
+	// Get size
+	long long int size() {
+		long long int size = 0;
+		for (auto& routine : scalingRoutines) size += routine.second->size();
+		return size + sizeof(scalingRoutines);
+	}
 };
 
 class ScalingRoutineVAContainer : protected RoutineContainer {
@@ -124,7 +144,10 @@ private:
 public:
 	ScalingRoutineVAContainer() {}
 	ScalingRoutineVAContainer(MovementRoutineEngine* _movementRoutineEnginePtr) : movementRoutineEngine(_movementRoutineEnginePtr) {}
-	~ScalingRoutineVAContainer() { scalingRoutines.clear(); }
+	~ScalingRoutineVAContainer() {
+		for (auto& routine : scalingRoutines) delete routine.second;
+		scalingRoutines.clear();
+	}
 
 	// Check if routine with given name already exists
 	ScalingRoutineVA* exists(const std::string& _name);
@@ -144,6 +167,16 @@ public:
 
 	// Remove routine with given name
 	void deleteRoutine(const std::string& _name);
+
+	// Get routine count
+	size_t routineCount() { return scalingRoutines.size(); }
+
+	// Get size
+	long long int size() {
+		long long int size = 0;
+		for (auto& routine : scalingRoutines) size += routine.second->size();
+		return size + sizeof(scalingRoutines);
+	}
 };
 
 class RotationRoutineContainer : protected RoutineContainer {

@@ -102,7 +102,6 @@ public:
 		for (auto movement : obj.routine_movements)
 			this->routine_movements.push_back(new movementInfoVA(*movement));
 	}
-
 	~MovementRoutineVA() { for (auto& movement : routine_movements) delete movement; routine_movements.clear(); }
 
 	// Add movement to routine
@@ -127,19 +126,32 @@ public:
 	movementInfoVA* getCurrentMovement();
 
 	const bool goToNextMovement(sf::VertexArray* vertexArray);
+
+	// get size
+	long long int size() {
+		long long int size = 0;
+		for (auto movement : routine_movements) size += sizeof(*movement);
+		return size + sizeof(routine_movements);
+	}
 };
 
 class ScalingRoutine : public TransformationRoutine {
 private:
 	std::vector <scalingInfo*> routine_scalings;
 
+	void adjustStartToCurrent(const sf::Vector2f& current_scale);
+	void adjustAllToCurrent(const sf::Vector2f& current_scale);
+
 public:
 	ScalingRoutine() {}
 	ScalingRoutine(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr) : TransformationRoutine{ name, _movementRoutineEnginePtr } {};
 	ScalingRoutine(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr, scalingInfo* scaling) : TransformationRoutine{ name, _movementRoutineEnginePtr } { this->routine_scalings.emplace_back(scaling); }
 	ScalingRoutine(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr, std::vector<scalingInfo*> scalings) : TransformationRoutine{ name, _movementRoutineEnginePtr } { this->routine_scalings = scalings; }
-	ScalingRoutine(const ScalingRoutine& obj) : TransformationRoutine{ obj }, routine_scalings(obj.routine_scalings) {}
-	~ScalingRoutine() { routine_scalings.clear(); }
+	ScalingRoutine(const ScalingRoutine& obj) : TransformationRoutine{ obj } {
+		for (auto scaling : obj.routine_scalings)
+			this->routine_scalings.push_back(new scalingInfo(*scaling));
+	}
+	~ScalingRoutine() { for (auto scaling : routine_scalings) delete scaling; routine_scalings.clear(); }
 
 	// Add scaling to routine
 	void addScaling(scalingInfo* scaling);
@@ -164,20 +176,39 @@ public:
 	// Get current scaling pointer
 	scalingInfo* getCurrentScaling();
 
-	const bool goToNextScaling();
+	const bool goToNextScaling(sf::Shape* shape);
+	const bool goToNextScaling(sf::Sprite* sprite);
+
+	// get size
+	long long int size() {
+		long long int size = 0;
+		for (auto scaling : routine_scalings) size += sizeof(*scaling);
+		return size + sizeof(routine_scalings);
+	}
 };
 
 class ScalingRoutineVA : public TransformationRoutine {
 private:
 	std::vector <scalingInfoVA*> routine_scalings;
+	sf::Vector2f* current_scale{};
+
+	void adjustVertexarrayToStartingScale(sf::VertexArray* vertexarray);
+	void adjustStartToCurrent();
+	void adjustAllToCurrent();
 
 public:
 	ScalingRoutineVA() {}
 	ScalingRoutineVA(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr) : TransformationRoutine{ name, _movementRoutineEnginePtr } {};
 	ScalingRoutineVA(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr, scalingInfoVA* scaling) : TransformationRoutine{ name, _movementRoutineEnginePtr } { this->routine_scalings.emplace_back(scaling); }
 	ScalingRoutineVA(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr, std::vector<scalingInfoVA*> scalings) : TransformationRoutine{ name, _movementRoutineEnginePtr } { this->routine_scalings = scalings; }
-	ScalingRoutineVA(const ScalingRoutineVA& obj) : TransformationRoutine{ obj }, routine_scalings(obj.routine_scalings) {}
-	~ScalingRoutineVA() { routine_scalings.clear(); }
+	ScalingRoutineVA(const ScalingRoutineVA& obj) : TransformationRoutine{ obj } {
+		for (auto scaling : obj.routine_scalings) 
+			this->routine_scalings.push_back(new scalingInfoVA(*scaling));
+
+		if (this->current_scale == nullptr && this->routine_scalings.size() != 0)
+			this->current_scale = &this->routine_scalings[0]->current_scale;
+	}
+	~ScalingRoutineVA() { for (auto& scaling : routine_scalings) delete scaling; routine_scalings.clear(); }
 
 	// Add scaling to routine
 	void addScaling(scalingInfoVA* scaling);
@@ -189,7 +220,7 @@ public:
 	void clear();
 
 	// Reset routine
-	void reset();
+	void reset(const sf::VertexArray* vertexArray);
 
 	// Start routine
 	const bool start(sf::VertexArray* vertexarray);
@@ -200,7 +231,14 @@ public:
 	// Get current scaling pointer
 	scalingInfoVA* getCurrentScaling();
 
-	const bool goToNextScaling();
+	const bool goToNextScaling(const sf::VertexArray* vertexArray);
+
+	// get size
+	long long int size() {
+		long long int size = 0;
+		for (auto scaling : routine_scalings) size += sizeof(*scaling);
+		return size + sizeof(routine_scalings);
+	}
 };
 
 class RotationRoutine : public TransformationRoutine {

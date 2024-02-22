@@ -176,6 +176,23 @@ public:
 
 	scalingInfoVA(const scalingInfoVA& obj) :
 		transformationInfoVA{ obj.repeat, obj.current_time, obj.motion_duration, obj.delay_before, obj.delay_after, obj.used_function, const_cast<sf::VertexArray*>(&obj.originalVertex) }, starting_scale(obj.starting_scale), ending_scale(obj.ending_scale), current_scale(obj.current_scale) {}
+
+	void reset() {
+		this->current_time = 0.f;
+		this->current_scale = this->starting_scale;
+	}
+
+	void recalculateCentroidsOriginalVertex(const sf::VertexArray* vertexArray) {
+		sf::Vector2f current_centroid{};
+		for (size_t i = 0; i < vertexArray->getVertexCount(); i++)
+			current_centroid += vertexArray->operator[](i).position;
+		current_centroid /= static_cast<float>(vertexArray->getVertexCount());
+
+		sf::Vector2f offset = current_centroid - this->centroid;
+		this->centroid = current_centroid;
+		for (size_t i = 0; i < vertexArray->getVertexCount(); i++)
+			this->originalVertex[i].position += offset;
+	}
 };
 
 class rotationInfoVA : public transformationInfoVA {

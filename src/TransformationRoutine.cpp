@@ -294,6 +294,26 @@ const bool MovementRoutineVA::goToNextMovement(sf::VertexArray* vertexArray)
 
 // - - - - - - - - - - - - - - - - - - - - ScalingRoutine - - - - - - - - - - - - - - - - - - - - \\
 
+void ScalingRoutine::adjustStartToCurrent(const sf::Vector2f& current_scale)
+{
+	if (this->routine_scalings.size() == 0) return;
+	this->routine_scalings[0]->starting_scale = current_scale;
+}
+
+void ScalingRoutine::adjustAllToCurrent(const sf::Vector2f& current_scale)
+{
+	if (this->routine_scalings.size() == 0) return;
+
+	const sf::Vector2f proportion{current_scale.x / this->routine_scalings[0]->starting_scale.x, current_scale.y / this->routine_scalings[0]->starting_scale.y};
+
+	if (proportion == sf::Vector2f{1.f, 1.f}) return;
+
+	for (auto& scaling : this->routine_scalings) {
+		scaling->starting_scale = sf::Vector2f{ scaling->starting_scale.x * proportion.x, scaling->starting_scale.y * proportion.y };
+		scaling->ending_scale   = sf::Vector2f{ scaling->ending_scale.x * proportion.x, scaling->ending_scale.y * proportion.y };
+	}
+}
+
 void ScalingRoutine::addScaling(scalingInfo* scaling)
 {
 	this->routine_scalings.emplace_back(scaling);
@@ -303,7 +323,11 @@ void ScalingRoutine::addScaling(scalingInfo* scaling)
 void ScalingRoutine::removeScaling(scalingInfo* scaling)
 {
 	auto it = std::find(this->routine_scalings.begin(), this->routine_scalings.end(), scaling);
-	if (it != this->routine_scalings.end()) { this->routine_scalings.erase(it); --this->count; }
+
+	if (it != this->routine_scalings.end()) {
+		this->routine_scalings.erase(it); 
+		--this->count;
+	}
 }
 
 void ScalingRoutine::clear()
@@ -329,6 +353,9 @@ void ScalingRoutine::reset()
 const bool ScalingRoutine::start(sf::Shape* shape)
 {
 	if (this->routine_scalings.size() != 0) {
+		if (this->adjust_all_to_current_transform)		  { this->adjustAllToCurrent(shape->getScale()); }
+		else if (this->adjust_start_to_current_transform) { this->adjustStartToCurrent(shape->getScale()); }
+
 		this->reset();
 
 		this->current = 0;
@@ -344,6 +371,8 @@ const bool ScalingRoutine::start(sf::Shape* shape)
 const bool ScalingRoutine::start(sf::Sprite* sprite)
 {
 	if (this->routine_scalings.size() != 0) {
+		if (this->adjust_all_to_current_transform)		  { this->adjustAllToCurrent(sprite->getPosition()); }
+		else if (this->adjust_start_to_current_transform) { this->adjustStartToCurrent(sprite->getPosition()); }
 		this->reset();
 
 		this->current = 0;
@@ -378,14 +407,38 @@ scalingInfo* ScalingRoutine::getCurrentScaling()
 	}
 }
 
-const bool ScalingRoutine::goToNextScaling()
+const bool ScalingRoutine::goToNextScaling(sf::Shape* shape)
 {
 	if (this->current < this->count - 1) {
 		++this->current;
 		return true;
 	}
 	else {
+		printf("Size: (%f, %f)\n", shape->getGlobalBounds().width, shape->getGlobalBounds().height);
+		if (this->adjust_all_to_current_transform)		  { this->adjustAllToCurrent(shape->getScale()); }
+		else if (this->adjust_start_to_current_transform) { this->adjustStartToCurrent(shape->getScale()); }
 		this->reset();
+
+		if (this->is_looping) {
+			this->is_active = true;
+			return true;
+		}
+
+		return false;
+	}
+}
+
+const bool ScalingRoutine::goToNextScaling(sf::Sprite* sprite)
+{
+	if (this->current < this->count - 1) {
+		++this->current;
+		return true;
+	}
+	else {
+		if (this->adjust_all_to_current_transform)		  { this->adjustAllToCurrent(sprite->getScale()); }
+		else if (this->adjust_start_to_current_transform) { this->adjustStartToCurrent(sprite->getScale()); }
+		this->reset();
+
 		if (this->is_looping) {
 			this->is_active = true;
 			return true;
@@ -397,8 +450,44 @@ const bool ScalingRoutine::goToNextScaling()
 
 // - - - - - - - - - - - - - - - - - - - - ScalingRoutineVA - - - - - - - - - - - - - - - - - - - - \\
 
+void ScalingRoutineVA::adjustVertexarrayToStartingScale(sf::VertexArray* vertexarray)
+{
+	scalingInfoVA* current_scaling = this->getCurrentScaling();
+	if (current_scaling == nullptr) return;
+
+	sf::Vector2f centroid{};
+	for (size_t i = 0; i < vertexarray->getVertexCount(); ++i)
+		centroid += vertexarray->operator[](i).position;
+	centroid /= static_cast<float>(vertexarray->getVertexCount());
+
+	sf::Vector2f offset = current_scaling->starting_scale - centroid;
+	for (size_t i = 0; i < vertexarray->getVertexCount(); ++i)
+		vertexarray->operator[](i).position += offset;
+}
+
+void ScalingRoutineVA::adjustStartToCurrent()
+{
+	if (this->routine_scalings.size() == 0) return;
+	this->routine_scalings[0]->starting_scale = *this->current_scale;
+	this->routine_scalings[0]->current_scale  = *this->current_scale;
+}
+
+void ScalingRoutineVA::adjustAllToCurrent()
+{
+	if (this->routine_scalings.size() == 0) return;
+	const sf::Vector2f proportion{ this->current_scale->x / this->routine_scalings[0]->starting_scale.x, this->current_scale->y / this->routine_scalings[0]->starting_scale.y };
+
+	for (auto& scaling : this->routine_scalings) {
+		scaling->starting_scale = sf::Vector2f{ scaling->starting_scale.x * proportion.x, scaling->starting_scale.y * proportion.y };
+		scaling->ending_scale   = sf::Vector2f{ scaling->ending_scale.x * proportion.x, scaling->ending_scale.y * proportion.y };
+		scaling->current_scale  = sf::Vector2f{ scaling->current_scale.x * proportion.x, scaling->current_scale.y * proportion.y };
+	}
+}
+
 void ScalingRoutineVA::addScaling(scalingInfoVA* scaling)
 {
+	if (this->current_scale == nullptr) this->current_scale = &scaling->current_scale;
+
 	this->routine_scalings.emplace_back(scaling);
 	++this->count;
 }
@@ -406,7 +495,11 @@ void ScalingRoutineVA::addScaling(scalingInfoVA* scaling)
 void ScalingRoutineVA::removeScaling(scalingInfoVA* scaling)
 {
 	auto it = std::find(this->routine_scalings.begin(), this->routine_scalings.end(), scaling);
-	if (it != this->routine_scalings.end()) { this->routine_scalings.erase(it); --this->count; }
+
+	if (it != this->routine_scalings.end()) {
+		this->routine_scalings.erase(it);
+		--this->count;
+	}
 }
 
 void ScalingRoutineVA::clear()
@@ -419,11 +512,14 @@ void ScalingRoutineVA::clear()
 	this->is_looping = false;
 }
 
-void ScalingRoutineVA::reset()
+void ScalingRoutineVA::reset(const sf::VertexArray* vertexArray)
 {
-	for (auto& scaling : this->routine_scalings)
+	for (auto& scaling : this->routine_scalings) {
 		scaling->reset();
-
+		scaling->recalculateCentroidsOriginalVertex(vertexArray);
+	}
+		
+	
 	this->current = 0;
 	this->is_active = false;
 	this->is_paused = false;
@@ -432,7 +528,10 @@ void ScalingRoutineVA::reset()
 const bool ScalingRoutineVA::start(sf::VertexArray* vertexArray)
 {
 	if (this->routine_scalings.size() != 0) {
-		this->reset();
+		if (this->adjust_all_to_current_transform)		  { this->adjustAllToCurrent(); }
+		else if (this->adjust_start_to_current_transform) { this->adjustStartToCurrent(); }
+
+		this->reset(vertexArray);
 
 		this->current = 0;
 		this->is_active = true;
@@ -446,7 +545,7 @@ const bool ScalingRoutineVA::start(sf::VertexArray* vertexArray)
 
 void ScalingRoutineVA::stop(sf::VertexArray* vertexArray)
 {
-	this->reset();
+	this->reset(vertexArray);
 	this->movementRoutineEngine->stopScaling(vertexArray);
 }
 
@@ -460,15 +559,19 @@ scalingInfoVA* ScalingRoutineVA::getCurrentScaling()
 	}
 }
 
-const bool ScalingRoutineVA::goToNextScaling()
+const bool ScalingRoutineVA::goToNextScaling(const sf::VertexArray* vertexArray)
 {
 	if (this->current < this->count - 1) {
 		++this->current;
 		return true;
 	}
 	else {
-		this->reset();
+		this->current_scale = &this->routine_scalings[this->current]->ending_scale;
+		this->reset(vertexArray);
 		if (this->is_looping) {
+			if (this->adjust_all_to_current_transform)		  { this->adjustAllToCurrent(); }
+			else if (this->adjust_start_to_current_transform) { this->adjustStartToCurrent(); }
+
 			this->is_active = true;
 			return true;
 		}

@@ -1580,7 +1580,7 @@ void MovementRoutineEngine::updateShape(float dt)
 					}
 				}
 				else if (scaling->isFinished()) {
-					if (!scalingRoutine->second->goToNextScaling()) {
+					if (!scalingRoutine->second->goToNextScaling(shape)) {
 						scalingRoutine->second = nullptr;
 						scalingRoutine = m_Scaling_Routines_Shape.erase(scalingRoutine);
 						continue;
@@ -1722,7 +1722,7 @@ void MovementRoutineEngine::updateVertexArray(float dt)
 						}
 					}
 					else if (scaling->isFinished()) {
-						if (!scalingRoutine->second->goToNextScaling()) {
+						if (!scalingRoutine->second->goToNextScaling(vertexarray)) {
 							scalingRoutine->second = nullptr;
 							scalingRoutine = m_Scaling_Routines_VA.erase(scalingRoutine);
 							continue;
@@ -1862,7 +1862,7 @@ void MovementRoutineEngine::updateSprite(float dt)
 					}
 				}
 				else if (scaling->isFinished()) {
-					if (!scalingRoutine->second->goToNextScaling()) {
+					if (!scalingRoutine->second->goToNextScaling(sprite)) {
 						scalingRoutine->second = nullptr;
 						scalingRoutine = m_Scaling_Routines_S.erase(scalingRoutine);
 						continue;
@@ -2062,17 +2062,44 @@ void MovementRoutineEngine::stopMovement(sf::Sprite* _sprite)
 
 const ScalingRoutine* MovementRoutineEngine::addScaling(sf::Shape* _shape, ScalingRoutine* _scalingRoutine)
 {
-	return nullptr;
+	auto& scalingRoutineMap = sInstance->m_Scaling_Routines_Shape;
+	auto scalingFound = scalingRoutineMap.find(_shape);
+
+	if (scalingFound != scalingRoutineMap.end()) {
+		printf("MovementRoutineEngine::addScaling: ScalingRoutine already exists for this shape\n");
+		return nullptr;
+	}
+
+	scalingRoutineMap.insert(std::make_pair(_shape, _scalingRoutine));
+	return _scalingRoutine;
 }
 
 const ScalingRoutineVA* MovementRoutineEngine::addScaling(sf::VertexArray* _vertexarray, ScalingRoutineVA* _scalingRoutine)
 {
-	return nullptr;
+	auto& scalingRoutineMap = sInstance->m_Scaling_Routines_VA;
+	auto scalingFound = scalingRoutineMap.find(_vertexarray);
+
+	if (scalingFound != scalingRoutineMap.end()) {
+		printf("MovementRoutineEngine::addScaling: ScalingRoutine already exists for this vertexarray\n");
+		return nullptr;
+	}
+
+	scalingRoutineMap.insert(std::make_pair(_vertexarray, _scalingRoutine));
+	return _scalingRoutine;
 }
 
 const ScalingRoutine* MovementRoutineEngine::addScaling(sf::Sprite* _sprite, ScalingRoutine* _scalingRoutine)
 {
-	return nullptr;
+	auto& scalingRoutineMap = sInstance->m_Scaling_Routines_S;
+	auto scalingFound = scalingRoutineMap.find(_sprite);
+
+	if (scalingFound != scalingRoutineMap.end()) {
+		printf("MovementRoutineEngine::addScaling: ScalingRoutine already exists for this sprite\n");
+		return nullptr;
+	}
+
+	scalingRoutineMap.insert(std::make_pair(_sprite, _scalingRoutine));
+	return _scalingRoutine;
 }
 
 void MovementRoutineEngine::undoScaling()
@@ -2109,18 +2136,53 @@ void MovementRoutineEngine::resetScaling(sf::Sprite* _sprite)
 
 void MovementRoutineEngine::stopScaling()
 {
+	for (auto routine = this->m_Scaling_Routines_Shape.begin(); routine != this->m_Scaling_Routines_Shape.end();) {
+		routine->second = nullptr;
+		routine = this->m_Scaling_Routines_Shape.erase(routine);
+	}
+
+	for (auto routine = this->m_Scaling_Routines_VA.begin(); routine != this->m_Scaling_Routines_VA.end();) {
+		routine->second = nullptr;
+		routine = this->m_Scaling_Routines_VA.erase(routine);
+	}
+
+	for (auto routine = this->m_Scaling_Routines_S.begin(); routine != this->m_Scaling_Routines_S.end();) {
+		routine->second = nullptr;
+		routine = this->m_Scaling_Routines_S.erase(routine);
+	}
 }
 
 void MovementRoutineEngine::stopScaling(sf::Shape* _shape)
 {
+	auto& scalingRoutineMap = sInstance->m_Scaling_Routines_Shape;
+	auto scalingRoutineFound = scalingRoutineMap.find(_shape);
+
+	if (scalingRoutineFound != scalingRoutineMap.end()) {
+		scalingRoutineFound->second = nullptr;
+		scalingRoutineMap.erase(scalingRoutineFound);
+	}
 }
 
 void MovementRoutineEngine::stopScaling(sf::VertexArray* _vertexarray)
 {
+	auto& scalingRoutineMap = sInstance->m_Scaling_Routines_VA;
+	auto scalingRoutineFound = scalingRoutineMap.find(_vertexarray);
+
+	if (scalingRoutineFound != scalingRoutineMap.end()) {
+		scalingRoutineFound->second = nullptr;
+		scalingRoutineMap.erase(scalingRoutineFound);
+	}
 }
 
 void MovementRoutineEngine::stopScaling(sf::Sprite* _sprite)
 {
+	auto& scalingRoutineMap = sInstance->m_Scaling_Routines_S;
+	auto scalingRoutineFound = scalingRoutineMap.find(_sprite);
+
+	if (scalingRoutineFound != scalingRoutineMap.end()) {
+		scalingRoutineFound->second = nullptr;
+		scalingRoutineMap.erase(scalingRoutineFound);
+	}
 }
 
 const RotationRoutine* MovementRoutineEngine::addRotation(sf::Shape* _shape, RotationRoutine* _rotationRoutine)

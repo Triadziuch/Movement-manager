@@ -106,9 +106,13 @@ int main()
 
 	// Arrows initialization
 	sf::VertexArray up_arrow(sf::LineStrip, 3u), down_arrow(sf::LineStrip, 3u);
-	up_arrow[0].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f - 40.f, 60.f);
+	/*up_arrow[0].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f - 40.f, 60.f);
 	up_arrow[1].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f, 30.f);
-	up_arrow[2].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f + 40.f, 60.f);
+	up_arrow[2].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f + 40.f, 60.f);*/
+
+	up_arrow[0].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f - 40.f, 500.f);
+	up_arrow[1].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f, 470.f);
+	up_arrow[2].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f + 40.f, 500.f);
 
 	down_arrow[0].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f - 40.f, static_cast<float>(window.getSize().y) - 60.f);
 	down_arrow[1].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f, static_cast<float>(window.getSize().y) - 30.f);
@@ -139,6 +143,14 @@ int main()
 
 	// ----- Movement Container testing ----- //
 	MovementManager movementManager;
+	auto routineS = movementManager.createScalingRoutineVA("TestowyS");
+	routineS->addScaling(new scalingInfoVA(sf::Vector2f(1.f, 1.f), sf::Vector2f(2.f, 2.f), 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, &up_arrow));
+	routineS->addScaling(new scalingInfoVA(sf::Vector2f(2.f, 2.f), sf::Vector2f(3.f, 3.f), 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, &up_arrow));
+	routineS->addScaling(new scalingInfoVA(sf::Vector2f(3.f, 3.f), sf::Vector2f(2.f, 2.f), 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, &up_arrow));
+	routineS->adjustStartToCurrentTransform(true);
+	//routineS->setLooping(true);
+	movementManager.linkScalingRoutine(&up_arrow, "TestowyS");
+
 	//auto* routine = movementManager.createMovementRoutineVA("Testowy");
 	//routine->addMovement(new movementInfoVA(sf::Vector2f(500.f, 500.f), sf::Vector2f(700.f, 700.f), 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_SINE), false, 1.f, 1.f, &up_arrow));
 	//routine->addMovement(new movementInfoVA(sf::Vector2f(700.f, 700.f), sf::Vector2f(800.f, 700.f), 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, &up_arrow));
@@ -148,18 +160,41 @@ int main()
 	//routine->adjustAllToCurrentTransform(true);
 	//movementManager.linkMovementRoutine(&up_arrow, "Testowy");
 
-	sf::RectangleShape test_shape;
-	test_shape.setSize(sf::Vector2f(50.f, 50.f));
+	/*sf::RectangleShape test_shape;
+	test_shape.setSize(sf::Vector2f(100.f, 100.f));
 	test_shape.setFillColor(sf::Color::Red);
-	test_shape.setPosition(100.f, 100.f);
+	test_shape.setOrigin(test_shape.getSize().x / 2.f, test_shape.getSize().y / 2.f);
+	test_shape.setPosition(500.f, 500.f);
 
-	
-	auto* routine = movementManager.createMovementRoutine("Testowy");
+	auto routineM = movementManager.createMovementRoutine("TestowyM");
+	routineM->addMovement(new movementInfo(sf::Vector2f(500.f, 500.f), sf::Vector2f(600.f, 500.f), 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_SINE), false, 0.5f, 0.5f));
+	routineM->setLooping(true);
+	movementManager.linkMovementRoutine(&test_shape, "TestowyM");
+
+
+	auto routineS = movementManager.createScalingRoutine("TestowyS");
+	routineS->addScaling(new scalingInfo(sf::Vector2f(2.f, 2.f), sf::Vector2f(1.5f, 2.f), 0.2f, MovementContainer.getFunctionPointer(MovementContainer::IN_SINE), false, 0.5f, 0.5f));
+	routineS->setLooping(true);
+	movementManager.linkScalingRoutine(&test_shape, "TestowyS");*/
+
+	/*auto* routine = movementManager.createScalingRoutine("TestowyS");
+	routine->addScaling(new scalingInfo(sf::Vector2f(1.f, 1.f), sf::Vector2f(2.f, 3.f), 0.5f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f));
+	routine->addScaling(new scalingInfo(sf::Vector2f(2.f, 3.f), sf::Vector2f(5.f, 1.f), 0.5f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_BOUNCE), false, 0.5f, 0.5f));
+	routine->addScaling(new scalingInfo(sf::Vector2f(5.f, 1.f), sf::Vector2f(4.f, 7.f), 0.5f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_EXPO), false, 0.5f, 0.5f));
+	routine->addScaling(new scalingInfo(sf::Vector2f(4.f, 7.f), sf::Vector2f(5.f, 3.f), 0.5f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_EXPO), false, 0.5f, 0.5f));
+	routine->addScaling(new scalingInfo(sf::Vector2f(5.f, 3.f), sf::Vector2f(1.f, 1.f), 0.5f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_EXPO), false, 0.5f, 0.5f));
+	routine->adjustStartToCurrentTransform(true);
+	routine->setLooping(true);
+	printf("Size: (%f, %f)\n", test_shape.getSize().x, test_shape.getSize().y);
+	movementManager.linkScalingRoutine(&test_shape, "TestowyS");*/
+
+
+	/*auto* routine = movementManager.createMovementRoutine("Testowy");
 	routine->addMovement(new movementInfo(sf::Vector2f(50.f, 50.f), sf::Vector2f(100.f, 100.f), 0.5f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.f, 0.f));
 	routine->addMovement(new movementInfo(sf::Vector2f(100.f, 100.f), sf::Vector2f(100.f, 50.f), 0.5f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.f, 0.0f));
 	routine->adjustAllToCurrentTransform(true);
 	routine->setLooping(true);
-	movementManager.linkMovementRoutine(&test_shape, "Testowy");
+	movementManager.linkMovementRoutine(&test_shape, "Testowy");*/
 
 	constexpr int test_shape_size = 10000;
 	constexpr int test_routine_size = 10000;
@@ -223,51 +258,9 @@ int main()
 			if (event.type == sf::Event::Closed || (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape))
 				window.close();
 
-			//// Start
-			//if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::Space)) {
-			//	movementManager.startMovementRoutine(&up_arrow, "Testowy");
-			//}
-
-			//// Pause
-			//if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::P)) {
-			//	movementManager.pauseMovementRoutine(&up_arrow, "Testowy");
-			//}
-
-			//// Resume
-			//if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::R)) {
-			//	movementManager.resumeMovementRoutine(&up_arrow, "Testowy");
-			//}
-
-			//// Stop
-			//if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::S)) {
-			//	movementManager.stopMovementRoutine(&up_arrow, "Testowy");
-			//}
-
-			
-
+			// Start
 			if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::Space)) {
-				printf("STARTED\n");
-				movementManager.startMovementRoutine(&test_shape, "Testowy");
-			}
-
-			if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::S)) {
-				printf("STOPPED\n");
-				movementManager.stopMovementRoutine(&test_shape, "Testowy");
-			}
-
-			if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::P)) {
-				printf("PAUSED\n");
-				movementManager.pauseMovementRoutine(&test_shape, "Testowy");
-			}
-
-			if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::R)) {
-				printf("RESUMED\n");
-				movementManager.resumeMovementRoutine(&test_shape, "Testowy");
-			}
-
-			if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::U)) {
-				printf("UNLINKED\n");
-				movementManager.unlinkMovementRoutine(&test_shape, "Testowy");
+				movementManager.startScalingRoutine(&up_arrow, "TestowyS");
 			}
 
 			if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::Up || event.key.code ==sf::Keyboard::W)) {
@@ -335,11 +328,11 @@ int main()
 			//window.draw(up_arrow);
 			//window.draw(down_arrow);
 		}
-		//window.draw(up_arrow);
+		window.draw(up_arrow);
 		//for(int i = 0; i < test_shape_size; ++i)
 		//	window.draw(test_shape[i]);
 
-		window.draw(test_shape);
+		//window.draw(test_shape);
 
 		window.display();
 	}

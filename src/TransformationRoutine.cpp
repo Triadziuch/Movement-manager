@@ -468,14 +468,26 @@ void ScalingRoutineVA::adjustVertexarrayToStartingScale(sf::VertexArray* vertexa
 void ScalingRoutineVA::adjustStartToCurrent()
 {
 	if (this->routine_scalings.size() == 0) return;
-	this->routine_scalings[0]->starting_scale = *this->current_scale;
-	this->routine_scalings[0]->current_scale  = *this->current_scale;
+
+	if (this->current_scale == nullptr) {
+		this->routine_scalings[0]->starting_scale = sf::Vector2f{ 1.f, 1.f };
+		this->routine_scalings[0]->current_scale = sf::Vector2f{ 1.f, 1.f };
+	}
+	else {
+		this->routine_scalings[0]->starting_scale = *this->current_scale;
+		this->routine_scalings[0]->current_scale = *this->current_scale;
+	}
+	
 }
 
 void ScalingRoutineVA::adjustAllToCurrent()
 {
 	if (this->routine_scalings.size() == 0) return;
-	const sf::Vector2f proportion{ this->current_scale->x / this->routine_scalings[0]->starting_scale.x, this->current_scale->y / this->routine_scalings[0]->starting_scale.y };
+
+	sf::Vector2f current_scale_temp{ 1.f, 1.f };
+	if (this->current_scale != nullptr) current_scale_temp = *this->current_scale;
+
+	const sf::Vector2f proportion{ current_scale_temp.x / this->routine_scalings[0]->starting_scale.x, current_scale_temp.y / this->routine_scalings[0]->starting_scale.y };
 
 	for (auto& scaling : this->routine_scalings) {
 		scaling->starting_scale = sf::Vector2f{ scaling->starting_scale.x * proportion.x, scaling->starting_scale.y * proportion.y };
@@ -486,7 +498,7 @@ void ScalingRoutineVA::adjustAllToCurrent()
 
 void ScalingRoutineVA::addScaling(scalingInfoVA* scaling)
 {
-	if (this->current_scale == nullptr) this->current_scale = &scaling->current_scale;
+	//if (this->current_scale == nullptr) this->current_scale = &scaling->current_scale;
 
 	this->routine_scalings.emplace_back(scaling);
 	++this->count;

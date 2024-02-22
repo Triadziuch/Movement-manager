@@ -204,9 +204,6 @@ public:
 	ScalingRoutineVA(const ScalingRoutineVA& obj) : TransformationRoutine{ obj } {
 		for (auto scaling : obj.routine_scalings) 
 			this->routine_scalings.push_back(new scalingInfoVA(*scaling));
-
-		if (this->current_scale == nullptr && this->routine_scalings.size() != 0)
-			this->current_scale = &this->routine_scalings[0]->current_scale;
 	}
 	~ScalingRoutineVA() { for (auto& scaling : routine_scalings) delete scaling; routine_scalings.clear(); }
 

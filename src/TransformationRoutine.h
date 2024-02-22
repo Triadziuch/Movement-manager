@@ -85,56 +85,6 @@ public:
 	}
 };
 
-class MovementRoutineVA : public TransformationRoutine {
-private:
-	std::vector <movementInfoVA*> routine_movements;
-
-	void adjustVertexarrayToStartingPosition(sf::VertexArray* vertexarray);
-	void adjustStartToCurrent(sf::VertexArray* vertexArray);
-	void adjustAllToCurrent(sf::VertexArray* vertexArray);
-
-public:
-	MovementRoutineVA() {}
-	MovementRoutineVA(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr) : TransformationRoutine{ name, _movementRoutineEnginePtr } {};
-	MovementRoutineVA(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr, movementInfoVA* movement) : TransformationRoutine{ name, _movementRoutineEnginePtr } { this->routine_movements.emplace_back(movement); }
-	MovementRoutineVA(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr, std::vector<movementInfoVA*> movements) : TransformationRoutine{ name, _movementRoutineEnginePtr } { this->routine_movements = movements; }
-	MovementRoutineVA(const MovementRoutineVA& obj) : TransformationRoutine{ obj } {
-		for (auto movement : obj.routine_movements)
-			this->routine_movements.push_back(new movementInfoVA(*movement));
-	}
-	~MovementRoutineVA() { for (auto& movement : routine_movements) delete movement; routine_movements.clear(); }
-
-	// Add movement to routine
-	void addMovement(movementInfoVA* movement);
-
-	// Remove movement from routine
-	void removeMovement(movementInfoVA* movement);
-
-	// Clear routine
-	void clear();
-
-	// Reset routine
-	void reset();
-
-	// Start routine
-	const bool start(sf::VertexArray* vertexarray);
-
-	// Stop routine
-	void stop(sf::VertexArray* vertexarray);
-
-	// Get current movement pointer
-	movementInfoVA* getCurrentMovement();
-
-	const bool goToNextMovement(sf::VertexArray* vertexArray);
-
-	// get size
-	long long int size() {
-		long long int size = 0;
-		for (auto movement : routine_movements) size += sizeof(*movement);
-		return size + sizeof(routine_movements);
-	}
-};
-
 class ScalingRoutine : public TransformationRoutine {
 private:
 	std::vector <scalingInfo*> routine_scalings;
@@ -228,13 +178,69 @@ public:
 	// Get current scaling pointer
 	scalingInfoVA* getCurrentScaling();
 
-	const bool goToNextScaling(const sf::VertexArray* vertexArray);
+	const bool goToNextScaling(sf::VertexArray* vertexArray);
+
+	void updateMovementInfoVA(const sf::Vector2f& offset);
 
 	// get size
 	long long int size() {
 		long long int size = 0;
 		for (auto scaling : routine_scalings) size += sizeof(*scaling);
 		return size + sizeof(routine_scalings);
+	}
+};
+
+class MovementRoutineVA : public TransformationRoutine {
+private:
+	std::vector <movementInfoVA*> routine_movements;
+
+
+	void adjustStartToCurrent(sf::VertexArray* vertexArray);
+	void adjustAllToCurrent(sf::VertexArray* vertexArray);
+
+public:
+	void adjustVertexarrayToStartingPosition(sf::VertexArray* vertexarray, ScalingRoutineVA* scalingRoutine = nullptr);
+
+	MovementRoutineVA() {}
+	MovementRoutineVA(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr) : TransformationRoutine{ name, _movementRoutineEnginePtr } {};
+	MovementRoutineVA(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr, movementInfoVA* movement) : TransformationRoutine{ name, _movementRoutineEnginePtr } { this->routine_movements.emplace_back(movement); }
+	MovementRoutineVA(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr, std::vector<movementInfoVA*> movements) : TransformationRoutine{ name, _movementRoutineEnginePtr } { this->routine_movements = movements; }
+	MovementRoutineVA(const MovementRoutineVA& obj) : TransformationRoutine{ obj } {
+		for (auto movement : obj.routine_movements)
+			this->routine_movements.push_back(new movementInfoVA(*movement));
+	}
+	~MovementRoutineVA() { for (auto& movement : routine_movements) delete movement; routine_movements.clear(); }
+
+	// Add movement to routine
+	void addMovement(movementInfoVA* movement);
+
+	// Remove movement from routine
+	void removeMovement(movementInfoVA* movement);
+
+	// Clear routine
+	void clear();
+
+	// Reset routine
+	void reset();
+
+	// Start routine
+	const bool start(sf::VertexArray* vertexarray);
+
+	// Stop routine
+	void stop(sf::VertexArray* vertexarray);
+
+	// Get current movement pointer
+	movementInfoVA* getCurrentMovement();
+
+	const bool goToNextMovement(sf::VertexArray* vertexArray);
+	const sf::Vector2f getGoToNextMovementOffset(const sf::VertexArray* vertexArray);
+
+
+	// get size
+	long long int size() {
+		long long int size = 0;
+		for (auto movement : routine_movements) size += sizeof(*movement);
+		return size + sizeof(routine_movements);
 	}
 };
 

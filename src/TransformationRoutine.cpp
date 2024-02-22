@@ -154,144 +154,6 @@ const bool MovementRoutine::goToNextMovement(sf::Sprite* sprite)
 	}
 }
 
-// - - - - - - - - - - - - - - - - - - - - MovementRoutineVA - - - - - - - - - - - - - - - - - - - - \\
-
-void MovementRoutineVA::adjustVertexarrayToStartingPosition(sf::VertexArray* vertexarray)
-{
-	movementInfoVA* current_movement = this->getCurrentMovement();
-	if (current_movement == nullptr) return;
-
-	sf::Vector2f centroid{};
-	for (size_t i = 0; i < vertexarray->getVertexCount(); ++i) 
-		centroid += vertexarray->operator[](i).position;
-	centroid /= static_cast<float>(vertexarray->getVertexCount());
-
-	sf::Vector2f offset = current_movement->starting_pos - centroid;
-	for (size_t i = 0; i < vertexarray->getVertexCount(); ++i) 
-		vertexarray->operator[](i).position += offset;
-}
-
-void MovementRoutineVA::adjustStartToCurrent(sf::VertexArray* vertexArray)
-{
-	if (this->routine_movements.size() == 0) return;
-
-	sf::Vector2f centroid{};
-	for (size_t i = 0; i < vertexArray->getVertexCount(); ++i) 
-		centroid += vertexArray->operator[](i).position;
-	centroid /= static_cast<float>(vertexArray->getVertexCount());
-
-	this->routine_movements[0]->starting_pos = centroid;
-	this->routine_movements[0]->moveCentroidsToStartingPosition();
-}
-
-void MovementRoutineVA::adjustAllToCurrent(sf::VertexArray* vertexArray)
-{
-	if (this->routine_movements.size() == 0) return;
-
-	sf::Vector2f centroid{};
-	for (size_t i = 0; i < vertexArray->getVertexCount(); ++i)
-		centroid += vertexArray->operator[](i).position;
-	centroid /= static_cast<float>(vertexArray->getVertexCount());
-
-	const sf::Vector2f offset = this->routine_movements[0]->starting_pos - centroid;
-	for (auto& movement : this->routine_movements) {
-		movement->starting_pos -= offset;
-		movement->ending_pos -= offset;
-	}
-}
-
-void MovementRoutineVA::addMovement(movementInfoVA * movement)
-{
-	this->routine_movements.emplace_back(movement);
-	++this->count;
-}
-
-void MovementRoutineVA::removeMovement(movementInfoVA* movement)
-{
-	auto it = std::find(this->routine_movements.begin(), this->routine_movements.end(), movement);
-	if (it != this->routine_movements.end()) { this->routine_movements.erase(it); --this->count; }
-}
-
-void MovementRoutineVA::clear()
-{
-	this->routine_movements.clear();
-	this->current = 0;
-	this->count = 0;
-	this->is_active = false;
-	this->is_paused = false;
-	this->is_looping = false;
-}
-
-void MovementRoutineVA::reset()
-{
-	for (auto& movement : this->routine_movements) {
-		movement->reset();
-		movement->moveCentroidsToStartingPosition();
-	}
-
-	this->current = 0;
-	this->is_active = false;
-	this->is_paused = false;
-}
-
-const bool MovementRoutineVA::start(sf::VertexArray* vertexArray)
-{
-	if (this->routine_movements.size() != 0) {
-		if (this->adjust_all_to_current_transform)		  { this->adjustAllToCurrent(vertexArray); }
-		else if (this->adjust_start_to_current_transform) { this->adjustStartToCurrent(vertexArray); }
-
-		this->reset();
-		
-		this->adjustVertexarrayToStartingPosition(vertexArray);
-
-		this->current = 0;
-		this->is_active = true;
-		this->movementRoutineEngine->addMovement(vertexArray, this);
-		return true;
-	}
-
-	printf("MovementRoutineVA::start: Routine is empty\n");
-	return false;
-}
-
-void MovementRoutineVA::stop(sf::VertexArray* vertexArray)
-{
-	this->reset();
-	this->movementRoutineEngine->stopMovement(vertexArray);
-}
-
-movementInfoVA* MovementRoutineVA::getCurrentMovement()
-{
-	if (this->current < this->count)
-		return this->routine_movements[this->current];
-	else {
-		printf("MovementRoutineVA::getCurrentMovement: Current movement index out of range\n");
-		return nullptr;
-	}
-}
-
-const bool MovementRoutineVA::goToNextMovement(sf::VertexArray* vertexArray)
-{
-	if (this->current < this->count - 1) {
-		++this->current;
-		this->adjustVertexarrayToStartingPosition(vertexArray);
-		return true;
-	}
-	else {
-		if (this->adjust_all_to_current_transform)		  { this->adjustAllToCurrent(vertexArray); }
-		else if (this->adjust_start_to_current_transform) { this->adjustStartToCurrent(vertexArray); }
-		this->reset();
-
-		if (this->is_looping) {
-			this->adjustVertexarrayToStartingPosition(vertexArray);
-			this->is_active = true;
-			return true;
-		}
-
-		return false;
-	}
-}
-
 // - - - - - - - - - - - - - - - - - - - - ScalingRoutine - - - - - - - - - - - - - - - - - - - - \\
 
 void ScalingRoutine::adjustStartToCurrent(const sf::Vector2f& current_scale)
@@ -414,7 +276,6 @@ const bool ScalingRoutine::goToNextScaling(sf::Shape* shape)
 		return true;
 	}
 	else {
-		printf("Size: (%f, %f)\n", shape->getGlobalBounds().width, shape->getGlobalBounds().height);
 		if (this->adjust_all_to_current_transform)		  { this->adjustAllToCurrent(shape->getScale()); }
 		else if (this->adjust_start_to_current_transform) { this->adjustStartToCurrent(shape->getScale()); }
 		this->reset();
@@ -455,14 +316,10 @@ void ScalingRoutineVA::adjustVertexarrayToStartingScale(sf::VertexArray* vertexa
 	scalingInfoVA* current_scaling = this->getCurrentScaling();
 	if (current_scaling == nullptr) return;
 
-	sf::Vector2f centroid{};
-	for (size_t i = 0; i < vertexarray->getVertexCount(); ++i)
-		centroid += vertexarray->operator[](i).position;
-	centroid /= static_cast<float>(vertexarray->getVertexCount());
-
-	sf::Vector2f offset = current_scaling->starting_scale - centroid;
-	for (size_t i = 0; i < vertexarray->getVertexCount(); ++i)
-		vertexarray->operator[](i).position += offset;
+	for (size_t i = 0; i < vertexarray->getVertexCount(); i++) {
+		vertexarray->operator[](i).position.x = current_scaling->centroid.x + (current_scaling->originalVertex.operator[](i).position.x - current_scaling->centroid.x) * current_scaling->current_scale.x;
+		vertexarray->operator[](i).position.y = current_scaling->centroid.y + (current_scaling->originalVertex.operator[](i).position.y - current_scaling->centroid.y) * current_scaling->current_scale.y;
+	}
 }
 
 void ScalingRoutineVA::adjustStartToCurrent()
@@ -540,10 +397,14 @@ void ScalingRoutineVA::reset(const sf::VertexArray* vertexArray)
 const bool ScalingRoutineVA::start(sf::VertexArray* vertexArray)
 {
 	if (this->routine_scalings.size() != 0) {
+		this->current_scale = &this->routine_scalings[this->current]->current_scale;
+
 		if (this->adjust_all_to_current_transform)		  { this->adjustAllToCurrent(); }
 		else if (this->adjust_start_to_current_transform) { this->adjustStartToCurrent(); }
 
 		this->reset(vertexArray);
+
+		this->adjustVertexarrayToStartingScale(vertexArray);
 
 		this->current = 0;
 		this->is_active = true;
@@ -571,25 +432,194 @@ scalingInfoVA* ScalingRoutineVA::getCurrentScaling()
 	}
 }
 
-const bool ScalingRoutineVA::goToNextScaling(const sf::VertexArray* vertexArray)
+const bool ScalingRoutineVA::goToNextScaling(sf::VertexArray* vertexArray)
 {
 	if (this->current < this->count - 1) {
 		++this->current;
+		//this->current_scale = &this->routine_scalings[this->current]->current_scale;
 		return true;
 	}
 	else {
 		this->current_scale = &this->routine_scalings[this->current]->ending_scale;
-		this->reset(vertexArray);
-		if (this->is_looping) {
-			if (this->adjust_all_to_current_transform)		  { this->adjustAllToCurrent(); }
-			else if (this->adjust_start_to_current_transform) { this->adjustStartToCurrent(); }
+		if (this->adjust_all_to_current_transform)		  { this->adjustAllToCurrent(); }
+		else if (this->adjust_start_to_current_transform) { this->adjustStartToCurrent(); }
 
+		this->reset(vertexArray);
+
+		if (this->is_looping) {
 			this->is_active = true;
 			return true;
 		}
 
 		return false;
 	}
+}
+
+void ScalingRoutineVA::updateMovementInfoVA(const sf::Vector2f& offset)
+{
+	for (auto& scaling : this->routine_scalings) {
+		scaling->centroid += offset;
+		
+		for(size_t i = 0; i < scaling->originalVertex.getVertexCount(); ++i)
+			scaling->originalVertex.operator[](i).position += offset;
+	}
+}
+
+// - - - - - - - - - - - - - - - - - - - - MovementRoutineVA - - - - - - - - - - - - - - - - - - - - \\
+
+void MovementRoutineVA::adjustStartToCurrent(sf::VertexArray* vertexArray) // To nie dzia³a, przeskakuje natychmiast do pierwszej pozycji zamiast ustawiæ poczatek pierwszej na aktualn¹ pozycjê
+{
+	if (this->routine_movements.size() == 0) return;
+
+	sf::Vector2f centroid{};
+	for (size_t i = 0; i < vertexArray->getVertexCount(); ++i)
+		centroid += vertexArray->operator[](i).position;
+	centroid /= static_cast<float>(vertexArray->getVertexCount());
+
+	this->routine_movements[0]->starting_pos = centroid;
+	this->routine_movements[0]->moveCentroidsToStartingPosition();
+}
+
+void MovementRoutineVA::adjustAllToCurrent(sf::VertexArray* vertexArray)
+{
+	if (this->routine_movements.size() == 0) return;
+
+	sf::Vector2f centroid{};
+	for (size_t i = 0; i < vertexArray->getVertexCount(); ++i)
+		centroid += vertexArray->operator[](i).position;
+	centroid /= static_cast<float>(vertexArray->getVertexCount());
+
+	const sf::Vector2f offset = this->routine_movements[0]->starting_pos - centroid;
+	for (auto& movement : this->routine_movements) {
+		movement->starting_pos -= offset;
+		movement->ending_pos -= offset;
+	}
+}
+
+void MovementRoutineVA::adjustVertexarrayToStartingPosition(sf::VertexArray* vertexarray, ScalingRoutineVA* scalingRoutine)
+{
+	movementInfoVA* current_movement = this->getCurrentMovement();
+	if (current_movement == nullptr) return;
+
+	sf::Vector2f centroid{};
+	for (size_t i = 0; i < vertexarray->getVertexCount(); ++i)
+		centroid += vertexarray->operator[](i).position;
+	centroid /= static_cast<float>(vertexarray->getVertexCount());
+
+	sf::Vector2f offset = current_movement->starting_pos - centroid;
+
+
+	if (scalingRoutine != nullptr) {
+		scalingRoutine->updateMovementInfoVA(offset);
+	}
+	else {
+		for (size_t i = 0; i < vertexarray->getVertexCount(); ++i)
+			vertexarray->operator[](i).position += offset;
+	}
+}
+
+void MovementRoutineVA::addMovement(movementInfoVA* movement)
+{
+	this->routine_movements.emplace_back(movement);
+	++this->count;
+}
+
+void MovementRoutineVA::removeMovement(movementInfoVA* movement)
+{
+	auto it = std::find(this->routine_movements.begin(), this->routine_movements.end(), movement);
+	if (it != this->routine_movements.end()) { this->routine_movements.erase(it); --this->count; }
+}
+
+void MovementRoutineVA::clear()
+{
+	this->routine_movements.clear();
+	this->current = 0;
+	this->count = 0;
+	this->is_active = false;
+	this->is_paused = false;
+	this->is_looping = false;
+}
+
+void MovementRoutineVA::reset()
+{
+	for (auto& movement : this->routine_movements) {
+		movement->reset();
+		movement->moveCentroidsToStartingPosition();
+	}
+
+	this->current = 0;
+	this->is_active = false;
+	this->is_paused = false;
+}
+
+const bool MovementRoutineVA::start(sf::VertexArray* vertexArray)
+{
+	if (this->routine_movements.size() != 0) {
+		if (this->adjust_all_to_current_transform) { this->adjustAllToCurrent(vertexArray); }
+		else if (this->adjust_start_to_current_transform) { this->adjustStartToCurrent(vertexArray); }
+
+		this->reset();
+
+		this->adjustVertexarrayToStartingPosition(vertexArray);
+
+		this->current = 0;
+		this->is_active = true;
+		this->movementRoutineEngine->addMovement(vertexArray, this);
+		return true;
+	}
+
+	printf("MovementRoutineVA::start: Routine is empty\n");
+	return false;
+}
+
+void MovementRoutineVA::stop(sf::VertexArray* vertexArray)
+{
+	this->reset();
+	this->movementRoutineEngine->stopMovement(vertexArray);
+}
+
+movementInfoVA* MovementRoutineVA::getCurrentMovement()
+{
+	if (this->current < this->count)
+		return this->routine_movements[this->current];
+	else {
+		printf("MovementRoutineVA::getCurrentMovement: Current movement index out of range\n");
+		return nullptr;
+	}
+}
+
+const bool MovementRoutineVA::goToNextMovement(sf::VertexArray* vertexArray)
+{
+	if (this->current < this->count - 1) {
+		++this->current;
+		return true;
+	}
+	else {
+		if (this->adjust_all_to_current_transform) { this->adjustAllToCurrent(vertexArray); }
+		else if (this->adjust_start_to_current_transform) { this->adjustStartToCurrent(vertexArray); }
+		this->reset();
+
+		if (this->is_looping) {
+			this->is_active = true;
+			return true;
+		}
+
+		return false;
+	}
+}
+
+const sf::Vector2f MovementRoutineVA::getGoToNextMovementOffset(const sf::VertexArray* vertexArray)
+{
+	movementInfoVA* current_movement = this->getCurrentMovement();
+	if (current_movement == nullptr) return sf::Vector2f{};
+
+	sf::Vector2f centroid{};
+	for (size_t i = 0; i < vertexArray->getVertexCount(); ++i)
+		centroid += vertexArray->operator[](i).position;
+	centroid /= static_cast<float>(vertexArray->getVertexCount());
+
+	const sf::Vector2f offset = current_movement->starting_pos - centroid;
+	return offset;
 }
 
 // - - - - - - - - - - - - - - - - - - - - RotationRoutine - - - - - - - - - - - - - - - - - - - - \\

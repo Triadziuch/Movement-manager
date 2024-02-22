@@ -1452,6 +1452,8 @@ MovementRoutineEngine* MovementRoutineEngine::sInstance = nullptr;
 
 void MovementRoutineEngine::updateMovementInfoVA(sf::VertexArray* _vertexarray, movementInfoVA* _movementInfo, sf::Vector2f _offset)
 {
+	if (_offset == sf::Vector2f{}) return;
+
 	// === Movement ===
 	_movementInfo->centroid += _offset;
 
@@ -1462,17 +1464,12 @@ void MovementRoutineEngine::updateMovementInfoVA(sf::VertexArray* _vertexarray, 
 	auto& scalingRoutineMap = sInstance->m_Scaling_Routines_VA;
 	auto scalingRoutine = scalingRoutineMap.find(_vertexarray);
 
-	if (scalingRoutine != scalingRoutineMap.end()) {
-		scalingInfoVA* scaling = scalingRoutine->second->getCurrentScaling();
-
-		scaling->centroid = _movementInfo->centroid;
-
-		for (size_t i = 0; i < scaling->originalVertex.getVertexCount(); i++)
-			scaling->originalVertex.operator[](i).position += _offset;
-	}
+	if (scalingRoutine != scalingRoutineMap.end()) 
+		scalingRoutine->second->updateMovementInfoVA(_offset);
+	
 
 	// === Rotation ===
-	auto& rotationRoutineMap = sInstance->m_Rotation_Routines_VA;
+	auto& rotationRoutineMap = sInstance->m_Rotation_Routines_VA; // To pewnie trzeba zmieniæ tak jak scaling ¿eby zmienia³o pozycjê wszystkich ruchów w rutynie
 	auto rotationRoutine = rotationRoutineMap.find(_vertexarray);
 
 	if (rotationRoutine != rotationRoutineMap.end()) {
@@ -1684,8 +1681,17 @@ void MovementRoutineEngine::updateVertexArray(float dt)
 						this->updateMovementInfoVA(vertexarray, movement, offset);
 					}
 					else if (movement->current_time - dt == 0.f) {
+
 						sf::Vector2f offset(movement->starting_pos - movement->centroid);
 						this->updateMovementInfoVA(vertexarray, movement, offset);
+
+						auto& scalingRoutineMap = sInstance->m_Scaling_Routines_VA;
+						auto scalingRoutine = scalingRoutineMap.find(vertexarray);
+
+						if (scalingRoutine != scalingRoutineMap.end()) {
+							const sf::Vector2f scalingOriginalVertextoCurrentMovementOffset = movement->centroid - scalingRoutine->second->getCurrentScaling()->centroid;
+							scalingRoutine->second->updateMovementInfoVA(scalingOriginalVertextoCurrentMovementOffset);
+						}
 					}
 				}
 			}
@@ -1738,9 +1744,19 @@ void MovementRoutineEngine::updateVertexArray(float dt)
 						updateScalingInfoVA(vertexarray, scaling);
 					}
 					else if (scaling->current_time - dt == 0.f) {
-						scaling->current_scale = scaling->starting_scale;
+ 						scaling->current_scale = scaling->starting_scale;
 						updateScalingInfoVA(vertexarray, scaling);
+
+						auto& movementRoutineMap = sInstance->m_Movement_Routines_VA;
+						auto movementRoutine = movementRoutineMap.find(vertexarray);
+
+						if (movementRoutine != movementRoutineMap.end()) {
+							//movementRoutine->second->adjustVertexarrayToStartingPosition(vertexarray);
+								//movement.second->adjustVertexarrayToStartingPosition(vertexarray);
+							
+						}
 					}
+					
 				}
 			}
 		}

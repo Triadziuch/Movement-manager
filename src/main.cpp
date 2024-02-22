@@ -144,12 +144,28 @@ int main()
 	// ----- Movement Container testing ----- //
 	MovementManager movementManager;
 	auto routineS = movementManager.createScalingRoutineVA("TestowyS");
-	routineS->addScaling(new scalingInfoVA(sf::Vector2f(1.f, 1.f), sf::Vector2f(2.f, 2.f), 0.5f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, &up_arrow));
-	routineS->addScaling(new scalingInfoVA(sf::Vector2f(2.f, 2.f), sf::Vector2f(3.f, 3.f), 0.5f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, &up_arrow));
-	routineS->addScaling(new scalingInfoVA(sf::Vector2f(3.f, 3.f), sf::Vector2f(2.f, 2.f), 0.5f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, &up_arrow));
-	routineS->adjustAllToCurrentTransform(true);
-	//routineS->setLooping(true);
+	routineS->addScaling(new scalingInfoVA(sf::Vector2f(1.f, 1.f), sf::Vector2f(2.f, 2.f), 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, &up_arrow));
+	routineS->addScaling(new scalingInfoVA(sf::Vector2f(2.f, 2.f), sf::Vector2f(1.f, 1.f), 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, &up_arrow));
+	//routineS->adjustAllToCurrentTransform(true);
+	//routineS->addScaling(new scalingInfoVA(sf::Vector2f(2.f, 2.f), sf::Vector2f(3.f, 3.f), 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, &up_arrow));
+	//routineS->addScaling(new scalingInfoVA(sf::Vector2f(3.f, 3.f), sf::Vector2f(1.f, 1.f), 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_BOUNCE), false, 0.5f, 0.5f, &up_arrow));
+	//routineS->adjustAllToCurrentTransform(true);
+	routineS->setLooping(true);
 	movementManager.linkScalingRoutine(&up_arrow, "TestowyS");
+
+	auto routineM = movementManager.createMovementRoutineVA("TestowyM");
+	//routineM->addMovement(new movementInfoVA(sf::Vector2f(window.getSize().x / 2.f, 490.f), sf::Vector2f(600.f, 500.f), 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_SINE), false, 0.5f, 0.5f, &up_arrow));
+	routineM->addMovement(new movementInfoVA(sf::Vector2f(600.f, 500.f), sf::Vector2f(800.f, 500.f), 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, &up_arrow));
+	routineM->addMovement(new movementInfoVA(sf::Vector2f(800.f, 500.f), sf::Vector2f(1000.f, 500.f), 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_BOUNCE), false, 0.5f, 0.5f, &up_arrow));
+	//routineM->adjustAllToCurrentTransform(true);
+	//routineM->addMovement(new movementInfoVA(sf::Vector2f(600.f, 500.f), sf::Vector2f(700.f, 500.f), 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, &up_arrow));
+	//routineM->addMovement(new movementInfoVA(sf::Vector2f(700.f, 500.f), sf::Vector2f(500.f, 500.f), 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_BOUNCE), false, 0.5f, 0.5f, &up_arrow));
+	//routineS->adjustStartToCurrentTransform(true);
+	//routineM->adjustStartToCurrentTransform(true);
+	routineM->setLooping(true);
+	movementManager.linkMovementRoutine(&up_arrow, "TestowyM");
+
+	// Working simoultaneus 
 
 	//auto* routine = movementManager.createMovementRoutineVA("Testowy");
 	//routine->addMovement(new movementInfoVA(sf::Vector2f(500.f, 500.f), sf::Vector2f(700.f, 700.f), 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_SINE), false, 1.f, 1.f, &up_arrow));
@@ -260,8 +276,22 @@ int main()
 
 			// Start
 			if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::Space)) {
+				movementManager.startMovementRoutine(&up_arrow, "TestowyM");
+				movementManager.startScalingRoutine(&up_arrow, "TestowyS");
+				
+			}
+
+			// Movement
+			if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::M)) {
+				movementManager.startMovementRoutine(&up_arrow, "TestowyM");
+			}
+
+			// Scaling
+			if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::S)) {
 				movementManager.startScalingRoutine(&up_arrow, "TestowyS");
 			}
+
+
 
 			if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::Up || event.key.code ==sf::Keyboard::W)) {
 				current_ease_type += rows;

@@ -34,11 +34,27 @@ private:
 	ScalingRoutineContainer* scalingRoutineContainer;
 	ScalingRoutineVAContainer* scalingRoutineVAContainer;
 
+
+
+	std::map<sf::Shape*, RotationRoutine*> m_Routine_Rotation_Shape_Active;
+	std::map<sf::Sprite*, RotationRoutine*> m_Routine_Rotation_Sprite_Active;
+	std::map<sf::VertexArray*, RotationRoutineVA*> m_Routine_Rotation_VertexArray_Active;
+
+	std::map<sf::Shape*, RotationRoutineContainer*>  m_Routine_Rotation_Shape;
+	std::map<sf::Sprite*, RotationRoutineContainer*> m_Routine_Rotation_Sprite;
+	std::map<sf::VertexArray*, RotationRoutineVAContainer*> m_Routine_Rotation_VertexArray;
+
+	RotationRoutineContainer* rotationRoutineContainer;
+	RotationRoutineVAContainer* rotationRoutineVAContainer;
+
 public:
 	// Movement container
 	MovementRoutineEngine* movementRoutineEngine;
 
 	MovementManager();
+	~MovementManager();
+
+	// === Movement ===
 
 	MovementRoutine*   createMovementRoutine(const std::string& _name)   { return this->movementRoutineContainer->createRoutine(_name); }
 	MovementRoutineVA* createMovementRoutineVA(const std::string& _name) { return this->movementRoutineVAContainer->createRoutine(_name); }
@@ -73,23 +89,25 @@ public:
 	void deleteMovementRoutine();
 	void deleteMovementRoutine(const std::string& _name);
 
-	long long int getSizeShapeActive() {
+	long long int getSizeShapeActiveMovement() {
 		long long int size = 0;
 		for (auto& routine : m_Routine_Movement_Shape_Active) size += routine.second->size();
 		return size + sizeof(m_Routine_Movement_Shape_Active);
 	}
 
-	long long int getSizeShape() {
+	long long int getSizeShapeMovement() {
 		long long int size = 0;
 		for (auto& routineContainer : m_Routine_Movement_Shape) size += routineContainer.second->size();
 		return size + sizeof(m_Routine_Movement_Shape);
 	}
 
-	long long int getSizeContainer() {
+	long long int getSizeContainerMovement() {
 		long long int size = 0;
 		size += movementRoutineContainer->size();
 		return size + sizeof(movementRoutineContainer);
 	}
+
+	// === Scaling ===
 
 	ScalingRoutine*   createScalingRoutine(const std::string& _name)   { return this->scalingRoutineContainer->createRoutine(_name); }
 	ScalingRoutineVA* createScalingRoutineVA(const std::string& _name) { return this->scalingRoutineVAContainer->createRoutine(_name); }
@@ -123,6 +141,78 @@ public:
 
 	void deleteScalingRoutine();
 	void deleteScalingRoutine(const std::string& _name);
+
+	long long int getSizeShapeActiveScaling() {
+		long long int size = 0;
+		for (auto& routine : m_Routine_Scaling_Shape_Active) size += routine.second->size();
+		return size + sizeof(m_Routine_Scaling_Shape_Active);
+	}
+
+	long long int getSizeShapeScaling() {
+		long long int size = 0;
+		for (auto& routineContainer : m_Routine_Scaling_Shape) size += routineContainer.second->size();
+		return size + sizeof(m_Routine_Scaling_Shape);
+	}
+
+	long long int getSizeContainerScaling() {
+		long long int size = 0;
+		size += scalingRoutineContainer->size();
+		return size + sizeof(scalingRoutineContainer);
+	}
+
+	// === Rotation ===
+
+	RotationRoutine*   createRotationRoutine(const std::string& _name)   { return this->rotationRoutineContainer->createRoutine(_name); }
+	RotationRoutineVA* createRotationRoutineVA(const std::string& _name) { return this->rotationRoutineVAContainer->createRoutine(_name); }
+
+	RotationRoutine*   getRotationRoutine(const std::string& _name)	{ return this->rotationRoutineContainer->getRoutinePtr(_name); }
+	RotationRoutineVA* getRotationRoutineVA(const std::string& _name) { return this->rotationRoutineVAContainer->getRoutinePtr(_name); }
+
+	RotationRoutine*   linkRotationRoutine(sf::Shape* _shape, const std::string& _name); // Dodaæ mo¿liwoœæ linkowania po wskaŸniku do routine
+	RotationRoutine*   linkRotationRoutine(sf::Sprite* _sprite, const std::string& _name);
+	RotationRoutineVA* linkRotationRoutine(sf::VertexArray* _vertexarray, const std::string& _name);
+
+	void unlinkRotationRoutine(sf::Shape* _shape, const std::string& _name);
+	void unlinkRotationRoutine(sf::Sprite* _sprite, const std::string& _name);
+	void unlinkRotationRoutine(sf::VertexArray* _vertexarray, const std::string& _name);
+
+	void startRotationRoutine(sf::Shape* _shape, const std::string& _name);
+	void startRotationRoutine(sf::Sprite* _sprite, const std::string& _name);
+	void startRotationRoutine(sf::VertexArray* _vertexarray, const std::string& _name);
+
+	void pauseRotationRoutine(sf::Shape* _shape, const std::string& _name);
+	void pauseRotationRoutine(sf::Sprite* _sprite, const std::string& _name);
+	void pauseRotationRoutine(sf::VertexArray* _vertexarray, const std::string& _name);
+
+	void resumeRotationRoutine(sf::Shape* _shape, const std::string& _name);
+	void resumeRotationRoutine(sf::Sprite* _sprite, const std::string& _name);
+	void resumeRotationRoutine(sf::VertexArray* _vertexarray, const std::string& _name);
+
+	void stopRotationRoutine(sf::Shape* _shape, const std::string& _name);
+	void stopRotationRoutine(sf::Sprite* _sprite, const std::string& _name);
+	void stopRotationRoutine(sf::VertexArray* _vertexarray, const std::string& _name);
+
+	void deleteRotationRoutine();
+	void deleteRotationRoutine(const std::string& _name);
+
+	long long int getSizeShapeActiveRotation() {
+		long long int size = 0;
+		for (auto& routine : m_Routine_Rotation_Shape_Active) size += routine.second->size();
+		return size + sizeof(m_Routine_Rotation_Shape_Active);
+	}
+
+	long long int getSizeShapeRotation() {
+		long long int size = 0;
+		for (auto& routineContainer : m_Routine_Rotation_Shape) size += routineContainer.second->size();
+		return size + sizeof(m_Routine_Rotation_Shape);
+	}
+
+	long long int getSizeContainerRotation() {
+		long long int size = 0;
+		size += rotationRoutineContainer->size();
+		return size + sizeof(rotationRoutineContainer);
+	}
+
 
 	void update(float dt);
 };

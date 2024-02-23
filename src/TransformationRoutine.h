@@ -223,6 +223,13 @@ public:
 	rotationInfoVA* getCurrentRotation();
 
 	const bool goToNextRotation();
+
+	// get size
+	long long int size() {
+		long long int size = 0;
+		for (auto rotation : routine_rotations) size += sizeof(*rotation);
+		return size + sizeof(routine_rotations);
+	}
 };
 
 class ScalingRoutineVA : public TransformationRoutine {

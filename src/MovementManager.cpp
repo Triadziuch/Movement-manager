@@ -926,3 +926,441 @@ void MovementManager::deleteScalingRoutine(const std::string& _name)
 	scalingRoutineContainer->deleteRoutine(_name);
 	scalingRoutineVAContainer->deleteRoutine(_name);
 }
+
+RotationRoutine* MovementManager::linkRotationRoutine(sf::Shape* _shape, const std::string& _name)
+{
+	// Check if routine with given name exists
+	RotationRoutine* rotationRoutineOriginal = rotationRoutineContainer->getRoutinePtr(_name);
+
+	if (rotationRoutineOriginal == nullptr) {
+		printf("MovementManager::linkRotationRoutine: Routine with name %s not found\n", _name.c_str());
+		return nullptr;
+	}
+
+	// Check if we linked a rotation routine to this shape before
+	auto rotationRoutineContainerFound = m_Routine_Rotation_Shape.find(_shape);
+	if (rotationRoutineContainerFound != m_Routine_Rotation_Shape.end()) {
+
+		auto* rotationRoutineFound = rotationRoutineContainerFound->second->exists(_name);
+		if (rotationRoutineFound != nullptr) {
+			printf("MovementManager::linkRotationRoutine: Routine with name %s already linked to shape\n", _name.c_str());
+			return rotationRoutineFound;
+		}
+	}
+	else {
+		// If not, create a new rotation routine container for this shape and link the rotation routine to it
+		RotationRoutineContainer* newRotationRoutineContainer = new RotationRoutineContainer(this->movementRoutineEngine);
+		m_Routine_Rotation_Shape.insert(std::make_pair(_shape, newRotationRoutineContainer));
+
+		RotationRoutine* newRotationRoutine = new RotationRoutine(*rotationRoutineOriginal);
+		return newRotationRoutineContainer->createRoutine(_name, newRotationRoutine);
+	}
+
+	// If yes, create a new rotation routine and link it to the existing rotation routine container
+	RotationRoutine* newRotationRoutine = new RotationRoutine(*rotationRoutineOriginal);
+	return rotationRoutineContainerFound->second->createRoutine(_name, newRotationRoutine);
+}
+
+RotationRoutine* MovementManager::linkRotationRoutine(sf::Sprite* _sprite, const std::string& _name)
+{
+	// Check if routine with given name exists
+	RotationRoutine* rotationRoutineOriginal = rotationRoutineContainer->getRoutinePtr(_name);
+
+	if (rotationRoutineOriginal == nullptr) {
+		printf("MovementManager::linkRotationRoutine: Routine with name %s not found\n", _name.c_str());
+		return nullptr;
+	}
+
+	// Check if we linked a rotation routine to this shape before
+	auto rotationRoutineContainerFound = m_Routine_Rotation_Sprite.find(_sprite);
+	if (rotationRoutineContainerFound != m_Routine_Rotation_Sprite.end()) {
+
+		auto* rotationRoutineFound = rotationRoutineContainerFound->second->exists(_name);
+		if (rotationRoutineFound != nullptr) {
+			printf("MovementManager::linkRotationRoutine: Routine with name %s already linked to shape\n", _name.c_str());
+			return rotationRoutineFound;
+		}
+	}
+	else {
+		// If not, create a new rotation routine container for this shape and link the rotation routine to it
+		RotationRoutineContainer* newRotationRoutineContainer = new RotationRoutineContainer(this->movementRoutineEngine);
+		m_Routine_Rotation_Sprite.insert(std::make_pair(_sprite, newRotationRoutineContainer));
+
+		RotationRoutine* newRotationRoutine = new RotationRoutine(*rotationRoutineOriginal);
+		return newRotationRoutineContainer->createRoutine(_name, newRotationRoutine);
+	}
+
+	// If yes, create a new rotation routine and link it to the existing rotation routine container
+	RotationRoutine* newRotationRoutine = new RotationRoutine(*rotationRoutineOriginal);
+	return rotationRoutineContainerFound->second->createRoutine(_name, newRotationRoutine);
+}
+
+RotationRoutineVA* MovementManager::linkRotationRoutine(sf::VertexArray* _vertexarray, const std::string& _name)
+{
+	// Check if routine with given name exists
+	RotationRoutineVA* rotationRoutineVAOriginal = rotationRoutineVAContainer->getRoutinePtr(_name);
+
+	if (rotationRoutineVAOriginal == nullptr) {
+		printf("MovementManager::linkRotationRoutine: Routine with name %s not found\n", _name.c_str());
+		return nullptr;
+	}
+
+	// Check if we linked a rotation routine to this vertexarray before
+	auto rotationRoutineVAContainerFound = m_Routine_Rotation_VertexArray.find(_vertexarray);
+	if (rotationRoutineVAContainerFound != m_Routine_Rotation_VertexArray.end()) {
+
+		auto* rotationRoutineVAFound = rotationRoutineVAContainerFound->second->exists(_name);
+		if (rotationRoutineVAFound != nullptr) {
+			printf("MovementManager::linkRotationRoutine: Routine with name %s already linked to vertexarray\n", _name.c_str());
+			return rotationRoutineVAFound;
+		}
+	}
+	else {
+		// If not, create a new rotation routine container for this vertexarray and link the rotation routine to it
+		RotationRoutineVAContainer* newRotationRoutineVAContainer = new RotationRoutineVAContainer(this->movementRoutineEngine);
+		m_Routine_Rotation_VertexArray.insert(std::make_pair(_vertexarray, newRotationRoutineVAContainer));
+
+		RotationRoutineVA* newRotationRoutineVA = new RotationRoutineVA(*rotationRoutineVAOriginal);
+		return newRotationRoutineVAContainer->createRoutine(_name, newRotationRoutineVA);
+	}
+
+	// If yes, create a new rotation routine and link it to the existing rotation routine container
+	RotationRoutineVA* newRotationRoutineVA = new RotationRoutineVA(*rotationRoutineVAOriginal);
+	return rotationRoutineVAContainerFound->second->createRoutine(_name, newRotationRoutineVA);
+}
+
+void MovementManager::unlinkRotationRoutine(sf::Shape* _shape, const std::string& _name)
+{
+	// Stop the routine if it's active
+	this->stopRotationRoutine(_shape, _name);
+
+	// Delete the routine from m_Routine_Rotation_Shape
+	auto rotationRoutineContainerFound = m_Routine_Rotation_Shape.find(_shape);
+	if (rotationRoutineContainerFound != m_Routine_Rotation_Shape.end()) {
+
+		auto* rotationRoutineFound = rotationRoutineContainerFound->second->exists(_name);
+		if (rotationRoutineFound != nullptr) {
+			rotationRoutineContainerFound->second->deleteRoutine(_name);
+		}
+		else
+			printf("MovementManager::unlinkRotationRoutine: Routine with name %s not found\n", _name.c_str());
+	}
+	else
+		printf("MovementManager::unlinkRotationRoutine: Routine for shape not found\n");
+}
+
+void MovementManager::unlinkRotationRoutine(sf::Sprite* _sprite, const std::string& _name)
+{
+	// Stop the routine if it's active
+	this->stopRotationRoutine(_sprite, _name);
+
+	// Delete the routine from m_Routine_Rotation_Sprite
+	auto rotationRoutineContainerFound = m_Routine_Rotation_Sprite.find(_sprite);
+	if (rotationRoutineContainerFound != m_Routine_Rotation_Sprite.end()) {
+
+		auto* rotationRoutineFound = rotationRoutineContainerFound->second->exists(_name);
+		if (rotationRoutineFound != nullptr) {
+			rotationRoutineContainerFound->second->deleteRoutine(_name);
+		}
+		else
+			printf("MovementManager::unlinkRotationRoutine: Routine with name %s not found\n", _name.c_str());
+	}
+	else
+		printf("MovementManager::unlinkRotationRoutine: Routine for sprite not found\n");
+}
+
+void MovementManager::unlinkRotationRoutine(sf::VertexArray* _vertexarray, const std::string& _name)
+{
+	// Stop the routine if it's active
+	this->stopRotationRoutine(_vertexarray, _name);
+
+	// Delete the routine from m_Routine_Rotation_VertexArray
+	auto rotationRoutineContainerFound = m_Routine_Rotation_VertexArray.find(_vertexarray);
+	if (rotationRoutineContainerFound != m_Routine_Rotation_VertexArray.end()) {
+
+		auto* rotationRoutineFound = rotationRoutineContainerFound->second->exists(_name);
+		if (rotationRoutineFound != nullptr) {
+			rotationRoutineContainerFound->second->deleteRoutine(_name);
+		}
+		else
+			printf("MovementManager::unlinkRotationRoutine: Routine with name %s not found\n", _name.c_str());
+	}
+	else
+		printf("MovementManager::unlinkRotationRoutine: Routine for vertexarray not found\n");
+}
+
+void MovementManager::startRotationRoutine(sf::Shape* _shape, const std::string& _name)
+{
+	auto rotationRoutineContainerFound = m_Routine_Rotation_Shape.find(_shape);
+	if (rotationRoutineContainerFound != m_Routine_Rotation_Shape.end()) {
+
+		auto* rotationRoutineFound = rotationRoutineContainerFound->second->exists(_name);
+		if (rotationRoutineFound != nullptr) {
+
+			if (rotationRoutineFound->start(_shape))
+				m_Routine_Rotation_Shape_Active.insert(std::make_pair(_shape, rotationRoutineFound));
+		}
+		else
+			printf("MovementManager::startRotationRoutine: Routine with name %s not found\n", _name.c_str());
+	}
+	else
+		printf("MovementManager::startRotationRoutine: Routine for shape not found\n");
+}
+
+void MovementManager::startRotationRoutine(sf::Sprite* _sprite, const std::string& _name)
+{
+	auto rotationRoutineContainerFound = m_Routine_Rotation_Sprite.find(_sprite);
+	if (rotationRoutineContainerFound != m_Routine_Rotation_Sprite.end()) {
+
+		auto* rotationRoutineFound = rotationRoutineContainerFound->second->exists(_name);
+		if (rotationRoutineFound != nullptr) {
+
+			if (rotationRoutineFound->start(_sprite))
+				m_Routine_Rotation_Sprite_Active.insert(std::make_pair(_sprite, rotationRoutineFound));
+		}
+		else
+			printf("MovementManager::startRotationRoutine: Routine with name %s not found\n", _name.c_str());
+	}
+	else
+		printf("MovementManager::startRotationRoutine: Routine for sprite not found\n");
+}
+
+void MovementManager::startRotationRoutine(sf::VertexArray* _vertexarray, const std::string& _name)
+{
+	auto rotationRoutineContainerFound = m_Routine_Rotation_VertexArray.find(_vertexarray);
+	if (rotationRoutineContainerFound != m_Routine_Rotation_VertexArray.end()) {
+
+		auto* rotationRoutineFound = rotationRoutineContainerFound->second->exists(_name);
+		if (rotationRoutineFound != nullptr) {
+
+			if (rotationRoutineFound->start(_vertexarray))
+				m_Routine_Rotation_VertexArray_Active.insert(std::make_pair(_vertexarray, rotationRoutineFound));
+		}
+		else
+			printf("MovementManager::startRotationRoutine: Routine with name %s not found\n", _name.c_str());
+	}
+	else
+		printf("MovementManager::startRotationRoutine: Routine for vertexarray not found\n");
+}
+
+void MovementManager::pauseRotationRoutine(sf::Shape* _shape, const std::string& _name)
+{
+	auto rotationRoutineFound = m_Routine_Rotation_Shape_Active.find(_shape);
+	if (rotationRoutineFound != m_Routine_Rotation_Shape_Active.end()) {
+		if (rotationRoutineFound->second->routine_name == _name) 
+			rotationRoutineFound->second->pause();
+		else
+			printf("MovementManager::pauseRotationRoutine: Routine with name %s not found\n", _name.c_str());
+	}
+	else
+		printf("MovementManager::pauseRotationRoutine: Routine for shape not found\n");
+}
+
+void MovementManager::pauseRotationRoutine(sf::Sprite* _sprite, const std::string& _name)
+{
+	auto rotationRoutineFound = m_Routine_Rotation_Sprite_Active.find(_sprite);
+	if (rotationRoutineFound != m_Routine_Rotation_Sprite_Active.end()) {
+		if (rotationRoutineFound->second->routine_name == _name) 
+			rotationRoutineFound->second->pause();
+		else
+			printf("MovementManager::pauseRotationRoutine: Routine with name %s not found\n", _name.c_str());
+	}
+	else
+		printf("MovementManager::pauseRotationRoutine: Routine for sprite not found\n");
+}
+
+void MovementManager::pauseRotationRoutine(sf::VertexArray* _vertexarray, const std::string& _name)
+{
+	auto rotationRoutineFound = m_Routine_Rotation_VertexArray_Active.find(_vertexarray);
+	if (rotationRoutineFound != m_Routine_Rotation_VertexArray_Active.end()) {
+		if (rotationRoutineFound->second->routine_name == _name) 
+			rotationRoutineFound->second->pause();
+		else
+			printf("MovementManager::pauseRotationRoutine: Routine with name %s not found\n", _name.c_str());
+	}
+	else
+		printf("MovementManager::pauseRotationRoutine: Routine for vertexarray not found\n");
+}
+
+void MovementManager::resumeRotationRoutine(sf::Shape* _shape, const std::string& _name)
+{
+	auto rotationRoutineFound = m_Routine_Rotation_Shape_Active.find(_shape);
+	if (rotationRoutineFound != m_Routine_Rotation_Shape_Active.end()) {
+		if (rotationRoutineFound->second->routine_name == _name) 
+			rotationRoutineFound->second->resume();
+		else
+			printf("MovementManager::resumeRotationRoutine: Routine with name %s not found\n", _name.c_str());
+	}
+	else
+		printf("MovementManager::resumeRotationRoutine: Routine for shape not found\n");
+}
+
+void MovementManager::resumeRotationRoutine(sf::Sprite* _sprite, const std::string& _name)
+{
+	auto rotationRoutineFound = m_Routine_Rotation_Sprite_Active.find(_sprite);
+	if (rotationRoutineFound != m_Routine_Rotation_Sprite_Active.end()) {
+		if (rotationRoutineFound->second->routine_name == _name) 
+			rotationRoutineFound->second->resume();
+		else
+			printf("MovementManager::resumeRotationRoutine: Routine with name %s not found\n", _name.c_str());
+	}
+	else
+		printf("MovementManager::resumeRotationRoutine: Routine for sprite not found\n");
+}
+
+void MovementManager::resumeRotationRoutine(sf::VertexArray* _vertexarray, const std::string& _name)
+{
+	auto rotationRoutineFound = m_Routine_Rotation_VertexArray_Active.find(_vertexarray);
+	if (rotationRoutineFound != m_Routine_Rotation_VertexArray_Active.end()) {
+		if (rotationRoutineFound->second->routine_name == _name) 
+			rotationRoutineFound->second->resume();
+		else
+			printf("MovementManager::resumeRotationRoutine: Routine with name %s not found\n", _name.c_str());
+	}
+	else
+		printf("MovementManager::resumeRotationRoutine: Routine for vertexarray not found\n");
+}
+
+void MovementManager::stopRotationRoutine(sf::Shape* _shape, const std::string& _name)
+{
+	auto rotationRoutineFound = m_Routine_Rotation_Shape_Active.find(_shape);
+	if (rotationRoutineFound != m_Routine_Rotation_Shape_Active.end()) {
+		if (rotationRoutineFound->second->routine_name == _name) {
+			rotationRoutineFound->second->stop(_shape);
+			m_Routine_Rotation_Shape_Active.erase(rotationRoutineFound);
+		}
+		else
+			printf("MovementManager::stopRotationRoutine: Routine with name %s not found\n", _name.c_str());
+	}
+	else
+		printf("MovementManager::stopRotationRoutine: Routine for shape not found\n");
+}
+
+void MovementManager::stopRotationRoutine(sf::Sprite* _sprite, const std::string& _name)
+{
+	auto rotationRoutineFound = m_Routine_Rotation_Sprite_Active.find(_sprite);
+	if (rotationRoutineFound != m_Routine_Rotation_Sprite_Active.end()) {
+		if (rotationRoutineFound->second->routine_name == _name) {
+			rotationRoutineFound->second->stop(_sprite);
+			m_Routine_Rotation_Sprite_Active.erase(rotationRoutineFound);
+		}
+		else
+			printf("MovementManager::stopRotationRoutine: Routine with name %s not found\n", _name.c_str());
+	}
+	else
+		printf("MovementManager::stopRotationRoutine: Routine for sprite not found\n");
+}
+
+void MovementManager::stopRotationRoutine(sf::VertexArray* _vertexarray, const std::string& _name)
+{
+	auto rotationRoutineFound = m_Routine_Rotation_VertexArray_Active.find(_vertexarray);
+	if (rotationRoutineFound != m_Routine_Rotation_VertexArray_Active.end()) {
+		if (rotationRoutineFound->second->routine_name == _name) {
+			rotationRoutineFound->second->stop(_vertexarray);
+			m_Routine_Rotation_VertexArray_Active.erase(rotationRoutineFound);
+		}
+		else
+			printf("MovementManager::stopRotationRoutine: Routine with name %s not found\n", _name.c_str());
+	}
+	else
+		printf("MovementManager::stopRotationRoutine: Routine for vertexarray not found\n");
+}
+
+void MovementManager::deleteRotationRoutine()
+{
+	for (auto routine_active = m_Routine_Rotation_Shape_Active.begin(); routine_active != m_Routine_Rotation_Shape_Active.end();) {
+		routine_active->second->stop(routine_active->first);
+		routine_active = m_Routine_Rotation_Shape_Active.erase(routine_active);
+	}
+
+	for (auto routine_active = m_Routine_Rotation_Sprite_Active.begin(); routine_active != m_Routine_Rotation_Sprite_Active.end();) {
+		routine_active->second->stop(routine_active->first);
+		routine_active = m_Routine_Rotation_Sprite_Active.erase(routine_active);
+	}
+
+	for (auto routine_active = m_Routine_Rotation_VertexArray_Active.begin(); routine_active != m_Routine_Rotation_VertexArray_Active.end();) {
+		routine_active->second->stop(routine_active->first);
+		routine_active = m_Routine_Rotation_VertexArray_Active.erase(routine_active);
+	}
+
+	for (auto routineContainer = m_Routine_Rotation_Shape.begin(); routineContainer != m_Routine_Rotation_Shape.end();) {
+		routineContainer->second->clear();
+		delete routineContainer->second;
+		routineContainer = m_Routine_Rotation_Shape.erase(routineContainer);
+	}
+
+	for (auto routineContainer = m_Routine_Rotation_Sprite.begin(); routineContainer != m_Routine_Rotation_Sprite.end();) {
+		routineContainer->second->clear();
+		delete routineContainer->second;
+		routineContainer = m_Routine_Rotation_Sprite.erase(routineContainer);
+	}
+
+	for (auto routineContainer = m_Routine_Rotation_VertexArray.begin(); routineContainer != m_Routine_Rotation_VertexArray.end();) {
+		routineContainer->second->clear();
+		delete routineContainer->second;
+		routineContainer = m_Routine_Rotation_VertexArray.erase(routineContainer);
+	}
+
+	rotationRoutineContainer->clear();
+	rotationRoutineVAContainer->clear();
+}
+
+void MovementManager::deleteRotationRoutine(const std::string& _name)
+{
+for (auto routine_active = m_Routine_Rotation_Shape_Active.begin(); routine_active != m_Routine_Rotation_Shape_Active.end();) {
+		if (routine_active->second->routine_name == _name) {
+			routine_active->second->stop(routine_active->first);
+			routine_active = m_Routine_Rotation_Shape_Active.erase(routine_active);
+		}
+		else
+			++routine_active;
+	}
+
+	for (auto routine_active = m_Routine_Rotation_Sprite_Active.begin(); routine_active != m_Routine_Rotation_Sprite_Active.end();) {
+		if (routine_active->second->routine_name == _name) {
+			routine_active->second->stop(routine_active->first);
+			routine_active = m_Routine_Rotation_Sprite_Active.erase(routine_active);
+		}
+		else
+			++routine_active;
+	}
+
+	for (auto routine_active = m_Routine_Rotation_VertexArray_Active.begin(); routine_active != m_Routine_Rotation_VertexArray_Active.end();) {
+		if (routine_active->second->routine_name == _name) {
+			routine_active->second->stop(routine_active->first);
+			routine_active = m_Routine_Rotation_VertexArray_Active.erase(routine_active);
+		}
+		else
+			++routine_active;
+	}
+
+	for (auto routineContainer = m_Routine_Rotation_Shape.begin(); routineContainer != m_Routine_Rotation_Shape.end();) {
+		routineContainer->second->deleteRoutine(_name);
+		if (routineContainer->second->routineCount() == 0) {
+			delete routineContainer->second;
+			routineContainer = m_Routine_Rotation_Shape.erase(routineContainer);
+		}
+		else
+			++routineContainer;
+	}
+
+	for (auto routineContainer = m_Routine_Rotation_Sprite.begin(); routineContainer != m_Routine_Rotation_Sprite.end();) {
+		routineContainer->second->deleteRoutine(_name);
+		if (routineContainer->second->routineCount() == 0) {
+			delete routineContainer->second;
+			routineContainer = m_Routine_Rotation_Sprite.erase(routineContainer);
+		}
+		else
+			++routineContainer;
+	}
+
+	for (auto routineContainer = m_Routine_Rotation_VertexArray.begin(); routineContainer != m_Routine_Rotation_VertexArray.end();) {
+		routineContainer->second->deleteRoutine(_name);
+		if (routineContainer->second->routineCount() == 0) {
+			delete routineContainer->second;
+			routineContainer = m_Routine_Rotation_VertexArray.erase(routineContainer);
+		}
+		else
+			++routineContainer;
+	}
+}

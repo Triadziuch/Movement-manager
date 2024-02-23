@@ -250,4 +250,14 @@ public:
 
 	// Remove routine with given name
 	void deleteRoutine(const std::string& _name);
+
+	// Get routine count
+	size_t routineCount() { return rotationRoutines.size(); }
+
+	// Get size
+	long long int size() {
+		long long int size = 0;
+		for (auto& routine : rotationRoutines) size += routine.second->size();
+		return size + sizeof(rotationRoutines);
+	}
 };

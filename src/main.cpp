@@ -144,9 +144,9 @@ int main()
 	// ----- Movement Container testing ----- //
 	MovementManager movementManager;
 	/*auto routineS = movementManager.createScalingRoutineVA("TestowyS");
-	routineS->addScaling(new scalingInfoVA(sf::Vector2f(1.f, 1.f), sf::Vector2f(2.f, 2.f), 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, &up_arrow));
-	routineS->addScaling(new scalingInfoVA(sf::Vector2f(2.f, 2.f), sf::Vector2f(1.f, 1.f), 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, &up_arrow));
-	routineS->adjustAllToCurrentTransform(true);
+	routineS->addScaling(new scalingInfoVA(sf::Vector2f(2.f, 2.f), sf::Vector2f(3.f, 3.f), 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, &up_arrow));
+	routineS->addScaling(new scalingInfoVA(sf::Vector2f(3.f, 3.f), sf::Vector2f(2.f, 2.f), 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, &up_arrow));
+	routineS->adjustStartToCurrentTransform(true);
 	routineS->setLooping(true);
 	movementManager.linkScalingRoutine(&up_arrow, "TestowyS");
 
@@ -157,7 +157,7 @@ int main()
 	routineM->setLooping(true);
 	movementManager.linkMovementRoutine(&up_arrow, "TestowyM");*/
 
-	sf::CircleShape test_shape;
+	/*sf::CircleShape test_shape;
 	test_shape.setPointCount(3);
 	test_shape.setRadius(50.f);
 	test_shape.setFillColor(sf::Color::Blue);
@@ -188,7 +188,7 @@ int main()
 	routineR->addRotation(new rotationInfo(180.f, 220, 2.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, true));
 	routineR->adjustAllToCurrentTransform(true);
 	routineR->setLooping(true);
-	movementManager.linkRotationRoutine(&test_shape, "TestowyR");
+	movementManager.linkRotationRoutine(&test_shape, "TestowyR");*/
 
 
 
@@ -256,9 +256,8 @@ int main()
 
 			// Start
 			if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::Space)) {
-				movementManager.startMovementRoutine(&test_shape, "TestowyM");
-				movementManager.startScalingRoutine(&test_shape, "TestowyS");
-				movementManager.startRotationRoutine(&test_shape, "TestowyR");
+				//movementManager.startMovementRoutine(&up_arrow, "TestowyM");
+				movementManager.startScalingRoutine(&up_arrow, "TestowyS");
 			}
 
 
@@ -328,11 +327,11 @@ int main()
 			//window.draw(up_arrow);
 			//window.draw(down_arrow);
 		}
-		//window.draw(up_arrow);
+		window.draw(up_arrow);
 		//for(int i = 0; i < test_shape_size; ++i)
 		//	window.draw(test_shape[i]);
 
-		window.draw(test_shape);
+		//window.draw(test_shape);
 
 		window.display();
 	}

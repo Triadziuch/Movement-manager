@@ -193,15 +193,24 @@ public:
 
 class RotationRoutineVA : public TransformationRoutine {
 private:
+	constexpr static double M_RAD = 3.14159265358979323846 / 180.0;
 	std::vector <rotationInfoVA*> routine_rotations;
+	bool was_last_clockwise{};
+
+	void adjustVertexarrayToStartingRotation(sf::VertexArray* vertexarray);
+	void adjustStartToCurrent(const float& current_rotation);
+	void adjustAllToCurrent(const float& current_rotation);
 
 public:
 	RotationRoutineVA() {}
 	RotationRoutineVA(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr) : TransformationRoutine{ name, _movementRoutineEnginePtr } {};
 	RotationRoutineVA(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr, rotationInfoVA* rotation) : TransformationRoutine{ name, _movementRoutineEnginePtr } { this->routine_rotations.emplace_back(rotation); }
 	RotationRoutineVA(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr, std::vector<rotationInfoVA*> rotations) : TransformationRoutine{ name, _movementRoutineEnginePtr } { this->routine_rotations = rotations; }
-	RotationRoutineVA(const RotationRoutineVA& obj) : TransformationRoutine{ obj }, routine_rotations(obj.routine_rotations) {}
-	~RotationRoutineVA() { routine_rotations.clear(); }
+	RotationRoutineVA(const RotationRoutineVA& obj) : TransformationRoutine{ obj } {
+		for (auto rotation : obj.routine_rotations)
+			this->routine_rotations.push_back(new rotationInfoVA(*rotation));
+	}
+	~RotationRoutineVA() { for (auto& rotation : routine_rotations) delete rotation; routine_rotations.clear(); }
 
 	// Add rotation to routine
 	void addRotation(rotationInfoVA* rotation);
@@ -225,6 +234,9 @@ public:
 	rotationInfoVA* getCurrentRotation();
 
 	const bool goToNextRotation();
+
+	void updateMovementInfoVA(const sf::Vector2f& offset);
+	void updateScalingInfoVA(const sf::VertexArray& vertexArray);
 
 	// get size
 	long long int size() {

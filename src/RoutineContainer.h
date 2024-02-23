@@ -230,7 +230,10 @@ private:
 public:
 	RotationRoutineVAContainer() {}
 	RotationRoutineVAContainer(MovementRoutineEngine* _movementRoutineEnginePtr) : movementRoutineEngine(_movementRoutineEnginePtr) {}
-	~RotationRoutineVAContainer() { rotationRoutines.clear(); }
+	~RotationRoutineVAContainer() {
+		for (auto& routine : rotationRoutines) delete routine.second;
+		rotationRoutines.clear();
+	}
 
 	// Check if routine with given name already exists
 	RotationRoutineVA* exists(const std::string& _name);

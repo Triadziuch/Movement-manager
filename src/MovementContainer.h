@@ -240,7 +240,7 @@ private:
 
 	// Private update functions
 	void updateMovementInfoVA(sf::VertexArray* _vertexarray, movementInfoVA* _movementInfo, sf::Vector2f _offset);
-	void updateScalingInfoVA(sf::VertexArray* _vertexarray, scalingInfoVA* _scalingInfo);
+	void updateScalingInfoVA(sf::VertexArray& vertexarray, const scalingInfoVA& scalingInfo);
 	void updateRotationInfoVA(sf::VertexArray* _vertexarray, rotationInfoVA* _rotationInfo);
 
 	void updateSprite(float dt);

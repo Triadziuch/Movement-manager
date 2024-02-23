@@ -84,9 +84,9 @@ public:
 			return static_cast<float>(this->used_function(static_cast<double>((this->current_time - this->delay_before) / this->motion_duration))) * (this->ending_rotation - this->starting_rotation) + this->starting_rotation;
 		else {
 			float new_rotation = static_cast<float>(this->used_function(static_cast<double>((this->current_time - this->delay_before) / this->motion_duration))) * (this->ending_rotation - this->starting_rotation) + this->starting_rotation;
-			new_rotation = 360.f - new_rotation;
-			new_rotation = fmod(new_rotation, 360.f);
-			return new_rotation;
+			//new_rotation = 360.f - new_rotation;
+			//new_rotation = fmod(new_rotation, 360.f);
+			return -new_rotation;
 		}
 	}
 
@@ -94,9 +94,9 @@ public:
 		if (this->clockwise)
 			return this->starting_rotation;
 		else {
-			float new_rotation = 360.f - this->starting_rotation;
-			new_rotation = fmod(new_rotation, 360.f);
-			return new_rotation;
+			//float new_rotation = 360.f - this->starting_rotation;
+			//new_rotation = fmod(new_rotation, 360.f);
+			return -starting_rotation;
 		}
 	}
 
@@ -104,13 +104,16 @@ public:
 		if (this->clockwise)
 			return this->ending_rotation;
 		else {
-			float new_rotation = 360.f - this->ending_rotation;
-			new_rotation = fmod(new_rotation, 360.f);
-			return new_rotation;
+			//float new_rotation = 360.f - this->ending_rotation;
+			//new_rotation = fmod(new_rotation, 360.f);
+			return -this->ending_rotation;
 		}
 	}
 
-	void adjustRotationByOffset(const float _offset) { this->starting_rotation += _offset; this->ending_rotation += _offset; }
+	void adjustRotationByOffset(const float _offset) { 
+		this->starting_rotation += _offset; 
+		this->ending_rotation += _offset; 
+	}
 };
 
 // TODO: Dodaæ sprawdzanie, czy przypadkiem nie zmieniliœmy liczby wierzcho³ków i w razie potrzeby zaktualizowaæ centroid i originalVertex

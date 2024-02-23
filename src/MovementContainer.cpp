@@ -2203,17 +2203,44 @@ void MovementRoutineEngine::stopScaling(sf::Sprite* _sprite)
 
 const RotationRoutine* MovementRoutineEngine::addRotation(sf::Shape* _shape, RotationRoutine* _rotationRoutine)
 {
-	return nullptr;
+	auto& rotationRoutineMap = sInstance->m_Rotation_Routines_Shape;
+	auto rotationFound = rotationRoutineMap.find(_shape);
+
+	if (rotationFound != rotationRoutineMap.end()) {
+		printf("RotationRoutineEngine::addRotation: RotationRoutine already exists for this shape\n");
+		return nullptr;
+	}
+
+	rotationRoutineMap.insert(std::make_pair(_shape, _rotationRoutine));
+	return _rotationRoutine;
 }
 
 const RotationRoutineVA* MovementRoutineEngine::addRotation(sf::VertexArray* _vertexarray, RotationRoutineVA* _rotationRoutine)
 {
-	return nullptr;
+	auto& rotationRoutineMap = sInstance->m_Rotation_Routines_VA;
+	auto rotationFound = rotationRoutineMap.find(_vertexarray);
+
+	if (rotationFound != rotationRoutineMap.end()) {
+		printf("RotationRoutineEngine::addRotation: RotationRoutine already exists for this shape\n");
+		return nullptr;
+	}
+
+	rotationRoutineMap.insert(std::make_pair(_vertexarray, _rotationRoutine));
+	return _rotationRoutine;
 }
 
 const RotationRoutine* MovementRoutineEngine::addRotation(sf::Sprite* _sprite, RotationRoutine* _rotationRoutine)
 {
-	return nullptr;
+	auto& rotationRoutineMap = sInstance->m_Rotation_Routines_S;
+	auto rotationFound = rotationRoutineMap.find(_sprite);
+
+	if (rotationFound != rotationRoutineMap.end()) {
+		printf("RotationRoutineEngine::addRotation: RotationRoutine already exists for this shape\n");
+		return nullptr;
+	}
+
+	rotationRoutineMap.insert(std::make_pair(_sprite, _rotationRoutine));
+	return _rotationRoutine;
 }
 
 void MovementRoutineEngine::undoRotation()
@@ -2250,18 +2277,53 @@ void MovementRoutineEngine::resetRotation(sf::Sprite* _sprite)
 
 void MovementRoutineEngine::stopRotation()
 {
+	for (auto routine = this->m_Rotation_Routines_Shape.begin(); routine != this->m_Rotation_Routines_Shape.end();) {
+		routine->second = nullptr;
+		routine = this->m_Rotation_Routines_Shape.erase(routine);
+	}
+
+	for (auto routine = this->m_Rotation_Routines_VA.begin(); routine != this->m_Rotation_Routines_VA.end();) {
+		routine->second = nullptr;
+		routine = this->m_Rotation_Routines_VA.erase(routine);
+	}
+
+	for (auto routine = this->m_Rotation_Routines_S.begin(); routine != this->m_Rotation_Routines_S.end();) {
+		routine->second = nullptr;
+		routine = this->m_Rotation_Routines_S.erase(routine);
+	}
 }
 
 void MovementRoutineEngine::stopRotation(sf::Shape* _shape)
 {
+	auto& rotationRoutineMap = sInstance->m_Rotation_Routines_Shape;
+	auto rotationRoutineFound = rotationRoutineMap.find(_shape);
+
+	if (rotationRoutineFound != rotationRoutineMap.end()) {
+		rotationRoutineFound->second = nullptr;
+		rotationRoutineMap.erase(rotationRoutineFound);
+	}
 }
 
 void MovementRoutineEngine::stopRotation(sf::VertexArray* _vertexarray)
 {
+	auto& rotationRoutineMap = sInstance->m_Rotation_Routines_VA;
+	auto rotationRoutineFound = rotationRoutineMap.find(_vertexarray);
+
+	if (rotationRoutineFound != rotationRoutineMap.end()) {
+		rotationRoutineFound->second = nullptr;
+		rotationRoutineMap.erase(rotationRoutineFound);
+	}
 }
 
 void MovementRoutineEngine::stopRotation(sf::Sprite* _sprite)
 {
+	auto& rotationRoutineMap = sInstance->m_Rotation_Routines_S;
+	auto rotationRoutineFound = rotationRoutineMap.find(_sprite);
+
+	if (rotationRoutineFound != rotationRoutineMap.end()) {
+		rotationRoutineFound->second = nullptr;
+		rotationRoutineMap.erase(rotationRoutineFound);
+	}
 }
 
 const bool MovementRoutineEngine::isMoving(sf::Shape* _shape)

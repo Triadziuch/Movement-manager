@@ -143,7 +143,7 @@ int main()
 
 	// ----- Movement Container testing ----- //
 	MovementManager movementManager;
-	auto routineS = movementManager.createScalingRoutineVA("TestowyS");
+	/*auto routineS = movementManager.createScalingRoutineVA("TestowyS");
 	routineS->addScaling(new scalingInfoVA(sf::Vector2f(1.f, 1.f), sf::Vector2f(2.f, 2.f), 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, &up_arrow));
 	routineS->addScaling(new scalingInfoVA(sf::Vector2f(2.f, 2.f), sf::Vector2f(1.f, 1.f), 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, &up_arrow));
 	routineS->adjustAllToCurrentTransform(true);
@@ -155,7 +155,23 @@ int main()
 	routineM->addMovement(new movementInfoVA(sf::Vector2f(800.f, 500.f), sf::Vector2f(1000.f, 500.f), 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_BOUNCE), false, 0.5f, 0.5f, &up_arrow));
 	routineM->adjustAllToCurrentTransform(true);
 	routineM->setLooping(true);
-	movementManager.linkMovementRoutine(&up_arrow, "TestowyM");
+	movementManager.linkMovementRoutine(&up_arrow, "TestowyM");*/
+
+	sf::CircleShape test_shape;
+	test_shape.setPointCount(3);
+	test_shape.setRadius(50.f);
+	test_shape.setFillColor(sf::Color::Blue);
+	test_shape.setOrigin(test_shape.getRadius(), test_shape.getRadius());
+	test_shape.setPosition(500.f, 500.f);
+
+	auto routineR = movementManager.createRotationRoutine("TestowyR");
+	routineR->addRotation(new rotationInfo(30.f, 90.f, 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_SINE), false, 0.5f, 0.5f, true));
+	routineR->addRotation(new rotationInfo(-90.f, 180.f, 1.f, MovementContainer.getFunctionPointer(MovementContainer::OUT_SINE), false, 0.5f, 0.5f, false));
+	routineR->addRotation(new rotationInfo(180.f, 270, 1.f, MovementContainer.getFunctionPointer(MovementContainer::OUT_SINE), false, 0.5f, 0.5f, true));
+	routineR->adjustStartToCurrentTransform(true);
+	routineR->setLooping(true);
+	movementManager.linkRotationRoutine(&test_shape, "TestowyR");
+
 
 
 	constexpr int test_shape_size = 10000;
@@ -163,9 +179,9 @@ int main()
 	constexpr int max_movements_in_routine = 10;
 
 	printf("Size before:\n");
-	printf("Active: %lld\n", movementManager.getSizeShapeActive());
-	printf("Shape: %lld\n", movementManager.getSizeShape());
-	printf("Container: %lld\n", movementManager.getSizeContainer());
+	printf("Active: %lld\n", movementManager.getSizeShapeActiveMovement());
+	printf("Shape: %lld\n", movementManager.getSizeShapeMovement());
+	printf("Container: %lld\n", movementManager.getSizeContainerMovement());
 
 
 
@@ -222,29 +238,7 @@ int main()
 
 			// Start
 			if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::Space)) {
-				movementManager.startMovementRoutine(&up_arrow, "TestowyM");
-				movementManager.startScalingRoutine(&up_arrow, "TestowyS");
-				
-			}
-
-			// Movement
-			if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::M)) {
-				movementManager.startMovementRoutine(&up_arrow, "TestowyM");
-			}
-
-			// Scaling
-			if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::S)) {
-				movementManager.startScalingRoutine(&up_arrow, "TestowyS");
-			}
-
-			// Scaling
-			if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::Z)) {
-				movementManager.pauseScalingRoutine(&up_arrow, "TestowyS");
-			}
-
-			// Scaling
-			if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::X)) {
-				movementManager.resumeScalingRoutine(&up_arrow, "TestowyS");
+				movementManager.startRotationRoutine(&test_shape, "TestowyR");
 			}
 
 
@@ -314,11 +308,11 @@ int main()
 			//window.draw(up_arrow);
 			//window.draw(down_arrow);
 		}
-		window.draw(up_arrow);
+		//window.draw(up_arrow);
 		//for(int i = 0; i < test_shape_size; ++i)
 		//	window.draw(test_shape[i]);
 
-		//window.draw(test_shape);
+		window.draw(test_shape);
 
 		window.display();
 	}

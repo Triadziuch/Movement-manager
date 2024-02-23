@@ -140,6 +140,7 @@ public:
 class RotationRoutine : public TransformationRoutine {
 private:
 	std::vector <rotationInfo*> routine_rotations;
+	bool was_last_clockwise{};
 
 	void adjustStartToCurrent(const float& current_rotation);
 	void adjustAllToCurrent(const float& current_rotation);
@@ -152,6 +153,7 @@ public:
 	RotationRoutine(const RotationRoutine& obj) : TransformationRoutine{ obj } {
 		for (auto rotations : obj.routine_rotations)
 			this->routine_rotations.push_back(new rotationInfo(*rotations));
+		this->was_last_clockwise = obj.was_last_clockwise;
 	}
 	~RotationRoutine() { for (auto rotation : routine_rotations) delete rotation; routine_rotations.clear(); }
 

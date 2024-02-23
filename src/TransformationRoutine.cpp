@@ -309,6 +309,236 @@ const bool ScalingRoutine::goToNextScaling(sf::Sprite* sprite)
 	}
 }
 
+// - - - - - - - - - - - - - - - - - - - - RotationRoutine - - - - - - - - - - - - - - - - - - - - \\
+
+void RotationRoutine::adjustStartToCurrent(const float& current_rotation)
+{
+	if (this->routine_rotations.size() == 0) return;
+	this->routine_rotations[0]->starting_rotation = current_rotation;
+}
+
+void RotationRoutine::adjustAllToCurrent(const float& current_rotation)
+{
+	if (this->routine_rotations.size() == 0) return;
+
+	const float rotation_offset = current_rotation - this->routine_rotations[0]->starting_rotation;
+	for (auto& rotation : this->routine_rotations)
+		rotation->adjustRotationByOffset(rotation_offset);
+}
+
+void RotationRoutine::addRotation(rotationInfo* rotation)
+{
+	this->routine_rotations.emplace_back(rotation);
+	++this->count;
+}
+
+void RotationRoutine::removeRotation(rotationInfo* rotation)
+{
+	auto it = std::find(this->routine_rotations.begin(), this->routine_rotations.end(), rotation);
+	if (it != this->routine_rotations.end()) { 
+		this->routine_rotations.erase(it); 
+		--this->count;
+	}
+}
+
+void RotationRoutine::clear()
+{
+	this->routine_rotations.clear();
+	this->current = 0;
+	this->count = 0;
+	this->is_active = false;
+	this->is_paused = false;
+	this->is_looping = false;
+}
+
+void RotationRoutine::reset()
+{
+	for (auto& rotation : this->routine_rotations)
+		rotation->reset();
+
+	this->current = 0;
+	this->is_active = false;
+	this->is_paused = false;
+}
+
+const bool RotationRoutine::start(sf::Shape* shape)
+{
+	if (this->routine_rotations.size() != 0) {
+		if (this->adjust_all_to_current_transform)		  { this->adjustAllToCurrent(shape->getRotation()); }
+		else if (this->adjust_start_to_current_transform) { this->adjustStartToCurrent(shape->getRotation()); }
+		this->reset();
+
+		this->current = 0;
+		this->is_active = true;
+		this->movementRoutineEngine->addRotation(shape, this);
+		return true;
+	}
+
+	printf("RotationRoutine::start: Routine is empty\n");
+	return false;
+}
+
+const bool RotationRoutine::start(sf::Sprite* sprite)
+{
+	if (this->routine_rotations.size() != 0) {
+		if (this->adjust_all_to_current_transform)		  { this->adjustAllToCurrent(sprite->getRotation()); }
+		else if (this->adjust_start_to_current_transform) { this->adjustStartToCurrent(sprite->getRotation()); }
+		this->reset();
+
+		this->current = 0;
+		this->is_active = true;
+		this->movementRoutineEngine->addRotation(sprite, this);
+		return true;
+	}
+
+	printf("RotationRoutine::start: Routine is empty\n");
+	return false;
+}
+
+void RotationRoutine::stop(sf::Shape* shape)
+{
+	this->reset();
+	this->movementRoutineEngine->stopRotation(shape);
+}
+
+void RotationRoutine::stop(sf::Sprite* sprite)
+{
+	this->reset();
+	this->movementRoutineEngine->stopRotation(sprite);
+}
+
+rotationInfo* RotationRoutine::getCurrentRotation()
+{
+	if (this->current < this->count)
+		return this->routine_rotations[this->current];
+	else {
+		printf("RotationRoutine::getCurrentRotation: Current rotation index out of range\n");
+		return nullptr;
+	}
+}
+
+const bool RotationRoutine::goToNextRotation(sf::Shape* shape)
+{
+	if (this->current < this->count - 1) {
+		++this->current;
+		return true;
+	}
+	else {
+		if (this->adjust_all_to_current_transform)		  { this->adjustAllToCurrent(shape->getRotation()); }
+		else if (this->adjust_start_to_current_transform) { this->adjustStartToCurrent(shape->getRotation()); }
+		this->reset();
+
+		if (this->is_looping) {
+			this->is_active = true;
+			return true;
+		}
+
+		return false;
+	}
+}
+
+const bool RotationRoutine::goToNextRotation(sf::Sprite* sprite)
+{
+	if (this->current < this->count - 1) {
+		++this->current;
+		return true;
+	}
+	else {
+		if (this->adjust_all_to_current_transform)		  { this->adjustAllToCurrent(sprite->getRotation()); }
+		else if (this->adjust_start_to_current_transform) { this->adjustStartToCurrent(sprite->getRotation()); }
+		this->reset();
+
+		if (this->is_looping) {
+			this->is_active = true;
+			return true;
+		}
+
+		return false;
+	}
+}
+
+// - - - - - - - - - - - - - - - - - - - - RotationVARoutine - - - - - - - - - - - - - - - - - - - - \\
+
+void RotationRoutineVA::addRotation(rotationInfoVA* rotation)
+{
+	this->routine_rotations.emplace_back(rotation);
+	++this->count;
+}
+
+void RotationRoutineVA::removeRotation(rotationInfoVA* rotation)
+{
+	auto it = std::find(this->routine_rotations.begin(), this->routine_rotations.end(), rotation);
+	if (it != this->routine_rotations.end()) { this->routine_rotations.erase(it); --this->count; }
+}
+
+void RotationRoutineVA::clear()
+{
+	this->routine_rotations.clear();
+	this->current = 0;
+	this->count = 0;
+	this->is_active = false;
+	this->is_paused = false;
+	this->is_looping = false;
+}
+
+void RotationRoutineVA::reset()
+{
+	for (auto& rotation : this->routine_rotations)
+		rotation->reset();
+
+	this->current = 0;
+	this->is_active = false;
+	this->is_paused = false;
+}
+
+const bool RotationRoutineVA::start(sf::VertexArray* vertexArray)
+{
+	if (this->routine_rotations.size() != 0) {
+		this->reset();
+
+		this->current = 0;
+		this->is_active = true;
+		this->movementRoutineEngine->addRotation(vertexArray, this);
+		return true;
+	}
+
+	printf("RotationRoutineVA::start: Routine is empty\n");
+	return false;
+}
+
+void RotationRoutineVA::stop(sf::VertexArray* vertexArray)
+{
+	this->reset();
+	this->movementRoutineEngine->stopRotation(vertexArray);
+}
+
+rotationInfoVA* RotationRoutineVA::getCurrentRotation()
+{
+	if (this->current < this->count)
+		return this->routine_rotations[this->current];
+	else {
+		printf("RotationRoutineVA::getCurrentRotation: Current rotation index out of range\n");
+		return nullptr;
+	}
+}
+
+const bool RotationRoutineVA::goToNextRotation()
+{
+	if (this->current < this->count - 1) {
+		++this->current;
+		return true;
+	}
+	else {
+		this->reset();
+		if (this->is_looping) {
+			this->is_active = true;
+			return true;
+		}
+
+		return false;
+	}
+}
+
 // - - - - - - - - - - - - - - - - - - - - ScalingRoutineVA - - - - - - - - - - - - - - - - - - - - \\
 
 void ScalingRoutineVA::adjustVertexarrayToStartingScale(sf::VertexArray* vertexarray)
@@ -436,7 +666,6 @@ const bool ScalingRoutineVA::goToNextScaling(sf::VertexArray* vertexArray)
 {
 	if (this->current < this->count - 1) {
 		++this->current;
-		//this->current_scale = &this->routine_scalings[this->current]->current_scale;
 		return true;
 	}
 	else {
@@ -620,189 +849,4 @@ const sf::Vector2f MovementRoutineVA::getGoToNextMovementOffset(const sf::Vertex
 
 	const sf::Vector2f offset = current_movement->starting_pos - centroid;
 	return offset;
-}
-
-// - - - - - - - - - - - - - - - - - - - - RotationRoutine - - - - - - - - - - - - - - - - - - - - \\
-
-void RotationRoutine::addRotation(rotationInfo* rotation)
-{
-	this->routine_rotations.emplace_back(rotation);
-	++this->count;
-}
-
-void RotationRoutine::removeRotation(rotationInfo* rotation)
-{
-	auto it = std::find(this->routine_rotations.begin(), this->routine_rotations.end(), rotation);
-	if (it != this->routine_rotations.end()) { this->routine_rotations.erase(it); --this->count; }
-}
-
-void RotationRoutine::clear()
-{
-	this->routine_rotations.clear();
-	this->current = 0;
-	this->count = 0;
-	this->is_active = false;
-	this->is_paused = false;
-	this->is_looping = false;
-}
-
-void RotationRoutine::reset()
-{
-	for (auto& rotation : this->routine_rotations)
-		rotation->reset();
-
-	this->current = 0;
-	this->is_active = false;
-	this->is_paused = false;
-}
-
-const bool RotationRoutine::start(sf::Shape* shape)
-{
-	if (this->routine_rotations.size() != 0) {
-		this->reset();
-
-		this->current = 0;
-		this->is_active = true;
-		this->movementRoutineEngine->addRotation(shape, this);
-		return true;
-	}
-
-	printf("RotationRoutine::start: Routine is empty\n");
-	return false;
-}
-
-const bool RotationRoutine::start(sf::Sprite* sprite)
-{
-	if (this->routine_rotations.size() != 0) {
-		this->reset();
-
-		this->current = 0;
-		this->is_active = true;
-		this->movementRoutineEngine->addRotation(sprite, this);
-		return true;
-	}
-
-	printf("RotationRoutine::start: Routine is empty\n");
-	return false;
-}
-
-void RotationRoutine::stop(sf::Shape* shape)
-{
-	this->reset();
-	this->movementRoutineEngine->stopRotation(shape);
-}
-
-void RotationRoutine::stop(sf::Sprite* sprite)
-{
-	this->reset();
-	this->movementRoutineEngine->stopRotation(sprite);
-}
-
-rotationInfo* RotationRoutine::getCurrentRotation()
-{
-	if (this->current < this->count)
-		return this->routine_rotations[this->current];
-	else {
-		printf("RotationRoutine::getCurrentRotation: Current rotation index out of range\n");
-		return nullptr;
-	}
-}
-
-const bool RotationRoutine::goToNextRotation()
-{
-	if (this->current < this->count - 1) {
-		++this->current;
-		return true;
-	}
-	else {
-		this->reset();
-		if (this->is_looping) {
-			this->is_active = true;
-			return true;
-		}
-
-		return false;
-	}
-}
-
-// - - - - - - - - - - - - - - - - - - - - RotationVARoutine - - - - - - - - - - - - - - - - - - - - \\
-
-void RotationRoutineVA::addRotation(rotationInfoVA* rotation)
-{
-	this->routine_rotations.emplace_back(rotation);
-	++this->count;
-}
-
-void RotationRoutineVA::removeRotation(rotationInfoVA* rotation)
-{
-	auto it = std::find(this->routine_rotations.begin(), this->routine_rotations.end(), rotation);
-	if (it != this->routine_rotations.end()) { this->routine_rotations.erase(it); --this->count; }
-}
-
-void RotationRoutineVA::clear()
-{
-	this->routine_rotations.clear();
-	this->current = 0;
-	this->count = 0;
-	this->is_active = false;
-	this->is_paused = false;
-	this->is_looping = false;
-}
-
-void RotationRoutineVA::reset()
-{
-	for (auto& rotation : this->routine_rotations)
-		rotation->reset();
-
-	this->current = 0;
-	this->is_active = false;
-	this->is_paused = false;
-}
-
-const bool RotationRoutineVA::start(sf::VertexArray* vertexArray)
-{
-	if (this->routine_rotations.size() != 0) {
-		this->reset();
-
-		this->current = 0;
-		this->is_active = true;
-		this->movementRoutineEngine->addRotation(vertexArray, this);
-		return true;
-	}
-
-	printf("RotationRoutineVA::start: Routine is empty\n");
-	return false;
-}
-
-void RotationRoutineVA::stop(sf::VertexArray* vertexArray)
-{
-	this->reset();
-	this->movementRoutineEngine->stopRotation(vertexArray);
-}
-
-rotationInfoVA* RotationRoutineVA::getCurrentRotation()
-{
-	if (this->current < this->count)
-		return this->routine_rotations[this->current];
-	else {
-		printf("RotationRoutineVA::getCurrentRotation: Current rotation index out of range\n");
-		return nullptr;
-	}
-}
-
-const bool RotationRoutineVA::goToNextRotation()
-{
-	if (this->current < this->count - 1) {
-		++this->current;
-		return true;
-	}
-	else {
-		this->reset();
-		if (this->is_looping) {
-			this->is_active = true;
-			return true;
-		}
-
-		return false;
-	}
 }

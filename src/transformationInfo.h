@@ -109,6 +109,8 @@ public:
 			return new_rotation;
 		}
 	}
+
+	void adjustRotationByOffset(const float _offset) { this->starting_rotation += _offset; this->ending_rotation += _offset; }
 };
 
 // TODO: Dodaæ sprawdzanie, czy przypadkiem nie zmieniliœmy liczby wierzcho³ków i w razie potrzeby zaktualizowaæ centroid i originalVertex

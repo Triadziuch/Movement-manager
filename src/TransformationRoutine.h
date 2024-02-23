@@ -137,6 +137,94 @@ public:
 	}
 };
 
+class RotationRoutine : public TransformationRoutine {
+private:
+	std::vector <rotationInfo*> routine_rotations;
+
+	void adjustStartToCurrent(const float& current_rotation);
+	void adjustAllToCurrent(const float& current_rotation);
+
+public:
+	RotationRoutine() {}
+	RotationRoutine(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr) : TransformationRoutine{ name, _movementRoutineEnginePtr } {};
+	RotationRoutine(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr, rotationInfo* rotation) : TransformationRoutine{ name, _movementRoutineEnginePtr } { this->routine_rotations.emplace_back(rotation); }
+	RotationRoutine(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr, std::vector<rotationInfo*> rotations) : TransformationRoutine{ name, _movementRoutineEnginePtr } { this->routine_rotations = rotations; }
+	RotationRoutine(const RotationRoutine& obj) : TransformationRoutine{ obj } {
+		for (auto rotations : obj.routine_rotations)
+			this->routine_rotations.push_back(new rotationInfo(*rotations));
+	}
+	~RotationRoutine() { for (auto rotation : routine_rotations) delete rotation; routine_rotations.clear(); }
+
+	// Add rotation to routine
+	void addRotation(rotationInfo* rotation);
+
+	// Remove rotation from routine
+	void removeRotation(rotationInfo* rotation);
+
+	// Clear routine
+	void clear();
+
+	// Reset routine
+	void reset();
+
+	// Start routine
+	const bool start(sf::Shape* shape);
+	const bool start(sf::Sprite* sprite);
+
+	// Stop routine
+	void stop(sf::Shape* shape);
+	void stop(sf::Sprite* sprite);
+
+	// Get current rotation pointer
+	rotationInfo* getCurrentRotation();
+
+	const bool goToNextRotation(sf::Shape* shape);
+	const bool goToNextRotation(sf::Sprite* sprite);
+
+	// get size
+	long long int size() {
+		long long int size = 0;
+		for (auto rotation : routine_rotations) size += sizeof(*rotation);
+		return size + sizeof(routine_rotations);
+	}
+};
+
+class RotationRoutineVA : public TransformationRoutine {
+private:
+	std::vector <rotationInfoVA*> routine_rotations;
+
+public:
+	RotationRoutineVA() {}
+	RotationRoutineVA(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr) : TransformationRoutine{ name, _movementRoutineEnginePtr } {};
+	RotationRoutineVA(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr, rotationInfoVA* rotation) : TransformationRoutine{ name, _movementRoutineEnginePtr } { this->routine_rotations.emplace_back(rotation); }
+	RotationRoutineVA(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr, std::vector<rotationInfoVA*> rotations) : TransformationRoutine{ name, _movementRoutineEnginePtr } { this->routine_rotations = rotations; }
+	RotationRoutineVA(const RotationRoutineVA& obj) : TransformationRoutine{ obj }, routine_rotations(obj.routine_rotations) {}
+	~RotationRoutineVA() { routine_rotations.clear(); }
+
+	// Add rotation to routine
+	void addRotation(rotationInfoVA* rotation);
+
+	// Remove rotation from routine
+	void removeRotation(rotationInfoVA* rotation);
+
+	// Clear routine
+	void clear();
+
+	// Reset routine
+	void reset();
+
+	// Start routine
+	const bool start(sf::VertexArray* vertexarray);
+
+	// Stop routine
+	void stop(sf::VertexArray* vertexarray);
+
+	// Get current rotation pointer
+	rotationInfoVA* getCurrentRotation();
+
+	const bool goToNextRotation();
+};
+
 class ScalingRoutineVA : public TransformationRoutine {
 private:
 	std::vector <scalingInfoVA*> routine_scalings;
@@ -242,78 +330,4 @@ public:
 		for (auto movement : routine_movements) size += sizeof(*movement);
 		return size + sizeof(routine_movements);
 	}
-};
-
-class RotationRoutine : public TransformationRoutine {
-private:
-	std::vector <rotationInfo*> routine_rotations;
-
-public:
-	RotationRoutine() {}
-	RotationRoutine(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr) : TransformationRoutine{ name, _movementRoutineEnginePtr } {};
-	RotationRoutine(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr, rotationInfo* rotation) : TransformationRoutine{ name, _movementRoutineEnginePtr } { this->routine_rotations.emplace_back(rotation); }
-	RotationRoutine(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr, std::vector<rotationInfo*> rotations) : TransformationRoutine{ name, _movementRoutineEnginePtr } { this->routine_rotations = rotations; }
-	RotationRoutine(const RotationRoutine& obj) : TransformationRoutine{ obj }, routine_rotations(obj.routine_rotations) {}
-	~RotationRoutine() { routine_rotations.clear(); }
-
-	// Add rotation to routine
-	void addRotation(rotationInfo* rotation);
-
-	// Remove rotation from routine
-	void removeRotation(rotationInfo* rotation);
-
-	// Clear routine
-	void clear();
-
-	// Reset routine
-	void reset();
-
-	// Start routine
-	const bool start(sf::Shape* shape);
-	const bool start(sf::Sprite* sprite);
-
-	// Stop routine
-	void stop(sf::Shape* shape);
-	void stop(sf::Sprite* sprite);
-
-	// Get current rotation pointer
-	rotationInfo* getCurrentRotation();
-
-	const bool goToNextRotation();
-};
-
-class RotationRoutineVA : public TransformationRoutine {
-private:
-	std::vector <rotationInfoVA*> routine_rotations;
-
-public:
-	RotationRoutineVA() {}
-	RotationRoutineVA(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr) : TransformationRoutine{ name, _movementRoutineEnginePtr } {};
-	RotationRoutineVA(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr, rotationInfoVA* rotation) : TransformationRoutine{ name, _movementRoutineEnginePtr } { this->routine_rotations.emplace_back(rotation); }
-	RotationRoutineVA(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr, std::vector<rotationInfoVA*> rotations) : TransformationRoutine{ name, _movementRoutineEnginePtr } { this->routine_rotations = rotations; }
-	RotationRoutineVA(const RotationRoutineVA& obj) : TransformationRoutine{ obj }, routine_rotations(obj.routine_rotations) {}
-	~RotationRoutineVA() { routine_rotations.clear(); }
-
-	// Add rotation to routine
-	void addRotation(rotationInfoVA* rotation);
-
-	// Remove rotation from routine
-	void removeRotation(rotationInfoVA* rotation);
-
-	// Clear routine
-	void clear();
-
-	// Reset routine
-	void reset();
-
-	// Start routine
-	const bool start(sf::VertexArray* vertexarray);
-
-	// Stop routine
-	void stop(sf::VertexArray* vertexarray);
-
-	// Get current rotation pointer
-	rotationInfoVA* getCurrentRotation();
-
-	const bool goToNextRotation();
 };

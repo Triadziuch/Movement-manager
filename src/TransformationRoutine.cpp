@@ -356,13 +356,20 @@ void RotationRoutine::adjustAllToCurrent(const float& current_rotation)
 
 	const float rotation_offset = current_rotation - this->routine_rotations[0]->starting_rotation;
 	for (auto& rotation : this->routine_rotations) {
-		if (rotation->clockwise) {
-			rotation->starting_rotation += rotation_offset;
-			rotation->ending_rotation += rotation_offset;
+
+		float& new_starting_rotation = rotation->starting_rotation;
+		float& new_ending_rotation = rotation->ending_rotation;
+
+		new_starting_rotation += rotation->clockwise ? rotation_offset : -rotation_offset;
+		new_ending_rotation   += rotation->clockwise ? rotation_offset : -rotation_offset;
+
+		if (new_starting_rotation > 360.f || new_ending_rotation > 360.f) {
+			new_starting_rotation -= 360.f;
+			new_ending_rotation -= 360.f;
 		}
-		else {
-			rotation->starting_rotation -= rotation_offset;
-			rotation->ending_rotation -= rotation_offset;
+		else if (new_starting_rotation < -360.f || new_ending_rotation < -360.f) {
+			new_starting_rotation += 360.f;
+			new_ending_rotation += 360.f;
 		}
 	}
 		//rotation->adjustRotationByOffset(rotation_offset);
@@ -490,8 +497,8 @@ const bool RotationRoutine::goToNextRotation(sf::Sprite* sprite)
 	}
 	else {
 		this->was_last_clockwise = this->routine_rotations[this->current]->clockwise;
-		if (this->adjust_all_to_current_transform) { this->adjustAllToCurrent(shape->getRotation()); }
-		else if (this->adjust_start_to_current_transform) { this->adjustStartToCurrent(shape->getRotation()); }
+		if (this->adjust_all_to_current_transform) { this->adjustAllToCurrent(sprite->getRotation()); }
+		else if (this->adjust_start_to_current_transform) { this->adjustStartToCurrent(sprite->getRotation()); }
 		this->reset();
 
 		if (this->is_looping) {

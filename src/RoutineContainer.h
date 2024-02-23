@@ -187,7 +187,10 @@ private:
 public:
 	RotationRoutineContainer() {}
 	RotationRoutineContainer(MovementRoutineEngine* _movementRoutineEnginePtr) : movementRoutineEngine(_movementRoutineEnginePtr) {}
-	~RotationRoutineContainer() { rotationRoutines.clear(); }
+	~RotationRoutineContainer() {
+		for (auto& routine : rotationRoutines) delete routine.second;
+		rotationRoutines.clear();
+	}
 
 	// Check if routine with given name already exists
 	RotationRoutine* exists(const std::string& _name);
@@ -207,6 +210,16 @@ public:
 
 	// Remove routine with given name
 	void deleteRoutine(const std::string& _name);
+
+	// Get routine count
+	size_t routineCount() { return rotationRoutines.size(); }
+
+	// Get size
+	long long int size() {
+		long long int size = 0;
+		for (auto& routine : rotationRoutines) size += routine.second->size();
+		return size + sizeof(rotationRoutines);
+	}
 };
 
 class RotationRoutineVAContainer : protected RoutineContainer {

@@ -63,7 +63,7 @@ MovementRoutine* MovementRoutineContainer::createRoutine(const std::string& _nam
 
 void MovementRoutineContainer::clear()
 {
-	for (auto routine : movementRoutines) delete routine.second;
+	for (auto& routine : movementRoutines) delete routine.second;
 	movementRoutines.clear();
 }
 
@@ -217,6 +217,7 @@ ScalingRoutine* ScalingRoutineContainer::createRoutine(const std::string& _name,
 
 void ScalingRoutineContainer::clear()
 {
+	for (auto& routine : scalingRoutines) delete routine.second;
 	scalingRoutines.clear();
 }
 
@@ -295,6 +296,7 @@ ScalingRoutineVA* ScalingRoutineVAContainer::createRoutine(const std::string& _n
 
 void ScalingRoutineVAContainer::clear()
 {
+	for (auto& routine : scalingRoutines) delete routine.second;
 	scalingRoutines.clear();
 }
 
@@ -373,6 +375,7 @@ RotationRoutine* RotationRoutineContainer::createRoutine(const std::string& _nam
 
 void RotationRoutineContainer::clear()
 {
+	for (auto& routine : rotationRoutines) delete routine.second;
 	rotationRoutines.clear();
 }
 
@@ -450,6 +453,7 @@ RotationRoutineVA* RotationRoutineVAContainer::createRoutine(const std::string& 
 
 void RotationRoutineVAContainer::clear()
 {
+	for (auto& routine : rotationRoutines) delete routine.second;
 	rotationRoutines.clear();
 }
 

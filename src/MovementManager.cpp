@@ -10,11 +10,32 @@ MovementManager::MovementManager()
 	sInstance = this;
 
 	movementRoutineEngine = new MovementRoutineEngine();
+
 	movementRoutineContainer = new MovementRoutineContainer();
 	movementRoutineVAContainer = new MovementRoutineVAContainer();
 
 	scalingRoutineContainer = new ScalingRoutineContainer();
 	scalingRoutineVAContainer = new ScalingRoutineVAContainer();
+
+	rotationRoutineContainer = new RotationRoutineContainer();
+	rotationRoutineVAContainer = new RotationRoutineVAContainer();
+}
+
+MovementManager::~MovementManager()
+{
+	this->deleteMovementRoutine();
+	this->deleteScalingRoutine();
+
+	delete movementRoutineContainer;
+	delete movementRoutineVAContainer;
+
+	delete scalingRoutineContainer;
+	delete scalingRoutineVAContainer;
+
+	delete rotationRoutineContainer;
+	delete rotationRoutineVAContainer;
+
+	delete movementRoutineEngine;
 }
 
 MovementRoutine* MovementManager::linkMovementRoutine(sf::Shape* _shape, const std::string& _name)

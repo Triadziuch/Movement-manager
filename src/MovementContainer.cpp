@@ -1772,24 +1772,28 @@ void MovementRoutineEngine::updateVertexArray(float dt)
 				if (rotation->isDone()) {
 					if (rotation->current_time - rotation->delay_before - dt < rotation->motion_duration) {
 						rotation->current_rotation = rotation->getEndingRotation();
+						rotation->fixed_rotation = rotation->ending_rotation;
 						updateRotationInfoVA(vertexarray, rotation);
 					}
 
 					if (rotation->repeat) {
 						if (rotation->current_time - rotation->motion_duration - rotation->delay_before < rotation->delay_after) {
 							rotation->current_rotation = rotation->getEndingRotation();
+							rotation->fixed_rotation = rotation->ending_rotation;
 							updateRotationInfoVA(vertexarray, rotation);
 						}
 
 						else {
 							rotation->current_rotation = rotation->getStartingRotation();
+							rotation->fixed_rotation = rotation->ending_rotation;
+
 							updateRotationInfoVA(vertexarray, rotation);
 
 							rotation->current_time -= rotation->total_duration;
 						}
 					}
 					else if (rotation->isFinished()) {
-						if (!rotationRoutine->second->goToNextRotation()) {
+						if (!rotationRoutine->second->goToNextRotation(vertexarray)) {
 							rotationRoutine->second = nullptr;
 							rotationRoutine = m_Rotation_Routines_VA.erase(rotationRoutine);
 							continue;
@@ -1803,6 +1807,7 @@ void MovementRoutineEngine::updateVertexArray(float dt)
 					}
 					else if (rotation->current_time - dt == 0.f) {
 						rotation->current_rotation = rotation->getStartingRotation();
+						rotation->fixed_rotation = rotation->starting_rotation;
 						updateRotationInfoVA(vertexarray, rotation);
 					}
 				}

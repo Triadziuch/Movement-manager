@@ -196,10 +196,11 @@ private:
 	constexpr static double M_RAD = 3.14159265358979323846 / 180.0;
 	std::vector <rotationInfoVA*> routine_rotations;
 	bool was_last_clockwise{};
+	const float *current_rotation{};
 
 	void adjustVertexarrayToStartingRotation(sf::VertexArray* vertexarray);
-	void adjustStartToCurrent(const float& current_rotation);
-	void adjustAllToCurrent(const float& current_rotation);
+	void adjustStartToCurrent();
+	void adjustAllToCurrent();
 
 public:
 	RotationRoutineVA() {}
@@ -222,7 +223,7 @@ public:
 	void clear();
 
 	// Reset routine
-	void reset();
+	void reset(const sf::VertexArray* vertexArray);
 
 	// Start routine
 	const bool start(sf::VertexArray* vertexarray);
@@ -233,7 +234,7 @@ public:
 	// Get current rotation pointer
 	rotationInfoVA* getCurrentRotation();
 
-	const bool goToNextRotation();
+	const bool goToNextRotation(sf::VertexArray* vertexArray);
 
 	void updateMovementInfoVA(const sf::Vector2f& offset);
 	void updateScalingInfoVA(const sf::VertexArray& vertexArray);
@@ -243,6 +244,10 @@ public:
 		long long int size = 0;
 		for (auto rotation : routine_rotations) size += sizeof(*rotation);
 		return size + sizeof(routine_rotations);
+	}
+
+	void printCurrentRotation() {
+		printf("Current rotation: %f\n", *current_rotation);
 	}
 };
 

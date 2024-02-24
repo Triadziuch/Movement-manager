@@ -318,6 +318,11 @@ void RotationRoutine::adjustStartToCurrent(const float& current_rotation)
 	rotationInfo* rotation = this->routine_rotations[0];
 	float new_starting_rotation = current_rotation;
 
+	printf("\Shape: \n");
+	printf("Current rotation: %f\n", current_rotation);
+	printf("Was last clockwise: %d\n", this->was_last_clockwise);
+	printf("Is current clockwise: %d\n", rotation->clockwise);
+
 	if (!this->was_last_clockwise) {
 		if (rotation->clockwise) {
 			if (current_rotation > rotation->ending_rotation)
@@ -344,6 +349,8 @@ void RotationRoutine::adjustStartToCurrent(const float& current_rotation)
 				new_starting_rotation -= 360.f;
 		}
 	}
+
+	printf("New starting rotation: %f\n\n", new_starting_rotation);
 
 	new_starting_rotation = fmod(new_starting_rotation, 360.f);
 
@@ -491,6 +498,7 @@ const bool RotationRoutine::goToNextRotation(sf::Shape* shape)
 const bool RotationRoutine::goToNextRotation(sf::Sprite* sprite)
 {
 	if (this->current < this->count - 1) {
+		this->was_last_clockwise = this->routine_rotations[this->current]->clockwise;
 		++this->current;
 		return true;
 	}
@@ -511,12 +519,16 @@ const bool RotationRoutine::goToNextRotation(sf::Sprite* sprite)
 
 // - - - - - - - - - - - - - - - - - - - - RotationVARoutine - - - - - - - - - - - - - - - - - - - - \\
 
+// adjustVertexarrayToStartingRotation jest ogarniête
+// teraz trzeba zrobiæ adjustStartToCurrent i adjustAllToCurrent
+// ale w sumie najpierw zaktualizowaæ kod w goToNextRotation
+
 void RotationRoutineVA::adjustVertexarrayToStartingRotation(sf::VertexArray* vertexarray)
 {
 	const rotationInfoVA& current_rotation = *this->getCurrentRotation();
 
-	float sine = static_cast<float>(sin(static_cast<double>(current_rotation.current_rotation) * M_RAD)),
-		cosine = static_cast<float>(cos(static_cast<double>(current_rotation.current_rotation) * M_RAD));
+	float sine = static_cast<float>(sin(static_cast<double>(current_rotation.fixed_rotation) * M_RAD)),
+		cosine = static_cast<float>(cos(static_cast<double>(current_rotation.fixed_rotation) * M_RAD));
 
 	for (size_t i = 0; i < vertexarray->getVertexCount(); ++i) {
 		float x = current_rotation.originalVertex.operator[](i).position.x - current_rotation.centroid.x;
@@ -526,16 +538,71 @@ void RotationRoutineVA::adjustVertexarrayToStartingRotation(sf::VertexArray* ver
 	}
 }
 
-void RotationRoutineVA::adjustStartToCurrent(const float& current_rotation)
+void RotationRoutineVA::adjustStartToCurrent()
 {
+	if (this->routine_rotations.size() == 0) return;
+
+	rotationInfoVA* rotation = this->routine_rotations[0];
+
+	float current_rotation_temp = 0.f;
+	if (this->current_rotation != nullptr) 
+		current_rotation_temp = *this->current_rotation;
+
+	if (!this->was_last_clockwise) {
+		current_rotation_temp -= 360.f;
+		current_rotation_temp *= -1.f;
+	}
+
+	float new_starting_rotation = current_rotation_temp;
+
+	printf("\nVertexArray: \n");
+	printf("Current rotation: %f\n", current_rotation_temp);
+	printf("Was last clockwise: %d\n", this->was_last_clockwise);
+	printf("Is current clockwise: %d\n", rotation->clockwise);
+
+	if (!this->was_last_clockwise) {
+		if (rotation->clockwise) {
+			if (current_rotation_temp > rotation->ending_rotation)
+				new_starting_rotation -= 360.f;
+		}
+		else {
+			new_starting_rotation -= 360.f;
+			new_starting_rotation *= -1.f;
+
+			if (new_starting_rotation > rotation->ending_rotation)
+				new_starting_rotation -= 360.f;
+		}
+	}
+	else {
+		if (rotation->clockwise) {
+			if (current_rotation_temp > rotation->ending_rotation)
+				new_starting_rotation -= 360.f;
+		}
+		else if (rotation->clockwise == false) {
+			new_starting_rotation -= 360.f;
+			new_starting_rotation *= -1.f;
+
+			if (new_starting_rotation > rotation->ending_rotation)
+				new_starting_rotation -= 360.f;
+		}
+	}
+
+	printf("New starting rotation: %f\n\n", new_starting_rotation);
+
+	new_starting_rotation = fmod(new_starting_rotation, 360.f);
+
+	this->routine_rotations[0]->starting_rotation = new_starting_rotation;
+	this->routine_rotations[0]->current_rotation = new_starting_rotation;
+	this->routine_rotations[0]->fixed_rotation = new_starting_rotation;
 }
 
-void RotationRoutineVA::adjustAllToCurrent(const float& current_rotation)
+void RotationRoutineVA::adjustAllToCurrent()
 {
 }
 
 void RotationRoutineVA::addRotation(rotationInfoVA* rotation)
 {
+	this->was_last_clockwise = rotation->clockwise;
 	this->routine_rotations.emplace_back(rotation);
 	++this->count;
 }
@@ -556,10 +623,12 @@ void RotationRoutineVA::clear()
 	this->is_looping = false;
 }
 
-void RotationRoutineVA::reset()
+void RotationRoutineVA::reset(const sf::VertexArray* vertexArray)
 {
-	for (auto& rotation : this->routine_rotations)
+	for (auto& rotation : this->routine_rotations) {
 		rotation->reset();
+		rotation->recalculateCentroidsOriginalVertex(vertexArray);
+	}
 
 	this->current = 0;
 	this->is_active = false;
@@ -569,9 +638,14 @@ void RotationRoutineVA::reset()
 const bool RotationRoutineVA::start(sf::VertexArray* vertexArray)
 {
 	if (this->routine_rotations.size() != 0) {
-		this->reset();
+		
+		if (this->adjust_all_to_current_transform)		  { this->adjustAllToCurrent(); }
+		else if (this->adjust_start_to_current_transform) { this->adjustStartToCurrent(); }
+		this->current_rotation = &this->routine_rotations[0]->fixed_rotation;
 
-		this->adjustVertexarrayToStartingRotation(vertexArray);
+		this->reset(vertexArray);
+
+		//this->adjustVertexarrayToStartingRotation(vertexArray);
 
 		this->current = 0;
 		this->is_active = true;
@@ -585,7 +659,7 @@ const bool RotationRoutineVA::start(sf::VertexArray* vertexArray)
 
 void RotationRoutineVA::stop(sf::VertexArray* vertexArray)
 {
-	this->reset();
+	this->reset(vertexArray);
 	this->movementRoutineEngine->stopRotation(vertexArray);
 }
 
@@ -599,14 +673,21 @@ rotationInfoVA* RotationRoutineVA::getCurrentRotation()
 	}
 }
 
-const bool RotationRoutineVA::goToNextRotation()
+const bool RotationRoutineVA::goToNextRotation(sf::VertexArray* vertexArray)
 {
 	if (this->current < this->count - 1) {
+		this->was_last_clockwise = this->routine_rotations[this->current]->clockwise;
 		++this->current;
+		this->current_rotation = &this->routine_rotations[this->current]->fixed_rotation;
 		return true;
 	}
 	else {
-		this->reset();
+		this->was_last_clockwise = this->routine_rotations[this->current]->clockwise;
+		this->current_rotation = &this->routine_rotations[this->current]->ending_rotation;
+		if (this->adjust_all_to_current_transform) { this->adjustAllToCurrent(); }
+		else if (this->adjust_start_to_current_transform) { this->adjustStartToCurrent(); }
+
+		this->reset(vertexArray);
 		if (this->is_looping) {
 			this->is_active = true;
 			return true;

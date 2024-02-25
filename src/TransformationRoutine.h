@@ -245,10 +245,6 @@ public:
 		for (auto rotation : routine_rotations) size += sizeof(*rotation);
 		return size + sizeof(routine_rotations);
 	}
-
-	void printCurrentRotation() {
-		printf("Current rotation: %f\n", *current_rotation);
-	}
 };
 
 class ScalingRoutineVA : public TransformationRoutine {

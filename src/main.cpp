@@ -142,26 +142,85 @@ int main()
 	}*/
 
 	// ----- Movement Container testing ----- //
-	sf::CircleShape test_shape;
-	test_shape.setPointCount(3);
-	test_shape.setRadius(50.f);
-	test_shape.setFillColor(sf::Color::Blue);
-	test_shape.setOrigin(test_shape.getRadius(), test_shape.getRadius());
-	test_shape.setPosition(800.f, 500.f);
+	sf::CircleShape test_shape[4];
 
+	for (int i = 0; i < 4; i++) {
+		test_shape[i].setPointCount(3);
+		test_shape[i].setRadius(50.f);
+		test_shape[i].setFillColor(sf::Color::Blue);
+		test_shape[i].setOrigin(test_shape[i].getRadius(), test_shape[i].getRadius());
+		test_shape[i].setPosition(800.f, 100.f + 200.f * i);
+	}
+
+	sf::VertexArray arrow1(sf::LineStrip, 3u);
+	sf::VertexArray arrow2(sf::LineStrip, 3u);
+	sf::VertexArray arrow3(sf::LineStrip, 3u);
+	sf::VertexArray arrow4(sf::LineStrip, 3u);
+
+	arrow1[0].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f - 40.f, 100.f);
+	arrow1[1].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f, 70.f);
+	arrow1[2].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f + 40.f, 100.f);
+
+	arrow2[0].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f - 40.f, 300.f);
+	arrow2[1].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f, 270.f);
+	arrow2[2].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f + 40.f, 300.f);
+
+	arrow3[0].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f - 40.f, 500.f);
+	arrow3[1].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f, 470.f);
+	arrow3[2].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f + 40.f, 500.f);
+
+	arrow4[0].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f - 40.f, 700.f);
+	arrow4[1].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f, 670.f);
+	arrow4[2].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f + 40.f, 700.f);
 
 	MovementManager movementManager;
-	auto routineRShape = movementManager.createRotationRoutine("TestowyR");
+	auto routineRShape = movementManager.createRotationRoutine("TestowyR1");
 	routineRShape->addRotation(new rotationInfo(30.f, 180.f, 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, false));
 	routineRShape->addRotation(new rotationInfo(180.f, 60.f, 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, false));
 	routineRShape->adjustStartToCurrentTransform(true);
-	movementManager.linkRotationRoutine(&test_shape, "TestowyR");
+	movementManager.linkRotationRoutine(&test_shape[0], "TestowyR1");
 
-	auto routineRVA = movementManager.createRotationRoutineVA("TestowyRVA");
-	routineRVA->addRotation(new rotationInfoVA(30.f, 180.f, 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), &up_arrow, false, 0.5f, 0.5f, false));
-	routineRVA->addRotation(new rotationInfoVA(180.f, 60.f, 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), &up_arrow, false, 0.5f, 0.5f, false));
+	routineRShape = movementManager.createRotationRoutine("TestowyR2");
+	routineRShape->addRotation(new rotationInfo(30.f, 180.f, 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, false));
+	routineRShape->addRotation(new rotationInfo(180.f, 60.f, 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, true));
+	routineRShape->adjustStartToCurrentTransform(true);
+	movementManager.linkRotationRoutine(&test_shape[1], "TestowyR2");
+
+	routineRShape = movementManager.createRotationRoutine("TestowyR3");
+	routineRShape->addRotation(new rotationInfo(30.f, 180.f, 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, true));
+	routineRShape->addRotation(new rotationInfo(180.f, 60.f, 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, false));
+	routineRShape->adjustStartToCurrentTransform(true);
+	movementManager.linkRotationRoutine(&test_shape[2], "TestowyR3");
+
+	routineRShape = movementManager.createRotationRoutine("TestowyR4");
+	routineRShape->addRotation(new rotationInfo(30.f, 180.f, 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, true));
+	routineRShape->addRotation(new rotationInfo(180.f, 60.f, 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, true));
+	routineRShape->adjustStartToCurrentTransform(true);
+	movementManager.linkRotationRoutine(&test_shape[3], "TestowyR4");
+
+	auto routineRVA = movementManager.createRotationRoutineVA("TestowyRVA1");
+	routineRVA->addRotation(new rotationInfoVA(30.f, 180.f, 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), &arrow1, false, 0.5f, 0.5f, false));
+	routineRVA->addRotation(new rotationInfoVA(180.f, 60.f, 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), &arrow1, false, 0.5f, 0.5f, false));
 	routineRVA->adjustStartToCurrentTransform(true);
-	movementManager.linkRotationRoutine(&up_arrow, "TestowyRVA");
+	movementManager.linkRotationRoutine(&arrow1, "TestowyRVA1");
+
+	routineRVA = movementManager.createRotationRoutineVA("TestowyRVA2");
+	routineRVA->addRotation(new rotationInfoVA(30.f, 180.f, 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), &arrow2, false, 0.5f, 0.5f, false));
+	routineRVA->addRotation(new rotationInfoVA(180.f, 60.f, 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), &arrow2, false, 0.5f, 0.5f, true));
+	routineRVA->adjustStartToCurrentTransform(true);
+	movementManager.linkRotationRoutine(&arrow2, "TestowyRVA2");
+
+	routineRVA = movementManager.createRotationRoutineVA("TestowyRVA3");
+	routineRVA->addRotation(new rotationInfoVA(30.f, 180.f, 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), &arrow3, false, 0.5f, 0.5f, true));
+	routineRVA->addRotation(new rotationInfoVA(180.f, 60.f, 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), &arrow3, false, 0.5f, 0.5f, false));
+	routineRVA->adjustStartToCurrentTransform(true);
+	movementManager.linkRotationRoutine(&arrow3, "TestowyRVA3");
+
+	routineRVA = movementManager.createRotationRoutineVA("TestowyRVA4");
+	routineRVA->addRotation(new rotationInfoVA(30.f, 180.f, 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), &arrow4, false, 0.5f, 0.5f, true));
+	routineRVA->addRotation(new rotationInfoVA(180.f, 60.f, 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), &arrow4, false, 0.5f, 0.5f, true));
+	routineRVA->adjustStartToCurrentTransform(true);
+	movementManager.linkRotationRoutine(&arrow4, "TestowyRVA4");
 
 	/*auto routineS = movementManager.createScalingRoutineVA("TestowyS");
 	routineS->addScaling(new scalingInfoVA(sf::Vector2f(2.f, 2.f), sf::Vector2f(3.f, 3.f), 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, &up_arrow));
@@ -278,8 +337,15 @@ int main()
 			if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::Space)) {
 				//movementManager.startMovementRoutine(&up_arrow, "TestowyM");
 				//movementManager.startScalingRoutine(&up_arrow, "TestowyS");
-				movementManager.startRotationRoutine(&up_arrow, "TestowyRVA");
-				movementManager.startRotationRoutine(&test_shape, "TestowyR");
+				movementManager.startRotationRoutine(&arrow1, "TestowyRVA1");
+				movementManager.startRotationRoutine(&arrow2, "TestowyRVA2");
+				movementManager.startRotationRoutine(&arrow3, "TestowyRVA3");
+				movementManager.startRotationRoutine(&arrow4, "TestowyRVA4");
+
+				movementManager.startRotationRoutine(&test_shape[0], "TestowyR1");
+				movementManager.startRotationRoutine(&test_shape[1], "TestowyR2");
+				movementManager.startRotationRoutine(&test_shape[2], "TestowyR3");
+				movementManager.startRotationRoutine(&test_shape[3], "TestowyR4");
 			}
 
 
@@ -349,12 +415,18 @@ int main()
 			//window.draw(up_arrow);
 			//window.draw(down_arrow);
 		}
-		window.draw(up_arrow);
 		//for(int i = 0; i < test_shape_size; ++i)
 		//	window.draw(test_shape[i]);
 
-		window.draw(test_shape);
+		for (int i = 0; i < 4; i++)
+			window.draw(test_shape[i]);
 
+		window.draw(arrow1);
+		window.draw(arrow2);
+		window.draw(arrow3);
+		window.draw(arrow4);
+
+		//window.draw(test_shape);
 		window.display();
 	}
 

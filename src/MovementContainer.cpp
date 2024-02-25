@@ -1771,22 +1771,21 @@ void MovementRoutineEngine::updateVertexArray(float dt)
 			if (vertexarray->getVertexCount() != 0) {
 				if (rotation->isDone()) {
 					if (rotation->current_time - rotation->delay_before - dt < rotation->motion_duration) {
-						rotation->current_rotation = rotation->getEndingRotation();
-						rotation->fixed_rotation = rotation->ending_rotation;
+						rotation->setCurrentRotation(rotation->getEndingRotation());
+						//rotation->current_rotation = rotation->getEndingRotation();
 						updateRotationInfoVA(vertexarray, rotation);
 					}
 
 					if (rotation->repeat) {
 						if (rotation->current_time - rotation->motion_duration - rotation->delay_before < rotation->delay_after) {
-							rotation->current_rotation = rotation->getEndingRotation();
-							rotation->fixed_rotation = rotation->ending_rotation;
+							rotation->setCurrentRotation(rotation->getEndingRotation());
+							//rotation->current_rotation = rotation->getEndingRotation();
 							updateRotationInfoVA(vertexarray, rotation);
 						}
 
 						else {
-							rotation->current_rotation = rotation->getStartingRotation();
-							rotation->fixed_rotation = rotation->ending_rotation;
-
+							rotation->setCurrentRotation(rotation->getStartingRotation());
+							//rotation->current_rotation = rotation->getStartingRotation();
 							updateRotationInfoVA(vertexarray, rotation);
 
 							rotation->current_time -= rotation->total_duration;
@@ -1802,12 +1801,13 @@ void MovementRoutineEngine::updateVertexArray(float dt)
 				}
 				else {
 					if (rotation->current_time > rotation->delay_before) {
-						rotation->current_rotation = rotation->updateRotation();
+						rotation->setCurrentRotation(rotation->updateRotation());
+						//rotation->current_rotation = rotation->updateRotation();
 						updateRotationInfoVA(vertexarray, rotation);
 					}
 					else if (rotation->current_time - dt == 0.f) {
-						rotation->current_rotation = rotation->getStartingRotation();
-						rotation->fixed_rotation = rotation->starting_rotation;
+						rotation->setCurrentRotation(rotation->getStartingRotation());
+						//rotation->current_rotation = rotation->getStartingRotation();
 						updateRotationInfoVA(vertexarray, rotation);
 					}
 				}

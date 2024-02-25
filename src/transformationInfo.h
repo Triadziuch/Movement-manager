@@ -93,21 +93,15 @@ public:
 	const float getStartingRotation() const {
 		if (this->clockwise)
 			return this->starting_rotation;
-		else {
-			//float new_rotation = 360.f - this->starting_rotation;
-			//new_rotation = fmod(new_rotation, 360.f);
+		else 
 			return -starting_rotation;
-		}
 	}
 
 	const float getEndingRotation() const {
 		if (this->clockwise)
 			return this->ending_rotation;
-		else {
-			//float new_rotation = 360.f - this->ending_rotation;
-			//new_rotation = fmod(new_rotation, 360.f);
+		else 
 			return -this->ending_rotation;
-		}
 	}
 
 	void adjustRotationByOffset(const float _offset) { 
@@ -205,34 +199,37 @@ public:
 	float starting_rotation{};
 	float ending_rotation{};
 	float current_rotation{};
-	float fixed_rotation{};
-
 	bool  clockwise = true;
 
 
 	rotationInfoVA(float _starting_rotation, float _ending_rotation, float _motion_duration, double(*_used_function)(double), sf::VertexArray* _vertexarray, bool _repeat, float _delay_before, float _delay_after, bool _clockwise) :
-		transformationInfoVA{ _repeat, _motion_duration, _delay_before, _delay_after, _used_function, _vertexarray }, starting_rotation(_starting_rotation), ending_rotation(_ending_rotation), current_rotation(_starting_rotation), clockwise(_clockwise) {}
+		transformationInfoVA{ _repeat, _motion_duration, _delay_before, _delay_after, _used_function, _vertexarray } {
+		this->clockwise = _clockwise;
+
+		if (this->clockwise) {
+			this->starting_rotation = _starting_rotation;
+			this->ending_rotation = _ending_rotation;
+		}
+		else {
+			this->starting_rotation = 360.f - _starting_rotation;
+			this->ending_rotation = 360.f - _ending_rotation;
+		}
+
+		this->current_rotation = this->starting_rotation;
+	}
 
 	rotationInfoVA(const rotationInfoVA& obj) :
 		transformationInfoVA{ obj.repeat, obj.current_time, obj.motion_duration, obj.delay_before, obj.delay_after, obj.used_function, const_cast<sf::VertexArray*>(&obj.originalVertex) }, starting_rotation(obj.starting_rotation), ending_rotation(obj.ending_rotation), current_rotation(obj.current_rotation), clockwise(obj.clockwise) {}
 
 	const float updateRotation()  {
 		float new_rotation = static_cast<float>(this->used_function(static_cast<double>((this->current_time - this->delay_before) / this->motion_duration))) * (this->ending_rotation - this->starting_rotation) + this->starting_rotation;
-		this->fixed_rotation = new_rotation;
-
-		if (this->clockwise) 
-			return new_rotation;
-		else {
-			new_rotation = 360.f - new_rotation;
-			new_rotation = fmod(new_rotation, 360.f);
-			return new_rotation;
-		}
+		return new_rotation;
 	}
 
 	void reset() {
 		this->current_time = 0.f;
+
 		this->current_rotation = this->starting_rotation;
-		this->fixed_rotation = this->starting_rotation;
 	}
 
 	void recalculateCentroidsOriginalVertex(const sf::VertexArray* vertexArray) {
@@ -248,32 +245,18 @@ public:
 	}
 
 	const float getStartingRotation() const {
-		if (this->clockwise)
-			return this->starting_rotation;
-		else {
-			float new_rotation = 360.f - this->starting_rotation;
-			new_rotation = fmod(new_rotation, 360.f);
-			return new_rotation;
-		}
+		return this->starting_rotation;
 	}
 
 	const float getCurrentRotation() const {
-		if (this->clockwise)
-			return this->current_rotation;
-		else {
-			float new_rotation = 360.f - this->current_rotation;
-			new_rotation = fmod(new_rotation, 360.f);
-			return new_rotation;
-		}
+		return this->current_rotation;
 	}
 
 	const float getEndingRotation() const {
-		if (this->clockwise)
-			return this->ending_rotation;
-		else {
-			float new_rotation = 360.f - this->ending_rotation;
-			new_rotation = fmod(new_rotation, 360.f);
-			return new_rotation;
-		}
+		return this->ending_rotation;
+	}
+
+	void setCurrentRotation(const float rotation) {
+		this->current_rotation = rotation;
 	}
 };

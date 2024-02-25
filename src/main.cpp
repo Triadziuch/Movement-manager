@@ -222,55 +222,6 @@ int main()
 	routineRVA->adjustStartToCurrentTransform(true);
 	movementManager.linkRotationRoutine(&arrow4, "TestowyRVA4");
 
-	/*auto routineS = movementManager.createScalingRoutineVA("TestowyS");
-	routineS->addScaling(new scalingInfoVA(sf::Vector2f(2.f, 2.f), sf::Vector2f(3.f, 3.f), 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, &up_arrow));
-	routineS->addScaling(new scalingInfoVA(sf::Vector2f(3.f, 3.f), sf::Vector2f(2.f, 2.f), 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, &up_arrow));
-	routineS->adjustStartToCurrentTransform(true);
-	routineS->setLooping(true);
-	movementManager.linkScalingRoutine(&up_arrow, "TestowyS");
-
-	auto routineM = movementManager.createMovementRoutineVA("TestowyM");
-	routineM->addMovement(new movementInfoVA(sf::Vector2f(600.f, 500.f), sf::Vector2f(800.f, 500.f), 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, &up_arrow));
-	routineM->addMovement(new movementInfoVA(sf::Vector2f(800.f, 500.f), sf::Vector2f(1000.f, 500.f), 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_BOUNCE), false, 0.5f, 0.5f, &up_arrow));
-	routineM->adjustAllToCurrentTransform(true);
-	routineM->setLooping(true);
-	movementManager.linkMovementRoutine(&up_arrow, "TestowyM");*/
-
-	/*sf::CircleShape test_shape;
-	test_shape.setPointCount(3);
-	test_shape.setRadius(50.f);
-	test_shape.setFillColor(sf::Color::Blue);
-	test_shape.setOrigin(test_shape.getRadius(), test_shape.getRadius());
-	test_shape.setPosition(500.f, 500.f);
-
-	auto routineM = movementManager.createMovementRoutine("TestowyM");
-	routineM->addMovement(new movementInfo(sf::Vector2f(500.f, 500.f), sf::Vector2f(800.f, 500.f), 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f));
-	routineM->addMovement(new movementInfo(sf::Vector2f(800.f, 500.f), sf::Vector2f(1000.f, 500.f), 2.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f));
-	routineM->addMovement(new movementInfo(sf::Vector2f(1000.f, 500.f), sf::Vector2f(400.f, 600.f), 0.5f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f));
-	routineM->addMovement(new movementInfo(sf::Vector2f(400.f, 600.f), sf::Vector2f(200.f, 400.f), 3.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f));
-	routineM->adjustStartToCurrentTransform(true);
-	routineM->setLooping(true);
-	movementManager.linkMovementRoutine(&test_shape, "TestowyM");
-	
-	auto RoutineS = movementManager.createScalingRoutine("TestowyS");
-	RoutineS->addScaling(new scalingInfo(sf::Vector2f(1.5f, 1.5f), sf::Vector2f(2.f, 2.f), 0.75f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f));
-	RoutineS->addScaling(new scalingInfo(sf::Vector2f(2.f, 2.f), sf::Vector2f(3.f, 3.f), 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f));
-	RoutineS->addScaling(new scalingInfo(sf::Vector2f(3.f, 3.f), sf::Vector2f(0.75f, 0.75f), 2.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f));
-	RoutineS->addScaling(new scalingInfo(sf::Vector2f(0.75f, 0.75f), sf::Vector2f(1.f, 1.f), 0.5f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f));
-	RoutineS->adjustStartToCurrentTransform(true);
-	RoutineS->setLooping(true);
-	movementManager.linkScalingRoutine(&test_shape, "TestowyS");
-
-	auto routineR = movementManager.createRotationRoutine("TestowyR");
-	routineR->addRotation(new rotationInfo(30.f, 90.f, 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, true));
-	routineR->addRotation(new rotationInfo(-90.f, 180.f, 0.5f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, false));
-	routineR->addRotation(new rotationInfo(180.f, 220, 2.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, true));
-	routineR->adjustAllToCurrentTransform(true);
-	routineR->setLooping(true);
-	movementManager.linkRotationRoutine(&test_shape, "TestowyR");*/
-
-
-
 	constexpr int test_shape_size = 10000;
 	constexpr int test_routine_size = 10000;
 	constexpr int max_movements_in_routine = 10;
@@ -335,8 +286,6 @@ int main()
 
 			// Start
 			if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::Space)) {
-				//movementManager.startMovementRoutine(&up_arrow, "TestowyM");
-				//movementManager.startScalingRoutine(&up_arrow, "TestowyS");
 				movementManager.startRotationRoutine(&arrow1, "TestowyRVA1");
 				movementManager.startRotationRoutine(&arrow2, "TestowyRVA2");
 				movementManager.startRotationRoutine(&arrow3, "TestowyRVA3");
@@ -415,9 +364,6 @@ int main()
 			//window.draw(up_arrow);
 			//window.draw(down_arrow);
 		}
-		//for(int i = 0; i < test_shape_size; ++i)
-		//	window.draw(test_shape[i]);
-
 		for (int i = 0; i < 4; i++)
 			window.draw(test_shape[i]);
 

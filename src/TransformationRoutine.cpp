@@ -353,32 +353,28 @@ void RotationRoutine::adjustStartToCurrent(const float& current_rotation)
 	printf("New starting rotation: %f\n", new_starting_rotation);
 	printf("Ending rotation: %f\n\n", rotation->ending_rotation);
 
-	new_starting_rotation = fmod(new_starting_rotation, 360.f);
-
-	this->routine_rotations[0]->starting_rotation = new_starting_rotation;
+	if (rotation->clockwise)
+		this->routine_rotations[0]->starting_rotation = new_starting_rotation;
+	else 
+		this->routine_rotations[0]->starting_rotation = 360.f - new_starting_rotation;
 }
 
 void RotationRoutine::adjustAllToCurrent(const float& current_rotation)
 {
 	if (this->routine_rotations.size() == 0) return;
 
-	const float rotation_offset = current_rotation - this->routine_rotations[0]->starting_rotation;
+	float rotation_offset = current_rotation - this->routine_rotations[0]->starting_rotation;
+
+	if (!this->routine_rotations[0]->clockwise)
+		rotation_offset = 360.f + rotation_offset;
+
 	for (auto& rotation : this->routine_rotations) {
 
 		float& new_starting_rotation = rotation->starting_rotation;
 		float& new_ending_rotation = rotation->ending_rotation;
 
-		new_starting_rotation += rotation->clockwise ? rotation_offset : -rotation_offset;
-		new_ending_rotation   += rotation->clockwise ? rotation_offset : -rotation_offset;
-
-		if (new_starting_rotation > 360.f || new_ending_rotation > 360.f) {
-			new_starting_rotation -= 360.f;
-			new_ending_rotation -= 360.f;
-		}
-		else if (new_starting_rotation < -360.f || new_ending_rotation < -360.f) {
-			new_starting_rotation += 360.f;
-			new_ending_rotation += 360.f;
-		}
+		new_starting_rotation += rotation->clockwise ? rotation_offset : rotation_offset;
+		new_ending_rotation += rotation->clockwise ? rotation_offset : rotation_offset;
 	}
 }
 
@@ -622,6 +618,32 @@ void RotationRoutineVA::adjustStartToCurrent()
 
 void RotationRoutineVA::adjustAllToCurrent()
 {
+	if (this->routine_rotations.size() == 0) return;
+
+	float rotation_offset{};
+
+	if (this->current_rotation != nullptr) 
+		rotation_offset = *this->current_rotation - this->routine_rotations[0]->starting_rotation;
+	else 
+		rotation_offset = this->routine_rotations[0]->starting_rotation;
+
+	for (auto& rotation : this->routine_rotations) {
+
+		float& new_starting_rotation = rotation->starting_rotation;
+		float& new_ending_rotation = rotation->ending_rotation;
+
+		new_starting_rotation += rotation->clockwise ? rotation_offset : -rotation_offset;
+		new_ending_rotation += rotation->clockwise ? rotation_offset : -rotation_offset;
+
+		if (new_starting_rotation > 360.f || new_ending_rotation > 360.f) {
+			new_starting_rotation -= 360.f;
+			new_ending_rotation -= 360.f;
+		}
+		else if (new_starting_rotation < -360.f || new_ending_rotation < -360.f) {
+			new_starting_rotation += 360.f;
+			new_ending_rotation += 360.f;
+		}
+	}
 }
 
 void RotationRoutineVA::addRotation(rotationInfoVA* rotation)

@@ -22,7 +22,7 @@ int main()
 	// Configuration
 	constexpr size_t easeTypeSize = 30;
 	const int rows = 3;
-	float animation_time = 3.f;
+	//float animation_time = 3.f;
 	int current_ease_type = 0;
 	float wait_time_max = 0.5f;
 
@@ -174,51 +174,52 @@ int main()
 	arrow4[2].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f + 40.f, 700.f);
 
 	MovementManager movementManager;
+	float animation_time = 0.5f;
 	auto routineRShape = movementManager.createRotationRoutine("TestowyR1");
-	routineRShape->addRotation(new rotationInfo(30.f, 180.f, 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, false));
-	routineRShape->addRotation(new rotationInfo(180.f, 60.f, 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, false));
+	routineRShape->addRotation(new rotationInfo(30.f, 180.f, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, false));
+	routineRShape->addRotation(new rotationInfo(180.f, 60.f, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, false));
 	routineRShape->adjustStartToCurrentTransform(true);
 	movementManager.linkRotationRoutine(&test_shape[0], "TestowyR1");
 
 	routineRShape = movementManager.createRotationRoutine("TestowyR2");
-	routineRShape->addRotation(new rotationInfo(30.f, 180.f, 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, false));
-	routineRShape->addRotation(new rotationInfo(180.f, 60.f, 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, true));
+	routineRShape->addRotation(new rotationInfo(30.f, 180.f, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, false));
+	routineRShape->addRotation(new rotationInfo(180.f, 60.f, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, true));
 	routineRShape->adjustStartToCurrentTransform(true);
 	movementManager.linkRotationRoutine(&test_shape[1], "TestowyR2");
 
 	routineRShape = movementManager.createRotationRoutine("TestowyR3");
-	routineRShape->addRotation(new rotationInfo(30.f, 180.f, 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, true));
-	routineRShape->addRotation(new rotationInfo(180.f, 60.f, 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, false));
+	routineRShape->addRotation(new rotationInfo(30.f, 180.f, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, true));
+	routineRShape->addRotation(new rotationInfo(180.f, 60.f, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, false));
 	routineRShape->adjustStartToCurrentTransform(true);
 	movementManager.linkRotationRoutine(&test_shape[2], "TestowyR3");
 
 	routineRShape = movementManager.createRotationRoutine("TestowyR4");
-	routineRShape->addRotation(new rotationInfo(30.f, 180.f, 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, true));
-	routineRShape->addRotation(new rotationInfo(180.f, 60.f, 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, true));
+	routineRShape->addRotation(new rotationInfo(30.f, 180.f, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, true));
+	routineRShape->addRotation(new rotationInfo(180.f, 60.f, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, true));
 	routineRShape->adjustStartToCurrentTransform(true);
 	movementManager.linkRotationRoutine(&test_shape[3], "TestowyR4");
 
 	auto routineRVA = movementManager.createRotationRoutineVA("TestowyRVA1");
-	routineRVA->addRotation(new rotationInfoVA(30.f, 180.f, 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), &arrow1, false, 0.5f, 0.5f, false));
-	routineRVA->addRotation(new rotationInfoVA(180.f, 60.f, 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), &arrow1, false, 0.5f, 0.5f, false));
+	routineRVA->addRotation(new rotationInfoVA(30.f, 180.f, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), &arrow1, false, 0.5f, 0.5f, false));
+	routineRVA->addRotation(new rotationInfoVA(180.f, 60.f, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), &arrow1, false, 0.5f, 0.5f, false));
 	routineRVA->adjustStartToCurrentTransform(true);
 	movementManager.linkRotationRoutine(&arrow1, "TestowyRVA1");
 
 	routineRVA = movementManager.createRotationRoutineVA("TestowyRVA2");
-	routineRVA->addRotation(new rotationInfoVA(30.f, 180.f, 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), &arrow2, false, 0.5f, 0.5f, false));
-	routineRVA->addRotation(new rotationInfoVA(180.f, 60.f, 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), &arrow2, false, 0.5f, 0.5f, true));
+	routineRVA->addRotation(new rotationInfoVA(30.f, 180.f, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), &arrow2, false, 0.5f, 0.5f, false));
+	routineRVA->addRotation(new rotationInfoVA(180.f, 60.f, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), &arrow2, false, 0.5f, 0.5f, true));
 	routineRVA->adjustStartToCurrentTransform(true);
 	movementManager.linkRotationRoutine(&arrow2, "TestowyRVA2");
 
 	routineRVA = movementManager.createRotationRoutineVA("TestowyRVA3");
-	routineRVA->addRotation(new rotationInfoVA(30.f, 180.f, 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), &arrow3, false, 0.5f, 0.5f, true));
-	routineRVA->addRotation(new rotationInfoVA(180.f, 60.f, 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), &arrow3, false, 0.5f, 0.5f, false));
+	routineRVA->addRotation(new rotationInfoVA(30.f, 180.f, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), &arrow3, false, 0.5f, 0.5f, true));
+	routineRVA->addRotation(new rotationInfoVA(180.f, 60.f, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), &arrow3, false, 0.5f, 0.5f, false));
 	routineRVA->adjustStartToCurrentTransform(true);
 	movementManager.linkRotationRoutine(&arrow3, "TestowyRVA3");
 
 	routineRVA = movementManager.createRotationRoutineVA("TestowyRVA4");
-	routineRVA->addRotation(new rotationInfoVA(30.f, 180.f, 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), &arrow4, false, 0.5f, 0.5f, true));
-	routineRVA->addRotation(new rotationInfoVA(180.f, 60.f, 1.f, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), &arrow4, false, 0.5f, 0.5f, true));
+	routineRVA->addRotation(new rotationInfoVA(30.f, 180.f, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), &arrow4, false, 0.5f, 0.5f, true));
+	routineRVA->addRotation(new rotationInfoVA(180.f, 60.f, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), &arrow4, false, 0.5f, 0.5f, true));
 	routineRVA->adjustStartToCurrentTransform(true);
 	movementManager.linkRotationRoutine(&arrow4, "TestowyRVA4");
 

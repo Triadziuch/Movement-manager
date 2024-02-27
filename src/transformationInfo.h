@@ -224,7 +224,6 @@ public:
 
 	void reset() {
 		this->current_time = 0.f;
-
 		this->current_rotation = this->starting_rotation;
 	}
 

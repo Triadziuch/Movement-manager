@@ -41,8 +41,6 @@ private:
 	void adjustAllToCurrent(sf::Vector2f current_position);
 
 public:
-	MovementRoutine() {}
-	MovementRoutine(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr) : TransformationRoutine{ name, _movementRoutineEnginePtr } {};
 	MovementRoutine(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr, movementInfo* movement) : TransformationRoutine{ name, _movementRoutineEnginePtr } { this->routine_movements.emplace_back(movement); }
 	MovementRoutine(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr, std::vector<movementInfo*> movements) : TransformationRoutine{ name, _movementRoutineEnginePtr } { this->routine_movements = movements; }
 	MovementRoutine(const MovementRoutine& obj) : TransformationRoutine{ obj } {
@@ -93,8 +91,6 @@ private:
 	void adjustAllToCurrent(const sf::Vector2f& current_scale);
 
 public:
-	ScalingRoutine() {}
-	ScalingRoutine(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr) : TransformationRoutine{ name, _movementRoutineEnginePtr } {};
 	ScalingRoutine(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr, scalingInfo* scaling) : TransformationRoutine{ name, _movementRoutineEnginePtr } { this->routine_scalings.emplace_back(scaling); }
 	ScalingRoutine(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr, std::vector<scalingInfo*> scalings) : TransformationRoutine{ name, _movementRoutineEnginePtr } { this->routine_scalings = scalings; }
 	ScalingRoutine(const ScalingRoutine& obj) : TransformationRoutine{ obj } {
@@ -146,8 +142,6 @@ private:
 	void adjustAllToCurrent(const float& current_rotation);
 
 public:
-	RotationRoutine() {}
-	RotationRoutine(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr) : TransformationRoutine{ name, _movementRoutineEnginePtr } {};
 	RotationRoutine(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr, rotationInfo* rotation) : TransformationRoutine{ name, _movementRoutineEnginePtr } { this->routine_rotations.emplace_back(rotation); }
 	RotationRoutine(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr, std::vector<rotationInfo*> rotations) : TransformationRoutine{ name, _movementRoutineEnginePtr } { this->routine_rotations = rotations; }
 	RotationRoutine(const RotationRoutine& obj) : TransformationRoutine{ obj } {
@@ -198,13 +192,10 @@ private:
 	bool was_last_clockwise{};
 	const float *current_rotation{};
 
-	void adjustVertexarrayToStartingRotation(sf::VertexArray* vertexarray);
 	void adjustStartToCurrent();
 	void adjustAllToCurrent();
 
 public:
-	RotationRoutineVA() {}
-	RotationRoutineVA(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr) : TransformationRoutine{ name, _movementRoutineEnginePtr } {};
 	RotationRoutineVA(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr, rotationInfoVA* rotation) : TransformationRoutine{ name, _movementRoutineEnginePtr } { this->routine_rotations.emplace_back(rotation); }
 	RotationRoutineVA(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr, std::vector<rotationInfoVA*> rotations) : TransformationRoutine{ name, _movementRoutineEnginePtr } { this->routine_rotations = rotations; }
 	RotationRoutineVA(const RotationRoutineVA& obj) : TransformationRoutine{ obj } {
@@ -252,13 +243,10 @@ private:
 	std::vector <scalingInfoVA*> routine_scalings;
 	sf::Vector2f* current_scale{};
 
-	void adjustVertexarrayToStartingScale(sf::VertexArray* vertexarray);
 	void adjustStartToCurrent();
 	void adjustAllToCurrent();
 
 public:
-	ScalingRoutineVA() {}
-	ScalingRoutineVA(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr) : TransformationRoutine{ name, _movementRoutineEnginePtr } {};
 	ScalingRoutineVA(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr, scalingInfoVA* scaling) : TransformationRoutine{ name, _movementRoutineEnginePtr } { this->routine_scalings.emplace_back(scaling); }
 	ScalingRoutineVA(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr, std::vector<scalingInfoVA*> scalings) : TransformationRoutine{ name, _movementRoutineEnginePtr } { this->routine_scalings = scalings; }
 	ScalingRoutineVA(const ScalingRoutineVA& obj) : TransformationRoutine{ obj } {
@@ -311,8 +299,6 @@ private:
 public:
 	void adjustVertexarrayToStartingPosition(sf::VertexArray* vertexarray, ScalingRoutineVA* scalingRoutine = nullptr);
 
-	MovementRoutineVA() {}
-	MovementRoutineVA(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr) : TransformationRoutine{ name, _movementRoutineEnginePtr } {};
 	MovementRoutineVA(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr, movementInfoVA* movement) : TransformationRoutine{ name, _movementRoutineEnginePtr } { this->routine_movements.emplace_back(movement); }
 	MovementRoutineVA(std::string name, MovementRoutineEngine* _movementRoutineEnginePtr, std::vector<movementInfoVA*> movements) : TransformationRoutine{ name, _movementRoutineEnginePtr } { this->routine_movements = movements; }
 	MovementRoutineVA(const MovementRoutineVA& obj) : TransformationRoutine{ obj } {

@@ -1,4 +1,5 @@
 #pragma once
+#include "MovementManager.h"
 #include "MovementContainer.h"
 #include "TransformationRoutine.h"
 
@@ -1464,7 +1465,7 @@ void MovementRoutineEngine::updateMovementInfoVA(sf::VertexArray* _vertexarray, 
 	auto& scalingRoutineMap = sInstance->m_Scaling_Routines_VA;
 	auto scalingRoutine = scalingRoutineMap.find(_vertexarray);
 
-	if (scalingRoutine != scalingRoutineMap.end()) 
+	if (scalingRoutine != scalingRoutineMap.end())
 		scalingRoutine->second->updateMovementInfoVA(_offset);
 	
 
@@ -1473,7 +1474,7 @@ void MovementRoutineEngine::updateMovementInfoVA(sf::VertexArray* _vertexarray, 
 	auto rotationRoutine = rotationRoutineMap.find(_vertexarray);
 
 	if (rotationRoutine != rotationRoutineMap.end()) 
-		rotationRoutine->second->updateMovementInfoVA(_offset); // pewnie mo¿na zmieniæ tylko pierwszy rotationInfoVA w rotationRoutine
+		rotationRoutine->second->updateMovementInfoVA(_offset);
 }
 
 void MovementRoutineEngine::updateScalingInfoVA(sf::VertexArray& vertexarray, const scalingInfoVA& scalingInfo)
@@ -1495,6 +1496,7 @@ void MovementRoutineEngine::updateScalingInfoVA(sf::VertexArray& vertexarray, co
 
 void MovementRoutineEngine::updateRotationInfoVA(sf::VertexArray* _vertexarray, rotationInfoVA* _rotationInfo)
 {
+	// === Rotation ===
 	float sine = static_cast<float>(sin(static_cast<double>(_rotationInfo->current_rotation) * M_RAD)),
 		  cosine = static_cast<float>(cos(static_cast<double>(_rotationInfo->current_rotation) * M_RAD));
 
@@ -1746,12 +1748,11 @@ void MovementRoutineEngine::updateVertexArray(float dt)
  						scaling.current_scale = scaling.starting_scale;
 						updateScalingInfoVA(vertexarray, scaling);
 
-						/*auto& rotationRoutineMap = sInstance->m_Rotation_Routines_VA;
+						auto& rotationRoutineMap = sInstance->m_Rotation_Routines_VA;
 						auto rotationRoutine = rotationRoutineMap.find(&vertexarray);
 
 						if (rotationRoutine != rotationRoutineMap.end()) 
-							rotationRoutine->second->updateScalingInfoVA(vertexarray);*/
-						
+							rotationRoutine->second->updateScalingInfoVA(vertexarray);
 					}
 					
 				}
@@ -1935,10 +1936,11 @@ void MovementRoutineEngine::updateSprite(float dt)
 	}
 }
 
-MovementRoutineEngine::MovementRoutineEngine()
+MovementRoutineEngine::MovementRoutineEngine(MovementManager* _MovementManager)
 {
 	assert(this->sInstance == nullptr);
 	sInstance = this;
+	this->movementManager = _MovementManager;
 }
 
 void MovementRoutineEngine::update(float dt)

@@ -186,7 +186,7 @@ int main()
 
 	bool adjust_start_rotation = false;
 	bool adjust_all_rotation = true;
-	bool looping_rotation = true;
+	bool looping_rotation = false;
 	auto routineRShape = movementManager.createRotationRoutine("TestowyR1");
 	routineRShape->addRotation(new rotationInfo(30.f, 180.f, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, false));
 	routineRShape->addRotation(new rotationInfo(180.f, 60.f, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, false));
@@ -259,7 +259,7 @@ int main()
 	
 	bool adjust_start_movement = false;
 	bool adjust_all_movement = true;
-	bool looping_movement = true;
+	bool looping_movement = false;
 	auto routineMShape = movementManager.createMovementRoutine("TestowyM1");
 	routineMShape->addMovement(new movementInfo(test_shape[0].getPosition() + starting_offset1, test_shape[0].getPosition() + ending_offset1, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f));
 	routineMShape->addMovement(new movementInfo(test_shape[0].getPosition() + starting_offset2, test_shape[0].getPosition() + ending_offset2, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f));
@@ -326,7 +326,7 @@ int main()
 
 	bool adjust_start_scaling = false;
 	bool adjust_all_scaling = true;
-	bool looping_scaling = true;
+	bool looping_scaling = false;
 	sf::Vector2f starting_scale1(1.f, 1.f);
 	sf::Vector2f ending_scale1(1.5f, 1.5f);
 	sf::Vector2f starting_scale2(1.5f, 1.5f);

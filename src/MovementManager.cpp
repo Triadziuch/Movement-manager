@@ -9,7 +9,7 @@ MovementManager::MovementManager()
 	assert(this->sInstance == nullptr);
 	sInstance = this;
 
-	movementRoutineEngine = new MovementRoutineEngine();
+	movementRoutineEngine = new MovementRoutineEngine(this);
 
 	movementRoutineContainer = new MovementRoutineContainer();
 	movementRoutineVAContainer = new MovementRoutineVAContainer();
@@ -692,8 +692,13 @@ void MovementManager::startScalingRoutine(sf::VertexArray* _vertexarray, const s
 		auto* scalingRoutineFound = scalingRoutineContainerFound->second->exists(_name);
 		if (scalingRoutineFound != nullptr) {
 
-			if (scalingRoutineFound->start(_vertexarray))
+			if (scalingRoutineFound->start(_vertexarray)) {
 				m_Routine_Scaling_VertexArray_Active.insert(std::make_pair(_vertexarray, scalingRoutineFound));
+
+				/*auto rotationRoutineFound = m_Routine_Scaling_VertexArray_Active.find(_vertexarray);
+				if (rotationRoutineFound != m_Routine_Scaling_VertexArray_Active.end())
+					scalingRoutineFound->updateRotationInfoVA(*_vertexarray);*/
+			}
 		}
 		else
 			printf("MovementManager::startScalingRoutine: Routine with name %s not found\n", _name.c_str());
@@ -1133,8 +1138,14 @@ void MovementManager::startRotationRoutine(sf::VertexArray* _vertexarray, const 
 		auto* rotationRoutineFound = rotationRoutineContainerFound->second->exists(_name);
 		if (rotationRoutineFound != nullptr) {
 
-			if (rotationRoutineFound->start(_vertexarray))
+			if (rotationRoutineFound->start(_vertexarray)) {
 				m_Routine_Rotation_VertexArray_Active.insert(std::make_pair(_vertexarray, rotationRoutineFound));
+
+				/*auto scalingRoutineFound = m_Routine_Scaling_VertexArray_Active.find(_vertexarray);
+				if (scalingRoutineFound != m_Routine_Scaling_VertexArray_Active.end()) 
+					rotationRoutineFound->updateScalingInfoVA(*_vertexarray);*/
+			}
+				
 		}
 		else
 			printf("MovementManager::startRotationRoutine: Routine with name %s not found\n", _name.c_str());

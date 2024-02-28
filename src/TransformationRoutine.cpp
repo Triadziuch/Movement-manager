@@ -509,6 +509,21 @@ const bool RotationRoutine::goToNextRotation(sf::Sprite* sprite)
 
 // - - - - - - - - - - - - - - - - - - - - RotationVARoutine - - - - - - - - - - - - - - - - - - - - \\
 
+void RotationRoutineVA::adjustVertexarrayToStartingRotation(sf::VertexArray* vertexarray)
+{
+	const rotationInfoVA& current_rotation = *this->getCurrentRotation();
+
+	float sine = static_cast<float>(sin(static_cast<double>(current_rotation.current_rotation) * M_RAD)),
+		cosine = static_cast<float>(cos(static_cast<double>(current_rotation.current_rotation) * M_RAD));
+
+	for (size_t i = 0; i < vertexarray->getVertexCount(); ++i) {
+		float x = current_rotation.originalVertex.operator[](i).position.x - current_rotation.centroid.x;
+		float y = current_rotation.originalVertex.operator[](i).position.y - current_rotation.centroid.y;
+		vertexarray->operator[](i).position.x = current_rotation.centroid.x + x * cosine - y * sine;
+		vertexarray->operator[](i).position.y = current_rotation.centroid.y + x * sine + y * cosine;
+	}
+}
+
 void RotationRoutineVA::adjustStartToCurrent()
 {
 	if (this->routine_rotations.size() == 0) return;
@@ -652,11 +667,13 @@ void RotationRoutineVA::reset(const sf::VertexArray* vertexArray)
 const bool RotationRoutineVA::start(sf::VertexArray* vertexArray)
 {
 	if (this->routine_rotations.size() != 0) {
+		//this->updateScalingInfoVA(*vertexArray);
 		if (this->adjust_all_to_current_transform)		  { this->adjustAllToCurrent(); }
 		else if (this->adjust_start_to_current_transform) { this->adjustStartToCurrent(); }
 		this->current_rotation = &this->routine_rotations[0]->current_rotation;
 
 		this->reset(vertexArray);
+		//this->adjustVertexarrayToStartingRotation(vertexArray);
 
 		this->current = 0;
 		this->is_active = true;
@@ -694,7 +711,7 @@ const bool RotationRoutineVA::goToNextRotation(sf::VertexArray* vertexArray)
 	}
 	else {
 		this->was_last_clockwise = this->routine_rotations[this->current]->clockwise;
-		this->current_rotation = &this->routine_rotations[this->current]->ending_rotation; // tutaj nie mo¿na tego zmieniaæ trzeba do adjust przesy³aæ jako argument albo coœ
+		this->current_rotation = &this->routine_rotations[this->current]->ending_rotation;
 		if (this->adjust_all_to_current_transform) { this->adjustAllToCurrent(); }
 		else if (this->adjust_start_to_current_transform) { this->adjustStartToCurrent(); }
 		
@@ -722,11 +739,21 @@ void RotationRoutineVA::updateMovementInfoVA(const sf::Vector2f& offset)
 void RotationRoutineVA::updateScalingInfoVA(const sf::VertexArray& vertexArray)
 {
 	for (auto& rotation : this->routine_rotations) 
-		for (size_t i = 0; i < rotation->originalVertex.getVertexCount(); ++i)
-			rotation->originalVertex.operator[](i).position = vertexArray.operator[](i).position;
+		rotation->setOriginalVertex(&vertexArray);
 }
 
 // - - - - - - - - - - - - - - - - - - - - ScalingRoutineVA - - - - - - - - - - - - - - - - - - - - \\
+
+void ScalingRoutineVA::adjustVertexarrayToStartingScale(sf::VertexArray* vertexarray)
+{
+	scalingInfoVA* current_scaling = this->getCurrentScaling();
+	if (current_scaling == nullptr) return;
+
+	for (size_t i = 0; i < vertexarray->getVertexCount(); i++) {
+		vertexarray->operator[](i).position.x = current_scaling->centroid.x + (current_scaling->originalVertex.operator[](i).position.x - current_scaling->centroid.x) * current_scaling->current_scale.x;
+		vertexarray->operator[](i).position.y = current_scaling->centroid.y + (current_scaling->originalVertex.operator[](i).position.y - current_scaling->centroid.y) * current_scaling->current_scale.y;
+	}
+}
 
 void ScalingRoutineVA::adjustStartToCurrent()
 {
@@ -756,6 +783,8 @@ void ScalingRoutineVA::adjustAllToCurrent()
 		scaling->ending_scale   = sf::Vector2f{ scaling->ending_scale.x * proportion.x, scaling->ending_scale.y * proportion.y };
 		scaling->current_scale  = sf::Vector2f{ scaling->current_scale.x * proportion.x, scaling->current_scale.y * proportion.y };
 	}
+
+	this->current_scale = &this->routine_scalings[0]->current_scale;
 }
 
 void ScalingRoutineVA::addScaling(scalingInfoVA* scaling)
@@ -801,9 +830,11 @@ const bool ScalingRoutineVA::start(sf::VertexArray* vertexArray)
 	if (this->routine_scalings.size() != 0) {
 		if (this->adjust_all_to_current_transform)		  { this->adjustAllToCurrent(); }
 		else if (this->adjust_start_to_current_transform) { this->adjustStartToCurrent(); }
-		this->current_scale = &this->routine_scalings[this->current]->current_scale;
+		this->current_scale = &this->routine_scalings[0]->current_scale;
 
 		this->reset(vertexArray);
+
+		//this->adjustVertexarrayToStartingScale(vertexArray);
 
 		this->current = 0;
 		this->is_active = true;
@@ -835,6 +866,7 @@ const bool ScalingRoutineVA::goToNextScaling(sf::VertexArray* vertexArray)
 {
 	if (this->current < this->count - 1) {
 		++this->current;
+		this->current_scale = &this->routine_scalings[this->current]->current_scale;
 		return true;
 	}
 	else {
@@ -858,10 +890,17 @@ void ScalingRoutineVA::updateMovementInfoVA(const sf::Vector2f& offset)
 	for (auto& scaling : this->routine_scalings) {
 		scaling->centroid += offset;
 		
-		for(size_t i = 0; i < scaling->originalVertex.getVertexCount(); ++i)
+		for (size_t i = 0; i < scaling->originalVertex.getVertexCount(); ++i) 
 			scaling->originalVertex.operator[](i).position += offset;
 	}
 }
+
+void ScalingRoutineVA::updateRotationInfoVA(const sf::VertexArray& vertexArray)
+{
+	for (auto& scaling : this->routine_scalings) 
+		scaling->setOriginalVertex(&vertexArray);
+}
+
 
 // - - - - - - - - - - - - - - - - - - - - MovementRoutineVA - - - - - - - - - - - - - - - - - - - - \\
 

@@ -4,6 +4,7 @@
 #include <map>
 #include <assert.h>
 
+class MovementManager;
 class TransformationRoutine;
 class MovementRoutine;
 class MovementRoutineVA;
@@ -223,9 +224,9 @@ public:
 
 class MovementRoutineEngine : protected MovementContainerBase {
 private:
-	std::map<sf::Shape*, MovementRoutine*>			m_Movement_Routines_Shape;
+	std::map<sf::Shape*, MovementRoutine*>				m_Movement_Routines_Shape;
 	std::map<sf::VertexArray*, MovementRoutineVA*>		m_Movement_Routines_VA;
-	std::map<sf::Sprite*, MovementRoutine*>			m_Movement_Routines_S;
+	std::map<sf::Sprite*, MovementRoutine*>				m_Movement_Routines_S;
 
 	std::map<sf::Shape*, ScalingRoutine*>				m_Scaling_Routines_Shape;
 	std::map<sf::VertexArray*, ScalingRoutineVA*>		m_Scaling_Routines_VA;
@@ -233,7 +234,9 @@ private:
 
 	std::map<sf::Shape*, RotationRoutine*>				m_Rotation_Routines_Shape;
 	std::map<sf::VertexArray*, RotationRoutineVA*>		m_Rotation_Routines_VA;
-	std::map<sf::Sprite*, RotationRoutine*>			m_Rotation_Routines_S;
+	std::map<sf::Sprite*, RotationRoutine*>				m_Rotation_Routines_S;
+
+	MovementManager* movementManager{};
 
 	// Singleton instance
 	static MovementRoutineEngine* sInstance;
@@ -249,7 +252,7 @@ private:
 
 public:
 	// Default constructor
-	MovementRoutineEngine();
+	MovementRoutineEngine(MovementManager* _MovementManager);
 
 	// Update functions
 	void update(float dt);

@@ -135,6 +135,16 @@ public:
 
 	transformationInfoVA(const transformationInfoVA& obj) :
 		transformationInfo{ obj.repeat, obj.current_time, obj.motion_duration, obj.delay_before, obj.delay_after, obj.used_function }, originalVertex(obj.originalVertex), centroid(obj.centroid) {}
+
+	void setOriginalVertex(const sf::VertexArray* vertexArray) {
+		this->originalVertex = *vertexArray;
+
+		sf::Vector2f new_centroid{};
+		for (size_t i = 0; i < this->originalVertex.getVertexCount(); i++)
+			new_centroid += this->originalVertex.operator[](i).position;
+		new_centroid /= static_cast<float>(this->originalVertex.getVertexCount());
+		this->centroid = new_centroid;
+	}
 };
 
 class movementInfoVA : public transformationInfoVA {

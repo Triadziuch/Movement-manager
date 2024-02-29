@@ -3,21 +3,25 @@
 
 class VertexArray2 : public sf::VertexArray {
 private:
+	sf::Vector2f	m_centroid;
+
 	sf::Vector2f	m_origin;
 	sf::Vector2f	m_scale;
 	float			m_rotation;
-	bool			m_need_update;
+	bool			m_needUpdate;
 
-	std::vector<sf::Vertex> m_original_scaling;
-	std::vector<sf::Vertex> m_original_rotation;
+	std::vector<sf::Vertex> m_originalScaling;
+	std::vector<sf::Vertex> m_originalRotation;
 
+	void updateCentroid();
 	void updateScale();
+	void updateRotation();
 
 public:
 
-	VertexArray2() : sf::VertexArray{}, m_origin{}, m_scale{ 1, 1 }, m_rotation{ 0 } {}
-	VertexArray2(sf::PrimitiveType type, size_t vertexCount = 0) : sf::VertexArray{type, vertexCount}, m_origin{}, m_scale{1, 1}, m_rotation{0}, m_original_scaling(vertexCount), m_original_rotation(vertexCount) {}
-	VertexArray2(const VertexArray2& other) : sf::VertexArray{ other }, m_origin{ other.m_origin }, m_scale{ other.m_scale }, m_rotation{ other.m_rotation }, m_need_update{ true } {}
+	VertexArray2() : sf::VertexArray{}, m_centroid{}, m_origin{}, m_scale{ 1, 1 }, m_rotation{ 0 }, m_needUpdate{ false } {}
+	VertexArray2(sf::PrimitiveType type, size_t vertexCount = 0) : sf::VertexArray{ type, vertexCount }, m_centroid{}, m_origin{}, m_scale{ 1, 1 }, m_rotation{ 0 }, m_needUpdate{ false }, m_originalScaling{ vertexCount }, m_originalRotation{ vertexCount } {}
+	VertexArray2(const VertexArray2& other) : sf::VertexArray{ other }, m_centroid{ other.m_centroid }, m_origin{ other.m_origin }, m_scale{ other.m_scale }, m_rotation{ other.m_rotation }, m_needUpdate{ other.m_needUpdate }, m_originalScaling{ other.m_originalScaling }, m_originalRotation{ other.m_originalRotation } {}
 	~VertexArray2() {};
 
 	void clear();

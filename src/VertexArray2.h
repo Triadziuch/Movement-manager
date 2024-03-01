@@ -3,6 +3,8 @@
 
 class VertexArray2 : public sf::VertexArray {
 private:
+	constexpr static double M_RAD = 3.14159265358979323846 / 180.0;
+
 	sf::Vector2f	m_centroid;
 
 	sf::Vector2f	m_origin;
@@ -13,7 +15,12 @@ private:
 	std::vector<sf::Vertex> m_originalScaling;
 	std::vector<sf::Vertex> m_originalRotation;
 
+	void undoTransformations();
+
 	void updateCentroid();
+	void updateInternalVertices();
+
+	void updatePosition(const sf::Vector2f& new_pos);
 	void updateScale();
 	void updateRotation();
 
@@ -44,6 +51,8 @@ public:
 
 	void setOrigin(float x, float y);
 	void setOrigin(const sf::Vector2f& origin);
+
+	const sf::Vector2f& getCentroid() const;
 	
 
 	// T¹ klasê wpierdalamy do MovementRoutineEngine zamiast sf::VertexArray

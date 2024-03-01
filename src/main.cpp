@@ -17,6 +17,19 @@ sf::Vector2f getCentroid(const sf::VertexArray& vertexArray) {
 
 int main()
 {
+	double M_RAD = 3.14159265358979323846 / 180.0;
+	float m_rotation = 45.f;
+	sf::Vector2f m_scale = sf::Vector2f(2.f, 2.f);
+	sf::Vector2f position = sf::Vector2f(4.f, 2.f);
+	sf::Vector2f m_origin = sf::Vector2f(3.f, 1.f);
+
+	position.x = m_origin.x + (position.x - m_origin.x) * m_scale.x;
+	position.y = m_origin.y + (position.y - m_origin.y) * m_scale.x;
+
+	printf("Position: %f, %f\n", position.x, position.y);
+
+	return 0;
+
 	srand(time(NULL));
 	sf::ContextSettings settings;
 	settings.antialiasingLevel = 16;

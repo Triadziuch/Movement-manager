@@ -7,11 +7,8 @@
 class MovementManager;
 class TransformationRoutine;
 class MovementRoutine;
-class MovementRoutineVA;
 class ScalingRoutine;
-class ScalingRoutineVA;
 class RotationRoutine;
-class RotationRoutineVA;
 
 class MovementContainerBase {
 public:

@@ -171,7 +171,7 @@ void VertexArray2::setOrigin(const sf::Vector2f& origin)
 }
 
 // = = = = = = = = = = Mutators = = = = = = = = = =
-void VertexArray2::setOriginToCentroid(bool value)
+void VertexArray2::setOriginIsCentroid(bool value)
 {
 	if (value == m_originIsCentroid)
 		return;
@@ -194,4 +194,35 @@ const sf::Vector2f& VertexArray2::getCentroid()
 		updateCentroid();
 
 	return m_centroid;
+}
+
+const sf::Vector2f& VertexArray2::getPosition()
+{
+	if (m_needCentroidUpdate)
+		updateCentroid();
+
+	return m_centroid;
+}
+
+const sf::Vector2f& VertexArray2::getOrigin()
+{
+	if (m_originIsCentroid && m_needCentroidUpdate)
+		updateCentroid();
+
+	return *m_origin;
+}
+
+const sf::Vector2f& VertexArray2::getScale()
+{
+	return m_scale;
+}
+
+const float& VertexArray2::getRotation()
+{
+	return m_rotation;
+}
+
+const bool VertexArray2::getOriginIsCentroid()
+{
+	return m_originIsCentroid;
 }

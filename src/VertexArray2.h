@@ -53,8 +53,18 @@ public:
 	void setOrigin(const sf::Vector2f& origin);
 
 	// Mutators
-	void setOriginToCentroid(bool value);
+	void setOriginIsCentroid(bool value);
 
 	// Accessors
 	const sf::Vector2f& getCentroid();
+	const sf::Vector2f& getPosition();
+
+	const sf::Vector2f& getOrigin();
+
+	const sf::Vector2f& getScale();
+
+	const float& getRotation();
+
+	const bool getOriginIsCentroid();
+
 };

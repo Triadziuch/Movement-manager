@@ -1451,7 +1451,7 @@ void MovementRoutineEngine::updateVertexArray(float dt)
 						vertexarray.setScale(new_scale);
 					}
 					else if (scaling.current_time - dt == 0.f) 
- 						vertexarray.setScale(scaling.starting_scale);
+						vertexarray.setScale(scaling.starting_scale);
 				}
 			}
 		}

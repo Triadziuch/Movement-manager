@@ -277,8 +277,8 @@ const bool ScalingRoutine::start(sf::Shape* shape)
 const bool ScalingRoutine::start(sf::Sprite* sprite)
 {
 	if (this->routine_scalings.size() != 0) {
-		if (this->adjust_all_to_current_transform)		  { this->adjustAllToCurrent(sprite->getPosition()); }
-		else if (this->adjust_start_to_current_transform) { this->adjustStartToCurrent(sprite->getPosition()); }
+		if (this->adjust_all_to_current_transform)		  { this->adjustAllToCurrent(sprite->getScale()); }
+		else if (this->adjust_start_to_current_transform) { this->adjustStartToCurrent(sprite->getScale()); }
 		this->reset();
 
 		this->current = 0;
@@ -294,8 +294,8 @@ const bool ScalingRoutine::start(sf::Sprite* sprite)
 const bool ScalingRoutine::start(VertexArray2* vertexArray)
 {
 	if (this->routine_scalings.size() != 0) {
-		if (this->adjust_all_to_current_transform)		  { this->adjustAllToCurrent(vertexArray->getPosition()); }
-		else if (this->adjust_start_to_current_transform) { this->adjustStartToCurrent(vertexArray->getPosition()); }
+		if (this->adjust_all_to_current_transform)		  { this->adjustAllToCurrent(vertexArray->getScale()); }
+		else if (this->adjust_start_to_current_transform) { this->adjustStartToCurrent(vertexArray->getScale()); }
 		this->reset();
 
 		this->current = 0;

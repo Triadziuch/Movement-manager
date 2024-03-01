@@ -17,43 +17,6 @@ sf::Vector2f getCentroid(const sf::VertexArray& vertexArray) {
 
 int main()
 {
-	sf::ContextSettings settings1;
-	settings1.antialiasingLevel = 16;
-	sf::RenderWindow window1(sf::VideoMode(1920, 1080), "Ease functions", sf::Style::Fullscreen, settings1);
-	window1.setVerticalSyncEnabled(true);
-
-	sf::Vector2f scale(1.f, 1.f);
-
-	VertexArray2 test_arrow(sf::PrimitiveType::LineStrip, 3u);
-	test_arrow[0].position = sf::Vector2f(static_cast<float>(window1.getSize().x) / 2.f - 40.f, 500.f);
-	test_arrow[1].position = sf::Vector2f(static_cast<float>(window1.getSize().x) / 2.f, 470.f);
-	test_arrow[2].position = sf::Vector2f(static_cast<float>(window1.getSize().x) / 2.f + 40.f, 500.f);
-	test_arrow.setOrigin(test_arrow.getCentroid());
-
-	while (window1.isOpen()) {
-		sf::Event event;
-		if (window1.pollEvent(event)) {
-			if (event.type == sf::Event::Closed || (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape))
-				window1.close();
-
-			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Up) {
-				scale += {1.f, 1.f};
-				test_arrow.setScale(scale);
-			}
-
-			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Down) {
-				scale -= {1.f, 1.f};
-				test_arrow.setScale(scale);
-			}
-		}
-
-		window1.clear();
-		window1.draw(test_arrow);
-		window1.display();
-	}
-
-	return 0;
-
 	srand(time(NULL));
 	sf::ContextSettings settings;
 	settings.antialiasingLevel = 16;
@@ -197,10 +160,10 @@ int main()
 		test_shape[i].setPosition(800.f, 100.f + 200.f * i);
 	}
 
-	sf::VertexArray arrow1(sf::LineStrip, 3u);
-	sf::VertexArray arrow2(sf::LineStrip, 3u);
-	sf::VertexArray arrow3(sf::LineStrip, 3u);
-	sf::VertexArray arrow4(sf::LineStrip, 3u);
+	VertexArray2 arrow1(sf::LineStrip, 3u);
+	VertexArray2 arrow2(sf::LineStrip, 3u);
+	VertexArray2 arrow3(sf::LineStrip, 3u);
+	VertexArray2 arrow4(sf::LineStrip, 3u);
 
 	arrow1[0].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f - 40.f, 100.f);
 	arrow1[1].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f, 70.f);
@@ -256,33 +219,33 @@ int main()
 	routineRShape->setLooping(looping_rotation);
 	movementManager.linkRotationRoutine(&test_shape[3], "TestowyR4");
 
-	auto routineRVA = movementManager.createRotationRoutineVA("TestowyRVA1");
-	routineRVA->addRotation(new rotationInfoVA(30.f, 180.f, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), &arrow1, false, 0.5f, 0.5f, false));
-	routineRVA->addRotation(new rotationInfoVA(180.f, 60.f, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), &arrow1, false, 0.5f, 0.5f, false));
+	auto routineRVA = movementManager.createRotationRoutine("TestowyRVA1");
+	routineRVA->addRotation(new rotationInfo(30.f, 180.f, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, false));
+	routineRVA->addRotation(new rotationInfo(180.f, 60.f, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, false));
 	routineRVA->adjustStartToCurrentTransform(adjust_start_rotation);
 	routineRVA->adjustAllToCurrentTransform(adjust_all_rotation);
 	routineRVA->setLooping(looping_rotation);
 	movementManager.linkRotationRoutine(&arrow1, "TestowyRVA1");
 
-	routineRVA = movementManager.createRotationRoutineVA("TestowyRVA2");
-	routineRVA->addRotation(new rotationInfoVA(30.f, 180.f, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), &arrow2, false, 0.5f, 0.5f, false));
-	routineRVA->addRotation(new rotationInfoVA(180.f, 60.f, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), &arrow2, false, 0.5f, 0.5f, true));
+	routineRVA = movementManager.createRotationRoutine("TestowyRVA2");
+	routineRVA->addRotation(new rotationInfo(30.f, 180.f, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, false));
+	routineRVA->addRotation(new rotationInfo(180.f, 60.f, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, true));
 	routineRVA->adjustStartToCurrentTransform(adjust_start_rotation);
 	routineRVA->adjustAllToCurrentTransform(adjust_all_rotation);
 	routineRVA->setLooping(looping_rotation);
 	movementManager.linkRotationRoutine(&arrow2, "TestowyRVA2");
 
-	routineRVA = movementManager.createRotationRoutineVA("TestowyRVA3");
-	routineRVA->addRotation(new rotationInfoVA(30.f, 180.f, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), &arrow3, false, 0.5f, 0.5f, true));
-	routineRVA->addRotation(new rotationInfoVA(180.f, 60.f, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), &arrow3, false, 0.5f, 0.5f, false));
+	routineRVA = movementManager.createRotationRoutine("TestowyRVA3");
+	routineRVA->addRotation(new rotationInfo(30.f, 180.f, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, true));
+	routineRVA->addRotation(new rotationInfo(180.f, 60.f, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, false));
 	routineRVA->adjustStartToCurrentTransform(adjust_start_rotation);
 	routineRVA->adjustAllToCurrentTransform(adjust_all_rotation);
 	routineRVA->setLooping(looping_rotation);
 	movementManager.linkRotationRoutine(&arrow3, "TestowyRVA3");
 
-	routineRVA = movementManager.createRotationRoutineVA("TestowyRVA4");
-	routineRVA->addRotation(new rotationInfoVA(30.f, 180.f, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), &arrow4, false, 0.5f, 0.5f, true));
-	routineRVA->addRotation(new rotationInfoVA(180.f, 60.f, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), &arrow4, false, 0.5f, 0.5f, true));
+	routineRVA = movementManager.createRotationRoutine("TestowyRVA4");
+	routineRVA->addRotation(new rotationInfo(30.f, 180.f, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, true));
+	routineRVA->addRotation(new rotationInfo(180.f, 60.f, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, true));
 	routineRVA->adjustStartToCurrentTransform(adjust_start_rotation);
 	routineRVA->adjustAllToCurrentTransform(adjust_all_rotation);
 	routineRVA->setLooping(looping_rotation);
@@ -329,33 +292,33 @@ int main()
 	routineMShape->setLooping(looping_movement);
 	movementManager.linkMovementRoutine(&test_shape[3], "TestowyM4");
 
-	auto routineMVA = movementManager.createMovementRoutineVA("TestowyMVA1");
-	routineMVA->addMovement(new movementInfoVA(getCentroid(arrow1) + starting_offset1, getCentroid(arrow1) + ending_offset1, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, &arrow1));
-	routineMVA->addMovement(new movementInfoVA(getCentroid(arrow1) + starting_offset2, getCentroid(arrow1) + ending_offset2, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, &arrow1));
+	auto routineMVA = movementManager.createMovementRoutine("TestowyMVA1");
+	routineMVA->addMovement(new movementInfo(getCentroid(arrow1) + starting_offset1, getCentroid(arrow1) + ending_offset1, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f));
+	routineMVA->addMovement(new movementInfo(getCentroid(arrow1) + starting_offset2, getCentroid(arrow1) + ending_offset2, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f));
 	routineMVA->adjustStartToCurrentTransform(adjust_start_movement);
 	routineMVA->adjustAllToCurrentTransform(adjust_all_movement);
 	routineMVA->setLooping(looping_movement);
 	movementManager.linkMovementRoutine(&arrow1, "TestowyMVA1");
 
-	routineMVA = movementManager.createMovementRoutineVA("TestowyMVA2");
-	routineMVA->addMovement(new movementInfoVA(getCentroid(arrow2) + starting_offset1, getCentroid(arrow2) + ending_offset1, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, &arrow2));
-	routineMVA->addMovement(new movementInfoVA(getCentroid(arrow2) + starting_offset2, getCentroid(arrow2) + ending_offset2, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, &arrow2));
+	routineMVA = movementManager.createMovementRoutine("TestowyMVA2");
+	routineMVA->addMovement(new movementInfo(getCentroid(arrow2) + starting_offset1, getCentroid(arrow2) + ending_offset1, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f));
+	routineMVA->addMovement(new movementInfo(getCentroid(arrow2) + starting_offset2, getCentroid(arrow2) + ending_offset2, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f));
 	routineMVA->adjustStartToCurrentTransform(adjust_start_movement);
 	routineMVA->adjustAllToCurrentTransform(adjust_all_movement);
 	routineMVA->setLooping(looping_movement);
 	movementManager.linkMovementRoutine(&arrow2, "TestowyMVA2");
 
-	routineMVA = movementManager.createMovementRoutineVA("TestowyMVA3");
-	routineMVA->addMovement(new movementInfoVA(getCentroid(arrow3) + starting_offset1, getCentroid(arrow3) + ending_offset1, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, &arrow3));
-	routineMVA->addMovement(new movementInfoVA(getCentroid(arrow3) + starting_offset2, getCentroid(arrow3) + ending_offset2, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, &arrow3));
+	routineMVA = movementManager.createMovementRoutine("TestowyMVA3");
+	routineMVA->addMovement(new movementInfo(getCentroid(arrow3) + starting_offset1, getCentroid(arrow3) + ending_offset1, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f));
+	routineMVA->addMovement(new movementInfo(getCentroid(arrow3) + starting_offset2, getCentroid(arrow3) + ending_offset2, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f));
 	routineMVA->adjustStartToCurrentTransform(adjust_start_movement);
 	routineMVA->adjustAllToCurrentTransform(adjust_all_movement);
 	routineMVA->setLooping(looping_movement);
 	movementManager.linkMovementRoutine(&arrow3, "TestowyMVA3");
 
-	routineMVA = movementManager.createMovementRoutineVA("TestowyMVA4");
-	routineMVA->addMovement(new movementInfoVA(getCentroid(arrow4) + starting_offset1, getCentroid(arrow4) + ending_offset1, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, &arrow4));
-	routineMVA->addMovement(new movementInfoVA(getCentroid(arrow4) + starting_offset2, getCentroid(arrow4) + ending_offset2, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, &arrow4));
+	routineMVA = movementManager.createMovementRoutine("TestowyMVA4");
+	routineMVA->addMovement(new movementInfo(getCentroid(arrow4) + starting_offset1, getCentroid(arrow4) + ending_offset1, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f));
+	routineMVA->addMovement(new movementInfo(getCentroid(arrow4) + starting_offset2, getCentroid(arrow4) + ending_offset2, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f));
 	routineMVA->adjustStartToCurrentTransform(adjust_start_movement);
 	routineMVA->adjustAllToCurrentTransform(adjust_all_movement);
 	routineMVA->setLooping(looping_movement);
@@ -400,33 +363,33 @@ int main()
 	routineSShape->setLooping(looping_scaling);
 	movementManager.linkScalingRoutine(&test_shape[3], "TestowyS4");
 
-	auto routineSVA = movementManager.createScalingRoutineVA("TestowySVA1");
-	routineSVA->addScaling(new scalingInfoVA(starting_scale1, ending_scale1, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, &arrow1));
-	routineSVA->addScaling(new scalingInfoVA(starting_scale2, ending_scale2, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, &arrow1));
+	auto routineSVA = movementManager.createScalingRoutine("TestowySVA1");
+	routineSVA->addScaling(new scalingInfo(starting_scale1, ending_scale1, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f));
+	routineSVA->addScaling(new scalingInfo(starting_scale2, ending_scale2, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f));
 	routineSVA->adjustStartToCurrentTransform(adjust_start_scaling);
 	routineSVA->adjustAllToCurrentTransform(adjust_all_scaling);
 	routineSVA->setLooping(looping_scaling);
 	movementManager.linkScalingRoutine(&arrow1, "TestowySVA1");
 
-	routineSVA = movementManager.createScalingRoutineVA("TestowySVA2");
-	routineSVA->addScaling(new scalingInfoVA(starting_scale1, ending_scale1, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, &arrow2));
-	routineSVA->addScaling(new scalingInfoVA(starting_scale2, ending_scale2, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, &arrow2));
+	routineSVA = movementManager.createScalingRoutine("TestowySVA2");
+	routineSVA->addScaling(new scalingInfo(starting_scale1, ending_scale1, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f));
+	routineSVA->addScaling(new scalingInfo(starting_scale2, ending_scale2, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f));
 	routineSVA->adjustStartToCurrentTransform(adjust_start_scaling);
 	routineSVA->adjustAllToCurrentTransform(adjust_all_scaling);
 	routineSVA->setLooping(looping_scaling);
 	movementManager.linkScalingRoutine(&arrow2, "TestowySVA2");
 
-	routineSVA = movementManager.createScalingRoutineVA("TestowySVA3");
-	routineSVA->addScaling(new scalingInfoVA(starting_scale1, ending_scale1, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, &arrow3));
-	routineSVA->addScaling(new scalingInfoVA(starting_scale2, ending_scale2, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, &arrow3));
+	routineSVA = movementManager.createScalingRoutine("TestowySVA3");
+	routineSVA->addScaling(new scalingInfo(starting_scale1, ending_scale1, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f));
+	routineSVA->addScaling(new scalingInfo(starting_scale2, ending_scale2, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f));
 	routineSVA->adjustStartToCurrentTransform(adjust_start_scaling);
 	routineSVA->adjustAllToCurrentTransform(adjust_all_scaling);
 	routineSVA->setLooping(looping_scaling);
 	movementManager.linkScalingRoutine(&arrow3, "TestowySVA3");
 
-	routineSVA = movementManager.createScalingRoutineVA("TestowySVA4");
-	routineSVA->addScaling(new scalingInfoVA(starting_scale1, ending_scale1, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, &arrow4));
-	routineSVA->addScaling(new scalingInfoVA(starting_scale2, ending_scale2, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, &arrow4));
+	routineSVA = movementManager.createScalingRoutine("TestowySVA4");
+	routineSVA->addScaling(new scalingInfo(starting_scale1, ending_scale1, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f));
+	routineSVA->addScaling(new scalingInfo(starting_scale2, ending_scale2, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f));
 	routineSVA->adjustStartToCurrentTransform(adjust_start_scaling);
 	routineSVA->adjustAllToCurrentTransform(adjust_all_scaling);
 	routineSVA->setLooping(looping_scaling);

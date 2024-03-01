@@ -21,6 +21,9 @@ void VertexArray2::updateCentroid()
 
 void VertexArray2::updatePosition(const sf::Vector2f& new_pos)
 {
+	if (m_needCentroidUpdate)
+		updateCentroid();
+
 	const sf::Vector2f offset = new_pos - *m_origin;
 	const size_t vertex_count = sf::VertexArray::getVertexCount();
 
@@ -33,6 +36,13 @@ void VertexArray2::updatePosition(const sf::Vector2f& new_pos)
 
 void VertexArray2::updateScale(const sf::Vector2f& new_scale)
 {
+	printf("Updating scale: %f %f\n", new_scale.x, new_scale.y);
+	if (new_scale.x == 0 || new_scale.y == 0)
+		return;
+
+	if (m_needCentroidUpdate)
+		updateCentroid();
+
 	const size_t vertex_count = sf::VertexArray::getVertexCount();
 
 	for (size_t i = 0; i < vertex_count; ++i) {
@@ -46,6 +56,9 @@ void VertexArray2::updateScale(const sf::Vector2f& new_scale)
 
 void VertexArray2::updateRotation(float new_rotation)
 {
+	if (m_needCentroidUpdate)
+		updateCentroid();
+
 	new_rotation = std::fmod(new_rotation, 360.f);
 	if (new_rotation < 0)
 		new_rotation += 360.f;
@@ -118,6 +131,7 @@ const sf::Vertex& VertexArray2::operator [](std::size_t index) const
 }
 
 VertexArray2::operator sf::VertexArray& () {
+	m_needCentroidUpdate = true;
 	return *this;
 }
 

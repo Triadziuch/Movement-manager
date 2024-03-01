@@ -17,16 +17,40 @@ sf::Vector2f getCentroid(const sf::VertexArray& vertexArray) {
 
 int main()
 {
-	double M_RAD = 3.14159265358979323846 / 180.0;
-	float m_rotation = 45.f;
-	sf::Vector2f m_scale = sf::Vector2f(2.f, 2.f);
-	sf::Vector2f position = sf::Vector2f(4.f, 2.f);
-	sf::Vector2f m_origin = sf::Vector2f(3.f, 1.f);
+	sf::ContextSettings settings1;
+	settings1.antialiasingLevel = 16;
+	sf::RenderWindow window1(sf::VideoMode(1920, 1080), "Ease functions", sf::Style::Fullscreen, settings1);
+	window1.setVerticalSyncEnabled(true);
 
-	position.x = m_origin.x + (position.x - m_origin.x) * m_scale.x;
-	position.y = m_origin.y + (position.y - m_origin.y) * m_scale.x;
+	sf::Vector2f scale(1.f, 1.f);
 
-	printf("Position: %f, %f\n", position.x, position.y);
+	VertexArray2 test_arrow(sf::PrimitiveType::LineStrip, 3u);
+	test_arrow[0].position = sf::Vector2f(static_cast<float>(window1.getSize().x) / 2.f - 40.f, 500.f);
+	test_arrow[1].position = sf::Vector2f(static_cast<float>(window1.getSize().x) / 2.f, 470.f);
+	test_arrow[2].position = sf::Vector2f(static_cast<float>(window1.getSize().x) / 2.f + 40.f, 500.f);
+	test_arrow.setOrigin(test_arrow.getCentroid());
+
+	while (window1.isOpen()) {
+		sf::Event event;
+		if (window1.pollEvent(event)) {
+			if (event.type == sf::Event::Closed || (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape))
+				window1.close();
+
+			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Up) {
+				scale += {1.f, 1.f};
+				test_arrow.setScale(scale);
+			}
+
+			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Down) {
+				scale -= {1.f, 1.f};
+				test_arrow.setScale(scale);
+			}
+		}
+
+		window1.clear();
+		window1.draw(test_arrow);
+		window1.display();
+	}
 
 	return 0;
 

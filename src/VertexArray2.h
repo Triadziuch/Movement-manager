@@ -7,28 +7,22 @@ private:
 
 	sf::Vector2f	m_centroid;
 
-	sf::Vector2f	m_origin;
+	sf::Vector2f*	m_origin;
 	sf::Vector2f	m_scale;
 	float			m_rotation;
-	bool			m_needUpdate;
-
-	std::vector<sf::Vertex> m_originalScaling;
-	std::vector<sf::Vertex> m_originalRotation;
-
-	void undoTransformations();
+	bool			m_needCentroidUpdate;
 
 	void updateCentroid();
-	void updateInternalVertices();
 
 	void updatePosition(const sf::Vector2f& new_pos);
-	void updateScale();
-	void updateRotation();
+	void updateScale(const sf::Vector2f& new_scale);
+	void updateRotation(const float new_rotation);
 
 public:
 
-	VertexArray2() : sf::VertexArray{}, m_centroid{}, m_origin{}, m_scale{ 1, 1 }, m_rotation{ 0 }, m_needUpdate{ false } {}
-	VertexArray2(sf::PrimitiveType type, size_t vertexCount = 0) : sf::VertexArray{ type, vertexCount }, m_centroid{}, m_origin{}, m_scale{ 1, 1 }, m_rotation{ 0 }, m_needUpdate{ false }, m_originalScaling{ vertexCount }, m_originalRotation{ vertexCount } {}
-	VertexArray2(const VertexArray2& other) : sf::VertexArray{ other }, m_centroid{ other.m_centroid }, m_origin{ other.m_origin }, m_scale{ other.m_scale }, m_rotation{ other.m_rotation }, m_needUpdate{ other.m_needUpdate }, m_originalScaling{ other.m_originalScaling }, m_originalRotation{ other.m_originalRotation } {}
+	VertexArray2() : sf::VertexArray{}, m_centroid{}, m_origin{}, m_scale{ 1, 1 }, m_rotation{ 0 }, m_needCentroidUpdate{ false } {}
+	VertexArray2(sf::PrimitiveType type, size_t vertexCount = 0) : sf::VertexArray{ type, vertexCount }, m_centroid{}, m_origin{}, m_scale{ 1, 1 }, m_rotation{ 0 }, m_needCentroidUpdate{ false } {}
+	VertexArray2(const VertexArray2& other) : sf::VertexArray{ other }, m_centroid{ other.m_centroid }, m_origin{ other.m_origin }, m_scale{ other.m_scale }, m_rotation{ other.m_rotation }, m_needCentroidUpdate{ other.m_needCentroidUpdate } {}
 	~VertexArray2() {};
 
 	void clear();
@@ -43,6 +37,9 @@ public:
 
 	void setPosition(float x, float y);
 	void setPosition(const sf::Vector2f& position);
+	
+	void move(float offsetX, float offsetY);
+	void move(const sf::Vector2f& offset);
 
 	void setRotation(float angle);
 
@@ -52,9 +49,7 @@ public:
 	void setOrigin(float x, float y);
 	void setOrigin(const sf::Vector2f& origin);
 
-	const sf::Vector2f& getCentroid() const;
-	
+	void setOriginToCentroid(bool value);
 
-	// T¹ klasê wpierdalamy do MovementRoutineEngine zamiast sf::VertexArray
-	// Trzeba dopisaæ setRotation, setScale, setPosition, 
+	const sf::Vector2f& getCentroid();
 };

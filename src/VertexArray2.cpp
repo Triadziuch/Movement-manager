@@ -1,98 +1,66 @@
 #pragma once
 #include "VertexArray2.h"
 
-void VertexArray2::undoTransformations()
-{
-	const size_t vertex_count = sf::VertexArray::getVertexCount();
-
-	float sine   = - static_cast<float>(sin(static_cast<double>(-m_rotation) * M_RAD)),
-		  cosine =   static_cast<float>(cos(static_cast<double>(-m_rotation) * M_RAD));
-
-	for (size_t i = 0; i < vertex_count; ++i) {
-		// Undo rotation
-		float x = sf::VertexArray::operator[](i).position.x - m_origin.x;
-		float y = sf::VertexArray::operator[](i).position.y - m_origin.y;
-		sf::VertexArray::operator[](i).position.x = m_origin.x + x * cosine - y * sine;
-		sf::VertexArray::operator[](i).position.y = m_origin.y + x * sine + y * cosine;
-
-		// Undo scaling
-		sf::VertexArray::operator[](i).position.x = m_origin.x + (sf::VertexArray::operator[](i).position.x - m_origin.x) * (1.f / m_scale.x);
-		sf::VertexArray::operator[](i).position.y = m_origin.y + (sf::VertexArray::operator[](i).position.y - m_origin.y) * (1.f / m_scale.x);
-	}
-}
-
 void VertexArray2::updateCentroid()
 {
+	m_needCentroidUpdate = false;
+
 	sf::Vector2f centroid_temp{};
 	const size_t vertex_count = sf::VertexArray::getVertexCount();
+
+	if (vertex_count == 0) {
+		m_centroid = centroid_temp;
+		return;
+	}
 
 	for (size_t i = 0; i < vertex_count; ++i)
 		centroid_temp += sf::VertexArray::operator[](i).position;
 	m_centroid = centroid_temp / static_cast<float>(vertex_count);
 }
 
-void VertexArray2::updateInternalVertices()
-{
-	updateCentroid();
-	undoTransformations();
-
-	const size_t vertex_count = sf::VertexArray::getVertexCount();
-
-	m_originalScaling.resize(vertex_count);
-	m_originalRotation.resize(vertex_count);
-
-	float sine =   static_cast<float>(sin(static_cast<double>(m_rotation) * M_RAD)),
-		  cosine = static_cast<float>(cos(static_cast<double>(m_rotation) * M_RAD));
-
-	for (size_t i = 0; i < vertex_count; ++i) {
-		m_originalScaling[i]  = sf::VertexArray::operator[](i);
-		m_originalRotation[i] = sf::VertexArray::operator[](i);
-
-		float x = m_originalScaling[i].position.x - m_origin.x;
-		float y = m_originalScaling[i].position.y - m_origin.y;
-		m_originalScaling[i].position.x = m_origin.x + x * cosine - y * sine;
-		m_originalScaling[i].position.y = m_origin.y + x * sine + y * cosine;
-
-		m_originalRotation[i].position.x = m_origin.x + (m_originalRotation[i].position.x - m_origin.x) * m_scale.x;
-		m_originalRotation[i].position.y = m_origin.y + (m_originalRotation[i].position.y - m_origin.y) * m_scale.x;
-	}
-
-	m_needUpdate = false;
-}
-
 void VertexArray2::updatePosition(const sf::Vector2f& new_pos)
 {
-	if (m_needUpdate) 
-		updateInternalVertices();
+	const sf::Vector2f offset = new_pos - *m_origin;
+	const size_t vertex_count = sf::VertexArray::getVertexCount();
 
-	const sf::Vector2f offset = new_pos - m_origin;
+	for (size_t i = 0; i < vertex_count; ++i) 
+		sf::VertexArray::operator[](i).position += offset;
+
+	m_centroid += offset;
+	*m_origin = new_pos;
+}
+
+void VertexArray2::updateScale(const sf::Vector2f& new_scale)
+{
 	const size_t vertex_count = sf::VertexArray::getVertexCount();
 
 	for (size_t i = 0; i < vertex_count; ++i) {
-		sf::VertexArray::operator[](i).position += offset;
-		m_originalScaling[i].position  += offset;
-		m_originalRotation[i].position += offset;
+		sf::Vertex& vertex = sf::VertexArray::operator[](i);
+		vertex.position.x = m_origin->x + (vertex.position.x - m_origin->x) * new_scale.x / m_scale.x;
+		vertex.position.y = m_origin->y + (vertex.position.y - m_origin->y) * new_scale.y / m_scale.y;
 	}
 
-	m_centroid += offset;
-	m_origin = new_pos;
+	m_scale = new_scale;
 }
 
-void VertexArray2::updateScale()
+void VertexArray2::updateRotation(const float new_rotation)
 {
-	if (m_needUpdate)
-		updateInternalVertices();
+	const size_t vertex_count = sf::VertexArray::getVertexCount();
 
-	/*for (size_t i = 0; i < _vertexarray->getVertexCount(); i++) {
-		_vertexarray->operator[](i).position.x = _scalingInfo->centroid.x + (_scalingInfo->originalVertex.operator[](i).position.x - _scalingInfo->centroid.x) * _scalingInfo->current_scale.x;
-		_vertexarray->operator[](i).position.y = _scalingInfo->centroid.y + (_scalingInfo->originalVertex.operator[](i).position.y - _scalingInfo->centroid.y) * _scalingInfo->current_scale.y;
-	}*/
-}
+	const double angle = static_cast<double>(new_rotation - m_rotation) * M_RAD;
+	const float sine   = static_cast<float>(sin(angle)),
+		        cosine = static_cast<float>(cos(angle));
 
-void VertexArray2::updateRotation()
-{
-	if (m_needUpdate)
-		updateInternalVertices();
+	for (size_t i = 0; i < vertex_count; ++i) {
+		sf::Vertex& vertex = sf::VertexArray::operator[](i);
+		const float x = vertex.position.x - m_origin->x;
+		const float y = vertex.position.y - m_origin->y;
+
+		vertex.position.x = m_origin->x + x * cosine - y * sine;
+		vertex.position.y = m_origin->y + x * sine + y * cosine;
+	}
+
+	m_rotation = new_rotation;
 }
 
 void VertexArray2::setPosition(float x, float y)
@@ -107,7 +75,7 @@ void VertexArray2::setPosition(const sf::Vector2f& position)
 
 sf::Vertex& VertexArray2::operator [](std::size_t index)
 {
-	m_needUpdate = true;
+	m_needCentroidUpdate = true;
 	return sf::VertexArray::operator[](index);
 }
 
@@ -118,45 +86,38 @@ const sf::Vertex& VertexArray2::operator [](std::size_t index) const
 
 void VertexArray2::setRotation(float angle)
 {
-	m_rotation = angle;
-	m_needUpdate = true;
-	updateRotation();
+	updateRotation(angle);
+}
+
+void VertexArray2::setOriginToCentroid(bool)
+{
 }
 
 void VertexArray2::setScale(float factorX, float factorY)
 {
-	m_scale.x = factorX;
-	m_scale.y = factorY;
-	updateScale();
+	updateScale(sf::Vector2f(factorX, factorY));
 }
 
 void VertexArray2::setScale(const sf::Vector2f& factors)
 {
-	m_scale = factors;
-	updateScale();
+	updateScale(factors);
 }
 
 void VertexArray2::clear()
 {
-	m_needUpdate = true;
-	m_originalScaling.clear();
-	m_originalRotation.clear();
+	m_needCentroidUpdate = true;
 	sf::VertexArray::clear();
 }
 
 void VertexArray2::resize(std::size_t vertexCount)
 {
-	m_needUpdate = true;
-	m_originalScaling.resize(vertexCount);
-	m_originalRotation.resize(vertexCount);
+	m_needCentroidUpdate = true;
 	sf::VertexArray::resize(vertexCount);
 }
 
 void VertexArray2::append(const sf::Vertex& vertex)
 {
-	m_needUpdate = true;
-	m_originalScaling.push_back(vertex);
-	m_originalRotation.push_back(vertex);
+	m_needCentroidUpdate = true;
 	sf::VertexArray::append(vertex);
 }
 
@@ -170,7 +131,20 @@ void VertexArray2::setOrigin(const sf::Vector2f& origin)
 	m_origin = origin;
 }
 
-const sf::Vector2f& VertexArray2::getCentroid() const
+void VertexArray2::move(float offsetX, float offsetY)
 {
+	updatePosition(m_origin + sf::Vector2f(offsetX, offsetY));
+}
+
+void VertexArray2::move(const sf::Vector2f& offset)
+{
+	updatePosition(m_origin + offset);
+}
+
+const sf::Vector2f& VertexArray2::getCentroid()
+{
+	if (m_needCentroidUpdate)
+		updateCentroid();
+
 	return m_centroid;
 }

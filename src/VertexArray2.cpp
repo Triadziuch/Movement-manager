@@ -73,6 +73,16 @@ void VertexArray2::setPosition(const sf::Vector2f& position)
 	updatePosition(position);
 }
 
+void VertexArray2::move(float offsetX, float offsetY)
+{
+	updatePosition(*m_origin + sf::Vector2f(offsetX, offsetY));
+}
+
+void VertexArray2::move(const sf::Vector2f& offset)
+{
+	updatePosition(*m_origin + offset);
+}
+
 sf::Vertex& VertexArray2::operator [](std::size_t index)
 {
 	m_needCentroidUpdate = true;
@@ -87,10 +97,6 @@ const sf::Vertex& VertexArray2::operator [](std::size_t index) const
 void VertexArray2::setRotation(float angle)
 {
 	updateRotation(angle);
-}
-
-void VertexArray2::setOriginToCentroid(bool)
-{
 }
 
 void VertexArray2::setScale(float factorX, float factorY)
@@ -123,22 +129,30 @@ void VertexArray2::append(const sf::Vertex& vertex)
 
 void VertexArray2::setOrigin(float x, float y)
 {
-	m_origin = sf::Vector2f(x, y);
+	if (!m_originIsCentroid)
+		*m_origin = sf::Vector2f(x, y);
 }
 
 void VertexArray2::setOrigin(const sf::Vector2f& origin)
 {
-	m_origin = origin;
+	if (!m_originIsCentroid)
+		*m_origin = origin;
 }
 
-void VertexArray2::move(float offsetX, float offsetY)
+void VertexArray2::setOriginToCentroid(bool value)
 {
-	updatePosition(m_origin + sf::Vector2f(offsetX, offsetY));
-}
+	if (value == m_originIsCentroid)
+		return;
 
-void VertexArray2::move(const sf::Vector2f& offset)
-{
-	updatePosition(m_origin + offset);
+	if (value && !m_originIsCentroid) {
+		delete m_origin;
+		m_origin = &m_centroid;
+		m_originIsCentroid = true;
+	}
+	else if (!value && m_originIsCentroid) {
+		m_origin = new sf::Vector2f{m_centroid};
+		m_originIsCentroid = false;
+	}
 }
 
 const sf::Vector2f& VertexArray2::getCentroid()

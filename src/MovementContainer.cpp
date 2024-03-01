@@ -6,68 +6,6 @@
 // Singleton initialization
 MovementContainer* MovementContainer::sInstance = nullptr;
 
-void MovementContainer::updateMovementInfoVA(sf::VertexArray* _vertexarray, movementInfoVA* _movementInfo, sf::Vector2f _offset)
-{
-	// === Movement ===
-	_movementInfo->centroid += _offset;
-
-	for (size_t i = 0; i < _vertexarray->getVertexCount(); i++)
-		_vertexarray->operator[](i).position += _offset;
-
-	// === Scaling ===
-	auto& scalingMap = sInstance->m_Scalings_VA;
-	auto scaling = scalingMap.find(_vertexarray);
-
-	if (scaling != scalingMap.end()) {
-		scaling->second->centroid = _movementInfo->centroid;
-
-		for (size_t i = 0; i < scaling->second->originalVertex.getVertexCount(); i++)
-			scaling->second->originalVertex.operator[](i).position += _offset;
-	}
-
-	// === Rotation ===
-	auto& rotationMap = sInstance->m_Rotations_VA;
-	auto rotation = rotationMap.find(_vertexarray);
-
-	if (rotation != rotationMap.end()) {
-		rotation->second->centroid = _movementInfo->centroid;
-
-		for (size_t i = 0; i < rotation->second->originalVertex.getVertexCount(); i++)
-			rotation->second->originalVertex.operator[](i).position += _offset;
-	}
-}
-
-void MovementContainer::updateScalingInfoVA(sf::VertexArray* _vertexarray, scalingInfoVA* _scalingInfo)
-{
-	// VA Scaling
-	for (size_t i = 0; i < _vertexarray->getVertexCount(); i++) {
-		_vertexarray->operator[](i).position.x = _scalingInfo->centroid.x + (_scalingInfo->originalVertex.operator[](i).position.x - _scalingInfo->centroid.x) * _scalingInfo->current_scale.x;
-		_vertexarray->operator[](i).position.y = _scalingInfo->centroid.y + (_scalingInfo->originalVertex.operator[](i).position.y - _scalingInfo->centroid.y) * _scalingInfo->current_scale.y;
-	}
-
-
-	// === Rotation ===
-	auto& rotationMap = sInstance->m_Rotations_VA;
-	auto rotation = rotationMap.find(_vertexarray);
-
-	if (rotation != rotationMap.end())
-		for (size_t i = 0; i < rotation->second->originalVertex.getVertexCount(); i++)
-			rotation->second->originalVertex.operator[](i).position = _vertexarray->operator[](i).position;
-}
-
-void MovementContainer::updateRotationInfoVA(sf::VertexArray* _vertexarray, rotationInfoVA* _rotationInfo)
-{
-	float sine   = static_cast<float>(sin(static_cast<double>(_rotationInfo->current_rotation) * M_RAD)),
-		  cosine = static_cast<float>(cos(static_cast<double>(_rotationInfo->current_rotation) * M_RAD));
-
-	for (size_t i = 0; i < _vertexarray->getVertexCount(); ++i) {
-		float x = _rotationInfo->originalVertex.operator[](i).position.x - _rotationInfo->centroid.x;
-		float y = _rotationInfo->originalVertex.operator[](i).position.y - _rotationInfo->centroid.y;
-		_vertexarray->operator[](i).position.x = _rotationInfo->centroid.x + x * cosine - y * sine;
-		_vertexarray->operator[](i).position.y = _rotationInfo->centroid.y + x * sine + y * cosine;
-	}
-}
-
 // Private update functions
 void MovementContainer::updateShape(float dt)
 {
@@ -177,19 +115,12 @@ void MovementContainer::updateVertexArray(float dt)
 
 		if (movement->first->getVertexCount() != 0) {
 			if (movement->second->isDone()) {
-				if (movement->second->current_time - movement->second->delay_before - dt < movement->second->motion_duration) {
-					sf::Vector2f offset(static_cast<float>(movement->second->used_function(1.0)) * (movement->second->ending_pos.x - movement->second->starting_pos.x) + movement->second->starting_pos.x - movement->second->centroid.x,
-										static_cast<float>(movement->second->used_function(1.0)) * (movement->second->ending_pos.y - movement->second->starting_pos.y) + movement->second->starting_pos.y - movement->second->centroid.y);
-
-					this->updateMovementInfoVA(movement->first, movement->second, offset);
-				}
+				if (movement->second->current_time - movement->second->delay_before - dt < movement->second->motion_duration) 
+					movement->first->setPosition(movement->second->ending_pos);
 
 				if (movement->second->repeat) {
 					if (movement->second->current_time - movement->second->motion_duration - movement->second->delay_before >= movement->second->delay_after) {
-						sf::Vector2f offset(movement->second->ending_pos - movement->second->starting_pos);
-
-						this->updateMovementInfoVA(movement->first, movement->second, -offset);
-
+						movement->first->setPosition(movement->second->starting_pos);
 						movement->second->current_time -= movement->second->total_duration;
 					}
 				}
@@ -201,15 +132,13 @@ void MovementContainer::updateVertexArray(float dt)
 			}
 			else {
 				if (movement->second->current_time > movement->second->delay_before) {
-					sf::Vector2f offset(static_cast<float>(movement->second->used_function(static_cast<double>(movement->second->current_time / movement->second->motion_duration))) * (movement->second->ending_pos.x - movement->second->starting_pos.x) + movement->second->starting_pos.x - movement->second->centroid.x,
-										static_cast<float>(movement->second->used_function(static_cast<double>(movement->second->current_time / movement->second->motion_duration))) * (movement->second->ending_pos.y - movement->second->starting_pos.y) + movement->second->starting_pos.y - movement->second->centroid.y);
+					sf::Vector2f new_position(static_cast<float>(movement->second->used_function(static_cast<double>((movement->second->current_time - movement->second->delay_before) / movement->second->motion_duration))) * (movement->second->ending_pos.x - movement->second->starting_pos.x) + movement->second->starting_pos.x,
+											  static_cast<float>(movement->second->used_function(static_cast<double>((movement->second->current_time - movement->second->delay_before) / movement->second->motion_duration))) * (movement->second->ending_pos.y - movement->second->starting_pos.y) + movement->second->starting_pos.y);
 
-					this->updateMovementInfoVA(movement->first, movement->second, offset);
+					movement->first->setPosition(new_position);
 				}
-				else if (movement->second->current_time - dt == 0.f) {
-					sf::Vector2f offset(movement->second->starting_pos - movement->second->centroid);
-					this->updateMovementInfoVA(movement->first, movement->second, offset);
-				}
+				else if (movement->second->current_time - dt == 0.f) 
+					movement->first->setPosition(movement->second->starting_pos);
 			}
 		}
 
@@ -221,21 +150,12 @@ void MovementContainer::updateVertexArray(float dt)
 
 		if (scaling->first->getVertexCount() != 0) {
 			if (scaling->second->isDone()) {
-				if (scaling->second->current_time - scaling->second->delay_before - dt < scaling->second->motion_duration) {
-
-					scaling->second->current_scale = scaling->second->ending_scale;
-					updateScalingInfoVA(scaling->first, scaling->second);
-				}
+				if (scaling->second->current_time - scaling->second->delay_before - dt < scaling->second->motion_duration) 
+					scaling->first->setScale(scaling->second->ending_scale);
 
 				if (scaling->second->repeat) {
-					if (scaling->second->current_time - scaling->second->motion_duration - scaling->second->delay_before < scaling->second->delay_after) {
-						scaling->second->current_scale = scaling->second->ending_scale;
-						updateScalingInfoVA(scaling->first, scaling->second);
-					}
-					else {
-						scaling->second->current_scale = scaling->second->starting_scale;
-						updateScalingInfoVA(scaling->first, scaling->second);
-
+					if (scaling->second->current_time - scaling->second->motion_duration - scaling->second->delay_before >= scaling->second->delay_after) {
+						scaling->first->setScale(scaling->second->starting_scale);
 						scaling->second->current_time -= scaling->second->total_duration;
 					}
 				}
@@ -247,16 +167,13 @@ void MovementContainer::updateVertexArray(float dt)
 			}
 			else {
 				if (scaling->second->current_time > scaling->second->delay_before) {
-					sf::Vector2f new_scale(scaling->second->used_function(static_cast<double>((scaling->second->current_time - scaling->second->delay_before) / scaling->second->motion_duration)) * (scaling->second->ending_scale.x - scaling->second->starting_scale.x) + scaling->second->starting_scale.x,
-										   scaling->second->used_function(static_cast<double>((scaling->second->current_time - scaling->second->delay_before) / scaling->second->motion_duration)) * (scaling->second->ending_scale.y - scaling->second->starting_scale.y) + scaling->second->starting_scale.y);
+					sf::Vector2f new_scale(static_cast<float>(scaling->second->used_function(static_cast<double>((scaling->second->current_time - scaling->second->delay_before) / scaling->second->motion_duration))) * (scaling->second->ending_scale.x - scaling->second->starting_scale.x) + scaling->second->starting_scale.x,
+										   static_cast<float>(scaling->second->used_function(static_cast<double>((scaling->second->current_time - scaling->second->delay_before) / scaling->second->motion_duration))) * (scaling->second->ending_scale.y - scaling->second->starting_scale.y) + scaling->second->starting_scale.y);
 					
-					scaling->second->current_scale = new_scale;
-					updateScalingInfoVA(scaling->first, scaling->second);
+					scaling->first->setScale(new_scale);
 				}
-				else if (scaling->second->current_time - dt == 0.f) {
-					scaling->second->current_scale = scaling->second->starting_scale;
-					updateScalingInfoVA(scaling->first, scaling->second);
-				}
+				else if (scaling->second->current_time - dt == 0.f) 
+					scaling->first->setScale(scaling->second->starting_scale);
 			}
 		}
 
@@ -268,21 +185,12 @@ void MovementContainer::updateVertexArray(float dt)
 
 		if (rotation->first->getVertexCount() != 0) {
 			if (rotation->second->isDone()) {
-				if (rotation->second->current_time - rotation->second->delay_before - dt < rotation->second->motion_duration) {
-					rotation->second->current_rotation = rotation->second->getEndingRotation();
-					updateRotationInfoVA(rotation->first, rotation->second);
-				}
+				if (rotation->second->current_time - rotation->second->delay_before - dt < rotation->second->motion_duration)
+					rotation->first->setRotation(rotation->second->getEndingRotation());
 
 				if (rotation->second->repeat) {
-					if (rotation->second->current_time - rotation->second->motion_duration - rotation->second->delay_before < rotation->second->delay_after) {
-						rotation->second->current_rotation = rotation->second->getEndingRotation();
-						updateRotationInfoVA(rotation->first, rotation->second);
-					}
-						
-					else {
-						rotation->second->current_rotation = rotation->second->getStartingRotation();
-						updateRotationInfoVA(rotation->first, rotation->second);
-
+					if (rotation->second->current_time - rotation->second->motion_duration - rotation->second->delay_before >= rotation->second->delay_after){
+						rotation->first->setRotation(rotation->second->getStartingRotation());
 						rotation->second->current_time -= rotation->second->total_duration;
 					}
 				}
@@ -293,14 +201,10 @@ void MovementContainer::updateVertexArray(float dt)
 				}
 			}
 			else{
-				if (rotation->second->current_time > rotation->second->delay_before) {
-					rotation->second->current_rotation = rotation->second->updateRotation();
-					updateRotationInfoVA(rotation->first, rotation->second);
-				}
-				else if (rotation->second->current_time - dt == 0.f) {
-					rotation->second->current_rotation = rotation->second->getStartingRotation();
-					updateRotationInfoVA(rotation->first, rotation->second);
-				}
+				if (rotation->second->current_time > rotation->second->delay_before) 
+					rotation->first->setRotation(rotation->second->updateRotation());
+				else if (rotation->second->current_time - dt == 0.f) 
+					rotation->first->setRotation(rotation->second->getStartingRotation());
 			}
 		}
 
@@ -476,7 +380,7 @@ const movementInfo* MovementContainer::addMovement(sf::Shape* _shape, float _off
 	return this->addMovement(_shape, _shape->getPosition() + sf::Vector2f(_offset_x, _offset_y), _movement_time, _used_function, _repeat, _delay_before, _delay_after);
 }
 
-const movementInfoVA* MovementContainer::addMovement(sf::VertexArray* _vertexarray, movementInfoVA* _movementInfo)
+const movementInfo* MovementContainer::addMovement(VertexArray2* _vertexarray, movementInfo* _movementInfo)
 {
 	auto& movementMap = sInstance->m_Movements_VA;
 	auto movementFound = movementMap.find(_vertexarray);
@@ -490,7 +394,7 @@ const movementInfoVA* MovementContainer::addMovement(sf::VertexArray* _vertexarr
 	return _movementInfo;
 }
 
-const movementInfoVA* MovementContainer::addMovement(sf::VertexArray* _vertexarray, sf::Vector2f _ending_pos, float _movement_time, movement_type _used_function, bool _repeat, float _delay_before, float _delay_after)
+const movementInfo* MovementContainer::addMovement(VertexArray2* _vertexarray, sf::Vector2f _ending_pos, float _movement_time, movement_type _used_function, bool _repeat, float _delay_before, float _delay_after)
 {
 	auto& movementMap = sInstance->m_Movements_VA;
 	auto movementFound = movementMap.find(_vertexarray);
@@ -500,13 +404,13 @@ const movementInfoVA* MovementContainer::addMovement(sf::VertexArray* _vertexarr
 		return nullptr;
 	}
 
-	movementInfoVA* newMovement = new movementInfoVA(_vertexarray->operator[](0).position, _ending_pos, _movement_time, sInstance->movement_functions[_used_function], _repeat, _delay_before, _delay_after, _vertexarray);
+	movementInfo* newMovement = new movementInfo(_vertexarray->getPosition(), _ending_pos, _movement_time, sInstance->movement_functions[_used_function], _repeat, _delay_before, _delay_after);
 	movementMap.insert(std::make_pair(_vertexarray, newMovement));
 
 	return newMovement;
 }
 
-const movementInfoVA* MovementContainer::addMovement(sf::VertexArray* _vertexarray, sf::Vector2f _starting_pos, sf::Vector2f _ending_pos, float _movement_time, movement_type _used_function, bool _repeat, float _delay_before, float _delay_after)
+const movementInfo* MovementContainer::addMovement(VertexArray2* _vertexarray, sf::Vector2f _starting_pos, sf::Vector2f _ending_pos, float _movement_time, movement_type _used_function, bool _repeat, float _delay_before, float _delay_after)
 {
 	auto& movementMap = sInstance->m_Movements_VA;
 	auto movementFound = movementMap.find(_vertexarray);
@@ -516,19 +420,19 @@ const movementInfoVA* MovementContainer::addMovement(sf::VertexArray* _vertexarr
 		return nullptr;
 	}
 
-	movementInfoVA* newMovement = new movementInfoVA(_starting_pos, _ending_pos, _movement_time, sInstance->movement_functions[_used_function], _repeat, _delay_before, _delay_after, _vertexarray);
+	movementInfo* newMovement = new movementInfo(_starting_pos, _ending_pos, _movement_time, sInstance->movement_functions[_used_function], _repeat, _delay_before, _delay_after);
 	movementMap.insert(std::make_pair(_vertexarray, newMovement));
 
 	return newMovement;
 }
 
-const movementInfoVA* MovementContainer::addMovement(sf::VertexArray* _vertexarray, float _offset_x, float _offset_y, float _movement_time, movement_type _used_function, bool _repeat, float _delay_before, float _delay_after)
+const movementInfo* MovementContainer::addMovement(VertexArray2* _vertexarray, float _offset_x, float _offset_y, float _movement_time, movement_type _used_function, bool _repeat, float _delay_before, float _delay_after)
 {
 	if (_vertexarray->getVertexCount() == 0) {
 		printf("ERROR: VertexArray has no vertices!\n");
 		return nullptr;
 	}
-	return this->addMovement(_vertexarray, _vertexarray->operator[](0).position + sf::Vector2f(_offset_x, _offset_y), _movement_time, _used_function, _repeat, _delay_before, _delay_after);
+	return this->addMovement(_vertexarray, _vertexarray->getPosition() + sf::Vector2f(_offset_x, _offset_y), _movement_time, _used_function, _repeat, _delay_before, _delay_after);
 }
 
 const movementInfo* MovementContainer::addMovement(sf::Sprite* _sprite, movementInfo* _movementInfo)
@@ -591,9 +495,7 @@ void MovementContainer::undoMovement()
 	}
 
 	for (auto movement = this->m_Movements_VA.begin(); movement != this->m_Movements_VA.end();) {
-		sf::Vector2f offset(movement->second->centroid - movement->second->originalCentroid);
-		updateMovementInfoVA(movement->first, movement->second, -offset);
-
+		movement->first->setPosition(movement->second->starting_pos);
 		delete movement->second;
 		movement = m_Movements_VA.erase(movement);
 	}
@@ -617,15 +519,13 @@ void MovementContainer::undoMovement(sf::Shape* _shape)
 	}
 }
 
-void MovementContainer::undoMovement(sf::VertexArray* _vertexarray)
+void MovementContainer::undoMovement(VertexArray2* _vertexarray)
 {
 	auto& movementMap = sInstance->m_Movements_VA;
 	auto movementFound = movementMap.find(_vertexarray);
 
 	if (movementFound != movementMap.end()) {
-		sf::Vector2f offset(movementFound->second->centroid - movementFound->second->originalCentroid);
-		updateMovementInfoVA(_vertexarray, movementFound->second, -offset);
-
+		_vertexarray->setPosition(movementFound->second->starting_pos);
 		delete movementFound->second;
 		movementMap.erase(movementFound);
 	}
@@ -652,9 +552,7 @@ void MovementContainer::resetMovement()
 	}
 
 	for (auto movement = this->m_Movements_VA.begin(); movement != this->m_Movements_VA.end();) {
-		sf::Vector2f offset(movement->second->centroid - movement->second->originalCentroid);
-		updateMovementInfoVA(movement->first, movement->second, -offset);
-		
+		movement->first->setPosition(movement->second->starting_pos);
 		movement->second->current_time = 0.f;
 		++movement;
 	}
@@ -677,15 +575,13 @@ void MovementContainer::resetMovement(sf::Shape* _shape)
 	}
 }
 
-void MovementContainer::resetMovement(sf::VertexArray* _vertexarray)
+void MovementContainer::resetMovement(VertexArray2* _vertexarray)
 {
 	auto& movementMap = sInstance->m_Movements_VA;
 	auto movementFound = movementMap.find(_vertexarray);
 
 	if (movementFound != movementMap.end()) {
-		sf::Vector2f offset(movementFound->second->centroid - movementFound->second->originalCentroid);
-		updateMovementInfoVA(_vertexarray, movementFound->second, -offset);
-
+		_vertexarray->setPosition(movementFound->second->starting_pos);
 		movementFound->second->current_time = 0.f;
 	}	
 }
@@ -730,7 +626,7 @@ void MovementContainer::stopMovement(sf::Shape* _shape)
 	}
 }
 
-void MovementContainer::stopMovement(sf::VertexArray* _vertexarray)
+void MovementContainer::stopMovement(VertexArray2* _vertexarray)
 {
 	auto& movementMap = sInstance->m_Movements_VA;
 	auto movementFound = movementMap.find(_vertexarray);
@@ -798,7 +694,7 @@ const bool MovementContainer::addScaling(sf::Shape* _shape, sf::Vector2f _starti
 	return 1;
 }
 
-const bool MovementContainer::addScaling(sf::VertexArray* _vertexarray, sf::Vector2f _ending_scale, float _scaling_time, movement_type _used_function, bool _repeat, float _delay_before, float _delay_after)
+const bool MovementContainer::addScaling(VertexArray2* _vertexarray, sf::Vector2f _ending_scale, float _scaling_time, movement_type _used_function, bool _repeat, float _delay_before, float _delay_after)
 {
 	auto& scalingMap = sInstance->m_Scalings_VA;
 	auto scalingFound = scalingMap.find(_vertexarray);
@@ -808,13 +704,13 @@ const bool MovementContainer::addScaling(sf::VertexArray* _vertexarray, sf::Vect
 		return 0;
 	}
 	else if (_vertexarray->getVertexCount() != 0){
-		scalingInfoVA* newScaling = new scalingInfoVA({ 1.f, 1.f }, _ending_scale, _scaling_time, sInstance->movement_functions[_used_function], _repeat, _delay_before, _delay_after, _vertexarray);
+		scalingInfo* newScaling = new scalingInfo({ 1.f, 1.f }, _ending_scale, _scaling_time, sInstance->movement_functions[_used_function], _repeat, _delay_before, _delay_after);
 		scalingMap.insert(std::make_pair(_vertexarray, newScaling));
 	}
 	return 1;
 }
 
-const bool MovementContainer::addScaling(sf::VertexArray* _vertexarray, sf::Vector2f _starting_scale, sf::Vector2f _ending_scale, float _scaling_time, movement_type _used_function, bool _repeat, float _delay_before, float _delay_after)
+const bool MovementContainer::addScaling(VertexArray2* _vertexarray, sf::Vector2f _starting_scale, sf::Vector2f _ending_scale, float _scaling_time, movement_type _used_function, bool _repeat, float _delay_before, float _delay_after)
 {
 	auto& scalingMap = sInstance->m_Scalings_VA;
 	auto scalingFound = scalingMap.find(_vertexarray);
@@ -824,7 +720,7 @@ const bool MovementContainer::addScaling(sf::VertexArray* _vertexarray, sf::Vect
 		return 0;
 	}
 	else if (_vertexarray->getVertexCount() != 0) {
-		scalingInfoVA* newScaling = new scalingInfoVA(_starting_scale, _ending_scale, _scaling_time, sInstance->movement_functions[_used_function], _repeat, _delay_before, _delay_after, _vertexarray);
+		scalingInfo* newScaling = new scalingInfo(_starting_scale, _ending_scale, _scaling_time, sInstance->movement_functions[_used_function], _repeat, _delay_before, _delay_after);
 		scalingMap.insert(std::make_pair(_vertexarray, newScaling));
 	}
 	return 1;
@@ -871,15 +767,7 @@ void MovementContainer::undoScaling()
 	}
 
 	for (auto scaling = this->m_Scalings_VA.begin(); scaling != this->m_Scalings_VA.end();) {
-		scaling->second->current_scale = scaling->second->starting_scale;
-		updateScalingInfoVA(scaling->first, scaling->second);
-
-		auto& rotationMap = sInstance->m_Rotations_VA;
-		auto rotationFound = rotationMap.find(scaling->first);
-
-		if (rotationFound != rotationMap.end())
-			updateRotationInfoVA(scaling->first, rotationFound->second);
-
+		scaling->first->setScale(scaling->second->starting_scale);
 		delete scaling->second;
 		scaling = m_Scalings_VA.erase(scaling);
 	}
@@ -903,21 +791,13 @@ void MovementContainer::undoScaling(sf::Shape* _shape)
 	}
 }
 
-void MovementContainer::undoScaling(sf::VertexArray* _vertexarray)
+void MovementContainer::undoScaling(VertexArray2* _vertexarray)
 {
 	auto& scalingMap = sInstance->m_Scalings_VA;
 	auto scalingFound = scalingMap.find(_vertexarray);
 
 	if (scalingFound != scalingMap.end()) {
-		scalingFound->second->current_scale = scalingFound->second->starting_scale;
-		updateScalingInfoVA(_vertexarray, scalingFound->second);
-
-		auto& rotationMap = sInstance->m_Rotations_VA;
-		auto rotationFound = rotationMap.find(_vertexarray);
-
-		if (rotationFound != rotationMap.end())
-			updateRotationInfoVA(_vertexarray, rotationFound->second);
-
+		_vertexarray->setScale(scalingFound->second->starting_scale);
 		delete scalingFound->second;
 		scalingMap.erase(scalingFound);
 	}
@@ -944,15 +824,7 @@ void MovementContainer::resetScaling()
 	}
 
 	for (auto scaling = this->m_Scalings_VA.begin(); scaling != this->m_Scalings_VA.end();) {
-		scaling->second->current_scale = scaling->second->starting_scale;
-		updateScalingInfoVA(scaling->first, scaling->second);
-
-		auto& rotationMap = sInstance->m_Rotations_VA;
-		auto rotationFound = rotationMap.find(scaling->first);
-
-		if (rotationFound != rotationMap.end())
-			updateRotationInfoVA(scaling->first, rotationFound->second);
-
+		scaling->first->setScale(scaling->second->starting_scale);
 		scaling->second->current_time = 0.f;
 		++scaling;
 	}
@@ -975,21 +847,13 @@ void MovementContainer::resetScaling(sf::Shape* _shape)
 	}
 }
 
-void MovementContainer::resetScaling(sf::VertexArray* _vertexarray)
+void MovementContainer::resetScaling(VertexArray2* _vertexarray)
 {
 	auto& scalingMap = sInstance->m_Scalings_VA;
 	auto scalingFound = scalingMap.find(_vertexarray);
 
 	if (scalingFound != scalingMap.end()) {
-		scalingFound->second->current_scale = scalingFound->second->starting_scale;
-		updateScalingInfoVA(_vertexarray, scalingFound->second);
-
-		auto& rotationMap = sInstance->m_Rotations_VA;
-		auto rotationFound = rotationMap.find(_vertexarray);
-
-		if (rotationFound != rotationMap.end())
-			updateRotationInfoVA(_vertexarray, rotationFound->second);
-
+		_vertexarray->setScale(scalingFound->second->starting_scale);
 		scalingFound->second->current_time = 0.f;
 	}
 }
@@ -1034,7 +898,7 @@ void MovementContainer::stopScaling(sf::Shape* _shape)
 	}
 }
 
-void MovementContainer::stopScaling(sf::VertexArray* _vertexarray)
+void MovementContainer::stopScaling(VertexArray2* _vertexarray)
 {
 	auto& scalingMap = sInstance->m_Scalings_VA;
 	auto scalingFound = scalingMap.find(_vertexarray);
@@ -1089,7 +953,7 @@ const bool MovementContainer::addRotation(sf::Shape* _shape, float _starting_rot
 	return 1;
 }
 
-const bool MovementContainer::addRotation(sf::VertexArray* _vertexarray, float _ending_rotation, float _rotation_time, movement_type _used_function, bool _clockwise, bool _repeat, float _delay_before, float _delay_after)
+const bool MovementContainer::addRotation(VertexArray2* _vertexarray, float _ending_rotation, float _rotation_time, movement_type _used_function, bool _clockwise, bool _repeat, float _delay_before, float _delay_after)
 {
 	auto& rotationMap = sInstance->m_Rotations_VA;
 	auto rotationFound = rotationMap.find(_vertexarray);
@@ -1099,13 +963,13 @@ const bool MovementContainer::addRotation(sf::VertexArray* _vertexarray, float _
 		return 0;
 	}
 	else if (_vertexarray->getVertexCount() != 0) {
-		rotationInfoVA* newRotation = new rotationInfoVA(0.f, _ending_rotation, _rotation_time, sInstance->movement_functions[_used_function], _vertexarray, _repeat, _delay_before, _delay_after, _clockwise);
+		rotationInfo* newRotation = new rotationInfo(0.f, _ending_rotation, _rotation_time, sInstance->movement_functions[_used_function], _repeat, _delay_before, _delay_after, _clockwise);
 		rotationMap.insert(std::make_pair(_vertexarray, newRotation));
 	}
 	return 1;
 }
 
-const bool MovementContainer::addRotation(sf::VertexArray* _vertexarray, float _starting_rotation, float _ending_rotation, float _rotation_time, movement_type _used_function, bool _clockwise, bool _repeat, float _delay_before, float _delay_after)
+const bool MovementContainer::addRotation(VertexArray2* _vertexarray, float _starting_rotation, float _ending_rotation, float _rotation_time, movement_type _used_function, bool _clockwise, bool _repeat, float _delay_before, float _delay_after)
 {
 	auto& rotationMap = sInstance->m_Rotations_VA;
 	auto rotationFound = rotationMap.find(_vertexarray);
@@ -1115,7 +979,7 @@ const bool MovementContainer::addRotation(sf::VertexArray* _vertexarray, float _
 		return 0;
 	}
 	else if (_vertexarray->getVertexCount() != 0) {
-		rotationInfoVA* newRotation = new rotationInfoVA(_starting_rotation, _ending_rotation, _rotation_time, sInstance->movement_functions[_used_function], _vertexarray, _repeat, _delay_before, _delay_after, _clockwise);
+		rotationInfo* newRotation = new rotationInfo(_starting_rotation, _ending_rotation, _rotation_time, sInstance->movement_functions[_used_function], _repeat, _delay_before, _delay_after, _clockwise);
 		rotationMap.insert(std::make_pair(_vertexarray, newRotation));
 	}
 	return 1;
@@ -1161,9 +1025,7 @@ void MovementContainer::undoRotation()
 	}
 
 	for (auto rotation = this->m_Rotations_VA.begin(); rotation != this->m_Rotations_VA.end();) {
-		rotation->second->current_rotation = rotation->second->getStartingRotation();
-		updateRotationInfoVA(rotation->first, rotation->second);
-
+		rotation->first->setRotation(rotation->second->getStartingRotation());
 		delete rotation->second;
 		rotation = m_Rotations_VA.erase(rotation);
 	}
@@ -1188,14 +1050,13 @@ void MovementContainer::undoRotation(sf::Shape* _shape)
 	}
 }
 
-void MovementContainer::undoRotation(sf::VertexArray* _vertexarray)
+void MovementContainer::undoRotation(VertexArray2* _vertexarray)
 {
 	auto& rotationMap = sInstance->m_Rotations_VA;
 	auto rotationFound = rotationMap.find(_vertexarray);
 
 	if (rotationFound != rotationMap.end()) {
-		rotationFound->second->current_rotation = rotationFound->second->getStartingRotation();
-		updateRotationInfoVA(_vertexarray, rotationFound->second);
+		_vertexarray->setRotation(rotationFound->second->getStartingRotation());
 
 		delete rotationFound->second;
 		rotationMap.erase(rotationFound);
@@ -1223,9 +1084,7 @@ void MovementContainer::resetRotation()
 	}
 
 	for (auto rotation = this->m_Rotations_VA.begin(); rotation != this->m_Rotations_VA.end();) {
-		rotation->second->current_rotation = rotation->second->getStartingRotation();
-		updateRotationInfoVA(rotation->first, rotation->second);
-
+		rotation->first->setRotation(rotation->second->getStartingRotation());
 		rotation->second->current_time = 0.f;
 		++rotation;
 	}
@@ -1248,15 +1107,13 @@ void MovementContainer::resetRotation(sf::Shape* _shape)
 	}
 }
 
-void MovementContainer::resetRotation(sf::VertexArray* _vertexarray)
+void MovementContainer::resetRotation(VertexArray2* _vertexarray)
 {
 	auto& rotationMap = sInstance->m_Rotations_VA;
 	auto rotationFound = rotationMap.find(_vertexarray);
 
 	if (rotationFound != rotationMap.end()) {
-		rotationFound->second->current_rotation = rotationFound->second->getStartingRotation();
-		updateRotationInfoVA(_vertexarray, rotationFound->second);
-
+		_vertexarray->setRotation(rotationFound->second->getStartingRotation());
 		rotationFound->second->current_time = 0.f;
 	}
 }
@@ -1280,36 +1137,6 @@ void MovementContainer::stopRotation()
 	}
 
 	for (auto rotation = this->m_Rotations_VA.begin(); rotation != this->m_Rotations_VA.end();) {
-		auto& movementMap = sInstance->m_Movements_VA;
-		auto movementFound = movementMap.find(rotation->first);
-
-		if (movementFound != movementMap.end()) {
-			float sine   = static_cast<float>(sin(static_cast<double>(rotation->second->current_rotation) * M_RAD)),
-				  cosine = static_cast<float>(cos(static_cast<double>(rotation->second->current_rotation) * M_RAD));
-
-			for (size_t i = 0; i < rotation->first->getVertexCount(); ++i) {
-				float x = movementFound->second->originalVertex.operator[](i).position.x - movementFound->second->centroid.x;
-				float y = movementFound->second->originalVertex.operator[](i).position.y - movementFound->second->centroid.y;
-				movementFound->second->originalVertex.operator[](i).position.x = movementFound->second->centroid.x + x * cosine - y * sine;
-				movementFound->second->originalVertex.operator[](i).position.y = movementFound->second->centroid.y + x * sine + y * cosine;
-			}
-		}
-
-		auto& scalingMap = sInstance->m_Scalings_VA;
-		auto scalingFound = scalingMap.find(rotation->first);
-
-		if (scalingFound != scalingMap.end()) {
-			float sine   = static_cast<float>(sin(static_cast<double>(rotation->second->current_rotation) * M_RAD)),
-				  cosine = static_cast<float>(cos(static_cast<double>(rotation->second->current_rotation) * M_RAD));
-
-			for (size_t i = 0; i < rotation->first->getVertexCount(); ++i) {
-				float x = scalingFound->second->originalVertex.operator[](i).position.x - scalingFound->second->centroid.x;
-				float y = scalingFound->second->originalVertex.operator[](i).position.y - scalingFound->second->centroid.y;
-				scalingFound->second->originalVertex.operator[](i).position.x = scalingFound->second->centroid.x + x * cosine - y * sine;
-				scalingFound->second->originalVertex.operator[](i).position.y = scalingFound->second->centroid.y + x * sine + y * cosine;
-			}
-		}
-
 		delete rotation->second;
 		rotation = m_Rotations_VA.erase(rotation);
 	}
@@ -1331,42 +1158,12 @@ void MovementContainer::stopRotation(sf::Shape* _shape)
 	}
 }
 
-void MovementContainer::stopRotation(sf::VertexArray* _vertexarray)
+void MovementContainer::stopRotation(VertexArray2* _vertexarray)
 {
 	auto& rotationMap = sInstance->m_Rotations_VA;
 	auto rotationFound = rotationMap.find(_vertexarray);
 
 	if (rotationFound != rotationMap.end()) {
-		auto& movementMap = sInstance->m_Movements_VA;
-		auto movementFound = movementMap.find(_vertexarray);
-
-		if (movementFound != movementMap.end()) {
-			float sine   = static_cast<float>(sin(static_cast<double>(rotationFound->second->current_rotation) * M_RAD)),
-				  cosine = static_cast<float>(cos(static_cast<double>(rotationFound->second->current_rotation) * M_RAD));
-
-			for (size_t i = 0; i < _vertexarray->getVertexCount(); ++i) {
-				float x = movementFound->second->originalVertex.operator[](i).position.x - movementFound->second->centroid.x;
-				float y = movementFound->second->originalVertex.operator[](i).position.y - movementFound->second->centroid.y;
-				movementFound->second->originalVertex.operator[](i).position.x = movementFound->second->centroid.x + x * cosine - y * sine;
-				movementFound->second->originalVertex.operator[](i).position.y = movementFound->second->centroid.y + x * sine + y * cosine;
-			}
-		}
-
-		auto& scalingMap = sInstance->m_Scalings_VA;
-		auto scalingFound = scalingMap.find(_vertexarray);
-
-		if (scalingFound != scalingMap.end()) {
-			float sine   = static_cast<float>(sin(static_cast<double>(rotationFound->second->current_rotation) * M_RAD)),
-				  cosine = static_cast<float>(cos(static_cast<double>(rotationFound->second->current_rotation) * M_RAD));
-
-			for (size_t i = 0; i < _vertexarray->getVertexCount(); ++i) {
-				float x = scalingFound->second->originalVertex.operator[](i).position.x - scalingFound->second->centroid.x;
-				float y = scalingFound->second->originalVertex.operator[](i).position.y - scalingFound->second->centroid.y;
-				scalingFound->second->originalVertex.operator[](i).position.x = scalingFound->second->centroid.x + x * cosine - y * sine;
-				scalingFound->second->originalVertex.operator[](i).position.y = scalingFound->second->centroid.y + x * sine + y * cosine;
-			}
-		}
-
 		delete rotationFound->second;
 		rotationMap.erase(rotationFound);
 	}
@@ -1390,7 +1187,7 @@ const bool MovementContainer::isMoving(sf::Shape* _shape)
 	return false;
 }
 
-const bool MovementContainer::isMoving(sf::VertexArray* _vertexarray)
+const bool MovementContainer::isMoving(VertexArray2* _vertexarray)
 {
 	if (this->m_Movements_VA.find(_vertexarray) != this->m_Movements_VA.end())
 		return true;
@@ -1411,7 +1208,7 @@ const bool MovementContainer::isScaling(sf::Shape* _shape)
 	return false;
 }
 
-const bool MovementContainer::isScaling(sf::VertexArray* _vertexarray)
+const bool MovementContainer::isScaling(VertexArray2* _vertexarray)
 {
 	if (this->m_Scalings_VA.find(_vertexarray) != this->m_Scalings_VA.end())
 		return true;
@@ -1432,7 +1229,7 @@ const bool MovementContainer::isRotating(sf::Shape* _shape)
 	return false;
 }
 
-const bool MovementContainer::isRotating(sf::VertexArray* _vertexarray)
+const bool MovementContainer::isRotating(VertexArray2* _vertexarray)
 {
 	if (this->m_Rotations_VA.find(_vertexarray) != this->m_Rotations_VA.end())
 		return true;
@@ -1450,63 +1247,6 @@ const bool MovementContainer::isRotating(sf::Sprite* _sprite)
 
 // Singleton initialization
 MovementRoutineEngine* MovementRoutineEngine::sInstance = nullptr;
-
-void MovementRoutineEngine::updateMovementInfoVA(sf::VertexArray* _vertexarray, movementInfoVA* _movementInfo, sf::Vector2f _offset)
-{
-	if (_offset == sf::Vector2f{}) return;
-
-	// === Movement ===
-	_movementInfo->centroid += _offset;
-
-	for (size_t i = 0; i < _vertexarray->getVertexCount(); i++)
-		_vertexarray->operator[](i).position += _offset;
-
-	// === Scaling ===
-	auto& scalingRoutineMap = sInstance->m_Scaling_Routines_VA;
-	auto scalingRoutine = scalingRoutineMap.find(_vertexarray);
-
-	if (scalingRoutine != scalingRoutineMap.end())
-		scalingRoutine->second->updateMovementInfoVA(_offset);
-	
-
-	// === Rotation ===
-	auto& rotationRoutineMap = sInstance->m_Rotation_Routines_VA; 
-	auto rotationRoutine = rotationRoutineMap.find(_vertexarray);
-
-	if (rotationRoutine != rotationRoutineMap.end()) 
-		rotationRoutine->second->updateMovementInfoVA(_offset);
-}
-
-void MovementRoutineEngine::updateScalingInfoVA(sf::VertexArray& vertexarray, const scalingInfoVA& scalingInfo)
-{
-	// VA Scaling
-	for (size_t i = 0; i < vertexarray.getVertexCount(); i++) {
-		vertexarray.operator[](i).position.x = scalingInfo.centroid.x + (scalingInfo.originalVertex.operator[](i).position.x - scalingInfo.centroid.x) * scalingInfo.current_scale.x;
-		vertexarray.operator[](i).position.y = scalingInfo.centroid.y + (scalingInfo.originalVertex.operator[](i).position.y - scalingInfo.centroid.y) * scalingInfo.current_scale.y;
-	}
-
-
-	// === Rotation ===
-	auto& rotationRoutineMap = sInstance->m_Rotation_Routines_VA;
-	auto rotationRoutine = rotationRoutineMap.find(&vertexarray);
-
-	if (rotationRoutine != rotationRoutineMap.end()) 
-		rotationRoutine->second->updateScalingInfoVA(vertexarray);
-}
-
-void MovementRoutineEngine::updateRotationInfoVA(sf::VertexArray* _vertexarray, rotationInfoVA* _rotationInfo)
-{
-	// === Rotation ===
-	float sine = static_cast<float>(sin(static_cast<double>(_rotationInfo->current_rotation) * M_RAD)),
-		  cosine = static_cast<float>(cos(static_cast<double>(_rotationInfo->current_rotation) * M_RAD));
-
-	for (size_t i = 0; i < _vertexarray->getVertexCount(); ++i) {
-		float x = _rotationInfo->originalVertex.operator[](i).position.x - _rotationInfo->centroid.x;
-		float y = _rotationInfo->originalVertex.operator[](i).position.y - _rotationInfo->centroid.y;
-		_vertexarray->operator[](i).position.x = _rotationInfo->centroid.x + x * cosine - y * sine;
-		_vertexarray->operator[](i).position.y = _rotationInfo->centroid.y + x * sine + y * cosine;
-	}
-}
 
 void MovementRoutineEngine::updateShape(float dt)
 {
@@ -1635,26 +1375,19 @@ void MovementRoutineEngine::updateVertexArray(float dt)
 {
 	for (auto movementRoutine = this->m_Movement_Routines_VA.begin(); movementRoutine != this->m_Movement_Routines_VA.end();) {
 		if (!movementRoutine->second->is_paused) {
-			sf::VertexArray* vertexarray = movementRoutine->first;
-			movementInfoVA* movement = movementRoutine->second->getCurrentMovement();
+			VertexArray2* vertexarray = movementRoutine->first;
+			movementInfo* movement = movementRoutine->second->getCurrentMovement();
 
 			movement->current_time += dt;
 
 			if (vertexarray->getVertexCount() != 0) {
 				if (movement->isDone()) {
-					if (movement->current_time - movement->delay_before - dt < movement->motion_duration) {
-						sf::Vector2f offset(static_cast<float>(movement->used_function(1.0)) * (movement->ending_pos.x - movement->starting_pos.x) + movement->starting_pos.x - movement->centroid.x,
-											static_cast<float>(movement->used_function(1.0)) * (movement->ending_pos.y - movement->starting_pos.y) + movement->starting_pos.y - movement->centroid.y);
-
-						this->updateMovementInfoVA(vertexarray, movement, offset);
-					}
+					if (movement->current_time - movement->delay_before - dt < movement->motion_duration) 
+						vertexarray->setPosition(movement->ending_pos);
 
 					if (movement->repeat) {
 						if (movement->current_time - movement->motion_duration - movement->delay_before >= movement->delay_after) {
-							sf::Vector2f offset(movement->ending_pos - movement->starting_pos);
-
-							this->updateMovementInfoVA(vertexarray, movement, -offset);
-
+							vertexarray->setPosition(movement->starting_pos);
 							movement->current_time -= movement->total_duration;
 						}
 					}
@@ -1668,32 +1401,13 @@ void MovementRoutineEngine::updateVertexArray(float dt)
 				}
 				else {
 					if (movement->current_time > movement->delay_before) {
-						sf::Vector2f offset(static_cast<float>(movement->used_function(static_cast<double>((movement->current_time - movement->delay_before) / movement->motion_duration))) * (movement->ending_pos.x - movement->starting_pos.x) + movement->starting_pos.x - movement->centroid.x,
-											static_cast<float>(movement->used_function(static_cast<double>((movement->current_time - movement->delay_before) / movement->motion_duration))) * (movement->ending_pos.y - movement->starting_pos.y) + movement->starting_pos.y - movement->centroid.y);
+						sf::Vector2f new_position(static_cast<float>(movement->used_function(static_cast<double>((movement->current_time - movement->delay_before) / movement->motion_duration))) * (movement->ending_pos.x - movement->starting_pos.x) + movement->starting_pos.x,
+												  static_cast<float>(movement->used_function(static_cast<double>((movement->current_time - movement->delay_before) / movement->motion_duration))) * (movement->ending_pos.y - movement->starting_pos.y) + movement->starting_pos.y);
 
-						this->updateMovementInfoVA(vertexarray, movement, offset);
+						vertexarray->setPosition(new_position);
 					}
-					else if (movement->current_time - dt == 0.f) {
-
-						sf::Vector2f offset(movement->starting_pos - movement->centroid);
-						this->updateMovementInfoVA(vertexarray, movement, offset);
-
-						auto& scalingRoutineMap = sInstance->m_Scaling_Routines_VA;
-						auto scalingRoutine = scalingRoutineMap.find(vertexarray);
-
-						if (scalingRoutine != scalingRoutineMap.end()) {
-							const sf::Vector2f scalingOriginalVertextoCurrentMovementOffset = movement->centroid - scalingRoutine->second->getCurrentScaling()->centroid;
-							scalingRoutine->second->updateMovementInfoVA(scalingOriginalVertextoCurrentMovementOffset);
-						}
-
-						auto& rotationRoutineMap = sInstance->m_Rotation_Routines_VA;
-						auto rotationRoutine = rotationRoutineMap.find(vertexarray);
-
-						if (rotationRoutine != rotationRoutineMap.end()) {
-							const sf::Vector2f rotationOriginalVertextoCurrentMovementOffset = movement->centroid - rotationRoutine->second->getCurrentRotation()->centroid;
-							rotationRoutine->second->updateMovementInfoVA(rotationOriginalVertextoCurrentMovementOffset);
-						}
-					}
+					else if (movement->current_time - dt == 0.f)
+						vertexarray->setPosition(movement->starting_pos);
 				}
 			}
 		}
@@ -1703,27 +1417,20 @@ void MovementRoutineEngine::updateVertexArray(float dt)
 
 	for (auto scalingRoutine = this->m_Scaling_Routines_VA.begin(); scalingRoutine != this->m_Scaling_Routines_VA.end();) {
 		if (!scalingRoutine->second->is_paused) {
-			sf::VertexArray& vertexarray = *scalingRoutine->first;
-			scalingInfoVA& scaling = *scalingRoutine->second->getCurrentScaling();
+			VertexArray2& vertexarray = *scalingRoutine->first;
+			scalingInfo&  scaling = *scalingRoutine->second->getCurrentScaling();
 
 			scaling.current_time += dt;
 
 			if (vertexarray.getVertexCount() != 0) {
 				if (scaling.isDone()) {
-					if (scaling.current_time - scaling.delay_before - dt < scaling.motion_duration) {
-
-						scaling.current_scale = scaling.ending_scale;
-						updateScalingInfoVA(vertexarray, scaling);
-					}
+					if (scaling.current_time - scaling.delay_before - dt < scaling.motion_duration) 
+						vertexarray.setScale(scaling.ending_scale);
+					
 
 					if (scaling.repeat) {
-						if (scaling.current_time - scaling.motion_duration - scaling.delay_before < scaling.delay_after) {
-							scaling.current_scale = scaling.ending_scale;
-							updateScalingInfoVA(vertexarray, scaling);
-						}
-						else {
-							scaling.current_scale = scaling.starting_scale;
-							updateScalingInfoVA(vertexarray, scaling);
+						if (scaling.current_time - scaling.motion_duration - scaling.delay_before >= scaling.delay_after){
+							vertexarray.setScale(scaling.starting_scale);
 
 							scaling.current_time -= scaling.total_duration;
 						}
@@ -1738,23 +1445,13 @@ void MovementRoutineEngine::updateVertexArray(float dt)
 				}
 				else {
 					if (scaling.current_time > scaling.delay_before) {
-						sf::Vector2f new_scale(scaling.used_function(static_cast<double>((scaling.current_time - scaling.delay_before) / scaling.motion_duration)) * (scaling.ending_scale.x - scaling.starting_scale.x) + scaling.starting_scale.x,
-											   scaling.used_function(static_cast<double>((scaling.current_time - scaling.delay_before) / scaling.motion_duration)) * (scaling.ending_scale.y - scaling.starting_scale.y) + scaling.starting_scale.y);
+						sf::Vector2f new_scale(static_cast<float>(scaling.used_function(static_cast<double>((scaling.current_time - scaling.delay_before) / scaling.motion_duration))) * (scaling.ending_scale.x - scaling.starting_scale.x) + scaling.starting_scale.x,
+											   static_cast<float>(scaling.used_function(static_cast<double>((scaling.current_time - scaling.delay_before) / scaling.motion_duration))) * (scaling.ending_scale.y - scaling.starting_scale.y) + scaling.starting_scale.y);
 
-						scaling.current_scale = new_scale;
-						updateScalingInfoVA(vertexarray, scaling);
+						vertexarray.setScale(new_scale);
 					}
-					else if (scaling.current_time - dt == 0.f) {
- 						scaling.current_scale = scaling.starting_scale;
-						updateScalingInfoVA(vertexarray, scaling);
-
-						auto& rotationRoutineMap = sInstance->m_Rotation_Routines_VA;
-						auto rotationRoutine = rotationRoutineMap.find(&vertexarray);
-
-						if (rotationRoutine != rotationRoutineMap.end()) 
-							rotationRoutine->second->updateScalingInfoVA(vertexarray);
-					}
-					
+					else if (scaling.current_time - dt == 0.f) 
+ 						vertexarray.setScale(scaling.starting_scale);
 				}
 			}
 		}
@@ -1764,33 +1461,25 @@ void MovementRoutineEngine::updateVertexArray(float dt)
 
 	for (auto rotationRoutine = this->m_Rotation_Routines_VA.begin(); rotationRoutine != this->m_Rotation_Routines_VA.end();) {
 		if (!rotationRoutine->second->is_paused) {
-			sf::VertexArray* vertexarray = rotationRoutine->first;
-			rotationInfoVA* rotation = rotationRoutine->second->getCurrentRotation();
+			VertexArray2& vertexarray = *rotationRoutine->first;
+			rotationInfo& rotation = *rotationRoutine->second->getCurrentRotation();
 
-			rotation->current_time += dt;
+			rotation.current_time += dt;
 
-			if (vertexarray->getVertexCount() != 0) {
-				if (rotation->isDone()) {
-					if (rotation->current_time - rotation->delay_before - dt < rotation->motion_duration) {
-						rotation->setCurrentRotation(rotation->getEndingRotation());
-						updateRotationInfoVA(vertexarray, rotation);
-					}
+			if (vertexarray.getVertexCount() != 0) {
+				if (rotation.isDone()) {
+					if (rotation.current_time - rotation.delay_before - dt < rotation.motion_duration) 
+						vertexarray.setRotation(rotation.getEndingRotation());
 
-					if (rotation->repeat) {
-						if (rotation->current_time - rotation->motion_duration - rotation->delay_before < rotation->delay_after) {
-							rotation->setCurrentRotation(rotation->getEndingRotation());
-							updateRotationInfoVA(vertexarray, rotation);
-						}
+					if (rotation.repeat) {
+						if (rotation.current_time - rotation.motion_duration - rotation.delay_before >= rotation.delay_after) {
+							vertexarray.setRotation(rotation.getStartingRotation());
 
-						else {
-							rotation->setCurrentRotation(rotation->getStartingRotation());
-							updateRotationInfoVA(vertexarray, rotation);
-
-							rotation->current_time -= rotation->total_duration;
+							rotation.current_time -= rotation.total_duration;
 						}
 					}
-					else if (rotation->isFinished()) {
-						if (!rotationRoutine->second->goToNextRotation(vertexarray)) {
+					else if (rotation.isFinished()) {
+						if (!rotationRoutine->second->goToNextRotation(&vertexarray)) {
 							rotationRoutine->second = nullptr;
 							rotationRoutine = m_Rotation_Routines_VA.erase(rotationRoutine);
 							continue;
@@ -1798,14 +1487,10 @@ void MovementRoutineEngine::updateVertexArray(float dt)
 					}
 				}
 				else {
-					if (rotation->current_time > rotation->delay_before) {
-						rotation->setCurrentRotation(rotation->updateRotation());
-						updateRotationInfoVA(vertexarray, rotation);
-					}
-					else if (rotation->current_time - dt == 0.f) {
-						rotation->setCurrentRotation(rotation->getStartingRotation());
-						updateRotationInfoVA(vertexarray, rotation);
-					}
+					if (rotation.current_time > rotation.delay_before) 
+						vertexarray.setRotation(rotation.updateRotation());
+					else if (rotation.current_time - dt == 0.f) 
+						vertexarray.setRotation(rotation.getStartingRotation());
 				}
 			}
 		}
@@ -1964,7 +1649,7 @@ const MovementRoutine* MovementRoutineEngine::addMovement(sf::Shape* _shape, Mov
 	return _movementRoutine;
 }
 
-const MovementRoutineVA* MovementRoutineEngine::addMovement(sf::VertexArray* _vertexarray, MovementRoutineVA* _movementRoutine)
+const MovementRoutine* MovementRoutineEngine::addMovement(VertexArray2* _vertexarray, MovementRoutine* _movementRoutine)
 {
 	auto& movementRoutineMap = sInstance->m_Movement_Routines_VA;
 	auto movementFound = movementRoutineMap.find(_vertexarray);
@@ -2000,7 +1685,7 @@ void MovementRoutineEngine::undoMovement(sf::Shape* _shape)
 {
 }
 
-void MovementRoutineEngine::undoMovement(sf::VertexArray* _vertexarray)
+void MovementRoutineEngine::undoMovement(VertexArray2* _vertexarray)
 {
 }
 
@@ -2016,7 +1701,7 @@ void MovementRoutineEngine::resetMovement(sf::Shape* _shape)
 {
 }
 
-void MovementRoutineEngine::resetMovement(sf::VertexArray* _vertexarray)
+void MovementRoutineEngine::resetMovement(VertexArray2* _vertexarray)
 {
 }
 
@@ -2053,7 +1738,7 @@ void MovementRoutineEngine::stopMovement(sf::Shape* _shape)
 	}
 }
 
-void MovementRoutineEngine::stopMovement(sf::VertexArray* _vertexarray)
+void MovementRoutineEngine::stopMovement(VertexArray2* _vertexarray)
 {
 	auto& movementRoutineMap = sInstance->m_Movement_Routines_VA;
 	auto movementRoutineFound = movementRoutineMap.find(_vertexarray);
@@ -2089,7 +1774,7 @@ const ScalingRoutine* MovementRoutineEngine::addScaling(sf::Shape* _shape, Scali
 	return _scalingRoutine;
 }
 
-const ScalingRoutineVA* MovementRoutineEngine::addScaling(sf::VertexArray* _vertexarray, ScalingRoutineVA* _scalingRoutine)
+const ScalingRoutine* MovementRoutineEngine::addScaling(VertexArray2* _vertexarray, ScalingRoutine* _scalingRoutine)
 {
 	auto& scalingRoutineMap = sInstance->m_Scaling_Routines_VA;
 	auto scalingFound = scalingRoutineMap.find(_vertexarray);
@@ -2125,7 +1810,7 @@ void MovementRoutineEngine::undoScaling(sf::Shape* _shape)
 {
 }
 
-void MovementRoutineEngine::undoScaling(sf::VertexArray* _vertexarray)
+void MovementRoutineEngine::undoScaling(VertexArray2* _vertexarray)
 {
 }
 
@@ -2141,7 +1826,7 @@ void MovementRoutineEngine::resetScaling(sf::Shape* _shape)
 {
 }
 
-void MovementRoutineEngine::resetScaling(sf::VertexArray* _vertexarray)
+void MovementRoutineEngine::resetScaling(VertexArray2* _vertexarray)
 {
 }
 
@@ -2178,7 +1863,7 @@ void MovementRoutineEngine::stopScaling(sf::Shape* _shape)
 	}
 }
 
-void MovementRoutineEngine::stopScaling(sf::VertexArray* _vertexarray)
+void MovementRoutineEngine::stopScaling(VertexArray2* _vertexarray)
 {
 	auto& scalingRoutineMap = sInstance->m_Scaling_Routines_VA;
 	auto scalingRoutineFound = scalingRoutineMap.find(_vertexarray);
@@ -2214,7 +1899,7 @@ const RotationRoutine* MovementRoutineEngine::addRotation(sf::Shape* _shape, Rot
 	return _rotationRoutine;
 }
 
-const RotationRoutineVA* MovementRoutineEngine::addRotation(sf::VertexArray* _vertexarray, RotationRoutineVA* _rotationRoutine)
+const RotationRoutine* MovementRoutineEngine::addRotation(VertexArray2* _vertexarray, RotationRoutine* _rotationRoutine)
 {
 	auto& rotationRoutineMap = sInstance->m_Rotation_Routines_VA;
 	auto rotationFound = rotationRoutineMap.find(_vertexarray);
@@ -2250,7 +1935,7 @@ void MovementRoutineEngine::undoRotation(sf::Shape* _shape)
 {
 }
 
-void MovementRoutineEngine::undoRotation(sf::VertexArray* _vertexarray)
+void MovementRoutineEngine::undoRotation(VertexArray2* _vertexarray)
 {
 }
 
@@ -2266,7 +1951,7 @@ void MovementRoutineEngine::resetRotation(sf::Shape* _shape)
 {
 }
 
-void MovementRoutineEngine::resetRotation(sf::VertexArray* _vertexarray)
+void MovementRoutineEngine::resetRotation(VertexArray2* _vertexarray)
 {
 }
 
@@ -2303,7 +1988,7 @@ void MovementRoutineEngine::stopRotation(sf::Shape* _shape)
 	}
 }
 
-void MovementRoutineEngine::stopRotation(sf::VertexArray* _vertexarray)
+void MovementRoutineEngine::stopRotation(VertexArray2* _vertexarray)
 {
 	auto& rotationRoutineMap = sInstance->m_Rotation_Routines_VA;
 	auto rotationRoutineFound = rotationRoutineMap.find(_vertexarray);
@@ -2330,7 +2015,7 @@ const bool MovementRoutineEngine::isMoving(sf::Shape* _shape)
 	return false;
 }
 
-const bool MovementRoutineEngine::isMoving(sf::VertexArray* _vertexarray)
+const bool MovementRoutineEngine::isMoving(VertexArray2* _vertexarray)
 {
 	return false;
 }
@@ -2345,7 +2030,7 @@ const bool MovementRoutineEngine::isScaling(sf::Shape* _shape)
 	return false;
 }
 
-const bool MovementRoutineEngine::isScaling(sf::VertexArray* _vertexarray)
+const bool MovementRoutineEngine::isScaling(VertexArray2* _vertexarray)
 {
 	return false;
 }
@@ -2360,7 +2045,7 @@ const bool MovementRoutineEngine::isRotating(sf::Shape* _shape)
 	return false;
 }
 
-const bool MovementRoutineEngine::isRotating(sf::VertexArray* _vertexarray)
+const bool MovementRoutineEngine::isRotating(VertexArray2* _vertexarray)
 {
 	return false;
 }

@@ -16,7 +16,7 @@ private:
 	void updateCentroid();
 	void updatePosition(const sf::Vector2f& new_pos);
 	void updateScale(const sf::Vector2f& new_scale);
-	void updateRotation(const float new_rotation);
+	void updateRotation(float new_rotation);
 
 public:
 	// Constructors / Destructors

@@ -44,8 +44,12 @@ void VertexArray2::updateScale(const sf::Vector2f& new_scale)
 	m_scale = new_scale;
 }
 
-void VertexArray2::updateRotation(const float new_rotation)
+void VertexArray2::updateRotation(float new_rotation)
 {
+	new_rotation = std::fmod(new_rotation, 360.f);
+	if (new_rotation < 0)
+		new_rotation += 360.f;
+
 	const size_t vertex_count = sf::VertexArray::getVertexCount();
 
 	const double angle = static_cast<double>(new_rotation - m_rotation) * M_RAD;
@@ -198,10 +202,7 @@ const sf::Vector2f& VertexArray2::getCentroid()
 
 const sf::Vector2f& VertexArray2::getPosition()
 {
-	if (m_needCentroidUpdate)
-		updateCentroid();
-
-	return m_centroid;
+	return getOrigin();
 }
 
 const sf::Vector2f& VertexArray2::getOrigin()

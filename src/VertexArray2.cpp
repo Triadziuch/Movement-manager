@@ -1,6 +1,7 @@
 #pragma once
 #include "VertexArray2.h"
 
+// = = = = = = = = = = Private update functions = = = = = = = = = = 
 void VertexArray2::updateCentroid()
 {
 	m_needCentroidUpdate = false;
@@ -63,6 +64,65 @@ void VertexArray2::updateRotation(const float new_rotation)
 	m_rotation = new_rotation;
 }
 
+// = = = = = = = = = = Constructors / Destructors = = = = = = = = = =
+
+VertexArray2::VertexArray2() : sf::VertexArray{}, m_centroid{}, m_origin{&m_centroid}, m_scale{1, 1},
+							   m_rotation{0}, m_needCentroidUpdate{false}, m_originIsCentroid{true} {}
+
+VertexArray2::VertexArray2(sf::PrimitiveType type, size_t vertexCount) : sf::VertexArray{ type, vertexCount },
+							   m_centroid{}, m_origin{ &m_centroid }, m_scale{ 1, 1 }, m_rotation{ 0 },
+							   m_needCentroidUpdate{ false }, m_originIsCentroid{ true } {}
+
+VertexArray2::VertexArray2(const VertexArray2& other) : sf::VertexArray{ other }, m_centroid{ other.m_centroid },
+							   m_origin{ other.m_origin }, m_scale{ other.m_scale }, m_rotation{ other.m_rotation },
+							   m_needCentroidUpdate{ other.m_needCentroidUpdate }, m_originIsCentroid{ other.m_originIsCentroid } {}
+
+VertexArray2::~VertexArray2() { 
+	if (!m_originIsCentroid) 
+		delete m_origin; 
+};
+
+// = = = = = = = = = = Overriden functions = = = = = = = = = =
+void VertexArray2::clear()
+{
+	m_needCentroidUpdate = true;
+	sf::VertexArray::clear();
+}
+
+void VertexArray2::resize(std::size_t vertexCount)
+{
+	m_needCentroidUpdate = true;
+	sf::VertexArray::resize(vertexCount);
+}
+
+void VertexArray2::append(const sf::Vertex& vertex)
+{
+	m_needCentroidUpdate = true;
+	sf::VertexArray::append(vertex);
+}
+
+// = = = = = = = = = = Overriden operators = = = = = = = = = =
+sf::Vertex& VertexArray2::operator [](std::size_t index)
+{
+	m_needCentroidUpdate = true;
+	return sf::VertexArray::operator[](index);
+}
+
+const sf::Vertex& VertexArray2::operator [](std::size_t index) const
+{
+	return sf::VertexArray::operator[](index);
+}
+
+VertexArray2::operator sf::VertexArray& () {
+	return *this;
+}
+
+VertexArray2::operator const sf::VertexArray& () const {
+	return *this;
+}
+
+//  = = = = = = = = = = Public functions = = = = = = = = = =
+
 void VertexArray2::setPosition(float x, float y)
 {
 	updatePosition(sf::Vector2f(x, y));
@@ -83,17 +143,6 @@ void VertexArray2::move(const sf::Vector2f& offset)
 	updatePosition(*m_origin + offset);
 }
 
-sf::Vertex& VertexArray2::operator [](std::size_t index)
-{
-	m_needCentroidUpdate = true;
-	return sf::VertexArray::operator[](index);
-}
-
-const sf::Vertex& VertexArray2::operator [](std::size_t index) const
-{
-	return sf::VertexArray::operator[](index);
-}
-
 void VertexArray2::setRotation(float angle)
 {
 	updateRotation(angle);
@@ -109,24 +158,6 @@ void VertexArray2::setScale(const sf::Vector2f& factors)
 	updateScale(factors);
 }
 
-void VertexArray2::clear()
-{
-	m_needCentroidUpdate = true;
-	sf::VertexArray::clear();
-}
-
-void VertexArray2::resize(std::size_t vertexCount)
-{
-	m_needCentroidUpdate = true;
-	sf::VertexArray::resize(vertexCount);
-}
-
-void VertexArray2::append(const sf::Vertex& vertex)
-{
-	m_needCentroidUpdate = true;
-	sf::VertexArray::append(vertex);
-}
-
 void VertexArray2::setOrigin(float x, float y)
 {
 	if (!m_originIsCentroid)
@@ -139,6 +170,7 @@ void VertexArray2::setOrigin(const sf::Vector2f& origin)
 		*m_origin = origin;
 }
 
+// = = = = = = = = = = Mutators = = = = = = = = = =
 void VertexArray2::setOriginToCentroid(bool value)
 {
 	if (value == m_originIsCentroid)
@@ -155,6 +187,7 @@ void VertexArray2::setOriginToCentroid(bool value)
 	}
 }
 
+// = = = = = = = = = = Accessors = = = = = = = = = =
 const sf::Vector2f& VertexArray2::getCentroid()
 {
 	if (m_needCentroidUpdate)

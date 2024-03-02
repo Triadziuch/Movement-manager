@@ -1,12 +1,45 @@
 #include "RoutineContainer.h"
 
+// - - - - - - - - - - - - - - - - - - - - RoutineContainer - - - - - - - - - - - - - - - - - - - - \\
+
+// Constructors / Destructors
+RoutineContainer::RoutineContainer() :
+	m_movementRoutineEngine(nullptr)
+	{}
+
+RoutineContainer::RoutineContainer(MovementRoutineEngine* movementRoutineEnginePtr) :
+	m_movementRoutineEngine(movementRoutineEnginePtr)
+	{}
+
+RoutineContainer::~RoutineContainer()
+{
+	m_movementRoutineEngine = nullptr;
+}
+
 // - - - - - - - - - - - - - - - - - - - - MovementRoutineContainer - - - - - - - - - - - - - - - - - - - - \\
 
+// Constructors / Destructors
+MovementRoutineContainer::MovementRoutineContainer() :
+	RoutineContainer{}
+	{}
+
+MovementRoutineContainer::MovementRoutineContainer(MovementRoutineEngine * movementRoutineEnginePtr) :
+	RoutineContainer{ movementRoutineEnginePtr }
+	{}
+
+MovementRoutineContainer::~MovementRoutineContainer()
+{
+	for (auto& routine : m_movementRoutines) 
+		delete routine.second;
+	m_movementRoutines.clear();
+}
+
+// Public functions
 MovementRoutine* MovementRoutineContainer::exists(const std::string& _name)
 {
-	auto movementRoutineFound = movementRoutines.find(_name);
+	auto movementRoutineFound = m_movementRoutines.find(_name);
 
-	if (movementRoutineFound != movementRoutines.end())
+	if (movementRoutineFound != m_movementRoutines.end())
 		return movementRoutineFound->second;
 	else
 		return nullptr;
@@ -15,7 +48,7 @@ MovementRoutine* MovementRoutineContainer::exists(const std::string& _name)
 MovementRoutine MovementRoutineContainer::getRoutine(const std::string& _name)
 {
 	if (exists(_name) != nullptr)
-		return *movementRoutines[_name];
+		return *m_movementRoutines[_name];
 	else {
 		printf("MovementRoutineContainer::getRoutine: Routine with given name does not exist\n");
 		return MovementRoutine();
@@ -41,8 +74,8 @@ MovementRoutine* MovementRoutineContainer::createRoutine(const std::string& _nam
 		return movementRoutineExists;
 	}
 	else {
-		MovementRoutine* newMovementRoutine = new MovementRoutine(_name, movementRoutineEngine);
-		movementRoutines.insert(std::make_pair(_name, newMovementRoutine));
+		MovementRoutine* newMovementRoutine = new MovementRoutine(_name, m_movementRoutineEngine);
+		m_movementRoutines.insert(std::make_pair(_name, newMovementRoutine));
 		return newMovementRoutine;
 	}
 }
@@ -56,28 +89,59 @@ MovementRoutine* MovementRoutineContainer::createRoutine(const std::string& _nam
 		return movementRoutineExists;
 	}
 	else {
-		movementRoutines.insert(std::make_pair(_name, _movement_routine));
+		m_movementRoutines.insert(std::make_pair(_name, _movement_routine));
 		return _movement_routine;
 	}
 }
 
 void MovementRoutineContainer::clear()
 {
-	for (auto& routine : movementRoutines) delete routine.second;
-	movementRoutines.clear();
+	for (auto& routine : m_movementRoutines) 
+		delete routine.second;
+	m_movementRoutines.clear();
 }
 
 void MovementRoutineContainer::deleteRoutine(const std::string& _name)
 {
-	auto movementRoutineFound = this->movementRoutines.find(_name);
+	auto movementRoutineFound = this->m_movementRoutines.find(_name);
 
-	if (movementRoutineFound != this->movementRoutines.end()) {
+	if (movementRoutineFound != this->m_movementRoutines.end()) {
 		delete movementRoutineFound->second;
-		this->movementRoutines.erase(movementRoutineFound);
+		this->m_movementRoutines.erase(movementRoutineFound);
 	}
 }
 
+const size_t& MovementRoutineContainer::getRoutineCount() const
+{
+	return m_movementRoutines.size();
+}
+
+const long long int& MovementRoutineContainer::size() const
+{
+	long long int size{ sizeof(this) };
+	for (const auto& routine : m_movementRoutines) 
+		size += routine.second->size();
+
+	return size;
+}
+
 // - - - - - - - - - - - - - - - - - - - - ScalingRoutineContainer - - - - - - - - - - - - - - - - - - - - \\
+
+// Constructors / Destructors
+ScalingRoutineContainer::ScalingRoutineContainer() :
+	RoutineContainer{}
+	{}
+
+ScalingRoutineContainer::ScalingRoutineContainer(MovementRoutineEngine* movementRoutineEnginePtr) :
+	RoutineContainer{ movementRoutineEnginePtr }
+	{}
+
+ScalingRoutineContainer::~ScalingRoutineContainer()
+{
+	for (auto& routine : scalingRoutines)
+		delete routine.second;
+	scalingRoutines.clear();
+}
 
 ScalingRoutine* ScalingRoutineContainer::exists(const std::string& _name)
 {
@@ -118,7 +182,7 @@ ScalingRoutine* ScalingRoutineContainer::createRoutine(const std::string& _name)
 		return scalingRoutineExists;
 	}
 	else {
-		ScalingRoutine* newScalingRoutine = new ScalingRoutine(_name, movementRoutineEngine);
+		ScalingRoutine* newScalingRoutine = new ScalingRoutine(_name, m_movementRoutineEngine);
 		scalingRoutines.insert(std::make_pair(_name, newScalingRoutine));
 		return newScalingRoutine;
 	}
@@ -140,7 +204,8 @@ ScalingRoutine* ScalingRoutineContainer::createRoutine(const std::string& _name,
 
 void ScalingRoutineContainer::clear()
 {
-	for (auto& routine : scalingRoutines) delete routine.second;
+	for (auto& routine : scalingRoutines)
+		delete routine.second;
 	scalingRoutines.clear();
 }
 
@@ -156,7 +221,38 @@ void ScalingRoutineContainer::deleteRoutine(const std::string& _name)
 		printf("ScalingRoutineContainer::deleteRoutine: Routine with given name does not exist\n");
 }
 
+const size_t& ScalingRoutineContainer::getRoutineCount() const
+{
+	return scalingRoutines.size();
+}
+
+const long long int& ScalingRoutineContainer::size() const
+{
+	long long int size{ sizeof(this) };
+	for (const auto& routine : scalingRoutines)
+		size += routine.second->size();
+
+	return size;
+}
+
 // - - - - - - - - - - - - - - - - - - - - RotationRoutineContainer - - - - - - - - - - - - - - - - - - - - \\
+
+// Constructors / Destructors
+RotationRoutineContainer::RotationRoutineContainer() :
+	RoutineContainer{}
+	{}
+
+RotationRoutineContainer::RotationRoutineContainer(MovementRoutineEngine* movementRoutineEnginePtr) :
+	RoutineContainer{ movementRoutineEnginePtr }
+	{}
+
+RotationRoutineContainer::~RotationRoutineContainer()
+{
+	for (auto& routine : rotationRoutines)
+		delete routine.second;
+	rotationRoutines.clear();
+
+}
 
 RotationRoutine* RotationRoutineContainer::exists(const std::string& _name)
 {
@@ -197,7 +293,7 @@ RotationRoutine* RotationRoutineContainer::createRoutine(const std::string& _nam
 		return rotationRoutineExists;
 	}
 	else {
-		RotationRoutine* newRotationRoutine = new RotationRoutine(_name, movementRoutineEngine);
+		RotationRoutine* newRotationRoutine = new RotationRoutine(_name, m_movementRoutineEngine);
 		rotationRoutines.insert(std::make_pair(_name, newRotationRoutine));
 		return newRotationRoutine;
 	}
@@ -219,7 +315,8 @@ RotationRoutine* RotationRoutineContainer::createRoutine(const std::string& _nam
 
 void RotationRoutineContainer::clear()
 {
-	for (auto& routine : rotationRoutines) delete routine.second;
+	for (auto& routine : rotationRoutines)
+		delete routine.second;
 	rotationRoutines.clear();
 }
 
@@ -231,4 +328,18 @@ void RotationRoutineContainer::deleteRoutine(const std::string& _name)
 		delete rotationRoutineFound->second;
 		this->rotationRoutines.erase(rotationRoutineFound);
 	}
+}
+
+const size_t& RotationRoutineContainer::getRoutineCount() const
+{
+	return rotationRoutines.size();
+}
+
+const long long int& RotationRoutineContainer::size() const
+{
+	long long int size{ sizeof(this) };
+	for (const auto& routine : rotationRoutines)
+		size += routine.second->size();
+
+	return size;
 }

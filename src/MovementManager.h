@@ -9,40 +9,40 @@ private:
 
 	
 	// Contains active routines linked to shapes
-	std::map<sf::Shape*,  MovementRoutine*> m_Routine_Movement_Shape_Active;
-	std::map<sf::Sprite*, MovementRoutine*> m_Routine_Movement_Sprite_Active;
-	std::map<VertexArray2*, MovementRoutine*> m_Routine_Movement_VertexArray_Active;
+	std::map<sf::Shape*,  MovementRoutine*> m_routineMovementShapeActive;
+	std::map<sf::Sprite*, MovementRoutine*> m_routineMovementSpriteActive;
+	std::map<VertexArray2*, MovementRoutine*> m_routineMovementVertexArrayActive;
 
-	// Contains copies of all linked routines to shapes. Contains COPY of LINKED routines from movementRoutineContainer
-	std::map<sf::Shape*,  MovementRoutineContainer*>  m_Routine_Movement_Shape;
-	std::map<sf::Sprite*, MovementRoutineContainer*> m_Routine_Movement_Sprite;
-	std::map<VertexArray2*, MovementRoutineContainer*> m_Routine_Movement_VertexArray;
+	// Contains copies of all linked routines to shapes. Contains COPY of LINKED routines from m_movementRoutineContainer
+	std::map<sf::Shape*,  MovementRoutineContainer*>  m_routineMovementShape;
+	std::map<sf::Sprite*, MovementRoutineContainer*> m_routineMovementSprite;
+	std::map<VertexArray2*, MovementRoutineContainer*> m_routineMovementVertexArray;
 
-	MovementRoutineContainer* movementRoutineContainer;
-
-
-
-	std::map<sf::Shape*, ScalingRoutine*> m_Routine_Scaling_Shape_Active;
-	std::map<sf::Sprite*, ScalingRoutine*> m_Routine_Scaling_Sprite_Active;
-	std::map<VertexArray2*, ScalingRoutine*> m_Routine_Scaling_VertexArray_Active;
-
-	std::map<sf::Shape*, ScalingRoutineContainer*>  m_Routine_Scaling_Shape;
-	std::map<sf::Sprite*, ScalingRoutineContainer*> m_Routine_Scaling_Sprite;
-	std::map<VertexArray2*, ScalingRoutineContainer*> m_Routine_Scaling_VertexArray;
-
-	ScalingRoutineContainer* scalingRoutineContainer;
+	MovementRoutineContainer* m_movementRoutineContainer;
 
 
 
-	std::map<sf::Shape*, RotationRoutine*> m_Routine_Rotation_Shape_Active;
-	std::map<sf::Sprite*, RotationRoutine*> m_Routine_Rotation_Sprite_Active;
-	std::map<VertexArray2*, RotationRoutine*> m_Routine_Rotation_VertexArray_Active;
+	std::map<sf::Shape*, ScalingRoutine*> m_routineScalingShape_Active;
+	std::map<sf::Sprite*, ScalingRoutine*> m_routineScalingSprite_Active;
+	std::map<VertexArray2*, ScalingRoutine*> m_routineScalingVertexArray_Active;
 
-	std::map<sf::Shape*, RotationRoutineContainer*>  m_Routine_Rotation_Shape;
-	std::map<sf::Sprite*, RotationRoutineContainer*> m_Routine_Rotation_Sprite;
-	std::map<VertexArray2*, RotationRoutineContainer*> m_Routine_Rotation_VertexArray;
+	std::map<sf::Shape*, ScalingRoutineContainer*>  m_routineScalingShape;
+	std::map<sf::Sprite*, ScalingRoutineContainer*> m_routineScalingSprite;
+	std::map<VertexArray2*, ScalingRoutineContainer*> m_routineScalingVertexArray;
 
-	RotationRoutineContainer* rotationRoutineContainer;
+	ScalingRoutineContainer* m_scalingRoutineContainer;
+
+
+
+	std::map<sf::Shape*, RotationRoutine*> m_routineRotationShape_Active;
+	std::map<sf::Sprite*, RotationRoutine*> m_routineRotationSprite_Active;
+	std::map<VertexArray2*, RotationRoutine*> m_routineRotationVertexArray_Active;
+
+	std::map<sf::Shape*, RotationRoutineContainer*>  m_routineRotationShape;
+	std::map<sf::Sprite*, RotationRoutineContainer*> m_routineRotationSprite;
+	std::map<VertexArray2*, RotationRoutineContainer*> m_routineRotationVertexArray;
+
+	RotationRoutineContainer* m_rotationRoutineContainer;
 
 public:
 	// Movement container

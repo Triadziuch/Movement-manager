@@ -3,53 +3,39 @@
 
 class RoutineContainer {
 protected:
-	MovementRoutineEngine* movementRoutineEngine{};
+	MovementRoutineEngine* m_movementRoutineEngine{};
 
-	RoutineContainer() {};
-	RoutineContainer(MovementRoutineEngine* _movementRoutineEnginePtr) : movementRoutineEngine(_movementRoutineEnginePtr) {}
-	~RoutineContainer() { movementRoutineEngine = nullptr; }
+	// Constructors / Destructors
+	RoutineContainer();
+	RoutineContainer(MovementRoutineEngine* movementRoutineEnginePtr);
+	~RoutineContainer();
 };
 
 class MovementRoutineContainer : protected RoutineContainer {
 private:
-	std::map<std::string, MovementRoutine*> movementRoutines{};
+	std::map<std::string, MovementRoutine*> m_movementRoutines{};
 
 public:
-	MovementRoutineContainer() {}
-	MovementRoutineContainer(MovementRoutineEngine* _movementRoutineEnginePtr) : RoutineContainer{ _movementRoutineEnginePtr } {}
-	~MovementRoutineContainer() { 
-		for (auto routine : movementRoutines) delete routine.second;
-		movementRoutines.clear(); 
-	}
+	// Constructors / Destructors
+	MovementRoutineContainer();
+	MovementRoutineContainer(MovementRoutineEngine* movementRoutineEnginePtr);
+	~MovementRoutineContainer();
 
-	// Check if routine with given name already exists
+	// Public functions
 	MovementRoutine* exists(const std::string& _name);
 
-	// Get routine value by name
 	MovementRoutine getRoutine(const std::string& _name);
-
-	// Get routine pointer by name
 	MovementRoutine* getRoutinePtr(const std::string& _name);
 
-	// Create routine with given name. If routine with given name already exists, return pointer to it. Else, create new routine.
 	MovementRoutine* createRoutine(const std::string& _name);
 	MovementRoutine* createRoutine(const std::string& _name, MovementRoutine* _movement_routine);
 
-	// Clear all routines
 	void clear();
-
-	// Remove routine with given name
 	void deleteRoutine(const std::string& _name);
 
-	// Get routine count
-	size_t routineCount() { return movementRoutines.size(); }
+	const size_t& getRoutineCount() const;
 
-	// Get size
-	long long int size() {
-		long long int size = 0;
-		for (auto& routine : movementRoutines) size += routine.second->size();
-		return size + sizeof(movementRoutines);
-	}
+	const long long int& size() const;
 };
 
 class ScalingRoutineContainer : protected RoutineContainer {
@@ -57,41 +43,26 @@ private:
 	std::map<std::string, ScalingRoutine*> scalingRoutines{};
 
 public:
-	ScalingRoutineContainer() {}
-	ScalingRoutineContainer(MovementRoutineEngine* _movementRoutineEnginePtr) : RoutineContainer{ _movementRoutineEnginePtr } {}
-	~ScalingRoutineContainer() {
-		for (auto& routine : scalingRoutines) delete routine.second;
-		scalingRoutines.clear();
-	}
+	// Constructors / Destructors
+	ScalingRoutineContainer();
+	ScalingRoutineContainer(MovementRoutineEngine* movementRoutineEnginePtr);
+	~ScalingRoutineContainer();
 
-	// Check if routine with given name already exists
+	// Public functions
 	ScalingRoutine* exists(const std::string& _name);
 
-	// Get routine value by name
 	ScalingRoutine getRoutine(const std::string& _name);
-
-	// Get routine pointer by name
 	ScalingRoutine* getRoutinePtr(const std::string& _name);
 
-	// Create routine with given name. If routine with given name already exists, return pointer to it. Else, create new routine.
 	ScalingRoutine* createRoutine(const std::string& _name);
 	ScalingRoutine* createRoutine(const std::string& _name, ScalingRoutine* _scaling_routine);
 
-	// Clear all routines
 	void clear();
-
-	// Remove routine with given name
 	void deleteRoutine(const std::string& _name);
 
-	// Get routine count
-	size_t routineCount() { return scalingRoutines.size(); }
+	const size_t& getRoutineCount() const;
 
-	// Get size
-	long long int size() {
-		long long int size = 0;
-		for (auto& routine : scalingRoutines) size += routine.second->size();
-		return size + sizeof(scalingRoutines);
-	}
+	const long long int& size() const;
 };
 
 class RotationRoutineContainer : protected RoutineContainer {
@@ -99,39 +70,23 @@ private:
 	std::map<std::string, RotationRoutine*> rotationRoutines{};
 
 public:
-	RotationRoutineContainer() {}
-	RotationRoutineContainer(MovementRoutineEngine* _movementRoutineEnginePtr) : RoutineContainer{ _movementRoutineEnginePtr } {}
-	~RotationRoutineContainer() {
-		for (auto& routine : rotationRoutines) delete routine.second;
-		rotationRoutines.clear();
-	}
+	// Constructors / Destructors
+	RotationRoutineContainer();
+	RotationRoutineContainer(MovementRoutineEngine* movementRoutineEnginePtr);
+	~RotationRoutineContainer();
 
-	// Check if routine with given name already exists
 	RotationRoutine* exists(const std::string& _name);
 
-	// Get routine value by name
 	RotationRoutine getRoutine(const std::string& _name);
-
-	// Get routine pointer by name
 	RotationRoutine* getRoutinePtr(const std::string& _name);
 
-	// Create routine with given name. If routine with given name already exists, return pointer to it. Else, create new routine.
 	RotationRoutine* createRoutine(const std::string& _name);
 	RotationRoutine* createRoutine(const std::string& _name, RotationRoutine* _rotation_routine);
 
-	// Clear all routines
 	void clear();
-
-	// Remove routine with given name
 	void deleteRoutine(const std::string& _name);
 
-	// Get routine count
-	size_t routineCount() { return rotationRoutines.size(); }
+	const size_t& getRoutineCount() const;
 
-	// Get size
-	long long int size() {
-		long long int size = 0;
-		for (auto& routine : rotationRoutines) size += routine.second->size();
-		return size + sizeof(rotationRoutines);
-	}
+	const long long int& size() const;
 };

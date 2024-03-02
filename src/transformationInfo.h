@@ -5,104 +5,86 @@
 
 // Movement info class
 class transformationInfo {
+protected:
+	bool		 m_repeat{};
+	float		 m_currentTime{};
+	float		 m_motionDuration{};
+	float		 m_delayBefore{};
+	float		 m_delayAfter{};
+	float		 m_totalDuration{};
+	double		 (*m_usedFunctionPtr)(double) {};
+
 public:
-	bool		 repeat = false;
-	float		 current_time{};
-	float		 motion_duration{};
-	float		 delay_before{};
-	float		 delay_after{};
-	float		 total_duration{};
-	double (*used_function)(double) {};
-
+	// Constructors / Destructors
 	transformationInfo() = default;
-
-	transformationInfo(bool _repeat, float _motion_duration, float _delay_before, float _delay_after, double (*_used_function)(double)) :
-		repeat(_repeat), motion_duration(_motion_duration), delay_before(_delay_before), delay_after(_delay_after), used_function(_used_function), total_duration(_delay_before + _motion_duration + _delay_after) {}
-
-	transformationInfo(bool _repeat, float _current_time, float _motion_duration, float _delay_before, float _delay_after, double (*_used_function)(double)) :
-		repeat(_repeat), current_time(_current_time), motion_duration(_motion_duration), delay_before(_delay_before), delay_after(_delay_after), used_function(_used_function), total_duration(_delay_before + _motion_duration + _delay_after) {}
-
-	transformationInfo(const transformationInfo& obj) :
-		repeat(obj.repeat), current_time(obj.current_time), motion_duration(obj.motion_duration), delay_before(obj.delay_before), delay_after(obj.delay_after), used_function(obj.used_function), total_duration(delay_before + motion_duration + delay_after) {}
-
+	transformationInfo(bool repeat, float motionDuration, float delayBefore, float delayAfter, double (*usedFunctionPtr)(double));
+	transformationInfo(bool repeat, float _current__time, float motionDuration, float delayBefore, float delayAfter, double (*usedFunctionPtr)(double));
+	transformationInfo(const transformationInfo& obj);
 	virtual ~transformationInfo() = default;
 
-	void reset() { this->current_time = 0.f; }
-
-	const bool isDone() const { return (this->current_time - this->delay_before >= this->motion_duration); }
-
-	const bool isFinished() const { return (this->current_time >= this->total_duration); }
+	// Public functions
+	void reset();
+	const bool isDone() const;
+	const bool isFinished() const;
 };
 
 class movementInfo : public transformationInfo {
 private:
-	sf::Vector2f starting_pos{};
-	sf::Vector2f ending_pos{};
+	sf::Vector2f m_startingPos{};
+	sf::Vector2f m_endingPos{};
 
 public:
-	movementInfo(sf::Vector2f _starting_pos, sf::Vector2f _ending_pos, float _motion_duration, double (*_used_function)(double), bool _repeat, float _delay_before, float _delay_after) :
-		transformationInfo{ _repeat, _motion_duration, _delay_before, _delay_after, _used_function }, starting_pos(_starting_pos), ending_pos(_ending_pos) {}
+	// Constructors / Destructors
+	movementInfo(sf::Vector2f startingPos, sf::Vector2f endingPos, float motionDuration, double (*usedFunctionPtr)(double), bool repeat, float delayBefore, float delayAfter);
+	movementInfo(const movementInfo& obj);
 
-	movementInfo(const movementInfo& obj) :
-		transformationInfo{ obj.repeat, obj.current_time, obj.motion_duration, obj.delay_before, obj.delay_after, obj.used_function }, starting_pos(obj.starting_pos), ending_pos(obj.ending_pos) {}
+	// Accessors
+	sf::Vector2f& getStartingPos();
+	const sf::Vector2f& getStartingPos() const;
 
-	sf::Vector2f& getStartingPos() { return this->starting_pos; }
-	const sf::Vector2f& getStartingPos() const { return this->starting_pos; }
-
-	sf::Vector2f& getEndingPos() { return this->ending_pos; }
-	const sf::Vector2f& getEndingPos()	 const { return this->ending_pos; }
+	sf::Vector2f& getEndingPos();
+	const sf::Vector2f& getEndingPos() const;
 };
 
 class scalingInfo : public transformationInfo {
+private:
+	sf::Vector2f m_startingScale{};
+	sf::Vector2f m_endingScale{};
+
 public:
-	sf::Vector2f starting_scale{};
-	sf::Vector2f ending_scale{};
+	// Constructors / Destructors
+	scalingInfo(sf::Vector2f startingScale, sf::Vector2f endingScale, float motionDuration, double(*usedFunctionPtr)(double), bool repeat, float delayBefore, float delayAfter);
+	scalingInfo(const scalingInfo& obj);
 
+	// Accessors
+	sf::Vector2f& getStartingScale();
+	const sf::Vector2f& getStartingScale() const;
 
-	scalingInfo(sf::Vector2f _starting_scale, sf::Vector2f _ending_scale, float _motion_duration, double(*_used_function)(double), bool _repeat, float _delay_before, float _delay_after) :
-		transformationInfo{ _repeat, _motion_duration, _delay_before, _delay_after, _used_function }, starting_scale(_starting_scale), ending_scale(_ending_scale) {}
-
-	scalingInfo(const scalingInfo& obj) :
-		transformationInfo{ obj.repeat, obj.current_time, obj.motion_duration, obj.delay_before, obj.delay_after, obj.used_function }, starting_scale(obj.starting_scale), ending_scale(obj.ending_scale) {}
+	sf::Vector2f& getEndingScale();
+	const sf::Vector2f& getEndingScale() const;
 };
 
 class rotationInfo : public transformationInfo {
+private:
+	float m_startingRotation{};
+	float m_endingRotation{};
+	float m_rotationOffset{};
+	bool  m_clockwise = true;
+
 public:
-	float starting_rotation{};
-	float ending_rotation{};
-	bool  clockwise = true;
+	// Constructors / Destructors
+	rotationInfo(float startingRotation, float endingRotation, float motionDuration, double(*usedFunctionPtr)(double), bool repeat, float delayBefore, float delayAfter, bool clockwise);
+	rotationInfo(const rotationInfo& obj);
 
+	// Update functions
+	const float updateRotation() const;
 
-	rotationInfo(float _starting_rotation, float _ending_rotation, float _motion_duration, double(*_used_function)(double), bool _repeat, float _delay_before, float _delay_after, bool _clockwise) :
-		transformationInfo{ _repeat, _motion_duration, _delay_before, _delay_after, _used_function }, clockwise(_clockwise) {
-		if (this->clockwise) {
-			this->starting_rotation = _starting_rotation;
-			this->ending_rotation = _ending_rotation;
-		}
-		else {
-			this->starting_rotation = 360.f - _starting_rotation;
-			this->ending_rotation = 360.f - _ending_rotation;
-		}
-	}
+	// Accessors
+	float& getStartingRotation();
+	const float& getStartingRotation() const;
 
-	rotationInfo(const rotationInfo& obj) :
-		transformationInfo{ obj.repeat, obj.current_time, obj.motion_duration, obj.delay_before, obj.delay_after, obj.used_function }, starting_rotation(obj.starting_rotation), ending_rotation(obj.ending_rotation), clockwise(obj.clockwise) {}
+	float& getEndingRotation();
+	const float& getEndingRotation() const;
 
-	const float updateRotation() const { 
-		float new_rotation = static_cast<float>(this->used_function(static_cast<double>((this->current_time - this->delay_before) / this->motion_duration))) * (this->ending_rotation - this->starting_rotation) + this->starting_rotation;
-		return new_rotation;
-	}
-
-	const float getStartingRotation() const {
-		return this->starting_rotation;
-	}
-
-	const float getEndingRotation() const {
-		return this->ending_rotation;
-	}
-
-	void adjustRotationByOffset(const float _offset) { 
-		this->starting_rotation += _offset; 
-		this->ending_rotation += _offset; 
-	}
+	bool getClockwise() const;
 };

@@ -140,6 +140,7 @@
     <ClCompile Include="src\MovementContainer.cpp" />
     <ClCompile Include="src\MovementManager.cpp" />
     <ClCompile Include="src\RoutineContainer.cpp" />
+    <ClCompile Include="src\transformationInfo.cpp" />
     <ClCompile Include="src\TransformationRoutine.cpp" />
     <ClCompile Include="src\VertexArray2.cpp" />
   </ItemGroup>

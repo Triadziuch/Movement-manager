@@ -452,7 +452,7 @@ void MovementManager::deleteMovementRoutine(const std::string& _name)
 
 	for (auto routineContainer = m_routineMovementShape.begin(); routineContainer != m_routineMovementShape.end();) {
 		routineContainer->second->deleteRoutine(_name);
-		if (routineContainer->second->routineCount() == 0) {
+		if (routineContainer->second->getRoutineCount() == 0) {
 			delete routineContainer->second;
 			routineContainer = m_routineMovementShape.erase(routineContainer);
 		}
@@ -462,7 +462,7 @@ void MovementManager::deleteMovementRoutine(const std::string& _name)
 
 	for (auto routineContainer = m_routineMovementSprite.begin(); routineContainer != m_routineMovementSprite.end();) {
 		routineContainer->second->deleteRoutine(_name);
-		if (routineContainer->second->routineCount() == 0) {
+		if (routineContainer->second->getRoutineCount() == 0) {
 			delete routineContainer->second;
 			routineContainer = m_routineMovementSprite.erase(routineContainer);
 		}
@@ -472,7 +472,7 @@ void MovementManager::deleteMovementRoutine(const std::string& _name)
 
 	for (auto routineContainer = m_routineMovementVertexArray.begin(); routineContainer != m_routineMovementVertexArray.end();) {
 		routineContainer->second->deleteRoutine(_name);
-		if (routineContainer->second->routineCount() == 0) {
+		if (routineContainer->second->getRoutineCount() == 0) {
 			delete routineContainer->second;
 			routineContainer = m_routineMovementVertexArray.erase(routineContainer);
 		}
@@ -928,7 +928,7 @@ void MovementManager::deleteScalingRoutine(const std::string& _name)
 
 	for (auto routineContainer = m_routineScalingShape.begin(); routineContainer != m_routineScalingShape.end();) {
 		routineContainer->second->deleteRoutine(_name);
-		if (routineContainer->second->routineCount() == 0) {
+		if (routineContainer->second->getRoutineCount() == 0) {
 			delete routineContainer->second;
 			routineContainer = m_routineScalingShape.erase(routineContainer);
 		}
@@ -938,7 +938,7 @@ void MovementManager::deleteScalingRoutine(const std::string& _name)
 
 	for (auto routineContainer = m_routineScalingSprite.begin(); routineContainer != m_routineScalingSprite.end();) {
 		routineContainer->second->deleteRoutine(_name);
-		if (routineContainer->second->routineCount() == 0) {
+		if (routineContainer->second->getRoutineCount() == 0) {
 			delete routineContainer->second;
 			routineContainer = m_routineScalingSprite.erase(routineContainer);
 		}
@@ -948,7 +948,7 @@ void MovementManager::deleteScalingRoutine(const std::string& _name)
 
 	for (auto routineContainer = m_routineScalingVertexArray.begin(); routineContainer != m_routineScalingVertexArray.end();) {
 		routineContainer->second->deleteRoutine(_name);
-		if (routineContainer->second->routineCount() == 0) {
+		if (routineContainer->second->getRoutineCount() == 0) {
 			delete routineContainer->second;
 			routineContainer = m_routineScalingVertexArray.erase(routineContainer);
 		}
@@ -1404,7 +1404,7 @@ for (auto routine_active = m_routineRotationShape_Active.begin(); routine_active
 
 	for (auto routineContainer = m_routineRotationShape.begin(); routineContainer != m_routineRotationShape.end();) {
 		routineContainer->second->deleteRoutine(_name);
-		if (routineContainer->second->routineCount() == 0) {
+		if (routineContainer->second->getRoutineCount() == 0) {
 			delete routineContainer->second;
 			routineContainer = m_routineRotationShape.erase(routineContainer);
 		}
@@ -1414,7 +1414,7 @@ for (auto routine_active = m_routineRotationShape_Active.begin(); routine_active
 
 	for (auto routineContainer = m_routineRotationSprite.begin(); routineContainer != m_routineRotationSprite.end();) {
 		routineContainer->second->deleteRoutine(_name);
-		if (routineContainer->second->routineCount() == 0) {
+		if (routineContainer->second->getRoutineCount() == 0) {
 			delete routineContainer->second;
 			routineContainer = m_routineRotationSprite.erase(routineContainer);
 		}
@@ -1424,7 +1424,7 @@ for (auto routine_active = m_routineRotationShape_Active.begin(); routine_active
 
 	for (auto routineContainer = m_routineRotationVertexArray.begin(); routineContainer != m_routineRotationVertexArray.end();) {
 		routineContainer->second->deleteRoutine(_name);
-		if (routineContainer->second->routineCount() == 0) {
+		if (routineContainer->second->getRoutineCount() == 0) {
 			delete routineContainer->second;
 			routineContainer = m_routineRotationVertexArray.erase(routineContainer);
 		}

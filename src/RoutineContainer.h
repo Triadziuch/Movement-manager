@@ -23,6 +23,7 @@ public:
 
 	// Public functions
 	MovementRoutine* exists(const std::string& _name);
+	MovementRoutine* exists(const MovementRoutine* _movement_routine);
 
 	MovementRoutine getRoutine(const std::string& _name);
 	MovementRoutine* getRoutinePtr(const std::string& _name);
@@ -50,6 +51,7 @@ public:
 
 	// Public functions
 	ScalingRoutine* exists(const std::string& _name);
+	ScalingRoutine* exists(const ScalingRoutine* _scaling_routine);
 
 	ScalingRoutine getRoutine(const std::string& _name);
 	ScalingRoutine* getRoutinePtr(const std::string& _name);
@@ -76,6 +78,7 @@ public:
 	~RotationRoutineContainer();
 
 	RotationRoutine* exists(const std::string& _name);
+	RotationRoutine* exists(const RotationRoutine* _rotation_routine);
 
 	RotationRoutine getRoutine(const std::string& _name);
 	RotationRoutine* getRoutinePtr(const std::string& _name);

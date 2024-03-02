@@ -147,6 +147,102 @@ MovementRoutine* MovementManager::linkMovementRoutine(VertexArray2& _vertexarray
 
 }
 
+MovementRoutine* MovementManager::linkMovementRoutine(sf::Shape* _shape, MovementRoutine* routine)
+{
+	MovementRoutine* movementRoutineFound = m_movementRoutineContainer->exists(routine);
+
+	if (movementRoutineFound == nullptr) {
+		printf("MovementManager::linkMovementRoutine: Routine not found\n");
+		return nullptr;
+	}
+	else {
+		// Check if we linked a movement routine to this shape before
+		auto m_movementRoutineContainerFound = m_routineMovementShape.find(_shape);
+		if (m_movementRoutineContainerFound != m_routineMovementShape.end()) {
+
+			auto* movementRoutineFound = m_movementRoutineContainerFound->second->exists(routine);
+			if (movementRoutineFound != nullptr) {
+				printf("MovementManager::linkMovementRoutine: Routine already linked to shape\n");
+				return movementRoutineFound;
+			}
+		}
+		else {
+			// If not, create a new movement routine container for this shape and link the movement routine to it
+			MovementRoutineContainer* newMovementRoutineContainer = new MovementRoutineContainer(this->movementRoutineEngine);
+			m_routineMovementShape.insert(std::make_pair(_shape, newMovementRoutineContainer));
+
+			return newMovementRoutineContainer->createRoutine(movementRoutineFound->getName(), routine);
+		}
+
+		// If yes, create a new movement routine and link it to the existing movement routine container
+		return m_movementRoutineContainerFound->second->createRoutine(movementRoutineFound->getName(), routine);
+	}
+}
+
+MovementRoutine* MovementManager::linkMovementRoutine(sf::Sprite* _sprite, MovementRoutine* routine)
+{
+	MovementRoutine* movementRoutineFound = m_movementRoutineContainer->exists(routine);
+
+	if (movementRoutineFound == nullptr) {
+		printf("MovementManager::linkMovementRoutine: Routine not found\n");
+		return nullptr;
+	}
+	else {
+		// Check if we linked a movement routine to this shape before
+		auto m_movementRoutineContainerFound = m_routineMovementSprite.find(_sprite);
+		if (m_movementRoutineContainerFound != m_routineMovementSprite.end()) {
+
+			auto* movementRoutineFound = m_movementRoutineContainerFound->second->exists(routine);
+			if (movementRoutineFound != nullptr) {
+				printf("MovementManager::linkMovementRoutine: Routine already linked to sprite\n");
+				return movementRoutineFound;
+			}
+		}
+		else {
+			// If not, create a new movement routine container for this shape and link the movement routine to it
+			MovementRoutineContainer* newMovementRoutineContainer = new MovementRoutineContainer(this->movementRoutineEngine);
+			m_routineMovementSprite.insert(std::make_pair(_sprite, newMovementRoutineContainer));
+
+			return newMovementRoutineContainer->createRoutine(movementRoutineFound->getName(), routine);
+		}
+
+		// If yes, create a new movement routine and link it to the existing movement routine container
+		return m_movementRoutineContainerFound->second->createRoutine(movementRoutineFound->getName(), routine);
+	}
+}
+
+MovementRoutine* MovementManager::linkMovementRoutine(VertexArray2* _vertexarray, MovementRoutine* routine)
+{
+	MovementRoutine* movementRoutineFound = m_movementRoutineContainer->exists(routine);
+
+	if (movementRoutineFound == nullptr) {
+		printf("MovementManager::linkMovementRoutine: Routine not found\n");
+		return nullptr;
+	}
+	else {
+		// Check if we linked a movement routine to this shape before
+		auto m_movementRoutineContainerFound = m_routineMovementVertexArray.find(_vertexarray);
+		if (m_movementRoutineContainerFound != m_routineMovementVertexArray.end()) {
+
+			auto* movementRoutineFound = m_movementRoutineContainerFound->second->exists(routine);
+			if (movementRoutineFound != nullptr) {
+				printf("MovementManager::linkMovementRoutine: Routine already linked to vertexarray\n");
+				return movementRoutineFound;
+			}
+		}
+		else {
+			// If not, create a new movement routine container for this shape and link the movement routine to it
+			MovementRoutineContainer* newMovementRoutineContainer = new MovementRoutineContainer(this->movementRoutineEngine);
+			m_routineMovementVertexArray.insert(std::make_pair(_vertexarray, newMovementRoutineContainer));
+
+			return newMovementRoutineContainer->createRoutine(movementRoutineFound->getName(), routine);
+		}
+
+		// If yes, create a new movement routine and link it to the existing movement routine container
+		return m_movementRoutineContainerFound->second->createRoutine(movementRoutineFound->getName(), routine);
+	}
+}
+
 void MovementManager::unlinkMovementRoutine(sf::Shape* _shape, const std::string& _name)
 {
 	// Stop the routine if it's active
@@ -617,6 +713,102 @@ ScalingRoutine* MovementManager::linkScalingRoutine(VertexArray2& _vertexarray, 
 	// If yes, create a new scaling routine and link it to the existing scaling routine container
 	ScalingRoutine* newScalingRoutine = new ScalingRoutine(*scalingRoutineOriginal);
 	return m_scalingRoutineContainerFound->second->createRoutine(_name, newScalingRoutine);
+}
+
+ScalingRoutine* MovementManager::linkScalingRoutine(sf::Shape* _shape, ScalingRoutine* routine)
+{
+	ScalingRoutine* scalingRoutineFound = m_scalingRoutineContainer->exists(routine);
+
+	if (scalingRoutineFound == nullptr) {
+		printf("MovementManager::linkScalingRoutine: Routine not found\n");
+		return nullptr;
+	}
+	else {
+		// Check if we linked a scaling routine to this shape before
+		auto m_scalingRoutineContainerFound = m_routineScalingShape.find(_shape);
+		if (m_scalingRoutineContainerFound != m_routineScalingShape.end()) {
+
+			auto* scalingRoutineFound = m_scalingRoutineContainerFound->second->exists(routine);
+			if (scalingRoutineFound != nullptr) {
+				printf("MovementManager::linkScalingRoutine: Routine already linked to shape\n");
+				return scalingRoutineFound;
+			}
+		}
+		else {
+			// If not, create a new scaling routine container for this shape and link the scaling routine to it
+			ScalingRoutineContainer* newScalingRoutineContainer = new ScalingRoutineContainer(this->movementRoutineEngine);
+			m_routineScalingShape.insert(std::make_pair(_shape, newScalingRoutineContainer));
+
+			return newScalingRoutineContainer->createRoutine(scalingRoutineFound->getName(), routine);
+		}
+
+		// If yes, create a new scaling routine and link it to the existing scaling routine container
+		return m_scalingRoutineContainerFound->second->createRoutine(scalingRoutineFound->getName(), routine);
+	}
+}
+
+ScalingRoutine* MovementManager::linkScalingRoutine(sf::Sprite* _sprite, ScalingRoutine* routine)
+{
+	ScalingRoutine* scalingRoutineFound = m_scalingRoutineContainer->exists(routine);
+
+	if (scalingRoutineFound == nullptr) {
+		printf("MovementManager::linkScalingRoutine: Routine not found\n");
+		return nullptr;
+	}
+	else {
+		// Check if we linked a scaling routine to this shape before
+		auto m_scalingRoutineContainerFound = m_routineScalingSprite.find(_sprite);
+		if (m_scalingRoutineContainerFound != m_routineScalingSprite.end()) {
+
+			auto* scalingRoutineFound = m_scalingRoutineContainerFound->second->exists(routine);
+			if (scalingRoutineFound != nullptr) {
+				printf("MovementManager::linkScalingRoutine: Routine already linked to sprite\n");
+				return scalingRoutineFound;
+			}
+		}
+		else {
+			// If not, create a new scaling routine container for this shape and link the scaling routine to it
+			ScalingRoutineContainer* newScalingRoutineContainer = new ScalingRoutineContainer(this->movementRoutineEngine);
+			m_routineScalingSprite.insert(std::make_pair(_sprite, newScalingRoutineContainer));
+
+			return newScalingRoutineContainer->createRoutine(scalingRoutineFound->getName(), routine);
+		}
+
+		// If yes, create a new scaling routine and link it to the existing scaling routine container
+		return m_scalingRoutineContainerFound->second->createRoutine(scalingRoutineFound->getName(), routine);
+	}
+}
+
+ScalingRoutine* MovementManager::linkScalingRoutine(VertexArray2* _vertexarray, ScalingRoutine* routine)
+{
+	ScalingRoutine* scalingRoutineFound = m_scalingRoutineContainer->exists(routine);
+
+	if (scalingRoutineFound == nullptr) {
+		printf("MovementManager::linkScalingRoutine: Routine not found\n");
+		return nullptr;
+	}
+	else {
+		// Check if we linked a scaling routine to this shape before
+		auto m_scalingRoutineContainerFound = m_routineScalingVertexArray.find(_vertexarray);
+		if (m_scalingRoutineContainerFound != m_routineScalingVertexArray.end()) {
+
+			auto* scalingRoutineFound = m_scalingRoutineContainerFound->second->exists(routine);
+			if (scalingRoutineFound != nullptr) {
+				printf("MovementManager::linkScalingRoutine: Routine already linked to vertexarray\n");
+				return scalingRoutineFound;
+			}
+		}
+		else {
+			// If not, create a new scaling routine container for this shape and link the scaling routine to it
+			ScalingRoutineContainer* newScalingRoutineContainer = new ScalingRoutineContainer(this->movementRoutineEngine);
+			m_routineScalingVertexArray.insert(std::make_pair(_vertexarray, newScalingRoutineContainer));
+
+			return newScalingRoutineContainer->createRoutine(scalingRoutineFound->getName(), routine);
+		}
+
+		// If yes, create a new scaling routine and link it to the existing scaling routine container
+		return m_scalingRoutineContainerFound->second->createRoutine(scalingRoutineFound->getName(), routine);
+	}
 }
 
 void MovementManager::unlinkScalingRoutine(sf::Shape* _shape, const std::string& _name)
@@ -1093,6 +1285,102 @@ RotationRoutine* MovementManager::linkRotationRoutine(VertexArray2& _vertexarray
 	// If yes, create a new rotation routine and link it to the existing rotation routine container
 	RotationRoutine* newRotationRoutine = new RotationRoutine(*rotationRoutineOriginal);
 	return m_rotationRoutineContainerFound->second->createRoutine(_name, newRotationRoutine);
+}
+
+RotationRoutine* MovementManager::linkRotationRoutine(sf::Shape* _shape, RotationRoutine* routine)
+{
+	RotationRoutine* rotationRoutineFound = m_rotationRoutineContainer->exists(routine);
+
+	if (rotationRoutineFound == nullptr) {
+		printf("MovementManager::linkRotationRoutine: Routine not found\n");
+		return nullptr;
+	}
+	else {
+		// Check if we linked a rotation routine to this shape before
+		auto m_rotationRoutineContainerFound = m_routineRotationShape.find(_shape);
+		if (m_rotationRoutineContainerFound != m_routineRotationShape.end()) {
+
+			auto* rotationRoutineFound = m_rotationRoutineContainerFound->second->exists(routine);
+			if (rotationRoutineFound != nullptr) {
+				printf("MovementManager::linkRotationRoutine: Routine already linked to shape\n");
+				return rotationRoutineFound;
+			}
+		}
+		else {
+			// If not, create a new rotation routine container for this shape and link the rotation routine to it
+			RotationRoutineContainer* newRotationRoutineContainer = new RotationRoutineContainer(this->movementRoutineEngine);
+			m_routineRotationShape.insert(std::make_pair(_shape, newRotationRoutineContainer));
+
+			return newRotationRoutineContainer->createRoutine(rotationRoutineFound->getName(), routine);
+		}
+
+		// If yes, create a new rotation routine and link it to the existing rotation routine container
+		return m_rotationRoutineContainerFound->second->createRoutine(rotationRoutineFound->getName(), routine);
+	}
+}
+
+RotationRoutine* MovementManager::linkRotationRoutine(sf::Sprite* _sprite, RotationRoutine* routine)
+{
+	RotationRoutine* rotationRoutineFound = m_rotationRoutineContainer->exists(routine);
+
+	if (rotationRoutineFound == nullptr) {
+		printf("MovementManager::linkRotationRoutine: Routine not found\n");
+		return nullptr;
+	}
+	else {
+		// Check if we linked a rotation routine to this shape before
+		auto m_rotationRoutineContainerFound = m_routineRotationSprite.find(_sprite);
+		if (m_rotationRoutineContainerFound != m_routineRotationSprite.end()) {
+
+			auto* rotationRoutineFound = m_rotationRoutineContainerFound->second->exists(routine);
+			if (rotationRoutineFound != nullptr) {
+				printf("MovementManager::linkRotationRoutine: Routine already linked to sprite\n");
+				return rotationRoutineFound;
+			}
+		}
+		else {
+			// If not, create a new rotation routine container for this shape and link the rotation routine to it
+			RotationRoutineContainer* newRotationRoutineContainer = new RotationRoutineContainer(this->movementRoutineEngine);
+			m_routineRotationSprite.insert(std::make_pair(_sprite, newRotationRoutineContainer));
+
+			return newRotationRoutineContainer->createRoutine(rotationRoutineFound->getName(), routine);
+		}
+
+		// If yes, create a new rotation routine and link it to the existing rotation routine container
+		return m_rotationRoutineContainerFound->second->createRoutine(rotationRoutineFound->getName(), routine);
+	}
+}
+
+RotationRoutine* MovementManager::linkRotationRoutine(VertexArray2* _vertexarray, RotationRoutine* routine)
+{
+	RotationRoutine* rotationRoutineFound = m_rotationRoutineContainer->exists(routine);
+
+	if (rotationRoutineFound == nullptr) {
+		printf("MovementManager::linkRotationRoutine: Routine not found\n");
+		return nullptr;
+	}
+	else {
+		// Check if we linked a rotation routine to this shape before
+		auto m_rotationRoutineContainerFound = m_routineRotationVertexArray.find(_vertexarray);
+		if (m_rotationRoutineContainerFound != m_routineRotationVertexArray.end()) {
+
+			auto* rotationRoutineFound = m_rotationRoutineContainerFound->second->exists(routine);
+			if (rotationRoutineFound != nullptr) {
+				printf("MovementManager::linkRotationRoutine: Routine already linked to vertexarray\n");
+				return rotationRoutineFound;
+			}
+		}
+		else {
+			// If not, create a new rotation routine container for this shape and link the rotation routine to it
+			RotationRoutineContainer* newRotationRoutineContainer = new RotationRoutineContainer(this->movementRoutineEngine);
+			m_routineRotationVertexArray.insert(std::make_pair(_vertexarray, newRotationRoutineContainer));
+
+			return newRotationRoutineContainer->createRoutine(rotationRoutineFound->getName(), routine);
+		}
+
+		// If yes, create a new rotation routine and link it to the existing rotation routine container
+		return m_rotationRoutineContainerFound->second->createRoutine(rotationRoutineFound->getName(), routine);
+	}
 }
 
 void MovementManager::unlinkRotationRoutine(sf::Shape* _shape, const std::string& _name)

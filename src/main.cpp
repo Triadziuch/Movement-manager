@@ -5,6 +5,7 @@
 #include <Windows.h>
 #include <random>
 #include "VertexArray2.h"
+
 int iterator = 0;
 
 sf::Vector2f getCentroid(const sf::VertexArray& vertexArray) {

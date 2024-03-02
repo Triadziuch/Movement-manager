@@ -60,9 +60,13 @@ public:
 
 	MovementRoutine* getMovementRoutine(const std::string& _name);
 
-	MovementRoutine* linkMovementRoutine(sf::Shape& _shape, const std::string& _name); // Dodaæ mo¿liwoœæ linkowania po wskaŸniku do routine
+	MovementRoutine* linkMovementRoutine(sf::Shape& _shape, const std::string& _name);
 	MovementRoutine* linkMovementRoutine(sf::Sprite& _sprite, const std::string& _name);
 	MovementRoutine* linkMovementRoutine(VertexArray2& _vertexarray, const std::string& _name);
+
+	MovementRoutine* linkMovementRoutine(sf::Shape* _shape, MovementRoutine* routine);
+	MovementRoutine* linkMovementRoutine(sf::Sprite* _sprite, MovementRoutine* routine);
+	MovementRoutine* linkMovementRoutine(VertexArray2* _vertexarray, MovementRoutine* routine);
 
 	void unlinkMovementRoutine(sf::Shape* _shape, const std::string& _name);
 	void unlinkMovementRoutine(sf::Sprite* _sprite, const std::string& _name);
@@ -98,6 +102,10 @@ public:
 	ScalingRoutine* linkScalingRoutine(sf::Sprite& _sprite, const std::string& _name);
 	ScalingRoutine* linkScalingRoutine(VertexArray2& _vertexarray, const std::string& _name);
 
+	ScalingRoutine* linkScalingRoutine(sf::Shape* _shape, ScalingRoutine* routine);
+	ScalingRoutine* linkScalingRoutine(sf::Sprite* _sprite, ScalingRoutine* routine);
+	ScalingRoutine* linkScalingRoutine(VertexArray2* _vertexarray, ScalingRoutine* routine);
+
 	void unlinkScalingRoutine(sf::Shape* _shape, const std::string& _name);
 	void unlinkScalingRoutine(sf::Sprite* _sprite, const std::string& _name);
 	void unlinkScalingRoutine(VertexArray2* _vertexarray, const std::string& _name);
@@ -131,6 +139,10 @@ public:
 	RotationRoutine* linkRotationRoutine(sf::Shape& _shape, const std::string& _name); 
 	RotationRoutine* linkRotationRoutine(sf::Sprite& _sprite, const std::string& _name);
 	RotationRoutine* linkRotationRoutine(VertexArray2& _vertexarray, const std::string& _name);
+
+	RotationRoutine* linkRotationRoutine(sf::Shape* _shape, RotationRoutine* routine);
+	RotationRoutine* linkRotationRoutine(sf::Sprite* _sprite, RotationRoutine* routine);
+	RotationRoutine* linkRotationRoutine(VertexArray2* _vertexarray, RotationRoutine* routine);
 
 	void unlinkRotationRoutine(sf::Shape* _shape, const std::string& _name);
 	void unlinkRotationRoutine(sf::Sprite* _sprite, const std::string& _name);

@@ -45,6 +45,15 @@ MovementRoutine* MovementRoutineContainer::exists(const std::string& _name)
 		return nullptr;
 }
 
+MovementRoutine* MovementRoutineContainer::exists(const MovementRoutine* _movement_routine)
+{
+	for (auto& routine : m_movementRoutines) 
+		if (routine.second == _movement_routine)
+			return routine.second;
+	
+	return nullptr;
+}
+
 MovementRoutine MovementRoutineContainer::getRoutine(const std::string& _name)
 {
 	if (exists(_name) != nullptr)
@@ -151,6 +160,15 @@ ScalingRoutine* ScalingRoutineContainer::exists(const std::string& _name)
 		return scalingRoutineFound->second;
 	else
 		return nullptr;
+}
+
+ScalingRoutine* ScalingRoutineContainer::exists(const ScalingRoutine* _scaling_routine)
+{
+	for (auto& routine : scalingRoutines)
+		if (routine.second == _scaling_routine)
+			return routine.second;
+
+	return nullptr;
 }
 
 ScalingRoutine ScalingRoutineContainer::getRoutine(const std::string& _name)
@@ -262,6 +280,15 @@ RotationRoutine* RotationRoutineContainer::exists(const std::string& _name)
 		return rotationRoutineFound->second;
 	else
 		return nullptr;
+}
+
+RotationRoutine* RotationRoutineContainer::exists(const RotationRoutine* _rotation_routine)
+{
+	for (auto& routine : rotationRoutines)
+		if (routine.second == _rotation_routine)
+			return routine.second;
+
+	return nullptr;
 }
 
 RotationRoutine RotationRoutineContainer::getRoutine(const std::string& _name)

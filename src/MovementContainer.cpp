@@ -1727,10 +1727,10 @@ void MovementRoutineEngine::stopMovement()
 	}
 }
 
-void MovementRoutineEngine::stopMovement(sf::Shape* _shape)
+void MovementRoutineEngine::stopMovement(sf::Shape& _shape)
 {
 	auto& movementRoutineMap = sInstance->m_Movement_Routines_Shape;
-	auto movementRoutineFound = movementRoutineMap.find(_shape);
+	auto movementRoutineFound = movementRoutineMap.find(&_shape);
 
 	if (movementRoutineFound != movementRoutineMap.end()) {
 		movementRoutineFound->second = nullptr;
@@ -1738,10 +1738,10 @@ void MovementRoutineEngine::stopMovement(sf::Shape* _shape)
 	}
 }
 
-void MovementRoutineEngine::stopMovement(VertexArray2* _vertexarray)
+void MovementRoutineEngine::stopMovement(VertexArray2& _vertexarray)
 {
 	auto& movementRoutineMap = sInstance->m_Movement_Routines_VA;
-	auto movementRoutineFound = movementRoutineMap.find(_vertexarray);
+	auto movementRoutineFound = movementRoutineMap.find(&_vertexarray);
 
 	if (movementRoutineFound != movementRoutineMap.end()) {
 		movementRoutineFound->second = nullptr;
@@ -1749,10 +1749,10 @@ void MovementRoutineEngine::stopMovement(VertexArray2* _vertexarray)
 	}
 }
 
-void MovementRoutineEngine::stopMovement(sf::Sprite* _sprite)
+void MovementRoutineEngine::stopMovement(sf::Sprite& _sprite)
 {
 	auto& movementRoutineMap = sInstance->m_Movement_Routines_S;
-	auto movementRoutineFound = movementRoutineMap.find(_sprite);
+	auto movementRoutineFound = movementRoutineMap.find(&_sprite);
 
 	if (movementRoutineFound != movementRoutineMap.end()) {
 		movementRoutineFound->second = nullptr;

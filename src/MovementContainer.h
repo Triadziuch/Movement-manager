@@ -263,9 +263,9 @@ public:
 	void resetMovement(sf::Sprite* _sprite);
 
 	void stopMovement();
-	void stopMovement(sf::Shape* _shape);
-	void stopMovement(VertexArray2* _vertexarray);
-	void stopMovement(sf::Sprite* _sprite);
+	void stopMovement(sf::Shape& _shape);
+	void stopMovement(VertexArray2& _vertexarray);
+	void stopMovement(sf::Sprite& _sprite);
 
 	// Scaling functions
 	const ScalingRoutine* addScaling(sf::Shape* _shape, ScalingRoutine* _scalingRoutine);

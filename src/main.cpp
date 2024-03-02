@@ -193,7 +193,7 @@ int main()
 	routineRShape->adjustStartToCurrentTransform(adjust_start_rotation);
 	routineRShape->adjustAllToCurrentTransform(adjust_all_rotation);
 	routineRShape->setLooping(looping_rotation);
-	movementManager.linkRotationRoutine(&test_shape[0], "TestowyR1");
+	movementManager.linkRotationRoutine(test_shape[0], "TestowyR1");
 
 	routineRShape = movementManager.createRotationRoutine("TestowyR2");
 	routineRShape->addRotation(new rotationInfo(30.f, 180.f, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, false));
@@ -201,7 +201,7 @@ int main()
 	routineRShape->adjustStartToCurrentTransform(adjust_start_rotation);
 	routineRShape->adjustAllToCurrentTransform(adjust_all_rotation);
 	routineRShape->setLooping(looping_rotation);
-	movementManager.linkRotationRoutine(&test_shape[1], "TestowyR2");
+	movementManager.linkRotationRoutine(test_shape[1], "TestowyR2");
 
 	routineRShape = movementManager.createRotationRoutine("TestowyR3");
 	routineRShape->addRotation(new rotationInfo(30.f, 180.f, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, true));
@@ -209,7 +209,7 @@ int main()
 	routineRShape->adjustStartToCurrentTransform(adjust_start_rotation);
 	routineRShape->adjustAllToCurrentTransform(adjust_all_rotation);
 	routineRShape->setLooping(looping_rotation);
-	movementManager.linkRotationRoutine(&test_shape[2], "TestowyR3");
+	movementManager.linkRotationRoutine(test_shape[2], "TestowyR3");
 
 	routineRShape = movementManager.createRotationRoutine("TestowyR4");
 	routineRShape->addRotation(new rotationInfo(30.f, 180.f, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, true));
@@ -217,7 +217,7 @@ int main()
 	routineRShape->adjustStartToCurrentTransform(adjust_start_rotation);
 	routineRShape->adjustAllToCurrentTransform(adjust_all_rotation);
 	routineRShape->setLooping(looping_rotation);
-	movementManager.linkRotationRoutine(&test_shape[3], "TestowyR4");
+	movementManager.linkRotationRoutine(test_shape[3], "TestowyR4");
 
 	auto routineRVA = movementManager.createRotationRoutine("TestowyRVA1");
 	routineRVA->addRotation(new rotationInfo(30.f, 180.f, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, false));
@@ -225,7 +225,7 @@ int main()
 	routineRVA->adjustStartToCurrentTransform(adjust_start_rotation);
 	routineRVA->adjustAllToCurrentTransform(adjust_all_rotation);
 	routineRVA->setLooping(looping_rotation);
-	movementManager.linkRotationRoutine(&arrow1, "TestowyRVA1");
+	movementManager.linkRotationRoutine(arrow1, "TestowyRVA1");
 
 	routineRVA = movementManager.createRotationRoutine("TestowyRVA2");
 	routineRVA->addRotation(new rotationInfo(30.f, 180.f, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, false));
@@ -233,7 +233,7 @@ int main()
 	routineRVA->adjustStartToCurrentTransform(adjust_start_rotation);
 	routineRVA->adjustAllToCurrentTransform(adjust_all_rotation);
 	routineRVA->setLooping(looping_rotation);
-	movementManager.linkRotationRoutine(&arrow2, "TestowyRVA2");
+	movementManager.linkRotationRoutine(arrow2, "TestowyRVA2");
 
 	routineRVA = movementManager.createRotationRoutine("TestowyRVA3");
 	routineRVA->addRotation(new rotationInfo(30.f, 180.f, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, true));
@@ -241,7 +241,7 @@ int main()
 	routineRVA->adjustStartToCurrentTransform(adjust_start_rotation);
 	routineRVA->adjustAllToCurrentTransform(adjust_all_rotation);
 	routineRVA->setLooping(looping_rotation);
-	movementManager.linkRotationRoutine(&arrow3, "TestowyRVA3");
+	movementManager.linkRotationRoutine(arrow3, "TestowyRVA3");
 
 	routineRVA = movementManager.createRotationRoutine("TestowyRVA4");
 	routineRVA->addRotation(new rotationInfo(30.f, 180.f, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f, true));
@@ -249,7 +249,7 @@ int main()
 	routineRVA->adjustStartToCurrentTransform(adjust_start_rotation);
 	routineRVA->adjustAllToCurrentTransform(adjust_all_rotation);
 	routineRVA->setLooping(looping_rotation);
-	movementManager.linkRotationRoutine(&arrow4, "TestowyRVA4");
+	movementManager.linkRotationRoutine(arrow4, "TestowyRVA4");
 
 	sf::Vector2f starting_offset1(0.f, 0.f);
 	sf::Vector2f ending_offset1 = sf::Vector2f(300.f, -100.f) + starting_offset1;
@@ -266,7 +266,7 @@ int main()
 	routineMShape->adjustStartToCurrentTransform(adjust_start_movement);
 	routineMShape->adjustAllToCurrentTransform(adjust_all_movement);
 	routineMShape->setLooping(looping_movement);
-	movementManager.linkMovementRoutine(&test_shape[0], "TestowyM1");
+	movementManager.linkMovementRoutine(test_shape[0], "TestowyM1");
 
 	routineMShape = movementManager.createMovementRoutine("TestowyM2");
 	routineMShape->addMovement(new movementInfo(test_shape[1].getPosition() + starting_offset1, test_shape[1].getPosition() + ending_offset1, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f));
@@ -274,7 +274,7 @@ int main()
 	routineMShape->adjustStartToCurrentTransform(adjust_start_movement);
 	routineMShape->adjustAllToCurrentTransform(adjust_all_movement);
 	routineMShape->setLooping(looping_movement);
-	movementManager.linkMovementRoutine(&test_shape[1], "TestowyM2");
+	movementManager.linkMovementRoutine(test_shape[1], "TestowyM2");
 
 	routineMShape = movementManager.createMovementRoutine("TestowyM3");
 	routineMShape->addMovement(new movementInfo(test_shape[2].getPosition() + starting_offset1, test_shape[2].getPosition() + ending_offset1, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f));
@@ -282,7 +282,7 @@ int main()
 	routineMShape->adjustStartToCurrentTransform(adjust_start_movement);
 	routineMShape->adjustAllToCurrentTransform(adjust_all_movement);
 	routineMShape->setLooping(looping_movement);
-	movementManager.linkMovementRoutine(&test_shape[2], "TestowyM3");
+	movementManager.linkMovementRoutine(test_shape[2], "TestowyM3");
 
 	routineMShape = movementManager.createMovementRoutine("TestowyM4");
 	routineMShape->addMovement(new movementInfo(test_shape[3].getPosition() + starting_offset1, test_shape[3].getPosition() + ending_offset1, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f));
@@ -290,7 +290,7 @@ int main()
 	routineMShape->adjustStartToCurrentTransform(adjust_start_movement);
 	routineMShape->adjustAllToCurrentTransform(adjust_all_movement);
 	routineMShape->setLooping(looping_movement);
-	movementManager.linkMovementRoutine(&test_shape[3], "TestowyM4");
+	movementManager.linkMovementRoutine(test_shape[3], "TestowyM4");
 
 	auto routineMVA = movementManager.createMovementRoutine("TestowyMVA1");
 	routineMVA->addMovement(new movementInfo(getCentroid(arrow1) + starting_offset1, getCentroid(arrow1) + ending_offset1, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f));
@@ -298,7 +298,7 @@ int main()
 	routineMVA->adjustStartToCurrentTransform(adjust_start_movement);
 	routineMVA->adjustAllToCurrentTransform(adjust_all_movement);
 	routineMVA->setLooping(looping_movement);
-	movementManager.linkMovementRoutine(&arrow1, "TestowyMVA1");
+	movementManager.linkMovementRoutine(arrow1, "TestowyMVA1");
 
 	routineMVA = movementManager.createMovementRoutine("TestowyMVA2");
 	routineMVA->addMovement(new movementInfo(getCentroid(arrow2) + starting_offset1, getCentroid(arrow2) + ending_offset1, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f));
@@ -306,7 +306,7 @@ int main()
 	routineMVA->adjustStartToCurrentTransform(adjust_start_movement);
 	routineMVA->adjustAllToCurrentTransform(adjust_all_movement);
 	routineMVA->setLooping(looping_movement);
-	movementManager.linkMovementRoutine(&arrow2, "TestowyMVA2");
+	movementManager.linkMovementRoutine(arrow2, "TestowyMVA2");
 
 	routineMVA = movementManager.createMovementRoutine("TestowyMVA3");
 	routineMVA->addMovement(new movementInfo(getCentroid(arrow3) + starting_offset1, getCentroid(arrow3) + ending_offset1, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f));
@@ -314,7 +314,7 @@ int main()
 	routineMVA->adjustStartToCurrentTransform(adjust_start_movement);
 	routineMVA->adjustAllToCurrentTransform(adjust_all_movement);
 	routineMVA->setLooping(looping_movement);
-	movementManager.linkMovementRoutine(&arrow3, "TestowyMVA3");
+	movementManager.linkMovementRoutine(arrow3, "TestowyMVA3");
 
 	routineMVA = movementManager.createMovementRoutine("TestowyMVA4");
 	routineMVA->addMovement(new movementInfo(getCentroid(arrow4) + starting_offset1, getCentroid(arrow4) + ending_offset1, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f));
@@ -322,7 +322,7 @@ int main()
 	routineMVA->adjustStartToCurrentTransform(adjust_start_movement);
 	routineMVA->adjustAllToCurrentTransform(adjust_all_movement);
 	routineMVA->setLooping(looping_movement);
-	movementManager.linkMovementRoutine(&arrow4, "TestowyMVA4");
+	movementManager.linkMovementRoutine(arrow4, "TestowyMVA4");
 
 	bool adjust_start_scaling = false;
 	bool adjust_all_scaling = true;
@@ -337,7 +337,7 @@ int main()
 	routineSShape->adjustStartToCurrentTransform(adjust_start_scaling);
 	routineSShape->adjustAllToCurrentTransform(adjust_all_scaling);
 	routineSShape->setLooping(looping_scaling);
-	movementManager.linkScalingRoutine(&test_shape[0], "TestowyS1");
+	movementManager.linkScalingRoutine(test_shape[0], "TestowyS1");
 
 	routineSShape = movementManager.createScalingRoutine("TestowyS2");
 	routineSShape->addScaling(new scalingInfo(starting_scale1, ending_scale1, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f));
@@ -345,7 +345,7 @@ int main()
 	routineSShape->adjustStartToCurrentTransform(adjust_start_scaling);
 	routineSShape->adjustAllToCurrentTransform(adjust_all_scaling);
 	routineSShape->setLooping(looping_scaling);
-	movementManager.linkScalingRoutine(&test_shape[1], "TestowyS2");
+	movementManager.linkScalingRoutine(test_shape[1], "TestowyS2");
 
 	routineSShape = movementManager.createScalingRoutine("TestowyS3");
 	routineSShape->addScaling(new scalingInfo(starting_scale1, ending_scale1, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f));
@@ -353,7 +353,7 @@ int main()
 	routineSShape->adjustStartToCurrentTransform(adjust_start_scaling);
 	routineSShape->adjustAllToCurrentTransform(adjust_all_scaling);
 	routineSShape->setLooping(looping_scaling);
-	movementManager.linkScalingRoutine(&test_shape[2], "TestowyS3");
+	movementManager.linkScalingRoutine(test_shape[2], "TestowyS3");
 
 	routineSShape = movementManager.createScalingRoutine("TestowyS4");
 	routineSShape->addScaling(new scalingInfo(starting_scale1, ending_scale1, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f));
@@ -361,7 +361,7 @@ int main()
 	routineSShape->adjustStartToCurrentTransform(adjust_start_scaling);
 	routineSShape->adjustAllToCurrentTransform(adjust_all_scaling);
 	routineSShape->setLooping(looping_scaling);
-	movementManager.linkScalingRoutine(&test_shape[3], "TestowyS4");
+	movementManager.linkScalingRoutine(test_shape[3], "TestowyS4");
 
 	auto routineSVA = movementManager.createScalingRoutine("TestowySVA1");
 	routineSVA->addScaling(new scalingInfo(starting_scale1, ending_scale1, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f));
@@ -369,7 +369,7 @@ int main()
 	routineSVA->adjustStartToCurrentTransform(adjust_start_scaling);
 	routineSVA->adjustAllToCurrentTransform(adjust_all_scaling);
 	routineSVA->setLooping(looping_scaling);
-	movementManager.linkScalingRoutine(&arrow1, "TestowySVA1");
+	movementManager.linkScalingRoutine(arrow1, "TestowySVA1");
 
 	routineSVA = movementManager.createScalingRoutine("TestowySVA2");
 	routineSVA->addScaling(new scalingInfo(starting_scale1, ending_scale1, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f));
@@ -377,7 +377,7 @@ int main()
 	routineSVA->adjustStartToCurrentTransform(adjust_start_scaling);
 	routineSVA->adjustAllToCurrentTransform(adjust_all_scaling);
 	routineSVA->setLooping(looping_scaling);
-	movementManager.linkScalingRoutine(&arrow2, "TestowySVA2");
+	movementManager.linkScalingRoutine(arrow2, "TestowySVA2");
 
 	routineSVA = movementManager.createScalingRoutine("TestowySVA3");
 	routineSVA->addScaling(new scalingInfo(starting_scale1, ending_scale1, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f));
@@ -385,7 +385,7 @@ int main()
 	routineSVA->adjustStartToCurrentTransform(adjust_start_scaling);
 	routineSVA->adjustAllToCurrentTransform(adjust_all_scaling);
 	routineSVA->setLooping(looping_scaling);
-	movementManager.linkScalingRoutine(&arrow3, "TestowySVA3");
+	movementManager.linkScalingRoutine(arrow3, "TestowySVA3");
 
 	routineSVA = movementManager.createScalingRoutine("TestowySVA4");
 	routineSVA->addScaling(new scalingInfo(starting_scale1, ending_scale1, animation_time, MovementContainer.getFunctionPointer(MovementContainer::IN_OUT_SINE), false, 0.5f, 0.5f));
@@ -393,7 +393,7 @@ int main()
 	routineSVA->adjustStartToCurrentTransform(adjust_start_scaling);
 	routineSVA->adjustAllToCurrentTransform(adjust_all_scaling);
 	routineSVA->setLooping(looping_scaling);
-	movementManager.linkScalingRoutine(&arrow4, "TestowySVA4");
+	movementManager.linkScalingRoutine(arrow4, "TestowySVA4");
 
 
 
@@ -402,9 +402,9 @@ int main()
 	constexpr int max_movements_in_routine = 10;
 
 	printf("Size before:\n");
-	printf("Active: %lld\n", movementManager.getSizeShapeActiveMovement());
-	printf("Shape: %lld\n", movementManager.getSizeShapeMovement());
-	printf("Container: %lld\n", movementManager.getSizeContainerMovement());
+	printf("Movement size: %lld\n", movementManager.getSizeMovement());
+	printf("Scaling size: %lld\n", movementManager.getSizeScaling());
+	printf("Rotation size: %lld\n", movementManager.getSizeRotation());
 
 
 
@@ -461,74 +461,74 @@ int main()
 
 			// Start all
 			if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::Space)) {
-				movementManager.startMovementRoutine(&test_shape[0], "TestowyM1");
-				movementManager.startMovementRoutine(&test_shape[1], "TestowyM2");
-				movementManager.startMovementRoutine(&test_shape[2], "TestowyM3");
-				movementManager.startMovementRoutine(&test_shape[3], "TestowyM4");
+				movementManager.startMovementRoutine(test_shape[0], "TestowyM1");
+				movementManager.startMovementRoutine(test_shape[1], "TestowyM2");
+				movementManager.startMovementRoutine(test_shape[2], "TestowyM3");
+				movementManager.startMovementRoutine(test_shape[3], "TestowyM4");
 
-				movementManager.startMovementRoutine(&arrow1, "TestowyMVA1");
-				movementManager.startMovementRoutine(&arrow2, "TestowyMVA2");
-				movementManager.startMovementRoutine(&arrow3, "TestowyMVA3");
-				movementManager.startMovementRoutine(&arrow4, "TestowyMVA4");
+				movementManager.startMovementRoutine(arrow1, "TestowyMVA1");
+				movementManager.startMovementRoutine(arrow2, "TestowyMVA2");
+				movementManager.startMovementRoutine(arrow3, "TestowyMVA3");
+				movementManager.startMovementRoutine(arrow4, "TestowyMVA4");
 
-				movementManager.startScalingRoutine(&test_shape[0], "TestowyS1");
-				movementManager.startScalingRoutine(&test_shape[1], "TestowyS2");
-				movementManager.startScalingRoutine(&test_shape[2], "TestowyS3");
-				movementManager.startScalingRoutine(&test_shape[3], "TestowyS4");
+				movementManager.startScalingRoutine(test_shape[0], "TestowyS1");
+				movementManager.startScalingRoutine(test_shape[1], "TestowyS2");
+				movementManager.startScalingRoutine(test_shape[2], "TestowyS3");
+				movementManager.startScalingRoutine(test_shape[3], "TestowyS4");
 
-				movementManager.startScalingRoutine(&arrow1, "TestowySVA1");
-				movementManager.startScalingRoutine(&arrow2, "TestowySVA2");
-				movementManager.startScalingRoutine(&arrow3, "TestowySVA3");
-				movementManager.startScalingRoutine(&arrow4, "TestowySVA4");
+				movementManager.startScalingRoutine(arrow1, "TestowySVA1");
+				movementManager.startScalingRoutine(arrow2, "TestowySVA2");
+				movementManager.startScalingRoutine(arrow3, "TestowySVA3");
+				movementManager.startScalingRoutine(arrow4, "TestowySVA4");
 
-				movementManager.startRotationRoutine(&arrow1, "TestowyRVA1");
-				movementManager.startRotationRoutine(&arrow2, "TestowyRVA2");
-				movementManager.startRotationRoutine(&arrow3, "TestowyRVA3");
-				movementManager.startRotationRoutine(&arrow4, "TestowyRVA4");
+				movementManager.startRotationRoutine(arrow1, "TestowyRVA1");
+				movementManager.startRotationRoutine(arrow2, "TestowyRVA2");
+				movementManager.startRotationRoutine(arrow3, "TestowyRVA3");
+				movementManager.startRotationRoutine(arrow4, "TestowyRVA4");
 
-				movementManager.startRotationRoutine(&test_shape[0], "TestowyR1");
-				movementManager.startRotationRoutine(&test_shape[1], "TestowyR2");
-				movementManager.startRotationRoutine(&test_shape[2], "TestowyR3");
-				movementManager.startRotationRoutine(&test_shape[3], "TestowyR4");
+				movementManager.startRotationRoutine(test_shape[0], "TestowyR1");
+				movementManager.startRotationRoutine(test_shape[1], "TestowyR2");
+				movementManager.startRotationRoutine(test_shape[2], "TestowyR3");
+				movementManager.startRotationRoutine(test_shape[3], "TestowyR4");
 			}
 
 			// Start rotation
 			if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::R)) {
-				movementManager.startRotationRoutine(&arrow1, "TestowyRVA1");
-				movementManager.startRotationRoutine(&arrow2, "TestowyRVA2");
-				movementManager.startRotationRoutine(&arrow3, "TestowyRVA3");
-				movementManager.startRotationRoutine(&arrow4, "TestowyRVA4");
+				movementManager.startRotationRoutine(arrow1, "TestowyRVA1");
+				movementManager.startRotationRoutine(arrow2, "TestowyRVA2");
+				movementManager.startRotationRoutine(arrow3, "TestowyRVA3");
+				movementManager.startRotationRoutine(arrow4, "TestowyRVA4");
 
-				movementManager.startRotationRoutine(&test_shape[0], "TestowyR1");
-				movementManager.startRotationRoutine(&test_shape[1], "TestowyR2");
-				movementManager.startRotationRoutine(&test_shape[2], "TestowyR3");
-				movementManager.startRotationRoutine(&test_shape[3], "TestowyR4");
+				movementManager.startRotationRoutine(test_shape[0], "TestowyR1");
+				movementManager.startRotationRoutine(test_shape[1], "TestowyR2");
+				movementManager.startRotationRoutine(test_shape[2], "TestowyR3");
+				movementManager.startRotationRoutine(test_shape[3], "TestowyR4");
 			}
 
 			// Start movement
 			if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::M)) {
-				movementManager.startMovementRoutine(&test_shape[0], "TestowyM1");
-				movementManager.startMovementRoutine(&test_shape[1], "TestowyM2");
-				movementManager.startMovementRoutine(&test_shape[2], "TestowyM3");
-				movementManager.startMovementRoutine(&test_shape[3], "TestowyM4");
+				movementManager.startMovementRoutine(test_shape[0], "TestowyM1");
+				movementManager.startMovementRoutine(test_shape[1], "TestowyM2");
+				movementManager.startMovementRoutine(test_shape[2], "TestowyM3");
+				movementManager.startMovementRoutine(test_shape[3], "TestowyM4");
 
-				movementManager.startMovementRoutine(&arrow1, "TestowyMVA1");
-				movementManager.startMovementRoutine(&arrow2, "TestowyMVA2");
-				movementManager.startMovementRoutine(&arrow3, "TestowyMVA3");
-				movementManager.startMovementRoutine(&arrow4, "TestowyMVA4");
+				movementManager.startMovementRoutine(arrow1, "TestowyMVA1");
+				movementManager.startMovementRoutine(arrow2, "TestowyMVA2");
+				movementManager.startMovementRoutine(arrow3, "TestowyMVA3");
+				movementManager.startMovementRoutine(arrow4, "TestowyMVA4");
 			}
 
 			// Start scaling
 			if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::S)) {
-				movementManager.startScalingRoutine(&test_shape[0], "TestowyS1");
-				movementManager.startScalingRoutine(&test_shape[1], "TestowyS2");
-				movementManager.startScalingRoutine(&test_shape[2], "TestowyS3");
-				movementManager.startScalingRoutine(&test_shape[3], "TestowyS4");
+				movementManager.startScalingRoutine(test_shape[0], "TestowyS1");
+				movementManager.startScalingRoutine(test_shape[1], "TestowyS2");
+				movementManager.startScalingRoutine(test_shape[2], "TestowyS3");
+				movementManager.startScalingRoutine(test_shape[3], "TestowyS4");
 
-				movementManager.startScalingRoutine(&arrow1, "TestowySVA1");
-				movementManager.startScalingRoutine(&arrow2, "TestowySVA2");
-				movementManager.startScalingRoutine(&arrow3, "TestowySVA3");
-				movementManager.startScalingRoutine(&arrow4, "TestowySVA4");
+				movementManager.startScalingRoutine(arrow1, "TestowySVA1");
+				movementManager.startScalingRoutine(arrow2, "TestowySVA2");
+				movementManager.startScalingRoutine(arrow3, "TestowySVA3");
+				movementManager.startScalingRoutine(arrow4, "TestowySVA4");
 			}
 
 

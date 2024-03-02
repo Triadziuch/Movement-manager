@@ -36,7 +36,6 @@ void VertexArray2::updatePosition(const sf::Vector2f& new_pos)
 
 void VertexArray2::updateScale(const sf::Vector2f& new_scale)
 {
-	printf("Updating scale: %f %f\n", new_scale.x, new_scale.y);
 	if (new_scale.x == 0 || new_scale.y == 0)
 		return;
 

@@ -105,7 +105,7 @@ MovementRoutine::MovementRoutine(const std::string& name, MovementRoutineEngine*
 	TransformationRoutine{ name, movementRoutineEnginePtr } 
 	{}
 
-MovementRoutine::MovementRoutine(const std::string& name, MovementRoutineEngine* const movementRoutineEnginePtr, const movementInfo& movement) :
+MovementRoutine::MovementRoutine(const std::string& name, MovementRoutineEngine* const movementRoutineEnginePtr, movementInfo* movement) :
 	TransformationRoutine{ name, movementRoutineEnginePtr } 
 {
 	m_routineMovements.emplace_back(movement);
@@ -121,23 +121,23 @@ MovementRoutine::MovementRoutine(const MovementRoutine& obj) :
 	TransformationRoutine{ obj } 
 {
 	for (const auto& movement : obj.m_routineMovements)
-		this->m_routineMovements.emplace_back(*movement);
+		this->m_routineMovements.emplace_back(new movementInfo(*movement));
 }
 
 MovementRoutine::~MovementRoutine() { 
 	for (auto& movement : m_routineMovements) 
-		delete movement; 
+		delete movement;
 	m_routineMovements.clear();
 }
 
 // Public functions
-void MovementRoutine::addMovement(const movementInfo& movement)
+void MovementRoutine::addMovement(movementInfo* movement)
 {
 	m_routineMovements.emplace_back(movement);
 	++m_count;
 }
 
-void MovementRoutine::removeMovement(const movementInfo& movement) 
+void MovementRoutine::removeMovement(movementInfo* movement) 
 {
 	auto it = std::find(m_routineMovements.begin(), m_routineMovements.end(), movement);
 
@@ -218,18 +218,18 @@ const bool MovementRoutine::start(VertexArray2& vertexArray)
 	return false;
 }
 
-void MovementRoutine::stop(sf::Shape& shape) 
+void MovementRoutine::stop(sf::Shape* shape) 
 {
 	reset();
 	m_movementRoutineEngine->stopMovement(shape);
 }
 
-void MovementRoutine::stop(sf::Sprite& sprite) {
+void MovementRoutine::stop(sf::Sprite* sprite) {
 	reset();
 	m_movementRoutineEngine->stopMovement(sprite);
 }
 
-void MovementRoutine::stop(VertexArray2& vertexArray)
+void MovementRoutine::stop(VertexArray2* vertexArray)
 {
 	reset();
 	m_movementRoutineEngine->stopMovement(vertexArray);
@@ -317,21 +317,20 @@ const long long int& MovementRoutine::size() const
 void ScalingRoutine::adjustStartToCurrent(const sf::Vector2f& current_scale)
 {
 	if (m_routineScalings.size() == 0) return;
-	m_routineScalings.front()->starting_scale = current_scale;
+	m_routineScalings.front()->getStartingScale() = current_scale;
 }
 
 void ScalingRoutine::adjustAllToCurrent(const sf::Vector2f& current_scale)
 {
 	if (m_routineScalings.size() == 0) return;
 
-	const sf::Vector2f proportion{ current_scale.x / m_routineScalings.front()->starting_scale.x, current_scale.y / m_routineScalings.front()->starting_scale.y };
+	const sf::Vector2f& starting_scale = m_routineScalings.front()->getStartingScale();
+	const sf::Vector2f proportion{ current_scale.x / starting_scale.x, current_scale.y / starting_scale.y};
 
 	if (proportion == sf::Vector2f{ 1.f, 1.f }) return;
 
-	for (auto& scaling : m_routineScalings) {
-		scaling->starting_scale = sf::Vector2f{ scaling->starting_scale.x * proportion.x, scaling->starting_scale.y * proportion.y };
-		scaling->ending_scale = sf::Vector2f{ scaling->ending_scale.x * proportion.x, scaling->ending_scale.y * proportion.y };
-	}
+	for (auto& scaling : m_routineScalings)
+		scaling->scale(proportion);
 }
 
 // Constructors / Destructors
@@ -344,7 +343,7 @@ ScalingRoutine::ScalingRoutine(const std::string& name, MovementRoutineEngine* c
 	TransformationRoutine{ name, movementRoutineEnginePtr } 
 	{}
 
-ScalingRoutine::ScalingRoutine(const std::string& name, MovementRoutineEngine* const movementRoutineEnginePtr, const scalingInfo& scaling) :
+ScalingRoutine::ScalingRoutine(const std::string& name, MovementRoutineEngine* const movementRoutineEnginePtr, scalingInfo* scaling) :
 	TransformationRoutine{ name, movementRoutineEnginePtr } 
 { 
 	this->m_routineScalings.emplace_back(scaling);
@@ -359,7 +358,7 @@ ScalingRoutine::ScalingRoutine(const ScalingRoutine & obj) :
 	TransformationRoutine{ obj } 
 {
 	for (const auto& scaling : obj.m_routineScalings)
-		this->m_routineScalings.emplace_back(*scaling);
+		this->m_routineScalings.emplace_back(new scalingInfo(*scaling));
 }
 
 ScalingRoutine::~ScalingRoutine()
@@ -370,13 +369,13 @@ ScalingRoutine::~ScalingRoutine()
 }
 
 // Public functions
-void ScalingRoutine::addScaling(const scalingInfo& scaling)
+void ScalingRoutine::addScaling(scalingInfo* scaling)
 {
 	m_routineScalings.emplace_back(scaling);
 	++m_count;
 }
 
-void ScalingRoutine::removeScaling(const scalingInfo& scaling)
+void ScalingRoutine::removeScaling(scalingInfo* scaling)
 {
 	auto it = std::find(m_routineScalings.begin(), m_routineScalings.end(), scaling);
 
@@ -454,22 +453,22 @@ const bool ScalingRoutine::start(VertexArray2& vertexArray)
 	return false;
 }
 
-void ScalingRoutine::stop(sf::Shape& shape)
+void ScalingRoutine::stop(sf::Shape* shape)
 {
 	reset();
-	m_movementRoutineEngine->stopScaling(&shape);
+	m_movementRoutineEngine->stopScaling(shape);
 }
 
-void ScalingRoutine::stop(sf::Sprite& sprite)
+void ScalingRoutine::stop(sf::Sprite* sprite)
 {
 	reset();
-	m_movementRoutineEngine->stopScaling(&sprite);
+	m_movementRoutineEngine->stopScaling(sprite);
 }
 
-void ScalingRoutine::stop(VertexArray2& vertexArray)
+void ScalingRoutine::stop(VertexArray2* vertexArray)
 {
 	reset();
-	m_movementRoutineEngine->stopScaling(&vertexArray);
+	m_movementRoutineEngine->stopScaling(vertexArray);
 }
 
 scalingInfo* ScalingRoutine::getCurrentScaling()
@@ -557,52 +556,52 @@ void RotationRoutine::adjustStartToCurrent(float current_rotation)
 	const rotationInfo& rotation = *m_routineRotations.front();
 
 	if (!was_last_clockwise) {
-		if (rotation.clockwise) {
-			if (current_rotation > rotation.ending_rotation)
+		if (rotation.getClockwise()) {
+			if (current_rotation > rotation.getEndingRotation())
 				current_rotation -= 360.f;
 		}
 		else {
 			current_rotation -= 360.f;
 			current_rotation *= -1.f;
 
-			if (current_rotation > rotation.ending_rotation)
+			if (current_rotation > rotation.getEndingRotation())
 				current_rotation -= 360.f;
 		}
 	}
 	else {
-		if (rotation.clockwise) {
-			if (current_rotation > rotation.ending_rotation)
+		if (rotation.getClockwise()) {
+			if (current_rotation > rotation.getEndingRotation())
 				current_rotation -= 360.f;
 		}
-		else if (rotation.clockwise == false) {
+		else if (rotation.getClockwise() == false) {
 			current_rotation -= 360.f;
 			current_rotation *= -1.f;
 
-			if (current_rotation > rotation.ending_rotation)
+			if (current_rotation > rotation.getEndingRotation())
 				current_rotation -= 360.f;
 		}
 	}
 
-	if (rotation.clockwise)
-		m_routineRotations.front()->starting_rotation = current_rotation;
+	if (rotation.getClockwise())
+		m_routineRotations.front()->getStartingRotation() = current_rotation;
 	else
-		m_routineRotations.front()->starting_rotation = 360.f - current_rotation;
+		m_routineRotations.front()->getStartingRotation() = 360.f - current_rotation;
 }
 
 void RotationRoutine::adjustAllToCurrent(const float current_rotation)
 {
 	if (m_routineRotations.size() == 0) return;
 
-	float rotation_offset = current_rotation - m_routineRotations.front()->starting_rotation;
+	float rotation_offset = current_rotation - m_routineRotations.front()->getStartingRotation();
 
-	if (!m_routineRotations.front()->clockwise)
+	if (!m_routineRotations.front()->getClockwise())
 		rotation_offset = 360.f + rotation_offset;
 
 	if (rotation_offset == 0.f || rotation_offset == 360.f) return;
 
 	for (auto& rotation : m_routineRotations) {
-		float& new_starting_rotation = rotation->starting_rotation;
-		float& new_ending_rotation = rotation->ending_rotation;
+		float& new_starting_rotation = rotation->getStartingRotation();
+		float& new_ending_rotation = rotation->getEndingRotation();
 
 		new_starting_rotation += rotation_offset;
 		new_ending_rotation += rotation_offset;
@@ -619,7 +618,7 @@ RotationRoutine::RotationRoutine(const std::string& name, MovementRoutineEngine*
 	TransformationRoutine{ name, movementRoutineEnginePtr } 
 	{}
 
-RotationRoutine::RotationRoutine(const std::string& name, MovementRoutineEngine* const movementRoutineEnginePtr, const rotationInfo& rotation) :
+RotationRoutine::RotationRoutine(const std::string& name, MovementRoutineEngine* const movementRoutineEnginePtr, rotationInfo* rotation) :
 	TransformationRoutine{ name, movementRoutineEnginePtr } 
 {
 	m_routineRotations.emplace_back(rotation);
@@ -636,7 +635,7 @@ RotationRoutine::RotationRoutine(const RotationRoutine& obj) :
 	was_last_clockwise{ obj.was_last_clockwise }
 {
 	for (const auto& rotation : obj.m_routineRotations)
-		this->m_routineRotations.emplace_back(*rotation);
+		this->m_routineRotations.emplace_back(new rotationInfo(*rotation));
 }
 
 RotationRoutine::~RotationRoutine()
@@ -647,14 +646,14 @@ RotationRoutine::~RotationRoutine()
 }
 
 // Public functions
-void RotationRoutine::addRotation(const rotationInfo& rotation)
+void RotationRoutine::addRotation(rotationInfo* rotation)
 {
-	was_last_clockwise = rotation.clockwise;
+	was_last_clockwise = rotation->getClockwise();
 	m_routineRotations.emplace_back(rotation);
 	++m_count;
 }
 
-void RotationRoutine::removeRotation(const rotationInfo& rotation)
+void RotationRoutine::removeRotation(rotationInfo* rotation)
 {
 	auto it = std::find(m_routineRotations.begin(), m_routineRotations.end(), rotation);
 	if (it != m_routineRotations.end()) { 
@@ -731,22 +730,22 @@ const bool RotationRoutine::start(VertexArray2& vertexArray)
 	return false;
 }
 
-void RotationRoutine::stop(sf::Shape& shape)
+void RotationRoutine::stop(sf::Shape* shape)
 {
 	reset();
-	m_movementRoutineEngine->stopRotation(&shape);
+	m_movementRoutineEngine->stopRotation(shape);
 }
 
-void RotationRoutine::stop(sf::Sprite& sprite)
+void RotationRoutine::stop(sf::Sprite* sprite)
 {
 	reset();
-	m_movementRoutineEngine->stopRotation(&sprite);
+	m_movementRoutineEngine->stopRotation(sprite);
 }
 
-void RotationRoutine::stop(VertexArray2& vertexArray)
+void RotationRoutine::stop(VertexArray2* vertexArray)
 {
 	reset();
-	m_movementRoutineEngine->stopRotation(&vertexArray);
+	m_movementRoutineEngine->stopRotation(vertexArray);
 }
 
 rotationInfo* RotationRoutine::getCurrentRotation()
@@ -760,12 +759,12 @@ rotationInfo* RotationRoutine::getCurrentRotation()
 const bool RotationRoutine::goToNextRotation(const sf::Shape& shape)
 {
 	if (m_current < m_count - 1) {
-		was_last_clockwise = m_routineRotations[m_current]->clockwise;
+		was_last_clockwise = m_routineRotations[m_current]->getClockwise();
 		++m_current;
 		return true;
 	}
 	else {
-		was_last_clockwise = m_routineRotations[m_current]->clockwise;
+		was_last_clockwise = m_routineRotations[m_current]->getClockwise();
 		if (m_adjustAllToCurrentTransform)		  { adjustAllToCurrent(shape.getRotation()); }
 		else if (m_adjustStartToCurrentTransform) { adjustStartToCurrent(shape.getRotation()); }
 		reset();
@@ -782,12 +781,12 @@ const bool RotationRoutine::goToNextRotation(const sf::Shape& shape)
 const bool RotationRoutine::goToNextRotation(const sf::Sprite& sprite)
 {
 	if (m_current < m_count - 1) {
-		was_last_clockwise = m_routineRotations[m_current]->clockwise;
+		was_last_clockwise = m_routineRotations[m_current]->getClockwise();
 		++m_current;
 		return true;
 	}
 	else {
-		was_last_clockwise = m_routineRotations[m_current]->clockwise;
+		was_last_clockwise = m_routineRotations[m_current]->getClockwise();
 		if (m_adjustAllToCurrentTransform)		  { adjustAllToCurrent(sprite.getRotation()); }
 		else if (m_adjustStartToCurrentTransform) { adjustStartToCurrent(sprite.getRotation()); }
 		reset();
@@ -804,12 +803,12 @@ const bool RotationRoutine::goToNextRotation(const sf::Sprite& sprite)
 const bool RotationRoutine::goToNextRotation(VertexArray2& vertexArray)
 {
 	if (m_current < m_count - 1) {
-		was_last_clockwise = m_routineRotations[m_current]->clockwise;
+		was_last_clockwise = m_routineRotations[m_current]->getClockwise();
 		++m_current;
 		return true;
 	}
 	else {
-		was_last_clockwise = m_routineRotations[m_current]->clockwise;
+		was_last_clockwise = m_routineRotations[m_current]->getClockwise();
 		if (m_adjustAllToCurrentTransform)		  { adjustAllToCurrent(vertexArray.getRotation()); }
 		else if (m_adjustStartToCurrentTransform) { adjustStartToCurrent(vertexArray.getRotation()); }
 		reset();

@@ -1,11 +1,7 @@
 #pragma once
 #include "transformationInfo.h"
 
-
-
 // Constructors / Destructors
-transformationInfo::transformationInfo() {};
-
 transformationInfo::transformationInfo(bool repeat, float motionDuration, float delayBefore, float delayAfter, double (*usedFunctionPtr)(double)) :
 	m_repeat{ repeat }, 
 	m_motionDuration{ motionDuration }, 
@@ -56,8 +52,8 @@ const bool transformationInfo::isFinished() const
 // Constructors / Destructors
 movementInfo::movementInfo(sf::Vector2f startingPos, sf::Vector2f endingPos, float motionDuration, double(*usedFunctionPtr)(double), bool repeat, float delayBefore, float delayAfter) :
 	transformationInfo{ repeat, motionDuration, delayBefore, delayAfter, usedFunctionPtr }, 
-	m_startingPos(startingPos), 
-	m_endingPos(endingPos) 
+	m_startingPos{ startingPos }, 
+	m_endingPos{ endingPos }
 	{}
 
 movementInfo::movementInfo(const movementInfo & obj) :
@@ -65,6 +61,20 @@ movementInfo::movementInfo(const movementInfo & obj) :
 	m_startingPos(obj.m_startingPos),
 	m_endingPos(obj.m_endingPos)
 	{}
+
+bool movementInfo::operator==(const movementInfo & rhs) {
+	return m_startingPos == rhs.m_startingPos &&
+		m_endingPos == rhs.m_endingPos &&
+		static_cast<const transformationInfo&>(*this) == static_cast<const transformationInfo&>(rhs);
+}
+
+// Update functions
+const sf::Vector2f movementInfo::updatePosition() const
+{
+	float ease_function_value = static_cast<float>(m_usedFunctionPtr(static_cast<double>((m_currentTime - m_delayBefore) / m_motionDuration)));
+	return sf::Vector2f{ ease_function_value * (m_endingPos.x - m_startingPos.x) + getStartingPos().x,
+						 ease_function_value * (m_endingPos.y - m_startingPos.y) + getStartingPos().y };
+}
 
 // Accessors
 sf::Vector2f& movementInfo::getStartingPos()
@@ -102,6 +112,15 @@ scalingInfo::scalingInfo(const scalingInfo & obj) :
 	m_endingScale(obj.m_endingScale)
 	{}
 
+// Public functions
+void scalingInfo::scale(const sf::Vector2f & scale)
+{
+	m_startingScale.x *= scale.x;
+	m_startingScale.y *= scale.y;
+	m_endingScale.x *= scale.x;
+	m_endingScale.y *= scale.y;
+}
+
 // Accessors
 sf::Vector2f& scalingInfo::getStartingScale()
 {
@@ -138,22 +157,19 @@ rotationInfo::rotationInfo(float startingRotation, float endingRotation, float m
 		m_startingRotation = 360.f - startingRotation;
 		m_endingRotation = 360.f - endingRotation;
 	}
-
-	m_rotationOffset = m_endingRotation - m_startingRotation;
 }
 
 rotationInfo::rotationInfo(const rotationInfo& obj) :
 	transformationInfo{ obj.m_repeat, obj.m_currentTime, obj.m_motionDuration, obj.m_delayBefore, obj.m_delayAfter, obj.m_usedFunctionPtr },
 	m_startingRotation(obj.m_startingRotation),
 	m_endingRotation(obj.m_endingRotation),
-	m_rotationOffset(obj.m_rotationOffset),
 	m_clockwise(obj.m_clockwise)
 	{}
 
 // Update functions
 const float rotationInfo::updateRotation() const
 {
-	float new_rotation = static_cast<float>(m_usedFunctionPtr(static_cast<double>((m_currentTime - m_delayBefore) / m_motionDuration))) * m_rotationOffset + m_startingRotation;
+	float new_rotation = static_cast<float>(m_usedFunctionPtr(static_cast<double>((m_currentTime - m_delayBefore) / m_motionDuration))) * (m_endingRotation - m_startingRotation) + m_startingRotation;
 	return new_rotation;
 }
 

@@ -24,10 +24,6 @@ MovementManager::~MovementManager()
 	this->deleteRotationRoutine();
 
 	delete m_movementRoutineContainer;
-	delete m_scalingRoutineContainer;
-	delete m_rotationRoutineContainer;
-
-	delete movementRoutineEngine;
 }
 
 // Update functions
@@ -151,13 +147,13 @@ MovementRoutine* MovementManager::linkMovementRoutine(VertexArray2& _vertexarray
 
 }
 
-void MovementManager::unlinkMovementRoutine(sf::Shape& _shape, const std::string& _name)
+void MovementManager::unlinkMovementRoutine(sf::Shape* _shape, const std::string& _name)
 {
 	// Stop the routine if it's active
 	this->stopMovementRoutine(_shape, _name);
 
 	// Delete the routine from m_routineMovementShape
-	auto m_movementRoutineContainerFound = m_routineMovementShape.find(&_shape);
+	auto m_movementRoutineContainerFound = m_routineMovementShape.find(_shape);
 	if (m_movementRoutineContainerFound != m_routineMovementShape.end()) {
 
 		auto* movementRoutineFound = m_movementRoutineContainerFound->second->exists(_name);
@@ -170,13 +166,13 @@ void MovementManager::unlinkMovementRoutine(sf::Shape& _shape, const std::string
 		printf("MovementManager::unlinkMovementRoutine: Routine for shape not found\n");
 }
 
-void MovementManager::unlinkMovementRoutine(sf::Sprite& _sprite, const std::string& _name)
+void MovementManager::unlinkMovementRoutine(sf::Sprite* _sprite, const std::string& _name)
 {
 	// Stop the routine if it's active
 	this->stopMovementRoutine(_sprite, _name);
 
 	// Delete the routine from m_routineMovementSprite
-	auto m_movementRoutineContainerFound = m_routineMovementSprite.find(&_sprite);
+	auto m_movementRoutineContainerFound = m_routineMovementSprite.find(_sprite);
 	if (m_movementRoutineContainerFound != m_routineMovementSprite.end()) {
 
 		auto* movementRoutineFound = m_movementRoutineContainerFound->second->exists(_name);
@@ -189,13 +185,13 @@ void MovementManager::unlinkMovementRoutine(sf::Sprite& _sprite, const std::stri
 		printf("MovementManager::unlinkMovementRoutine: Routine for sprite not found\n");
 }
 
-void MovementManager::unlinkMovementRoutine(VertexArray2& _vertexarray, const std::string& _name)
+void MovementManager::unlinkMovementRoutine(VertexArray2* _vertexarray, const std::string& _name)
 {
 	// Stop the routine if it's active
 	this->stopMovementRoutine(_vertexarray, _name);
 
 	// Delete the routine from m_routineMovementVertexArray
-	auto m_movementRoutineContainerFound = m_routineMovementVertexArray.find(&_vertexarray);
+	auto m_movementRoutineContainerFound = m_routineMovementVertexArray.find(_vertexarray);
 	if (m_movementRoutineContainerFound != m_routineMovementVertexArray.end()) {
 
 		auto* movementRoutineFound = m_movementRoutineContainerFound->second->exists(_name);
@@ -338,9 +334,9 @@ void MovementManager::resumeMovementRoutine(VertexArray2& _vertexarray, const st
 		printf("MovementManager::resumeMovementRoutine: Routine for vertexarray not found\n");
 }
 
-void MovementManager::stopMovementRoutine(sf::Shape& _shape, const std::string& _name)
+void MovementManager::stopMovementRoutine(sf::Shape* _shape, const std::string& _name)
 {
-	auto movementRoutineFound = m_routineMovementShapeActive.find(&_shape);
+	auto movementRoutineFound = m_routineMovementShapeActive.find(_shape);
 	if (movementRoutineFound != m_routineMovementShapeActive.end()) {
 		if (movementRoutineFound->second->getName() == _name) {
 			movementRoutineFound->second->stop(_shape);
@@ -353,9 +349,9 @@ void MovementManager::stopMovementRoutine(sf::Shape& _shape, const std::string& 
 		printf("MovementManager::stopMovementRoutine: Routine for shape not found\n");
 }
 
-void MovementManager::stopMovementRoutine(sf::Sprite& _sprite, const std::string& _name)
+void MovementManager::stopMovementRoutine(sf::Sprite* _sprite, const std::string& _name)
 {
-	auto movementRoutineFound = m_routineMovementSpriteActive.find(&_sprite);
+	auto movementRoutineFound = m_routineMovementSpriteActive.find(_sprite);
 	if (movementRoutineFound != m_routineMovementSpriteActive.end()) {
 		if (movementRoutineFound->second->getName() == _name) {
 			movementRoutineFound->second->stop(_sprite);
@@ -368,9 +364,9 @@ void MovementManager::stopMovementRoutine(sf::Sprite& _sprite, const std::string
 		printf("MovementManager::stopMovementRoutine: Routine for sprite not found\n");
 }
 
-void MovementManager::stopMovementRoutine(VertexArray2& _vertexarray, const std::string& _name)
+void MovementManager::stopMovementRoutine(VertexArray2* _vertexarray, const std::string& _name)
 {
-	auto movementRoutineFound = m_routineMovementVertexArrayActive.find(&_vertexarray);
+	auto movementRoutineFound = m_routineMovementVertexArrayActive.find(_vertexarray);
 	if (movementRoutineFound != m_routineMovementVertexArrayActive.end()) {
 		if (movementRoutineFound->second->getName() == _name) {
 			movementRoutineFound->second->stop(_vertexarray);
@@ -386,17 +382,17 @@ void MovementManager::stopMovementRoutine(VertexArray2& _vertexarray, const std:
 void MovementManager::deleteMovementRoutine()
 {
 	for (auto routine_active = m_routineMovementShapeActive.begin(); routine_active != m_routineMovementShapeActive.end();) {
-		routine_active->second->stop(*routine_active->first);
+		routine_active->second->stop(routine_active->first);
 		routine_active = m_routineMovementShapeActive.erase(routine_active);
 	}
 
 	for (auto routine_active = m_routineMovementSpriteActive.begin(); routine_active != m_routineMovementSpriteActive.end();) {
-		routine_active->second->stop(*routine_active->first);
+		routine_active->second->stop(routine_active->first);
 		routine_active = m_routineMovementSpriteActive.erase(routine_active);
 	}
 
 	for (auto routine_active = m_routineMovementVertexArrayActive.begin(); routine_active != m_routineMovementVertexArrayActive.end();) {
-		routine_active->second->stop(*routine_active->first);
+		routine_active->second->stop(routine_active->first);
 		routine_active = m_routineMovementVertexArrayActive.erase(routine_active);
 	}
 
@@ -425,7 +421,7 @@ void MovementManager::deleteMovementRoutine(const std::string& _name)
 {
 	for (auto routine_active = m_routineMovementShapeActive.begin(); routine_active != m_routineMovementShapeActive.end();) {
 		if (routine_active->second->getName() == _name) {
-			routine_active->second->stop(*routine_active->first);
+			routine_active->second->stop(routine_active->first);
 			routine_active = m_routineMovementShapeActive.erase(routine_active);
 		}
 		else
@@ -434,7 +430,7 @@ void MovementManager::deleteMovementRoutine(const std::string& _name)
 
 	for (auto routine_active = m_routineMovementSpriteActive.begin(); routine_active != m_routineMovementSpriteActive.end();) {
 		if (routine_active->second->getName() == _name) {
-			routine_active->second->stop(*routine_active->first);
+			routine_active->second->stop(routine_active->first);
 			routine_active = m_routineMovementSpriteActive.erase(routine_active);
 		}
 		else
@@ -443,7 +439,7 @@ void MovementManager::deleteMovementRoutine(const std::string& _name)
 
 	for (auto routine_active = m_routineMovementVertexArrayActive.begin(); routine_active != m_routineMovementVertexArrayActive.end();) {
 		if (routine_active->second->getName() == _name) {
-			routine_active->second->stop(*routine_active->first);
+			routine_active->second->stop(routine_active->first);
 			routine_active = m_routineMovementVertexArrayActive.erase(routine_active);
 		}
 		else
@@ -623,13 +619,13 @@ ScalingRoutine* MovementManager::linkScalingRoutine(VertexArray2& _vertexarray, 
 	return m_scalingRoutineContainerFound->second->createRoutine(_name, newScalingRoutine);
 }
 
-void MovementManager::unlinkScalingRoutine(sf::Shape& _shape, const std::string& _name)
+void MovementManager::unlinkScalingRoutine(sf::Shape* _shape, const std::string& _name)
 {
 	// Stop the routine if it's active
 	this->stopScalingRoutine(_shape, _name);
 
 	// Delete the routine from m_routineScalingShape
-	auto m_scalingRoutineContainerFound = m_routineScalingShape.find(&_shape);
+	auto m_scalingRoutineContainerFound = m_routineScalingShape.find(_shape);
 	if (m_scalingRoutineContainerFound != m_routineScalingShape.end()) {
 
 		auto* scalingRoutineFound = m_scalingRoutineContainerFound->second->exists(_name);
@@ -643,13 +639,13 @@ void MovementManager::unlinkScalingRoutine(sf::Shape& _shape, const std::string&
 		printf("MovementManager::unlinkScalingRoutine: Routine for shape not found\n");
 }
 
-void MovementManager::unlinkScalingRoutine(sf::Sprite& _sprite, const std::string& _name)
+void MovementManager::unlinkScalingRoutine(sf::Sprite* _sprite, const std::string& _name)
 {
 	// Stop the routine if it's active
 	this->stopScalingRoutine(_sprite, _name);
 
 	// Delete the routine from m_routineScalingSprite
-	auto m_scalingRoutineContainerFound = m_routineScalingSprite.find(&_sprite);
+	auto m_scalingRoutineContainerFound = m_routineScalingSprite.find(_sprite);
 	if (m_scalingRoutineContainerFound != m_routineScalingSprite.end()) {
 
 		auto* scalingRoutineFound = m_scalingRoutineContainerFound->second->exists(_name);
@@ -663,13 +659,13 @@ void MovementManager::unlinkScalingRoutine(sf::Sprite& _sprite, const std::strin
 		printf("MovementManager::unlinkScalingRoutine: Routine for sprite not found\n");
 }
 
-void MovementManager::unlinkScalingRoutine(VertexArray2& _vertexarray, const std::string& _name)
+void MovementManager::unlinkScalingRoutine(VertexArray2* _vertexarray, const std::string& _name)
 {
 	// Stop the routine if it's active
 	this->stopScalingRoutine(_vertexarray, _name);
 
 	// Delete the routine from m_routineScalingVertexArray
-	auto m_scalingRoutineContainerFound = m_routineScalingVertexArray.find(&_vertexarray);
+	auto m_scalingRoutineContainerFound = m_routineScalingVertexArray.find(_vertexarray);
 	if (m_scalingRoutineContainerFound != m_routineScalingVertexArray.end()) {
 
 		auto* scalingRoutineFound = m_scalingRoutineContainerFound->second->exists(_name);
@@ -814,9 +810,9 @@ void MovementManager::resumeScalingRoutine(VertexArray2& _vertexarray, const std
 		printf("MovementManager::resumeScalingRoutine: Routine for vertexarray not found\n");
 }
 
-void MovementManager::stopScalingRoutine(sf::Shape& _shape, const std::string& _name)
+void MovementManager::stopScalingRoutine(sf::Shape* _shape, const std::string& _name)
 {
-	auto scalingRoutineFound = m_routineScalingShape_Active.find(&_shape);
+	auto scalingRoutineFound = m_routineScalingShape_Active.find(_shape);
 	if (scalingRoutineFound != m_routineScalingShape_Active.end()) {
 		if (scalingRoutineFound->second->getName() == _name) {
 			scalingRoutineFound->second->stop(_shape);
@@ -829,9 +825,9 @@ void MovementManager::stopScalingRoutine(sf::Shape& _shape, const std::string& _
 		printf("MovementManager::stopScalingRoutine: Routine for shape not found\n");
 }
 
-void MovementManager::stopScalingRoutine(sf::Sprite& _sprite, const std::string& _name)
+void MovementManager::stopScalingRoutine(sf::Sprite* _sprite, const std::string& _name)
 {
-	auto scalingRoutineFound = m_routineScalingSprite_Active.find(&_sprite);
+	auto scalingRoutineFound = m_routineScalingSprite_Active.find(_sprite);
 	if (scalingRoutineFound != m_routineScalingSprite_Active.end()) {
 		if (scalingRoutineFound->second->getName() == _name) {
 			scalingRoutineFound->second->stop(_sprite);
@@ -844,9 +840,9 @@ void MovementManager::stopScalingRoutine(sf::Sprite& _sprite, const std::string&
 		printf("MovementManager::stopScalingRoutine: Routine for sprite not found\n");
 }
 
-void MovementManager::stopScalingRoutine(VertexArray2& _vertexarray, const std::string& _name)
+void MovementManager::stopScalingRoutine(VertexArray2* _vertexarray, const std::string& _name)
 {
-	auto scalingRoutineFound = m_routineScalingVertexArray_Active.find(&_vertexarray);
+	auto scalingRoutineFound = m_routineScalingVertexArray_Active.find(_vertexarray);
 	if (scalingRoutineFound != m_routineScalingVertexArray_Active.end()) {
 		if (scalingRoutineFound->second->getName() == _name) {
 			scalingRoutineFound->second->stop(_vertexarray);
@@ -862,17 +858,17 @@ void MovementManager::stopScalingRoutine(VertexArray2& _vertexarray, const std::
 void MovementManager::deleteScalingRoutine()
 {
 	for (auto routine_active = m_routineScalingShape_Active.begin(); routine_active != m_routineScalingShape_Active.end();) {
-		routine_active->second->stop(*routine_active->first);
+		routine_active->second->stop(routine_active->first);
 		routine_active = m_routineScalingShape_Active.erase(routine_active);
 	}
 
 	for (auto routine_active = m_routineScalingSprite_Active.begin(); routine_active != m_routineScalingSprite_Active.end();) {
-		routine_active->second->stop(*routine_active->first);
+		routine_active->second->stop(routine_active->first);
 		routine_active = m_routineScalingSprite_Active.erase(routine_active);
 	}
 
 	for (auto routine_active = m_routineScalingVertexArray_Active.begin(); routine_active != m_routineScalingVertexArray_Active.end();) {
-		routine_active->second->stop(*routine_active->first);
+		routine_active->second->stop(routine_active->first);
 		routine_active = m_routineScalingVertexArray_Active.erase(routine_active);
 	}
 
@@ -901,7 +897,7 @@ void MovementManager::deleteScalingRoutine(const std::string& _name)
 {
 	for (auto routine_active = m_routineScalingShape_Active.begin(); routine_active != m_routineScalingShape_Active.end();) {
 		if (routine_active->second->getName() == _name) {
-			routine_active->second->stop(*routine_active->first);
+			routine_active->second->stop(routine_active->first);
 			routine_active = m_routineScalingShape_Active.erase(routine_active);
 		}
 		else
@@ -910,7 +906,7 @@ void MovementManager::deleteScalingRoutine(const std::string& _name)
 
 	for (auto routine_active = m_routineScalingSprite_Active.begin(); routine_active != m_routineScalingSprite_Active.end();) {
 		if (routine_active->second->getName() == _name) {
-			routine_active->second->stop(*routine_active->first);
+			routine_active->second->stop(routine_active->first);
 			routine_active = m_routineScalingSprite_Active.erase(routine_active);
 		}
 		else
@@ -919,7 +915,7 @@ void MovementManager::deleteScalingRoutine(const std::string& _name)
 
 	for (auto routine_active = m_routineScalingVertexArray_Active.begin(); routine_active != m_routineScalingVertexArray_Active.end();) {
 		if (routine_active->second->getName() == _name) {
-			routine_active->second->stop(*routine_active->first);
+			routine_active->second->stop(routine_active->first);
 			routine_active = m_routineScalingVertexArray_Active.erase(routine_active);
 		}
 		else
@@ -1099,13 +1095,13 @@ RotationRoutine* MovementManager::linkRotationRoutine(VertexArray2& _vertexarray
 	return m_rotationRoutineContainerFound->second->createRoutine(_name, newRotationRoutine);
 }
 
-void MovementManager::unlinkRotationRoutine(sf::Shape& _shape, const std::string& _name)
+void MovementManager::unlinkRotationRoutine(sf::Shape* _shape, const std::string& _name)
 {
 	// Stop the routine if it's active
 	this->stopRotationRoutine(_shape, _name);
 
 	// Delete the routine from m_routineRotationShape
-	auto m_rotationRoutineContainerFound = m_routineRotationShape.find(&_shape);
+	auto m_rotationRoutineContainerFound = m_routineRotationShape.find(_shape);
 	if (m_rotationRoutineContainerFound != m_routineRotationShape.end()) {
 
 		auto* rotationRoutineFound = m_rotationRoutineContainerFound->second->exists(_name);
@@ -1119,13 +1115,13 @@ void MovementManager::unlinkRotationRoutine(sf::Shape& _shape, const std::string
 		printf("MovementManager::unlinkRotationRoutine: Routine for shape not found\n");
 }
 
-void MovementManager::unlinkRotationRoutine(sf::Sprite& _sprite, const std::string& _name)
+void MovementManager::unlinkRotationRoutine(sf::Sprite* _sprite, const std::string& _name)
 {
 	// Stop the routine if it's active
 	this->stopRotationRoutine(_sprite, _name);
 
 	// Delete the routine from m_routineRotationSprite
-	auto m_rotationRoutineContainerFound = m_routineRotationSprite.find(&_sprite);
+	auto m_rotationRoutineContainerFound = m_routineRotationSprite.find(_sprite);
 	if (m_rotationRoutineContainerFound != m_routineRotationSprite.end()) {
 
 		auto* rotationRoutineFound = m_rotationRoutineContainerFound->second->exists(_name);
@@ -1139,13 +1135,13 @@ void MovementManager::unlinkRotationRoutine(sf::Sprite& _sprite, const std::stri
 		printf("MovementManager::unlinkRotationRoutine: Routine for sprite not found\n");
 }
 
-void MovementManager::unlinkRotationRoutine(VertexArray2& _vertexarray, const std::string& _name)
+void MovementManager::unlinkRotationRoutine(VertexArray2* _vertexarray, const std::string& _name)
 {
 	// Stop the routine if it's active
 	this->stopRotationRoutine(_vertexarray, _name);
 
 	// Delete the routine from m_routineRotationVertexArray
-	auto m_rotationRoutineContainerFound = m_routineRotationVertexArray.find(&_vertexarray);
+	auto m_rotationRoutineContainerFound = m_routineRotationVertexArray.find(_vertexarray);
 	if (m_rotationRoutineContainerFound != m_routineRotationVertexArray.end()) {
 
 		auto* rotationRoutineFound = m_rotationRoutineContainerFound->second->exists(_name);
@@ -1290,9 +1286,9 @@ void MovementManager::resumeRotationRoutine(VertexArray2& _vertexarray, const st
 		printf("MovementManager::resumeRotationRoutine: Routine for vertexarray not found\n");
 }
 
-void MovementManager::stopRotationRoutine(sf::Shape& _shape, const std::string& _name)
+void MovementManager::stopRotationRoutine(sf::Shape* _shape, const std::string& _name)
 {
-	auto rotationRoutineFound = m_routineRotationShape_Active.find(&_shape);
+	auto rotationRoutineFound = m_routineRotationShape_Active.find(_shape);
 	if (rotationRoutineFound != m_routineRotationShape_Active.end()) {
 		if (rotationRoutineFound->second->getName() == _name) {
 			rotationRoutineFound->second->stop(_shape);
@@ -1305,9 +1301,9 @@ void MovementManager::stopRotationRoutine(sf::Shape& _shape, const std::string& 
 		printf("MovementManager::stopRotationRoutine: Routine for shape not found\n");
 }
 
-void MovementManager::stopRotationRoutine(sf::Sprite& _sprite, const std::string& _name)
+void MovementManager::stopRotationRoutine(sf::Sprite* _sprite, const std::string& _name)
 {
-	auto rotationRoutineFound = m_routineRotationSprite_Active.find(&_sprite);
+	auto rotationRoutineFound = m_routineRotationSprite_Active.find(_sprite);
 	if (rotationRoutineFound != m_routineRotationSprite_Active.end()) {
 		if (rotationRoutineFound->second->getName() == _name) {
 			rotationRoutineFound->second->stop(_sprite);
@@ -1320,9 +1316,9 @@ void MovementManager::stopRotationRoutine(sf::Sprite& _sprite, const std::string
 		printf("MovementManager::stopRotationRoutine: Routine for sprite not found\n");
 }
 
-void MovementManager::stopRotationRoutine(VertexArray2& _vertexarray, const std::string& _name)
+void MovementManager::stopRotationRoutine(VertexArray2* _vertexarray, const std::string& _name)
 {
-	auto rotationRoutineFound = m_routineRotationVertexArray_Active.find(&_vertexarray);
+	auto rotationRoutineFound = m_routineRotationVertexArray_Active.find(_vertexarray);
 	if (rotationRoutineFound != m_routineRotationVertexArray_Active.end()) {
 		if (rotationRoutineFound->second->getName() == _name) {
 			rotationRoutineFound->second->stop(_vertexarray);
@@ -1338,17 +1334,17 @@ void MovementManager::stopRotationRoutine(VertexArray2& _vertexarray, const std:
 void MovementManager::deleteRotationRoutine()
 {
 	for (auto routine_active = m_routineRotationShape_Active.begin(); routine_active != m_routineRotationShape_Active.end();) {
-		routine_active->second->stop(*routine_active->first);
+		routine_active->second->stop(routine_active->first);
 		routine_active = m_routineRotationShape_Active.erase(routine_active);
 	}
 
 	for (auto routine_active = m_routineRotationSprite_Active.begin(); routine_active != m_routineRotationSprite_Active.end();) {
-		routine_active->second->stop(*routine_active->first);
+		routine_active->second->stop(routine_active->first);
 		routine_active = m_routineRotationSprite_Active.erase(routine_active);
 	}
 
 	for (auto routine_active = m_routineRotationVertexArray_Active.begin(); routine_active != m_routineRotationVertexArray_Active.end();) {
-		routine_active->second->stop(*routine_active->first);
+		routine_active->second->stop(routine_active->first);
 		routine_active = m_routineRotationVertexArray_Active.erase(routine_active);
 	}
 
@@ -1377,7 +1373,7 @@ void MovementManager::deleteRotationRoutine(const std::string& _name)
 {
 for (auto routine_active = m_routineRotationShape_Active.begin(); routine_active != m_routineRotationShape_Active.end();) {
 		if (routine_active->second->getName() == _name) {
-			routine_active->second->stop(*routine_active->first);
+			routine_active->second->stop(routine_active->first);
 			routine_active = m_routineRotationShape_Active.erase(routine_active);
 		}
 		else
@@ -1386,7 +1382,7 @@ for (auto routine_active = m_routineRotationShape_Active.begin(); routine_active
 
 	for (auto routine_active = m_routineRotationSprite_Active.begin(); routine_active != m_routineRotationSprite_Active.end();) {
 		if (routine_active->second->getName() == _name) {
-			routine_active->second->stop(*routine_active->first);
+			routine_active->second->stop(routine_active->first);
 			routine_active = m_routineRotationSprite_Active.erase(routine_active);
 		}
 		else
@@ -1395,7 +1391,7 @@ for (auto routine_active = m_routineRotationShape_Active.begin(); routine_active
 
 	for (auto routine_active = m_routineRotationVertexArray_Active.begin(); routine_active != m_routineRotationVertexArray_Active.end();) {
 		if (routine_active->second->getName() == _name) {
-			routine_active->second->stop(*routine_active->first);
+			routine_active->second->stop(routine_active->first);
 			routine_active = m_routineRotationVertexArray_Active.erase(routine_active);
 		}
 		else

@@ -7,16 +7,17 @@ class MovementRoutineEngine;
 class TransformationRoutine {
 protected:
 	MovementRoutineEngine* m_movementRoutineEngine{};
+	bool				   m_adjustStartToCurrentTransform{};
+	bool				   m_adjustAllToCurrentTransform{};
+	bool				   m_isLooping{};
+
+public:
 	std::string			   m_routineName{};
 	size_t				   m_current{};
 	size_t				   m_count{};
 	bool				   m_isActive{};
-	bool				   m_isLooping{};
 	bool				   m_isPaused{};
-	bool				   m_adjustStartToCurrentTransform{};
-	bool				   m_adjustAllToCurrentTransform{};
 
-public:
 	// Constructors / Destructors
 	TransformationRoutine();
 	TransformationRoutine(const std::string& name, MovementRoutineEngine* movementRoutineEnginePtr);
@@ -47,14 +48,14 @@ public:
 	// Constructors / Destructors
 	MovementRoutine();
 	MovementRoutine(const std::string& name, MovementRoutineEngine* movementRoutineEnginePtr);
-	MovementRoutine(const std::string& name, MovementRoutineEngine* movementRoutineEnginePtr, const movementInfo& movement);
-	MovementRoutine(const std::string& name, MovementRoutineEngine* movementRoutineEnginePtr, const std::vector<movementInfo*> movements);
+	MovementRoutine(const std::string& name, MovementRoutineEngine* movementRoutineEnginePtr, movementInfo* movement);
+	MovementRoutine(const std::string& name, MovementRoutineEngine* movementRoutineEnginePtr, std::vector<movementInfo*> movements);
 	MovementRoutine(const MovementRoutine& obj);
 	~MovementRoutine();
 
 	// Public functions
-	void addMovement(const movementInfo& movement);
-	void removeMovement(const movementInfo& movement);
+	void addMovement(movementInfo* movement);
+	void removeMovement(movementInfo* movement);
 
 	void clear();
 	void reset();
@@ -63,9 +64,9 @@ public:
 	const bool start(sf::Sprite& sprite);
 	const bool start(VertexArray2& vertexArray);
 
-	void stop(sf::Shape& shape);
-	void stop(sf::Sprite& sprite);
-	void stop(VertexArray2& vertexArray);
+	void stop(sf::Shape* shape);
+	void stop(sf::Sprite* sprite);
+	void stop(VertexArray2* vertexArray);
 
 	movementInfo* getCurrentMovement();
 
@@ -88,14 +89,14 @@ public:
 	// Constructors / Destructors
 	ScalingRoutine();
 	ScalingRoutine(const std::string& name, MovementRoutineEngine* movementRoutineEnginePtr);
-	ScalingRoutine(const std::string& name, MovementRoutineEngine* movementRoutineEnginePtr, const scalingInfo& scaling);
-	ScalingRoutine(const std::string& name, MovementRoutineEngine* movementRoutineEnginePtr, const std::vector<scalingInfo*> scalings);
+	ScalingRoutine(const std::string& name, MovementRoutineEngine* movementRoutineEnginePtr, scalingInfo* scaling);
+	ScalingRoutine(const std::string& name, MovementRoutineEngine* movementRoutineEnginePtr, std::vector<scalingInfo*> scalings);
 	ScalingRoutine(const ScalingRoutine& obj);
 	~ScalingRoutine();
 
 	// Public functions
-	void addScaling(const scalingInfo& scaling);
-	void removeScaling(const scalingInfo& scaling);
+	void addScaling(scalingInfo* scaling);
+	void removeScaling(scalingInfo* scaling);
 
 	void clear();
 	void reset();
@@ -104,9 +105,9 @@ public:
 	const bool start(sf::Sprite& sprite);
 	const bool start(VertexArray2& vertexArray);
 
-	void stop(sf::Shape& shape);
-	void stop(sf::Sprite& sprite);
-	void stop(VertexArray2& vertexArray);
+	void stop(sf::Shape* shape);
+	void stop(sf::Sprite* sprite);
+	void stop(VertexArray2* vertexArray);
 
 	scalingInfo* getCurrentScaling();
 
@@ -129,14 +130,14 @@ public:
 	// Constructors / Destructors
 	RotationRoutine();
 	RotationRoutine(const std::string& name, MovementRoutineEngine* movementRoutineEnginePtr);
-	RotationRoutine(const std::string& name, MovementRoutineEngine* movementRoutineEnginePtr, const rotationInfo& rotation);
-	RotationRoutine(const std::string& name, MovementRoutineEngine* movementRoutineEnginePtr, const std::vector<rotationInfo*> rotations);
+	RotationRoutine(const std::string& name, MovementRoutineEngine* movementRoutineEnginePtr, rotationInfo* rotation);
+	RotationRoutine(const std::string& name, MovementRoutineEngine* movementRoutineEnginePtr, std::vector<rotationInfo*> rotations);
 	RotationRoutine(const RotationRoutine& obj);
 	~RotationRoutine();
 
 	// Public functions
-	void addRotation(const rotationInfo& rotation);
-	void removeRotation(const rotationInfo& rotation);
+	void addRotation(rotationInfo* rotation);
+	void removeRotation(rotationInfo* rotation);
 
 	void clear();
 	void reset();
@@ -145,9 +146,9 @@ public:
 	const bool start(sf::Sprite& sprite);
 	const bool start(VertexArray2& vertexArray);
 
-	void stop(sf::Shape& shape);
-	void stop(sf::Sprite& sprite);
-	void stop(VertexArray2& vertexArray);
+	void stop(sf::Shape* shape);
+	void stop(sf::Sprite* sprite);
+	void stop(VertexArray2* vertexArray);
 
 	rotationInfo* getCurrentRotation();
 

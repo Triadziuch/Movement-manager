@@ -19,7 +19,7 @@ protected:
 public:
 	// Constructors / Destructors
 	TransformationRoutine();
-	TransformationRoutine(const std::string& name, const MovementRoutineEngine* movementRoutineEnginePtr);
+	TransformationRoutine(const std::string& name, MovementRoutineEngine* movementRoutineEnginePtr);
 	TransformationRoutine(const TransformationRoutine& obj);
 	virtual ~TransformationRoutine();
 
@@ -30,6 +30,9 @@ public:
 
 	void pause();
 	void resume();
+
+	// Accessors
+	const std::string& getName() const;
 };
 
 class MovementRoutine : public TransformationRoutine {
@@ -43,9 +46,9 @@ private:
 public:
 	// Constructors / Destructors
 	MovementRoutine();
-	MovementRoutine(const std::string& name, const MovementRoutineEngine* const movementRoutineEnginePtr);
-	MovementRoutine(const std::string& name, const MovementRoutineEngine* const movementRoutineEnginePtr, const movementInfo& movement);
-	MovementRoutine(const std::string& name, const MovementRoutineEngine* const movementRoutineEnginePtr, const std::vector<movementInfo*> movements);
+	MovementRoutine(const std::string& name, MovementRoutineEngine* movementRoutineEnginePtr);
+	MovementRoutine(const std::string& name, MovementRoutineEngine* movementRoutineEnginePtr, const movementInfo& movement);
+	MovementRoutine(const std::string& name, MovementRoutineEngine* movementRoutineEnginePtr, const std::vector<movementInfo*> movements);
 	MovementRoutine(const MovementRoutine& obj);
 	~MovementRoutine();
 
@@ -84,9 +87,9 @@ private:
 public:
 	// Constructors / Destructors
 	ScalingRoutine();
-	ScalingRoutine(const std::string& name, const MovementRoutineEngine* const movementRoutineEnginePtr);
-	ScalingRoutine(const std::string& name, const MovementRoutineEngine* const movementRoutineEnginePtr, const scalingInfo& scaling);
-	ScalingRoutine(const std::string& name, const MovementRoutineEngine* const movementRoutineEnginePtr, const std::vector<scalingInfo*> scalings);
+	ScalingRoutine(const std::string& name, MovementRoutineEngine* movementRoutineEnginePtr);
+	ScalingRoutine(const std::string& name, MovementRoutineEngine* movementRoutineEnginePtr, const scalingInfo& scaling);
+	ScalingRoutine(const std::string& name, MovementRoutineEngine* movementRoutineEnginePtr, const std::vector<scalingInfo*> scalings);
 	ScalingRoutine(const ScalingRoutine& obj);
 	~ScalingRoutine();
 
@@ -125,9 +128,9 @@ private:
 public:
 	// Constructors / Destructors
 	RotationRoutine();
-	RotationRoutine(const std::string& name, const MovementRoutineEngine* const movementRoutineEnginePtr);
-	RotationRoutine(const std::string& name, const MovementRoutineEngine* const movementRoutineEnginePtr, const rotationInfo& rotation);
-	RotationRoutine(const std::string& name, const MovementRoutineEngine* const movementRoutineEnginePtr, const std::vector<rotationInfo*> rotations);
+	RotationRoutine(const std::string& name, MovementRoutineEngine* movementRoutineEnginePtr);
+	RotationRoutine(const std::string& name, MovementRoutineEngine* movementRoutineEnginePtr, const rotationInfo& rotation);
+	RotationRoutine(const std::string& name, MovementRoutineEngine* movementRoutineEnginePtr, const std::vector<rotationInfo*> rotations);
 	RotationRoutine(const RotationRoutine& obj);
 	~RotationRoutine();
 

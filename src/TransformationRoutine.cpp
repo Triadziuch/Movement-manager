@@ -17,7 +17,7 @@ TransformationRoutine::TransformationRoutine() :
 	m_adjustAllToCurrentTransform{} 
 	{}
 
-TransformationRoutine::TransformationRoutine(const std::string& name, const MovementRoutineEngine* movementRoutineEnginePtr) :
+TransformationRoutine::TransformationRoutine(const std::string& name, MovementRoutineEngine* movementRoutineEnginePtr) :
 	m_movementRoutineEngine{ movementRoutineEnginePtr }, 
 	m_routineName{ name }, 
 	m_current{}, 
@@ -66,6 +66,12 @@ void TransformationRoutine::resume() {
 	this->m_isPaused = false;
 }
 
+// Accessors
+const std::string& TransformationRoutine::getName() const
+{
+	return m_routineName;
+}
+
 
 // - - - - - - - - - - - - - - - - - - - - MovementRoutine - - - - - - - - - - - - - - - - - - - - \\
 
@@ -95,18 +101,18 @@ MovementRoutine::MovementRoutine() :
 	m_routineMovements{}
 	{}
 
-MovementRoutine::MovementRoutine(const std::string& name, const MovementRoutineEngine* const movementRoutineEnginePtr) :
+MovementRoutine::MovementRoutine(const std::string& name, MovementRoutineEngine* const movementRoutineEnginePtr) :
 	TransformationRoutine{ name, movementRoutineEnginePtr } 
 	{}
 
-MovementRoutine::MovementRoutine(const std::string& name, const MovementRoutineEngine* const movementRoutineEnginePtr, const movementInfo& movement) :
+MovementRoutine::MovementRoutine(const std::string& name, MovementRoutineEngine* const movementRoutineEnginePtr, const movementInfo& movement) :
 	TransformationRoutine{ name, movementRoutineEnginePtr } 
 {
 	m_routineMovements.emplace_back(movement);
 	++m_count;
 }
 
-MovementRoutine::MovementRoutine(const std::string& name, const MovementRoutineEngine* const movementRoutineEnginePtr, const std::vector<movementInfo*> movements) :
+MovementRoutine::MovementRoutine(const std::string& name, MovementRoutineEngine* const movementRoutineEnginePtr, const std::vector<movementInfo*> movements) :
 	TransformationRoutine{ name, movementRoutineEnginePtr },
 	m_routineMovements{ movements }
 	{}
@@ -334,17 +340,17 @@ ScalingRoutine::ScalingRoutine() :
 	m_routineScalings{}
 	{}
 
-ScalingRoutine::ScalingRoutine(const std::string& name, const MovementRoutineEngine* const movementRoutineEnginePtr) :
+ScalingRoutine::ScalingRoutine(const std::string& name, MovementRoutineEngine* const movementRoutineEnginePtr) :
 	TransformationRoutine{ name, movementRoutineEnginePtr } 
 	{}
 
-ScalingRoutine::ScalingRoutine(const std::string& name, const MovementRoutineEngine* const movementRoutineEnginePtr, const scalingInfo& scaling) :
+ScalingRoutine::ScalingRoutine(const std::string& name, MovementRoutineEngine* const movementRoutineEnginePtr, const scalingInfo& scaling) :
 	TransformationRoutine{ name, movementRoutineEnginePtr } 
 { 
 	this->m_routineScalings.emplace_back(scaling);
 }
 
-ScalingRoutine::ScalingRoutine(const std::string& name, const MovementRoutineEngine* const movementRoutineEnginePtr, const std::vector<scalingInfo*> scalings) :
+ScalingRoutine::ScalingRoutine(const std::string& name, MovementRoutineEngine* const movementRoutineEnginePtr, const std::vector<scalingInfo*> scalings) :
 	TransformationRoutine{ name, movementRoutineEnginePtr },
 	m_routineScalings{ scalings }
 	{}
@@ -609,18 +615,18 @@ RotationRoutine::RotationRoutine() :
 	m_routineRotations{}
 	{}
 
-RotationRoutine::RotationRoutine(const std::string& name, const MovementRoutineEngine* const movementRoutineEnginePtr) :
+RotationRoutine::RotationRoutine(const std::string& name, MovementRoutineEngine* const movementRoutineEnginePtr) :
 	TransformationRoutine{ name, movementRoutineEnginePtr } 
 	{}
 
-RotationRoutine::RotationRoutine(const std::string& name, const MovementRoutineEngine* const movementRoutineEnginePtr, const rotationInfo& rotation) :
+RotationRoutine::RotationRoutine(const std::string& name, MovementRoutineEngine* const movementRoutineEnginePtr, const rotationInfo& rotation) :
 	TransformationRoutine{ name, movementRoutineEnginePtr } 
 {
 	m_routineRotations.emplace_back(rotation);
 	++m_count;
 }
 
-RotationRoutine::RotationRoutine(const std::string& name, const MovementRoutineEngine* const movementRoutineEnginePtr, const std::vector<rotationInfo*> rotations) :
+RotationRoutine::RotationRoutine(const std::string& name, MovementRoutineEngine* const movementRoutineEnginePtr, const std::vector<rotationInfo*> rotations) :
 	TransformationRoutine{ name, movementRoutineEnginePtr },
 	m_routineRotations{ rotations }
 	{}

@@ -1,6 +1,8 @@
 #pragma once
 #include "transformationInfo.h"
 
+// - - - - - - - - - - - - - - - - - - - - transformationInfo - - - - - - - - - - - - - - - - - - - - \\
+
 // Constructors / Destructors
 transformationInfo::transformationInfo(bool repeat, float motionDuration, float delayBefore, float delayAfter, easeFunctions::Tmovement_function usedFunctionType) :
 	m_repeat{ repeat }, 
@@ -40,13 +42,14 @@ transformationInfo::transformationInfo(const transformationInfo& obj) :
 	m_totalDuration{ obj.m_totalDuration } 
 	{}
 
-bool transformationInfo::operator==(const transformationInfo & rhs) const
+// Operators
+bool transformationInfo::operator==(const transformationInfo& rhs) const
 {
-	return m_repeat		  == rhs.m_repeat &&
-		m_currentTime	  == rhs.m_currentTime &&
-		m_motionDuration  == rhs.m_motionDuration &&
-		m_delayBefore	  == rhs.m_delayBefore &&
-		m_delayAfter	  == rhs.m_delayAfter &&
+	return m_repeat == rhs.m_repeat &&
+		m_currentTime == rhs.m_currentTime &&
+		m_motionDuration == rhs.m_motionDuration &&
+		m_delayBefore == rhs.m_delayBefore &&
+		m_delayAfter == rhs.m_delayAfter &&
 		m_usedFunctionPtr == rhs.m_usedFunctionPtr;
 }
 
@@ -66,9 +69,9 @@ const bool transformationInfo::isFinished() const
 	return (m_currentTime >= m_totalDuration);
 }
 
+// Mutators
 void transformationInfo::setFunction(easeFunctions::Tmovement_function usedFunctionType)
 {
-	m_usedFunctionPtr = easeFunctions::movement_functions[usedFunctionType];
 	m_usedFunctionPtr = easeFunctions::movement_functions[usedFunctionType];
 }
 
@@ -98,18 +101,19 @@ movementInfo::movementInfo(const movementInfo & obj) :
 	m_endingPos(obj.m_endingPos)
 	{}
 
-bool movementInfo::operator==(const movementInfo & rhs) const {
+// Operators
+bool movementInfo::operator==(const movementInfo& rhs) const {
 	return	m_startingPos == rhs.m_startingPos &&
-			m_endingPos == rhs.m_endingPos &&
-			static_cast<const transformationInfo&>(*this) == static_cast<const transformationInfo&>(rhs);
+		m_endingPos == rhs.m_endingPos &&
+		static_cast<const transformationInfo&>(*this) == static_cast<const transformationInfo&>(rhs);
 }
 
 // Update functions
 const sf::Vector2f movementInfo::updatePosition() const
 {
 	const float ease_function_value = static_cast<float>(m_usedFunctionPtr(static_cast<double>((m_currentTime - m_delayBefore) / m_motionDuration)));
-	return sf::Vector2f{ ease_function_value * (m_endingPos.x - m_startingPos.x) + getStartingPos().x,
-						 ease_function_value * (m_endingPos.y - m_startingPos.y) + getStartingPos().y };
+	return sf::Vector2f{ ease_function_value * (m_endingPos.x - m_startingPos.x) + m_startingPos.x,
+						 ease_function_value * (m_endingPos.y - m_startingPos.y) + m_startingPos.y };
 }
 
 // Accessors
@@ -154,15 +158,16 @@ scalingInfo::scalingInfo(const scalingInfo & obj) :
 	m_endingScale(obj.m_endingScale)
 	{}
 
-bool scalingInfo::operator==(const scalingInfo & rhs) const
+// Operators
+bool scalingInfo::operator==(const scalingInfo& rhs) const
 {
 	return	m_startingScale == rhs.m_startingScale &&
-			m_endingScale == rhs.m_endingScale &&
-			static_cast<const transformationInfo&>(*this) == static_cast<const transformationInfo&>(rhs);
+		m_endingScale == rhs.m_endingScale &&
+		static_cast<const transformationInfo&>(*this) == static_cast<const transformationInfo&>(rhs);
 }
 
 // Public functions
-void scalingInfo::scale(const sf::Vector2f & scale)
+void scalingInfo::scale(const sf::Vector2f& scale)
 {
 	m_startingScale.x *= scale.x;
 	m_startingScale.y *= scale.y;
@@ -197,6 +202,7 @@ const sf::Vector2f& scalingInfo::getEndingScale() const
 {
 	return m_endingScale;
 }
+
 
 // - - - - - - - - - - - - - - - - - - - - rotationInfo - - - - - - - - - - - - - - - - - - - - \\
 
@@ -236,12 +242,13 @@ rotationInfo::rotationInfo(const rotationInfo& obj) :
 	m_clockwise(obj.m_clockwise)
 	{}
 
-bool rotationInfo::operator==(const rotationInfo & rhs) const
+// Operators
+bool rotationInfo::operator==(const rotationInfo& rhs) const
 {
 	return	m_startingRotation == rhs.m_startingRotation &&
-			m_endingRotation == rhs.m_endingRotation &&
-			m_clockwise == rhs.m_clockwise &&
-			static_cast<const transformationInfo&>(*this) == static_cast<const transformationInfo&>(rhs);
+		m_endingRotation == rhs.m_endingRotation &&
+		m_clockwise == rhs.m_clockwise &&
+		static_cast<const transformationInfo&>(*this) == static_cast<const transformationInfo&>(rhs);
 }
 
 // Update functions

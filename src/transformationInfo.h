@@ -4,7 +4,8 @@
 #include "easeFunctions.h"
 #include <math.h>
 
-// Movement info class
+// - - - - - - - - - - - - - - - - - - - - transformationInfo - - - - - - - - - - - - - - - - - - - - \\
+ 
 class transformationInfo {
 public:
 	bool		  m_repeat{};
@@ -33,6 +34,9 @@ public:
 	void setFunction(double (*usedFunctionPtr)(double));
 };
 
+
+// - - - - - - - - - - - - - - - - - - - - movementInfo - - - - - - - - - - - - - - - - - - - - \\
+
 class movementInfo : public transformationInfo {
 private:
 	sf::Vector2f m_startingPos{};
@@ -56,6 +60,10 @@ public:
 	sf::Vector2f& getEndingPos();
 	const sf::Vector2f& getEndingPos() const;
 };
+
+
+
+// - - - - - - - - - - - - - - - - - - - - scalingInfo - - - - - - - - - - - - - - - - - - - - \\
 
 class scalingInfo : public transformationInfo {
 private:
@@ -83,6 +91,9 @@ public:
 	sf::Vector2f& getEndingScale();
 	const sf::Vector2f& getEndingScale() const;
 };
+
+
+// - - - - - - - - - - - - - - - - - - - - rotationInfo - - - - - - - - - - - - - - - - - - - - \\
 
 class rotationInfo : public transformationInfo {
 private:

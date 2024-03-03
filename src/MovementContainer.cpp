@@ -1682,18 +1682,20 @@ void MovementRoutineEngine::undoMovement(sf::Sprite* _sprite)
 
 void MovementRoutineEngine::resetMovement()
 {
-}
+	for (auto& movementRoutine: m_Movement_Routines_Shape) {
+		movementRoutine.second->reset();
+		movementRoutine.first->setPosition(movementRoutine.second->getCurrentMovement()->getStartingPos());
+	}
 
-void MovementRoutineEngine::resetMovement(sf::Shape* _shape)
-{
-}
+	for (auto& movementRoutine : m_Movement_Routines_VA) {
+		movementRoutine.second->reset();
+		movementRoutine.first->setPosition(movementRoutine.second->getCurrentMovement()->getStartingPos());
+	}
 
-void MovementRoutineEngine::resetMovement(VertexArray2* _vertexarray)
-{
-}
-
-void MovementRoutineEngine::resetMovement(sf::Sprite* _sprite)
-{
+	for (auto& movementRoutine : m_Movement_Routines_S) {
+		movementRoutine.second->reset();
+		movementRoutine.first->setPosition(movementRoutine.second->getCurrentMovement()->getStartingPos());
+	}
 }
 
 void MovementRoutineEngine::stopMovement()
@@ -1807,18 +1809,20 @@ void MovementRoutineEngine::undoScaling(sf::Sprite* _sprite)
 
 void MovementRoutineEngine::resetScaling()
 {
-}
+	for (auto& scalingRoutine : m_Scaling_Routines_Shape) {
+		scalingRoutine.second->reset();
+		scalingRoutine.first->setScale(scalingRoutine.second->getCurrentScaling()->getStartingScale());
+	}
 
-void MovementRoutineEngine::resetScaling(sf::Shape* _shape)
-{
-}
+	for (auto& scalingRoutine : m_Scaling_Routines_VA) {
+		scalingRoutine.second->reset();
+		scalingRoutine.first->setScale(scalingRoutine.second->getCurrentScaling()->getStartingScale());
+	}
 
-void MovementRoutineEngine::resetScaling(VertexArray2* _vertexarray)
-{
-}
-
-void MovementRoutineEngine::resetScaling(sf::Sprite* _sprite)
-{
+	for (auto& scalingRoutine : m_Scaling_Routines_S) {
+		scalingRoutine.second->reset();
+		scalingRoutine.first->setScale(scalingRoutine.second->getCurrentScaling()->getStartingScale());
+	}
 }
 
 void MovementRoutineEngine::stopScaling()
@@ -1932,18 +1936,20 @@ void MovementRoutineEngine::undoRotation(sf::Sprite* _sprite)
 
 void MovementRoutineEngine::resetRotation()
 {
-}
+	for (auto& rotationRoutine : m_Rotation_Routines_Shape) {
+		rotationRoutine.second->reset();
+		rotationRoutine.first->setRotation(rotationRoutine.second->getCurrentRotation()->getStartingRotation());
+	}
 
-void MovementRoutineEngine::resetRotation(sf::Shape* _shape)
-{
-}
+	for (auto& rotationRoutine : m_Rotation_Routines_VA) {
+		rotationRoutine.second->reset();
+		rotationRoutine.first->setRotation(rotationRoutine.second->getCurrentRotation()->getStartingRotation());
+	}
 
-void MovementRoutineEngine::resetRotation(VertexArray2* _vertexarray)
-{
-}
-
-void MovementRoutineEngine::resetRotation(sf::Sprite* _sprite)
-{
+	for (auto& rotationRoutine : m_Rotation_Routines_S) {
+		rotationRoutine.second->reset();
+		rotationRoutine.first->setRotation(rotationRoutine.second->getCurrentRotation()->getStartingRotation());
+	}
 }
 
 void MovementRoutineEngine::stopRotation()

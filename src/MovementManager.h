@@ -60,6 +60,15 @@ public:
 	// Update functions
 	void update(const float dt);
 
+	// Universal public functions
+	void setFunction(sf::Shape& _shape, easeFunctions::Tmovement_function usedFunctionType);
+	void setFunction(sf::Sprite& _sprite, easeFunctions::Tmovement_function usedFunctionType);
+	void setFunction(VertexArray2& _vertexarray, easeFunctions::Tmovement_function usedFunctionType);
+
+	void resetRoutines(sf::Shape& _shape);
+	void resetRoutines(sf::Sprite& _sprite);
+	void resetRoutines(VertexArray2& _vertexarray);
+
 	// === Movement ===
 	MovementRoutine* createMovementRoutine(const std::string& _name);
 
@@ -84,6 +93,8 @@ public:
 	void startMovementRoutine(sf::Sprite& _sprite, const std::string& _name);
 	void startMovementRoutine(VertexArray2& _vertexarray, const std::string& _name);
 
+
+
 	void pauseMovementRoutine(sf::Shape& _shape, const std::string& _name);
 	void pauseMovementRoutine(sf::Sprite& _sprite, const std::string& _name);
 	void pauseMovementRoutine(VertexArray2& _vertexarray, const std::string& _name);
@@ -92,6 +103,10 @@ public:
 	void resumeMovementRoutine(sf::Sprite& _sprite, const std::string& _name);
 	void resumeMovementRoutine(VertexArray2& _vertexarray, const std::string& _name);
 
+	void resetMovementRoutine(sf::Shape& _shape, const std::string& _name);
+	void resetMovementRoutine(sf::Sprite& _sprite, const std::string& _name);
+	void resetMovementRoutine(VertexArray2& _vertexarray, const std::string& _name);
+
 	void stopMovementRoutine(sf::Shape* _shape, const std::string& _name);
 	void stopMovementRoutine(sf::Sprite* _sprite, const std::string& _name);
 	void stopMovementRoutine(VertexArray2* _vertexarray, const std::string& _name);
@@ -99,7 +114,7 @@ public:
 	void deleteMovementRoutine();
 	void deleteMovementRoutine(const std::string& _name);
 
-	const long long int& getSizeMovement() const;
+	const long long int getSizeMovement() const;
 
 	// === Scaling ===
 	ScalingRoutine* createScalingRoutine(const std::string& _name);
@@ -133,6 +148,10 @@ public:
 	void resumeScalingRoutine(sf::Sprite& _sprite, const std::string& _name);
 	void resumeScalingRoutine(VertexArray2& _vertexarray, const std::string& _name);
 
+	void resetScalingRoutine(sf::Shape& _shape, const std::string& _name);
+	void resetScalingRoutine(sf::Sprite& _sprite, const std::string& _name);
+	void resetScalingRoutine(VertexArray2& _vertexarray, const std::string& _name);
+
 	void stopScalingRoutine(sf::Shape* _shape, const std::string& _name);
 	void stopScalingRoutine(sf::Sprite* _sprite, const std::string& _name);
 	void stopScalingRoutine(VertexArray2* _vertexarray, const std::string& _name);
@@ -140,7 +159,7 @@ public:
 	void deleteScalingRoutine();
 	void deleteScalingRoutine(const std::string& _name);
 
-	const long long int& getSizeScaling() const;
+	const long long int getSizeScaling() const;
 
 	// === Rotation ===
 	RotationRoutine* createRotationRoutine(const std::string& _name);
@@ -174,6 +193,10 @@ public:
 	void resumeRotationRoutine(sf::Sprite& _sprite, const std::string& _name);
 	void resumeRotationRoutine(VertexArray2& _vertexarray, const std::string& _name);
 
+	void resetRotationRoutine(sf::Shape& _shape, const std::string& _name);
+	void resetRotationRoutine(sf::Sprite& _sprite, const std::string& _name);
+	void resetRotationRoutine(VertexArray2& _vertexarray, const std::string& _name);
+
 	void stopRotationRoutine(sf::Shape* _shape, const std::string& _name);
 	void stopRotationRoutine(sf::Sprite* _sprite, const std::string& _name);
 	void stopRotationRoutine(VertexArray2* _vertexarray, const std::string& _name);
@@ -181,5 +204,5 @@ public:
 	void deleteRotationRoutine();
 	void deleteRotationRoutine(const std::string& _name);
 
-	const long long int& getSizeRotation() const;
+	const long long int getSizeRotation() const;
 };

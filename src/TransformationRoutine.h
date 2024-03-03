@@ -1,8 +1,9 @@
 #pragma once
 #include "transformationInfo.h"
-
 class MovementContainerBase;
 class MovementRoutineEngine;
+
+// - - - - - - - - - - - - - - - - - - - - TransformationRoutine - - - - - - - - - - - - - - - - - - - - \\
 
 class TransformationRoutine {
 protected:
@@ -36,6 +37,10 @@ public:
 	const std::string& getName() const;
 };
 
+
+
+// - - - - - - - - - - - - - - - - - - - - MovementRoutine - - - - - - - - - - - - - - - - - - - - \\
+
 class MovementRoutine : public TransformationRoutine {
 private:
 	std::vector <movementInfo*> m_routineMovements;
@@ -64,11 +69,15 @@ public:
 	const bool start(sf::Sprite& sprite);
 	const bool start(VertexArray2& vertexArray);
 
+	void reset(sf::Shape& shape);
+	void reset(sf::Sprite& sprite);
+	void reset(VertexArray2& vertexArray);
+
 	void stop(sf::Shape* shape);
 	void stop(sf::Sprite* sprite);
 	void stop(VertexArray2* vertexArray);
 
-	movementInfo* getCurrentMovement();
+	movementInfo* getCurrentMovement() const;
 
 	const bool goToNextMovement(const sf::Shape& shape);
 	const bool goToNextMovement(const sf::Sprite& sprite);
@@ -81,6 +90,8 @@ public:
 
 	const long long int& size() const;
 };
+
+// - - - - - - - - - - - - - - - - - - - - ScalingRoutine - - - - - - - - - - - - - - - - - - - - \\
 
 class ScalingRoutine : public TransformationRoutine {
 private:
@@ -110,11 +121,15 @@ public:
 	const bool start(sf::Sprite& sprite);
 	const bool start(VertexArray2& vertexArray);
 
+	void reset(sf::Shape& shape);
+	void reset(sf::Sprite& sprite);
+	void reset(VertexArray2& vertexArray);
+
 	void stop(sf::Shape* shape);
 	void stop(sf::Sprite* sprite);
 	void stop(VertexArray2* vertexArray);
 
-	scalingInfo* getCurrentScaling();
+	scalingInfo* getCurrentScaling() const;
 
 	const bool goToNextScaling(const sf::Shape& shape);
 	const bool goToNextScaling(const sf::Sprite& sprite);
@@ -127,6 +142,10 @@ public:
 
 	const long long int& size() const;
 };
+
+
+
+// - - - - - - - - - - - - - - - - - - - - RotationRoutine - - - - - - - - - - - - - - - - - - - - \\
 
 class RotationRoutine : public TransformationRoutine {
 private:
@@ -156,11 +175,15 @@ public:
 	const bool start(sf::Sprite& sprite);
 	const bool start(VertexArray2& vertexArray);
 
+	void reset(sf::Shape& shape);
+	void reset(sf::Sprite& sprite);
+	void reset(VertexArray2& vertexArray);
+
 	void stop(sf::Shape* shape);
 	void stop(sf::Sprite* sprite);
 	void stop(VertexArray2* vertexArray);
 
-	rotationInfo* getCurrentRotation();
+	rotationInfo* getCurrentRotation() const;
 
 	const bool goToNextRotation(const sf::Shape& shape);
 	const bool goToNextRotation(const sf::Sprite& sprite);

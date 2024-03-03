@@ -197,9 +197,6 @@ public:
 	void undoMovement(sf::Sprite* _sprite);
 
 	void resetMovement();
-	void resetMovement(sf::Shape* _shape);
-	void resetMovement(VertexArray2* _vertexarray);
-	void resetMovement(sf::Sprite* _sprite);
 
 	void stopMovement();
 	void stopMovement(sf::Shape* _shape);
@@ -217,9 +214,6 @@ public:
 	void undoScaling(sf::Sprite* _sprite);
 
 	void resetScaling();
-	void resetScaling(sf::Shape* _shape);
-	void resetScaling(VertexArray2* _vertexarray);
-	void resetScaling(sf::Sprite* _sprite);
 
 	void stopScaling();
 	void stopScaling(sf::Shape* _shape);
@@ -237,9 +231,6 @@ public:
 	void undoRotation(sf::Sprite* _sprite);
 
 	void resetRotation();
-	void resetRotation(sf::Shape* _shape);
-	void resetRotation(VertexArray2* _vertexarray);
-	void resetRotation(sf::Sprite* _sprite);
 
 	void stopRotation();
 	void stopRotation(sf::Shape* _shape);

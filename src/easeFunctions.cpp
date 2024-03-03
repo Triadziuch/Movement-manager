@@ -70,33 +70,33 @@ std::map<easeFunctions::Tmovement_function, std::string> easeFunctions::easeFunc
 easeFunctions::easeFunctions() {}
 
 // Sine
-double easeFunctions::inSine(double x)
+inline double easeFunctions::inSine(double x)
 {
 	return 1.0 - cos((x * M_PI) / 2.0);
 }
 
-double easeFunctions::outSine(double x)
+inline double easeFunctions::outSine(double x)
 {
 	return sin((x * M_PI) / 2.0);
 }
 
-double easeFunctions::inOutSine(double x)
+inline double easeFunctions::inOutSine(double x)
 {
 	return -(cos(M_PI * x) - 1.0) / 2.0;
 }
 
 // Quad
-double easeFunctions::inQuad(double x)
+inline double easeFunctions::inQuad(double x)
 {
 	return x * x;
 }
 
-double easeFunctions::outQuad(double x)
+inline double easeFunctions::outQuad(double x)
 {
 	return 1.0 - (1.0 - x) * (1.0 - x);
 }
 
-double easeFunctions::inOutQuad(double x)
+inline double easeFunctions::inOutQuad(double x)
 {
 	return x < 0.5 ? 2.0 * x * x : 1.0 - pow(-2.0 * x + 2.0, 2.0) / 2.0;
 }

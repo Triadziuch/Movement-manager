@@ -1,5 +1,5 @@
 #pragma once
-#include "easeFunctions.cpp"
+#include "easeFunctions.h"
 #include <SFML/Graphics.hpp>
 #include <chrono>
 #include <iostream>

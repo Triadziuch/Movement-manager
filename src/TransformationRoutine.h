@@ -74,6 +74,11 @@ public:
 	const bool goToNextMovement(const sf::Sprite& sprite);
 	const bool goToNextMovement(VertexArray2& vertexArray);
 
+	void setFunction(easeFunctions::Tmovement_function usedFunctionType);
+	void setFunction(easeFunctions::Tmovement_function usedFunctionType, const size_t movement_id);
+	void setFunction(double(*usedFunctionPtr)(double));
+	void setFunction(double(*usedFunctionPtr)(double), const size_t movement_id);
+
 	const long long int& size() const;
 };
 
@@ -115,6 +120,11 @@ public:
 	const bool goToNextScaling(const sf::Sprite& sprite);
 	const bool goToNextScaling(VertexArray2& vertexArray);
 
+	void setFunction(easeFunctions::Tmovement_function usedFunctionType);
+	void setFunction(easeFunctions::Tmovement_function usedFunctionType, const size_t scaling_id);
+	void setFunction(double(*usedFunctionPtr)(double));
+	void setFunction(double(*usedFunctionPtr)(double), const size_t scaling_id);
+
 	const long long int& size() const;
 };
 
@@ -155,6 +165,11 @@ public:
 	const bool goToNextRotation(const sf::Shape& shape);
 	const bool goToNextRotation(const sf::Sprite& sprite);
 	const bool goToNextRotation(VertexArray2& vertexArray);
+
+	void setFunction(easeFunctions::Tmovement_function usedFunctionType);
+	void setFunction(easeFunctions::Tmovement_function usedFunctionType, const size_t rotation_id);
+	void setFunction(double(*usedFunctionPtr)(double));
+	void setFunction(double(*usedFunctionPtr)(double), const size_t rotation_id);
 
 	const long long int& size() const;
 };

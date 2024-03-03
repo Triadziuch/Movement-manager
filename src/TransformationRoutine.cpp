@@ -303,6 +303,30 @@ const bool MovementRoutine::goToNextMovement(VertexArray2& vertexArray)
 	}
 }
 
+void MovementRoutine::setFunction(easeFunctions::Tmovement_function usedFunctionType)
+{
+	for (auto& movement: m_routineMovements)
+		movement->setFunction(usedFunctionType);
+}
+
+void MovementRoutine::setFunction(easeFunctions::Tmovement_function usedFunctionType, const size_t movement_id)
+{
+	if (movement_id < m_count)
+		m_routineMovements[movement_id]->setFunction(usedFunctionType);
+}
+
+void MovementRoutine::setFunction(double(*usedFunctionPtr)(double))
+{
+	for (auto& movement : m_routineMovements)
+		movement->setFunction(usedFunctionPtr);
+}
+
+void MovementRoutine::setFunction(double(*usedFunctionPtr)(double), const size_t movement_id)
+{
+	if (movement_id < m_count)
+		m_routineMovements[movement_id]->setFunction(usedFunctionPtr);
+}
+
 const long long int& MovementRoutine::size() const
 {
 	long long int size{};
@@ -537,6 +561,30 @@ const bool ScalingRoutine::goToNextScaling(VertexArray2& vertexArray)
 
 		return false;
 	}
+}
+
+void ScalingRoutine::setFunction(easeFunctions::Tmovement_function usedFunctionType)
+{
+	for (auto& scaling : m_routineScalings)
+		scaling->setFunction(usedFunctionType);
+}
+
+void ScalingRoutine::setFunction(easeFunctions::Tmovement_function usedFunctionType, const size_t scaling_id)
+{
+	if (scaling_id < m_count)
+		m_routineScalings[scaling_id]->setFunction(usedFunctionType);
+}
+
+void ScalingRoutine::setFunction(double(*usedFunctionPtr)(double))
+{
+	for (auto& scaling : m_routineScalings)
+		scaling->setFunction(usedFunctionPtr);
+}
+
+void ScalingRoutine::setFunction(double(*usedFunctionPtr)(double), const size_t scaling_id)
+{
+	if (scaling_id < m_count)
+		m_routineScalings[scaling_id]->setFunction(usedFunctionPtr);
 }
 
 const long long int& ScalingRoutine::size() const
@@ -820,6 +868,30 @@ const bool RotationRoutine::goToNextRotation(VertexArray2& vertexArray)
 
 		return false;
 	}
+}
+
+void RotationRoutine::setFunction(easeFunctions::Tmovement_function usedFunctionType)
+{
+	for (auto& rotation : m_routineRotations)
+		rotation->setFunction(usedFunctionType);
+}
+
+void RotationRoutine::setFunction(easeFunctions::Tmovement_function usedFunctionType, const size_t rotation_id)
+{
+	if (rotation_id < m_count)
+		m_routineRotations[rotation_id]->setFunction(usedFunctionType);
+}
+
+void RotationRoutine::setFunction(double(*usedFunctionPtr)(double))
+{
+	for (auto& rotation : m_routineRotations)
+		rotation->setFunction(usedFunctionPtr);
+}
+
+void RotationRoutine::setFunction(double(*usedFunctionPtr)(double), const size_t rotation_id)
+{
+	if (rotation_id < m_count)
+		m_routineRotations[rotation_id]->setFunction(usedFunctionPtr);
 }
 
 const long long int& RotationRoutine::size() const

@@ -1,5 +1,5 @@
 #pragma once
-#include "easeFunctions.cpp"
+#include "easeFunctions.h"
 #include "transformationInfo.h"
 #include <map>
 #include <assert.h>
@@ -11,76 +11,8 @@ class ScalingRoutine;
 class RotationRoutine;
 
 class MovementContainerBase {
-public:
-	enum movement_type : int {
-		IN_SINE,
-		OUT_SINE,
-		IN_OUT_SINE,
-		IN_QUAD,
-		OUT_QUAD,
-		IN_OUT_QUAD,
-		IN_CUBIC,
-		OUT_CUBIC,
-		IN_OUT_CUBIC,
-		IN_QUART,
-		OUT_QUART,
-		IN_OUT_QUART,
-		IN_QUINT,
-		OUT_QUINT,
-		IN_OUT_QUINT,
-		IN_EXPO,
-		OUT_EXPO,
-		IN_OUT_EXPO,
-		IN_CIRC,
-		OUT_CIRC,
-		IN_OUT_CIRC,
-		IN_BACK,
-		OUT_BACK,
-		IN_OUT_BACK,
-		IN_ELASTIC,
-		OUT_ELASTIC,
-		IN_OUT_ELASTIC,
-		IN_BOUNCE,
-		OUT_BOUNCE,
-		IN_OUT_BOUNCE
-	};
-
-	double (*getFunctionPointer(movement_type _movement_type))(double) { return movement_functions[_movement_type]; }
-
 protected:
 	constexpr static double M_RAD = 3.14159265358979323846 / 180.0;
-	std::map<movement_type, double(*)(double)>	movement_functions = {
-												{movement_type::IN_SINE, inSine},
-												{movement_type::OUT_SINE, outSine},
-												{movement_type::IN_OUT_SINE, inOutSine},
-												{movement_type::IN_QUAD, inQuad},
-												{movement_type::OUT_QUAD, outQuad},
-												{movement_type::IN_OUT_QUAD, inOutQuad},
-												{movement_type::IN_CUBIC, inCubic},
-												{movement_type::OUT_CUBIC, outCubic},
-												{movement_type::IN_OUT_CUBIC, inOutCubic},
-												{movement_type::IN_QUART, inQuart},
-												{movement_type::OUT_QUART, outQuart},
-												{movement_type::IN_OUT_QUART, inOutQuart},
-												{movement_type::IN_QUINT, inQuint},
-												{movement_type::OUT_QUINT, outQuint},
-												{movement_type::IN_OUT_QUINT, inOutQuint},
-												{movement_type::IN_EXPO, inExpo},
-												{movement_type::OUT_EXPO, outExpo},
-												{movement_type::IN_OUT_EXPO, inOutExpo},
-												{movement_type::IN_CIRC, inCirc},
-												{movement_type::OUT_CIRC, outCirc},
-												{movement_type::IN_OUT_CIRC, inOutCirc},
-												{movement_type::IN_BACK, inBack},
-												{movement_type::OUT_BACK, outBack},
-												{movement_type::IN_OUT_BACK, inOutBack},
-												{movement_type::IN_ELASTIC, inElastic},
-												{movement_type::OUT_ELASTIC, outElastic},
-												{movement_type::IN_OUT_ELASTIC, inOutElastic},
-												{movement_type::IN_BOUNCE, inBounce},
-												{movement_type::OUT_BOUNCE, outBounce},
-												{movement_type::IN_OUT_BOUNCE, inOutBounce}
-												};
 };
 
 class MovementContainer : public MovementContainerBase{
@@ -116,19 +48,19 @@ public:
 
 	// Movement functions
 	const movementInfo* addMovement(sf::Shape* _shape, movementInfo* _movementInfo);
-	const movementInfo* addMovement(sf::Shape* _shape, sf::Vector2f _ending_pos, float _movement_time, movement_type _used_function, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);
-	const movementInfo* addMovement(sf::Shape* _shape, sf::Vector2f _starting_pos, sf::Vector2f _ending_pos, float _movement_time, movement_type _used_function, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);
-	const movementInfo* addMovement(sf::Shape* _shape, float _offset_x, float _offset_y, float _movement_time, movement_type _used_function, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);
+	const movementInfo* addMovement(sf::Shape* _shape, sf::Vector2f _ending_pos, float _movement_time, easeFunctions::Tmovement_function _used_function, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);
+	const movementInfo* addMovement(sf::Shape* _shape, sf::Vector2f _starting_pos, sf::Vector2f _ending_pos, float _movement_time, easeFunctions::Tmovement_function _used_function, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);
+	const movementInfo* addMovement(sf::Shape* _shape, float _offset_x, float _offset_y, float _movement_time, easeFunctions::Tmovement_function _used_function, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);
 
 	const movementInfo* addMovement(VertexArray2* _vertexarray, movementInfo* _movementInfo);
-	const movementInfo* addMovement(VertexArray2* _vertexarray, sf::Vector2f _ending_pos, float _movement_time, movement_type _used_function, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);
-	const movementInfo* addMovement(VertexArray2* _vertexarray, sf::Vector2f _starting_pos, sf::Vector2f _ending_pos, float _movement_time, movement_type _used_function, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);
-	const movementInfo* addMovement(VertexArray2* _vertexarray, float _offset_x, float _offset_y, float _movement_time, movement_type _used_function, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);
+	const movementInfo* addMovement(VertexArray2* _vertexarray, sf::Vector2f _ending_pos, float _movement_time, easeFunctions::Tmovement_function _used_function, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);
+	const movementInfo* addMovement(VertexArray2* _vertexarray, sf::Vector2f _starting_pos, sf::Vector2f _ending_pos, float _movement_time, easeFunctions::Tmovement_function _used_function, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);
+	const movementInfo* addMovement(VertexArray2* _vertexarray, float _offset_x, float _offset_y, float _movement_time, easeFunctions::Tmovement_function _used_function, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);
 
 	const movementInfo* addMovement(sf::Sprite* _sprite, movementInfo* _movementInfo);
-	const movementInfo* addMovement(sf::Sprite* _sprite, sf::Vector2f _ending_pos, float _movement_time, movement_type _used_function, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);
-	const movementInfo* addMovement(sf::Sprite* _sprite, sf::Vector2f _starting_pos, sf::Vector2f _ending_pos, float _movement_time, movement_type _used_function, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);
-	const movementInfo* addMovement(sf::Sprite* _sprite, float _offset_x, float _offset_y, float _movement_time, movement_type _used_function, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);
+	const movementInfo* addMovement(sf::Sprite* _sprite, sf::Vector2f _ending_pos, float _movement_time, easeFunctions::Tmovement_function _used_function, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);
+	const movementInfo* addMovement(sf::Sprite* _sprite, sf::Vector2f _starting_pos, sf::Vector2f _ending_pos, float _movement_time, easeFunctions::Tmovement_function _used_function, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);
+	const movementInfo* addMovement(sf::Sprite* _sprite, float _offset_x, float _offset_y, float _movement_time, easeFunctions::Tmovement_function _used_function, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);
 	
 	void undoMovement();
 	void undoMovement(sf::Shape* _shape);
@@ -148,14 +80,14 @@ public:
 	void swapMovement(sf::Shape* _shape, movementInfo* _newMovementInfo);
 
 	// Scaling functions
-	const bool addScaling(sf::Shape* _shape, sf::Vector2f _ending_scale, float _scaling_time, movement_type _used_function, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);
-	const bool addScaling(sf::Shape* _shape, sf::Vector2f _starting_scale, sf::Vector2f _ending_scale, float _scaling_time, movement_type _used_function, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);
+	const bool addScaling(sf::Shape* _shape, sf::Vector2f _ending_scale, float _scaling_time, easeFunctions::Tmovement_function _used_function, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);
+	const bool addScaling(sf::Shape* _shape, sf::Vector2f _starting_scale, sf::Vector2f _ending_scale, float _scaling_time, easeFunctions::Tmovement_function _used_function, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);
 
-	const bool addScaling(VertexArray2* _vertexarray, sf::Vector2f _ending_scale, float _scaling_time, movement_type _used_function, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);
-	const bool addScaling(VertexArray2* _vertexarray, sf::Vector2f _starting_scale, sf::Vector2f _ending_scale, float _scaling_time, movement_type _used_function, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);
+	const bool addScaling(VertexArray2* _vertexarray, sf::Vector2f _ending_scale, float _scaling_time, easeFunctions::Tmovement_function _used_function, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);
+	const bool addScaling(VertexArray2* _vertexarray, sf::Vector2f _starting_scale, sf::Vector2f _ending_scale, float _scaling_time, easeFunctions::Tmovement_function _used_function, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);
 
-	const bool addScaling(sf::Sprite* _sprite, sf::Vector2f _ending_scale, float _scaling_time, movement_type _used_function, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);
-	const bool addScaling(sf::Sprite* _sprite, sf::Vector2f _starting_scale, sf::Vector2f _ending_scale, float _scaling_time, movement_type _used_function, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);
+	const bool addScaling(sf::Sprite* _sprite, sf::Vector2f _ending_scale, float _scaling_time, easeFunctions::Tmovement_function _used_function, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);
+	const bool addScaling(sf::Sprite* _sprite, sf::Vector2f _starting_scale, sf::Vector2f _ending_scale, float _scaling_time, easeFunctions::Tmovement_function _used_function, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);
 
 	void undoScaling();
 	void undoScaling(sf::Shape* _shape);
@@ -173,14 +105,14 @@ public:
 	void stopScaling(sf::Sprite* _sprite);
 
 	// Rotation functions
-	const bool addRotation(sf::Shape* _shape, float _ending_rotation, float _rotation_time, movement_type _used_function, bool _clockwise = true, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);
-	const bool addRotation(sf::Shape* _shape, float _starting_rotation, float _ending_rotation, float _rotation_time, movement_type _used_function, bool _clockwise = true, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);
+	const bool addRotation(sf::Shape* _shape, float _ending_rotation, float _rotation_time, easeFunctions::Tmovement_function _used_function, bool _clockwise = true, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);
+	const bool addRotation(sf::Shape* _shape, float _starting_rotation, float _ending_rotation, float _rotation_time, easeFunctions::Tmovement_function _used_function, bool _clockwise = true, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);
 
-	const bool addRotation(VertexArray2* _vertexarray, float _ending_rotation, float _rotation_time, movement_type _used_function, bool _clockwise = true, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);
-	const bool addRotation(VertexArray2* _vertexarray, float _starting_rotation, float _ending_rotation, float _rotation_time, movement_type _used_function, bool _clockwise = true, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);
+	const bool addRotation(VertexArray2* _vertexarray, float _ending_rotation, float _rotation_time, easeFunctions::Tmovement_function _used_function, bool _clockwise = true, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);
+	const bool addRotation(VertexArray2* _vertexarray, float _starting_rotation, float _ending_rotation, float _rotation_time, easeFunctions::Tmovement_function _used_function, bool _clockwise = true, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);
 
-	const bool addRotation(sf::Sprite* _sprite, float _ending_rotation, float _rotation_time, movement_type _used_function, bool _clockwise = true, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);
-	const bool addRotation(sf::Sprite* _sprite, float _starting_rotation, float _ending_rotation, float _rotation_time, movement_type _used_function, bool _clockwise = true, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);
+	const bool addRotation(sf::Sprite* _sprite, float _ending_rotation, float _rotation_time, easeFunctions::Tmovement_function _used_function, bool _clockwise = true, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);
+	const bool addRotation(sf::Sprite* _sprite, float _starting_rotation, float _ending_rotation, float _rotation_time, easeFunctions::Tmovement_function _used_function, bool _clockwise = true, bool _repeat = false, float _delay_before = 0.f, float _delay_after = 0.f);
 	
 	void undoRotation();
 	void undoRotation(sf::Shape* _shape);
@@ -238,9 +170,16 @@ private:
 	void updateVertexArray(float dt);
 	void updateShape(float dt);
 
+	// Constructors / Destructors
+	MovementRoutineEngine() {};
+
 public:
-	// Default constructor
-	MovementRoutineEngine(MovementManager* _MovementManager);
+	MovementRoutineEngine(const MovementRoutineEngine&) = delete;
+	MovementRoutineEngine& operator=(const MovementRoutineEngine&) = delete;
+
+	static MovementRoutineEngine* getInstance();
+
+	void setMovementManager(MovementManager* _movementManager);
 
 	// Update functions
 	void update(float dt);

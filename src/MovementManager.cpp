@@ -7,10 +7,8 @@ MovementManager* MovementManager::sInstance = nullptr;
 // Constructors / Destructors
 MovementManager::MovementManager()
 {
-	assert(this->sInstance == nullptr);
-	sInstance = this;
-
-	movementRoutineEngine = new MovementRoutineEngine(this);
+	movementRoutineEngine = MovementRoutineEngine::getInstance();
+	movementRoutineEngine->setMovementManager(this);
 
 	m_movementRoutineContainer = new MovementRoutineContainer();
 	m_scalingRoutineContainer = new ScalingRoutineContainer();
@@ -24,6 +22,13 @@ MovementManager::~MovementManager()
 	this->deleteRotationRoutine();
 
 	delete m_movementRoutineContainer;
+}
+
+MovementManager* MovementManager::getInstance()
+{
+	if (!sInstance) 
+		sInstance = new MovementManager();
+	return sInstance;
 }
 
 // Update functions
@@ -42,6 +47,42 @@ MovementRoutine* MovementManager::createMovementRoutine(const std::string& _name
 MovementRoutine* MovementManager::getMovementRoutine(const std::string& _name)
 {
 	return this->m_movementRoutineContainer->getRoutinePtr(_name);
+}
+
+MovementRoutine* MovementManager::getMovementRoutine(sf::Shape& _shape, const std::string& _name)
+{
+	auto m_movementRoutineContainerFound = m_routineMovementShape.find(&_shape);
+	if (m_movementRoutineContainerFound != m_routineMovementShape.end()) {
+		return m_movementRoutineContainerFound->second->exists(_name);
+	}
+	else {
+		printf("MovementManager::getMovementRoutine: Routine for shape not found\n");
+		return nullptr;
+	}
+}
+
+MovementRoutine* MovementManager::getMovementRoutine(sf::Sprite& _sprite, const std::string& _name)
+{
+	auto m_movementRoutineContainerFound = m_routineMovementSprite.find(&_sprite);
+	if (m_movementRoutineContainerFound != m_routineMovementSprite.end()) {
+		return m_movementRoutineContainerFound->second->exists(_name);
+	}
+	else {
+		printf("MovementManager::getMovementRoutine: Routine for sprite not found\n");
+		return nullptr;
+	}
+}
+
+MovementRoutine* MovementManager::getMovementRoutine(VertexArray2& _vertexarray, const std::string& _name)
+{
+	auto m_movementRoutineContainerFound = m_routineMovementVertexArray.find(&_vertexarray);
+	if (m_movementRoutineContainerFound != m_routineMovementVertexArray.end()) {
+		return m_movementRoutineContainerFound->second->exists(_name);
+	}
+	else {
+		printf("MovementManager::getMovementRoutine: Routine for vertexarray not found\n");
+		return nullptr;
+	}
 }
 
 MovementRoutine* MovementManager::linkMovementRoutine(sf::Shape& _shape, const std::string& _name)
@@ -171,11 +212,11 @@ MovementRoutine* MovementManager::linkMovementRoutine(sf::Shape* _shape, Movemen
 			MovementRoutineContainer* newMovementRoutineContainer = new MovementRoutineContainer(this->movementRoutineEngine);
 			m_routineMovementShape.insert(std::make_pair(_shape, newMovementRoutineContainer));
 
-			return newMovementRoutineContainer->createRoutine(movementRoutineFound->getName(), routine);
+			return newMovementRoutineContainer->createRoutine(movementRoutineFound->getName(), new MovementRoutine(*routine));
 		}
 
 		// If yes, create a new movement routine and link it to the existing movement routine container
-		return m_movementRoutineContainerFound->second->createRoutine(movementRoutineFound->getName(), routine);
+		return m_movementRoutineContainerFound->second->createRoutine(movementRoutineFound->getName(), new MovementRoutine(*routine));
 	}
 }
 
@@ -203,11 +244,11 @@ MovementRoutine* MovementManager::linkMovementRoutine(sf::Sprite* _sprite, Movem
 			MovementRoutineContainer* newMovementRoutineContainer = new MovementRoutineContainer(this->movementRoutineEngine);
 			m_routineMovementSprite.insert(std::make_pair(_sprite, newMovementRoutineContainer));
 
-			return newMovementRoutineContainer->createRoutine(movementRoutineFound->getName(), routine);
+			return newMovementRoutineContainer->createRoutine(movementRoutineFound->getName(), new MovementRoutine(*routine));
 		}
 
 		// If yes, create a new movement routine and link it to the existing movement routine container
-		return m_movementRoutineContainerFound->second->createRoutine(movementRoutineFound->getName(), routine);
+		return m_movementRoutineContainerFound->second->createRoutine(movementRoutineFound->getName(), new MovementRoutine(*routine));
 	}
 }
 
@@ -235,11 +276,11 @@ MovementRoutine* MovementManager::linkMovementRoutine(VertexArray2* _vertexarray
 			MovementRoutineContainer* newMovementRoutineContainer = new MovementRoutineContainer(this->movementRoutineEngine);
 			m_routineMovementVertexArray.insert(std::make_pair(_vertexarray, newMovementRoutineContainer));
 
-			return newMovementRoutineContainer->createRoutine(movementRoutineFound->getName(), routine);
+			return newMovementRoutineContainer->createRoutine(movementRoutineFound->getName(), new MovementRoutine(*routine));
 		}
 
 		// If yes, create a new movement routine and link it to the existing movement routine container
-		return m_movementRoutineContainerFound->second->createRoutine(movementRoutineFound->getName(), routine);
+		return m_movementRoutineContainerFound->second->createRoutine(movementRoutineFound->getName(), new MovementRoutine(*routine));
 	}
 }
 
@@ -613,6 +654,43 @@ ScalingRoutine* MovementManager::getScalingRoutine(const std::string& _name)
 	return this->m_scalingRoutineContainer->getRoutinePtr(_name);
 }
 
+ScalingRoutine* MovementManager::getScalingRoutine(sf::Shape& _shape, const std::string& _name)
+{
+	auto scalingRoutineContainerFound = m_routineScalingShape.find(&_shape);
+	if (scalingRoutineContainerFound != m_routineScalingShape.end()) {
+		return scalingRoutineContainerFound->second->exists(_name);
+	}
+	else {
+		printf("MovementManager::getScalingRoutine: Routine for shape not found\n");
+		return nullptr;
+	}
+}
+
+ScalingRoutine* MovementManager::getScalingRoutine(sf::Sprite& _sprite, const std::string& _name)
+{
+	auto scalingRoutineContainerFound = m_routineScalingSprite.find(&_sprite);
+	if (scalingRoutineContainerFound != m_routineScalingSprite.end()) {
+		return scalingRoutineContainerFound->second->exists(_name);
+	}
+	else {
+		printf("MovementManager::getScalingRoutine: Routine for sprite not found\n");
+		return nullptr;
+	}
+}
+
+ScalingRoutine* MovementManager::getScalingRoutine(VertexArray2& _vertexarray, const std::string& _name)
+{
+	auto scalingRoutineContainerFound = m_routineScalingVertexArray.find(&_vertexarray);
+	if (scalingRoutineContainerFound != m_routineScalingVertexArray.end()) {
+		return scalingRoutineContainerFound->second->exists(_name);
+	}
+	else {
+		printf("MovementManager::getScalingRoutine: Routine for vertexarray not found\n");
+		return nullptr;
+	}
+
+}
+
 ScalingRoutine* MovementManager::linkScalingRoutine(sf::Shape& _shape, const std::string& _name)
 {
 	// Check if routine with given name exists
@@ -739,11 +817,11 @@ ScalingRoutine* MovementManager::linkScalingRoutine(sf::Shape* _shape, ScalingRo
 			ScalingRoutineContainer* newScalingRoutineContainer = new ScalingRoutineContainer(this->movementRoutineEngine);
 			m_routineScalingShape.insert(std::make_pair(_shape, newScalingRoutineContainer));
 
-			return newScalingRoutineContainer->createRoutine(scalingRoutineFound->getName(), routine);
+			return newScalingRoutineContainer->createRoutine(scalingRoutineFound->getName(), new ScalingRoutine(*routine));
 		}
 
 		// If yes, create a new scaling routine and link it to the existing scaling routine container
-		return m_scalingRoutineContainerFound->second->createRoutine(scalingRoutineFound->getName(), routine);
+		return m_scalingRoutineContainerFound->second->createRoutine(scalingRoutineFound->getName(), new ScalingRoutine(*routine));
 	}
 }
 
@@ -771,11 +849,11 @@ ScalingRoutine* MovementManager::linkScalingRoutine(sf::Sprite* _sprite, Scaling
 			ScalingRoutineContainer* newScalingRoutineContainer = new ScalingRoutineContainer(this->movementRoutineEngine);
 			m_routineScalingSprite.insert(std::make_pair(_sprite, newScalingRoutineContainer));
 
-			return newScalingRoutineContainer->createRoutine(scalingRoutineFound->getName(), routine);
+			return newScalingRoutineContainer->createRoutine(scalingRoutineFound->getName(), new ScalingRoutine(*routine));
 		}
 
 		// If yes, create a new scaling routine and link it to the existing scaling routine container
-		return m_scalingRoutineContainerFound->second->createRoutine(scalingRoutineFound->getName(), routine);
+		return m_scalingRoutineContainerFound->second->createRoutine(scalingRoutineFound->getName(), new ScalingRoutine(*routine));
 	}
 }
 
@@ -803,11 +881,11 @@ ScalingRoutine* MovementManager::linkScalingRoutine(VertexArray2* _vertexarray, 
 			ScalingRoutineContainer* newScalingRoutineContainer = new ScalingRoutineContainer(this->movementRoutineEngine);
 			m_routineScalingVertexArray.insert(std::make_pair(_vertexarray, newScalingRoutineContainer));
 
-			return newScalingRoutineContainer->createRoutine(scalingRoutineFound->getName(), routine);
+			return newScalingRoutineContainer->createRoutine(scalingRoutineFound->getName(), new ScalingRoutine(*routine));
 		}
 
 		// If yes, create a new scaling routine and link it to the existing scaling routine container
-		return m_scalingRoutineContainerFound->second->createRoutine(scalingRoutineFound->getName(), routine);
+		return m_scalingRoutineContainerFound->second->createRoutine(scalingRoutineFound->getName(), new ScalingRoutine(*routine));
 	}
 }
 
@@ -1185,6 +1263,42 @@ RotationRoutine* MovementManager::getRotationRoutine(const std::string& _name)
 	return this->m_rotationRoutineContainer->getRoutinePtr(_name);
 }
 
+RotationRoutine* MovementManager::getRotationRoutine(sf::Shape& _shape, const std::string& _name)
+{
+	auto rotationRoutineContainerFound = m_routineRotationShape.find(&_shape);
+	if (rotationRoutineContainerFound != m_routineRotationShape.end()) {
+		return rotationRoutineContainerFound->second->exists(_name);
+	}
+	else {
+		printf("MovementManager::getRotationRoutine: Routine for shape not found\n");
+		return nullptr;
+	}
+}
+
+RotationRoutine* MovementManager::getRotationRoutine(sf::Sprite& _sprite, const std::string& _name)
+{
+	auto rotationRoutineContainerFound = m_routineRotationSprite.find(&_sprite);
+	if (rotationRoutineContainerFound != m_routineRotationSprite.end()) {
+		return rotationRoutineContainerFound->second->exists(_name);
+	}
+	else {
+		printf("MovementManager::getRotationRoutine: Routine for sprite not found\n");
+		return nullptr;
+	}
+}
+
+RotationRoutine* MovementManager::getRotationRoutine(VertexArray2& _vertexarray, const std::string& _name)
+{
+	auto rotationRoutineContainerFound = m_routineRotationVertexArray.find(&_vertexarray);
+	if (rotationRoutineContainerFound != m_routineRotationVertexArray.end()) {
+		return rotationRoutineContainerFound->second->exists(_name);
+	}
+	else {
+		printf("MovementManager::getRotationRoutine: Routine for vertexarray not found\n");
+		return nullptr;
+	}
+}
+
 RotationRoutine* MovementManager::linkRotationRoutine(sf::Shape& _shape, const std::string& _name)
 {
 	// Check if routine with given name exists
@@ -1311,11 +1425,11 @@ RotationRoutine* MovementManager::linkRotationRoutine(sf::Shape* _shape, Rotatio
 			RotationRoutineContainer* newRotationRoutineContainer = new RotationRoutineContainer(this->movementRoutineEngine);
 			m_routineRotationShape.insert(std::make_pair(_shape, newRotationRoutineContainer));
 
-			return newRotationRoutineContainer->createRoutine(rotationRoutineFound->getName(), routine);
+			return newRotationRoutineContainer->createRoutine(rotationRoutineFound->getName(), new RotationRoutine(*routine));
 		}
 
 		// If yes, create a new rotation routine and link it to the existing rotation routine container
-		return m_rotationRoutineContainerFound->second->createRoutine(rotationRoutineFound->getName(), routine);
+		return m_rotationRoutineContainerFound->second->createRoutine(rotationRoutineFound->getName(), new RotationRoutine(*routine));
 	}
 }
 
@@ -1343,11 +1457,11 @@ RotationRoutine* MovementManager::linkRotationRoutine(sf::Sprite* _sprite, Rotat
 			RotationRoutineContainer* newRotationRoutineContainer = new RotationRoutineContainer(this->movementRoutineEngine);
 			m_routineRotationSprite.insert(std::make_pair(_sprite, newRotationRoutineContainer));
 
-			return newRotationRoutineContainer->createRoutine(rotationRoutineFound->getName(), routine);
+			return newRotationRoutineContainer->createRoutine(rotationRoutineFound->getName(), new RotationRoutine(*routine));
 		}
 
 		// If yes, create a new rotation routine and link it to the existing rotation routine container
-		return m_rotationRoutineContainerFound->second->createRoutine(rotationRoutineFound->getName(), routine);
+		return m_rotationRoutineContainerFound->second->createRoutine(rotationRoutineFound->getName(), new RotationRoutine(*routine));
 	}
 }
 
@@ -1375,11 +1489,11 @@ RotationRoutine* MovementManager::linkRotationRoutine(VertexArray2* _vertexarray
 			RotationRoutineContainer* newRotationRoutineContainer = new RotationRoutineContainer(this->movementRoutineEngine);
 			m_routineRotationVertexArray.insert(std::make_pair(_vertexarray, newRotationRoutineContainer));
 
-			return newRotationRoutineContainer->createRoutine(rotationRoutineFound->getName(), routine);
+			return newRotationRoutineContainer->createRoutine(rotationRoutineFound->getName(), new RotationRoutine(*routine));
 		}
 
 		// If yes, create a new rotation routine and link it to the existing rotation routine container
-		return m_rotationRoutineContainerFound->second->createRoutine(rotationRoutineFound->getName(), routine);
+		return m_rotationRoutineContainerFound->second->createRoutine(rotationRoutineFound->getName(), new RotationRoutine(*routine));
 	}
 }
 

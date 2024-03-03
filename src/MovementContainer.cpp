@@ -9,314 +9,320 @@ MovementContainer* MovementContainer::sInstance = nullptr;
 // Private update functions
 void MovementContainer::updateShape(float dt)
 {
-	for (auto movement = this->m_Movements_Shape.begin(); movement != this->m_Movements_Shape.end();) {
-		movement->second->m_currentTime += dt;
+	for (auto movementRoutine = this->m_Movements_Shape.begin(); movementRoutine != this->m_Movements_Shape.end();) {
+		sf::Shape& shape = *movementRoutine->first;
+		movementInfo& movement = *movementRoutine->second;
 
-		if (movement->second->isDone()) {
-			if (movement->second->m_currentTime - movement->second->m_delayBefore - dt < movement->second->m_motionDuration)
-				movement->first->setPosition(movement->second->getEndingPos());
+		movement.m_currentTime += dt;
 
-			if (movement->second->m_repeat) {
-				if (movement->second->m_currentTime - movement->second->m_motionDuration - movement->second->m_delayBefore >= movement->second->m_delayAfter) {
-					movement->first->setPosition(movement->second->getStartingPos());
+		if (movement.isDone()) {
+			if (movement.m_currentTime - movement.m_delayBefore - dt < movement.m_motionDuration)
+				shape.setPosition(movement.getEndingPos());
 
-					movement->second->m_currentTime -= movement->second->m_totalDuration;
+			if (movement.m_repeat) {
+				if (movement.m_currentTime - movement.m_motionDuration - movement.m_delayBefore >= movement.m_delayAfter) {
+					shape.setPosition(movement.getStartingPos());
+
+					movement.m_currentTime -= movement.m_totalDuration;
 				}
 			}
-			else if (movement->second->isFinished()) {
-				delete movement->second;
-				movement = m_Movements_Shape.erase(movement);
+			else if (movement.isFinished()) {
+				delete movementRoutine->second;
+				movementRoutine = m_Movements_Shape.erase(movementRoutine);
 				continue;
 			}
 		}
 		else {
-			if (movement->second->m_currentTime > movement->second->m_delayBefore) {
-				sf::Vector2f new_position(static_cast<float>(movement->second->m_usedFunctionPtr(static_cast<double>((movement->second->m_currentTime - movement->second->m_delayBefore) / movement->second->m_motionDuration))) * (movement->second->getEndingPos().x - movement->second->getStartingPos().x) + movement->second->getStartingPos().x,
-										  static_cast<float>(movement->second->m_usedFunctionPtr(static_cast<double>((movement->second->m_currentTime - movement->second->m_delayBefore) / movement->second->m_motionDuration))) * (movement->second->getEndingPos().y - movement->second->getStartingPos().y) + movement->second->getStartingPos().y);
-
-				movement->first->setPosition(new_position);
-			}
-			else if (movement->second->m_currentTime - dt == 0.f)
-				movement->first->setPosition(movement->second->getStartingPos());
+			if (movement.m_currentTime > movement.m_delayBefore) 
+				shape.setPosition(movement.updatePosition());
+			else if (movement.m_currentTime - dt == 0.f)
+				shape.setPosition(movement.getStartingPos());
 		}
 
-		++movement;
+		++movementRoutine;
 	}
 
-	for (auto scaling = this->m_Scalings_Shape.begin(); scaling != this->m_Scalings_Shape.end();) {
-		scaling->second->m_currentTime += dt;
+	for (auto scalingRoutine = this->m_Scalings_Shape.begin(); scalingRoutine != this->m_Scalings_Shape.end();) {
+		sf::Shape& shape = *scalingRoutine->first;
+		scalingInfo& scaling = *scalingRoutine->second;
+		
+		scaling.m_currentTime += dt;
 
-		if (scaling->second->isDone()) {
-			if (scaling->second->m_currentTime - scaling->second->m_delayBefore - dt < scaling->second->m_motionDuration)
-				scaling->first->setScale(scaling->second->getEndingScale());
+		if (scaling.isDone()) {
+			if (scaling.m_currentTime - scaling.m_delayBefore - dt < scaling.m_motionDuration)
+				shape.setScale(scaling.getEndingScale());
 
-			if (scaling->second->m_repeat) {
-				if (scaling->second->m_currentTime - scaling->second->m_motionDuration - scaling->second->m_delayBefore >= scaling->second->m_delayAfter) {
-					scaling->first->setScale(scaling->second->getStartingScale());
+			if (scaling.m_repeat) {
+				if (scaling.m_currentTime - scaling.m_motionDuration - scaling.m_delayBefore >= scaling.m_delayAfter) {
+					shape.setScale(scaling.getStartingScale());
 					
-					scaling->second->m_currentTime -= scaling->second->m_totalDuration;
+					scaling.m_currentTime -= scaling.m_totalDuration;
 				}
 			}
-			else if (scaling->second->isFinished()) {
-				delete scaling->second;
-				scaling = m_Scalings_Shape.erase(scaling);
+			else if (scaling.isFinished()) {
+				delete scalingRoutine->second;
+				scalingRoutine = m_Scalings_Shape.erase(scalingRoutine);
 				continue;
 			}
 		}
 		else {
-			if (scaling->second->m_currentTime > scaling->second->m_delayBefore) {
-				sf::Vector2f new_scale(static_cast<float>(scaling->second->m_usedFunctionPtr(static_cast<double>((scaling->second->m_currentTime - scaling->second->m_delayBefore) / scaling->second->m_motionDuration))) * (scaling->second->getEndingScale().x - scaling->second->getStartingScale().x) + scaling->second->getStartingScale().x,
-									   static_cast<float>(scaling->second->m_usedFunctionPtr(static_cast<double>((scaling->second->m_currentTime - scaling->second->m_delayBefore) / scaling->second->m_motionDuration))) * (scaling->second->getEndingScale().y - scaling->second->getStartingScale().y) + scaling->second->getStartingScale().y);
-
-				scaling->first->setScale(new_scale);
-			}
-			else if (scaling->second->m_currentTime - dt == 0.f)
-				scaling->first->setScale(scaling->second->getStartingScale());
+			if (scaling.m_currentTime > scaling.m_delayBefore) 
+				shape.setScale(scaling.updateScale());
+			else if (scaling.m_currentTime - dt == 0.f)
+				shape.setScale(scaling.getStartingScale());
 		}
 
-		++scaling;
+		++scalingRoutine;
 	}
 
-	for (auto rotation = this->m_Rotations_Shape.begin(); rotation != this->m_Rotations_Shape.end();) {
-		rotation->second->m_currentTime += dt;
+	for (auto rotationRoutine = this->m_Rotations_Shape.begin(); rotationRoutine != this->m_Rotations_Shape.end();) {
+		sf::Shape& shape = *rotationRoutine->first;
+		rotationInfo& rotation = *rotationRoutine->second;
+		
+		rotation.m_currentTime += dt;
 
-		if (rotation->second->isDone()) {
-			if (rotation->second->m_currentTime - rotation->second->m_delayBefore - dt < rotation->second->m_motionDuration)
-				rotation->first->setRotation(rotation->second->getEndingRotation());
+		if (rotation.isDone()) {
+			if (rotation.m_currentTime - rotation.m_delayBefore - dt < rotation.m_motionDuration)
+				shape.setRotation(rotation.getEndingRotation());
 
-			if (rotation->second->m_repeat) {
-				if (rotation->second->m_currentTime - rotation->second->m_motionDuration - rotation->second->m_delayBefore >= rotation->second->m_delayAfter) {
-					rotation->first->setRotation(rotation->second->getStartingRotation());
+			if (rotation.m_repeat) {
+				if (rotation.m_currentTime - rotation.m_motionDuration - rotation.m_delayBefore >= rotation.m_delayAfter) {
+					shape.setRotation(rotation.getStartingRotation());
 
-					rotation->second->m_currentTime -= rotation->second->m_totalDuration;
+					rotation.m_currentTime -= rotation.m_totalDuration;
 				}
 			}
-			else if (rotation->second->isFinished()) {
-				delete rotation->second;
-				rotation = m_Rotations_Shape.erase(rotation);
+			else if (rotation.isFinished()) {
+				delete rotationRoutine->second;
+				rotationRoutine = m_Rotations_Shape.erase(rotationRoutine);
 				continue;
 			}
 		}
 		else{
-			if (rotation->second->m_currentTime > rotation->second->m_delayBefore)
-				rotation->first->setRotation(rotation->second->updateRotation());
-			else if (rotation->second->m_currentTime - dt == 0.f)
-				rotation->first->setRotation(rotation->second->getStartingRotation());
+			if (rotation.m_currentTime > rotation.m_delayBefore)
+				shape.setRotation(rotation.updateRotation());
+			else if (rotation.m_currentTime - dt == 0.f)
+				shape.setRotation(rotation.getStartingRotation());
 		}
 
-		++rotation;
+		++rotationRoutine;
 	}
 }
 
 void MovementContainer::updateVertexArray(float dt)
 {
-	for (auto movement = this->m_Movements_VA.begin(); movement != this->m_Movements_VA.end();) {
-		movement->second->m_currentTime += dt;
+	for (auto movementRoutine = this->m_Movements_VA.begin(); movementRoutine != this->m_Movements_VA.end();) {
+		VertexArray2& vertexarray = *movementRoutine->first;
+		movementInfo& movement = *movementRoutine->second;
+		
+		movement.m_currentTime += dt;
 
-		if (movement->first->getVertexCount() != 0) {
-			if (movement->second->isDone()) {
-				if (movement->second->m_currentTime - movement->second->m_delayBefore - dt < movement->second->m_motionDuration) 
-					movement->first->setPosition(movement->second->getEndingPos());
+		if (vertexarray.getVertexCount() != 0) {
+			if (movement.isDone()) {
+				if (movement.m_currentTime - movement.m_delayBefore - dt < movement.m_motionDuration) 
+					vertexarray.setPosition(movement.getEndingPos());
 
-				if (movement->second->m_repeat) {
-					if (movement->second->m_currentTime - movement->second->m_motionDuration - movement->second->m_delayBefore >= movement->second->m_delayAfter) {
-						movement->first->setPosition(movement->second->getStartingPos());
-						movement->second->m_currentTime -= movement->second->m_totalDuration;
+				if (movement.m_repeat) {
+					if (movement.m_currentTime - movement.m_motionDuration - movement.m_delayBefore >= movement.m_delayAfter) {
+						vertexarray.setPosition(movement.getStartingPos());
+						movement.m_currentTime -= movement.m_totalDuration;
 					}
 				}
-				else if (movement->second->isFinished()) {
-					delete movement->second;
-					movement = m_Movements_VA.erase(movement);
+				else if (movement.isFinished()) {
+					delete movementRoutine->second;
+					movementRoutine = m_Movements_VA.erase(movementRoutine);
 					continue;
 				}
 			}
 			else {
-				if (movement->second->m_currentTime > movement->second->m_delayBefore) {
-					sf::Vector2f new_position(static_cast<float>(movement->second->m_usedFunctionPtr(static_cast<double>((movement->second->m_currentTime - movement->second->m_delayBefore) / movement->second->m_motionDuration))) * (movement->second->getEndingPos().x - movement->second->getStartingPos().x) + movement->second->getStartingPos().x,
-											  static_cast<float>(movement->second->m_usedFunctionPtr(static_cast<double>((movement->second->m_currentTime - movement->second->m_delayBefore) / movement->second->m_motionDuration))) * (movement->second->getEndingPos().y - movement->second->getStartingPos().y) + movement->second->getStartingPos().y);
-
-					movement->first->setPosition(new_position);
-				}
-				else if (movement->second->m_currentTime - dt == 0.f) 
-					movement->first->setPosition(movement->second->getStartingPos());
+				if (movement.m_currentTime > movement.m_delayBefore) 
+					vertexarray.setPosition(movement.updatePosition());
+				else if (movement.m_currentTime - dt == 0.f) 
+					vertexarray.setPosition(movement.getStartingPos());
 			}
 		}
 
-		++movement;
+		++movementRoutine;
 	}
 
-	for (auto scaling = this->m_Scalings_VA.begin(); scaling != this->m_Scalings_VA.end();) {
-		scaling->second->m_currentTime += dt;
+	for (auto scalingRoutine = this->m_Scalings_VA.begin(); scalingRoutine != this->m_Scalings_VA.end();) {
+		VertexArray2& vertexarray = *scalingRoutine->first;
+		scalingInfo& scaling = *scalingRoutine->second;
 
-		if (scaling->first->getVertexCount() != 0) {
-			if (scaling->second->isDone()) {
-				if (scaling->second->m_currentTime - scaling->second->m_delayBefore - dt < scaling->second->m_motionDuration) 
-					scaling->first->setScale(scaling->second->getEndingScale());
+		scaling.m_currentTime += dt;
 
-				if (scaling->second->m_repeat) {
-					if (scaling->second->m_currentTime - scaling->second->m_motionDuration - scaling->second->m_delayBefore >= scaling->second->m_delayAfter) {
-						scaling->first->setScale(scaling->second->getStartingScale());
-						scaling->second->m_currentTime -= scaling->second->m_totalDuration;
+		if (vertexarray.getVertexCount() != 0) {
+			if (scaling.isDone()) {
+				if (scaling.m_currentTime - scaling.m_delayBefore - dt < scaling.m_motionDuration) 
+					vertexarray.setScale(scaling.getEndingScale());
+
+				if (scaling.m_repeat) {
+					if (scaling.m_currentTime - scaling.m_motionDuration - scaling.m_delayBefore >= scaling.m_delayAfter) {
+						vertexarray.setScale(scaling.getStartingScale());
+						scaling.m_currentTime -= scaling.m_totalDuration;
 					}
 				}
-				else if (scaling->second->isFinished()) {
-					delete scaling->second;
-					scaling = m_Scalings_VA.erase(scaling);
+				else if (scaling.isFinished()) {
+					delete scalingRoutine->second;
+					scalingRoutine = m_Scalings_VA.erase(scalingRoutine);
 					continue;
 				}
 			}
 			else {
-				if (scaling->second->m_currentTime > scaling->second->m_delayBefore) {
-					sf::Vector2f new_scale(static_cast<float>(scaling->second->m_usedFunctionPtr(static_cast<double>((scaling->second->m_currentTime - scaling->second->m_delayBefore) / scaling->second->m_motionDuration))) * (scaling->second->getEndingScale().x - scaling->second->getStartingScale().x) + scaling->second->getStartingScale().x,
-										   static_cast<float>(scaling->second->m_usedFunctionPtr(static_cast<double>((scaling->second->m_currentTime - scaling->second->m_delayBefore) / scaling->second->m_motionDuration))) * (scaling->second->getEndingScale().y - scaling->second->getStartingScale().y) + scaling->second->getStartingScale().y);
-					
-					scaling->first->setScale(new_scale);
-				}
-				else if (scaling->second->m_currentTime - dt == 0.f) 
-					scaling->first->setScale(scaling->second->getStartingScale());
+				if (scaling.m_currentTime > scaling.m_delayBefore)
+					vertexarray.setScale(scaling.updateScale());
+				else if (scaling.m_currentTime - dt == 0.f) 
+					vertexarray.setScale(scaling.getStartingScale());
 			}
 		}
 
-		++scaling;
+		++scalingRoutine;
 	}
 
-	for (auto rotation = this->m_Rotations_VA.begin(); rotation != this->m_Rotations_VA.end();) {
-		rotation->second->m_currentTime += dt;
+	for (auto rotationRoutine = this->m_Rotations_VA.begin(); rotationRoutine != this->m_Rotations_VA.end();) {
+		VertexArray2& vertexarray = *rotationRoutine->first;
+		rotationInfo& rotation = *rotationRoutine->second;
 
-		if (rotation->first->getVertexCount() != 0) {
-			if (rotation->second->isDone()) {
-				if (rotation->second->m_currentTime - rotation->second->m_delayBefore - dt < rotation->second->m_motionDuration)
-					rotation->first->setRotation(rotation->second->getEndingRotation());
+		rotation.m_currentTime += dt;
 
-				if (rotation->second->m_repeat) {
-					if (rotation->second->m_currentTime - rotation->second->m_motionDuration - rotation->second->m_delayBefore >= rotation->second->m_delayAfter){
-						rotation->first->setRotation(rotation->second->getStartingRotation());
-						rotation->second->m_currentTime -= rotation->second->m_totalDuration;
+		if (vertexarray.getVertexCount() != 0) {
+			if (rotation.isDone()) {
+				if (rotation.m_currentTime - rotation.m_delayBefore - dt < rotation.m_motionDuration)
+					vertexarray.setRotation(rotation.getEndingRotation());
+
+				if (rotation.m_repeat) {
+					if (rotation.m_currentTime - rotation.m_motionDuration - rotation.m_delayBefore >= rotation.m_delayAfter){
+						vertexarray.setRotation(rotation.getStartingRotation());
+						rotation.m_currentTime -= rotation.m_totalDuration;
 					}
 				}
-				else if (rotation->second->isFinished()) {
-					delete rotation->second;
-					rotation = m_Rotations_VA.erase(rotation);
+				else if (rotation.isFinished()) {
+					delete rotationRoutine->second;
+					rotationRoutine = m_Rotations_VA.erase(rotationRoutine);
 					continue;
 				}
 			}
 			else{
-				if (rotation->second->m_currentTime > rotation->second->m_delayBefore) 
-					rotation->first->setRotation(rotation->second->updateRotation());
-				else if (rotation->second->m_currentTime - dt == 0.f) 
-					rotation->first->setRotation(rotation->second->getStartingRotation());
+				if (rotation.m_currentTime > rotation.m_delayBefore) 
+					vertexarray.setRotation(rotation.updateRotation());
+				else if (rotation.m_currentTime - dt == 0.f) 
+					vertexarray.setRotation(rotation.getStartingRotation());
 			}
 		}
 
-		++rotation;
+		++rotationRoutine;
 	}
 }
 
 void MovementContainer::updateSprite(float dt)
 {
-	for (auto movement = this->m_Movements_S.begin(); movement != this->m_Movements_S.end();) {
-		movement->second->m_currentTime += dt;
+	for (auto movementRoutine = this->m_Movements_S.begin(); movementRoutine != this->m_Movements_S.end();) {
+		sf::Sprite& sprite = *movementRoutine->first;
+		movementInfo& movement = *movementRoutine->second;
 
-		if (movement->second->isDone()) {
-			if (movement->second->m_currentTime - movement->second->m_delayBefore - dt < movement->second->m_motionDuration)
-				movement->first->setPosition(movement->second->getEndingPos());
+		movement.m_currentTime += dt;
 
-			if (movement->second->m_repeat) {
-				if (movement->second->m_currentTime - movement->second->m_motionDuration - movement->second->m_delayBefore >= movement->second->m_delayAfter) {
-					movement->first->setPosition(movement->second->getStartingPos());
+		if (movement.isDone()) {
+			if (movement.m_currentTime - movement.m_delayBefore - dt < movement.m_motionDuration)
+				sprite.setPosition(movement.getEndingPos());
 
-					movement->second->m_currentTime -= movement->second->m_totalDuration;
+			if (movement.m_repeat) {
+				if (movement.m_currentTime - movement.m_motionDuration - movement.m_delayBefore >= movement.m_delayAfter) {
+					sprite.setPosition(movement.getStartingPos());
+
+					movement.m_currentTime -= movement.m_totalDuration;
 				}
 			}
-			else if (movement->second->isFinished()) {
-				delete movement->second;
-				movement = m_Movements_S.erase(movement);
+			else if (movement.isFinished()) {
+				delete movementRoutine->second;
+				movementRoutine = m_Movements_S.erase(movementRoutine);
 				continue;
 			}
 		}
 		else {
-			if (movement->second->m_currentTime > movement->second->m_delayBefore) {
-				sf::Vector2f new_position(static_cast<float>(movement->second->m_usedFunctionPtr(static_cast<double>((movement->second->m_currentTime - movement->second->m_delayBefore) / movement->second->m_motionDuration))) * (movement->second->getEndingPos().x - movement->second->getStartingPos().x) + movement->second->getStartingPos().x,
-										  static_cast<float>(movement->second->m_usedFunctionPtr(static_cast<double>((movement->second->m_currentTime - movement->second->m_delayBefore) / movement->second->m_motionDuration))) * (movement->second->getEndingPos().y - movement->second->getStartingPos().y) + movement->second->getStartingPos().y);
-
-				movement->first->setPosition(new_position);
-			}
-			else if (movement->second->m_currentTime - dt == 0.f)
-				movement->first->setPosition(movement->second->getStartingPos());
+			if (movement.m_currentTime > movement.m_delayBefore)
+				sprite.setPosition(movement.updatePosition());
+			else if (movement.m_currentTime - dt == 0.f)
+				sprite.setPosition(movement.getStartingPos());
 		}
-		++movement;
+
+		++movementRoutine;
 	}
 
-	for (auto scaling = this->m_Scalings_S.begin(); scaling != this->m_Scalings_S.end();) {
-		scaling->second->m_currentTime += dt;
+	for (auto scalingRoutine = this->m_Scalings_S.begin(); scalingRoutine != this->m_Scalings_S.end();) {
+		sf::Sprite& sprite = *scalingRoutine->first;
+		scalingInfo& scaling = *scalingRoutine->second;
 
-		if (scaling->second->isDone()) {
-			if (scaling->second->m_currentTime - scaling->second->m_delayBefore - dt < scaling->second->m_motionDuration)
-				scaling->first->setScale(scaling->second->getEndingScale());
+		scaling.m_currentTime += dt;
 
-			if (scaling->second->m_repeat) {
-				if (scaling->second->m_currentTime - scaling->second->m_motionDuration - scaling->second->m_delayBefore >= scaling->second->m_delayAfter) {
-					scaling->first->setScale(scaling->second->getStartingScale());
+		if (scaling.isDone()) {
+			if (scaling.m_currentTime - scaling.m_delayBefore - dt < scaling.m_motionDuration)
+				sprite.setScale(scaling.getEndingScale());
 
-					scaling->second->m_currentTime -= scaling->second->m_totalDuration;
+			if (scaling.m_repeat) {
+				if (scaling.m_currentTime - scaling.m_motionDuration - scaling.m_delayBefore >= scaling.m_delayAfter) {
+					sprite.setScale(scaling.getStartingScale());
+
+					scaling.m_currentTime -= scaling.m_totalDuration;
 				}
 			}
-			else if (scaling->second->isFinished()) {
-				delete scaling->second;
-				scaling = m_Scalings_S.erase(scaling);
+			else if (scaling.isFinished()) {
+				delete scalingRoutine->second;
+				scalingRoutine = m_Scalings_S.erase(scalingRoutine);
 				continue;
 			}
 		}
 		else {
-			if (scaling->second->m_currentTime > scaling->second->m_delayBefore) {
-				sf::Vector2f new_scale(static_cast<float>(scaling->second->m_usedFunctionPtr(static_cast<double>((scaling->second->m_currentTime - scaling->second->m_delayBefore) / scaling->second->m_motionDuration))) * (scaling->second->getEndingScale().x - scaling->second->getStartingScale().x) + scaling->second->getStartingScale().x,
-									   static_cast<float>(scaling->second->m_usedFunctionPtr(static_cast<double>((scaling->second->m_currentTime - scaling->second->m_delayBefore) / scaling->second->m_motionDuration))) * (scaling->second->getEndingScale().y - scaling->second->getStartingScale().y) + scaling->second->getStartingScale().y);
-
-				scaling->first->setScale(new_scale);
-			}
-			else if (scaling->second->m_currentTime - dt == 0.f)
-				scaling->first->setScale(scaling->second->getStartingScale());
+			if (scaling.m_currentTime > scaling.m_delayBefore)
+				sprite.setScale(scaling.updateScale());
+			else if (scaling.m_currentTime - dt == 0.f)
+				sprite.setScale(scaling.getStartingScale());
 		}
 
-		++scaling;
+		++scalingRoutine;
 	}
 
-	for (auto rotation = this->m_Rotations_S.begin(); rotation != this->m_Rotations_S.end();) {
-		rotation->second->m_currentTime += dt;
+	for (auto rotationRoutine = this->m_Rotations_S.begin(); rotationRoutine != this->m_Rotations_S.end();) {
+		sf::Sprite& sprite = *rotationRoutine->first;
+		rotationInfo& rotation = *rotationRoutine->second;
 
-		if (rotation->second->isDone()) {
-			if (rotation->second->m_currentTime - rotation->second->m_delayBefore - dt < rotation->second->m_motionDuration)
-				rotation->first->setRotation(rotation->second->getEndingRotation());
+		rotation.m_currentTime += dt;
 
-			if (rotation->second->m_repeat) {
-				if (rotation->second->m_currentTime - rotation->second->m_motionDuration - rotation->second->m_delayBefore >= rotation->second->m_delayAfter) {
-					rotation->first->setRotation(rotation->second->getStartingRotation());
+		if (rotation.isDone()) {
+			if (rotation.m_currentTime - rotation.m_delayBefore - dt < rotation.m_motionDuration)
+				sprite.setRotation(rotation.getEndingRotation());
 
-					rotation->second->m_currentTime -= rotation->second->m_totalDuration;
+			if (rotation.m_repeat) {
+				if (rotation.m_currentTime - rotation.m_motionDuration - rotation.m_delayBefore >= rotation.m_delayAfter) {
+					sprite.setRotation(rotation.getStartingRotation());
+
+					rotation.m_currentTime -= rotation.m_totalDuration;
 				}
 			}
-			else if (rotation->second->isFinished()) {
-				delete rotation->second;
-				rotation = m_Rotations_S.erase(rotation);
+			else if (rotation.isFinished()) {
+				delete rotationRoutine->second;
+				rotationRoutine = m_Rotations_S.erase(rotationRoutine);
 				continue;
 			}
 		}
 		else {
-			if (rotation->second->m_currentTime > rotation->second->m_delayBefore)
-				rotation->first->setRotation(rotation->second->updateRotation());
-			else if (rotation->second->m_currentTime - dt == 0.f)
-				rotation->first->setRotation(rotation->second->getStartingRotation());
+			if (rotation.m_currentTime > rotation.m_delayBefore)
+				sprite.setRotation(rotation.updateRotation());
+			else if (rotation.m_currentTime - dt == 0.f)
+				sprite.setRotation(rotation.getStartingRotation());
 		}
 
-		++rotation;
+		++rotationRoutine;
 	}
 }
 
 // Default constructor
 MovementContainer::MovementContainer()
 {
-	assert(this->sInstance == nullptr);
-	sInstance = this;
+	if (sInstance == nullptr) {
+		assert(this->sInstance == nullptr);
+		sInstance = this;
+	}
 }
 
 // Update functions
@@ -343,7 +349,7 @@ const movementInfo* MovementContainer::addMovement(sf::Shape* _shape, movementIn
 }
 
 // Movement functions
-const movementInfo* MovementContainer::addMovement(sf::Shape* _shape, sf::Vector2f _ending_pos, float _movement_time, movement_type _used_function, bool _repeat, float _delay_before, float _delay_after)
+const movementInfo* MovementContainer::addMovement(sf::Shape* _shape, sf::Vector2f _ending_pos, float _movement_time, easeFunctions::Tmovement_function _used_function, bool _repeat, float _delay_before, float _delay_after)
 {
 	auto& movementMap = sInstance->m_Movements_Shape;
 	auto movementFound = movementMap.find(_shape);
@@ -353,13 +359,13 @@ const movementInfo* MovementContainer::addMovement(sf::Shape* _shape, sf::Vector
 		return nullptr;
 	}
 	
-	movementInfo* newMovement = new movementInfo(_shape->getPosition(), _ending_pos, _movement_time, sInstance->movement_functions[_used_function], _repeat, _delay_before, _delay_after);
+	movementInfo* newMovement = new movementInfo(_shape->getPosition(), _ending_pos, _movement_time, easeFunctions::movement_functions[_used_function], _repeat, _delay_before, _delay_after);
 	movementMap.insert(std::make_pair(_shape, newMovement));
 
 	return newMovement;
 }
 
-const movementInfo* MovementContainer::addMovement(sf::Shape* _shape, sf::Vector2f _starting_pos, sf::Vector2f _ending_pos, float _movement_time, movement_type _used_function, bool _repeat, float _delay_before, float _delay_after)
+const movementInfo* MovementContainer::addMovement(sf::Shape* _shape, sf::Vector2f _starting_pos, sf::Vector2f _ending_pos, float _movement_time, easeFunctions::Tmovement_function _used_function, bool _repeat, float _delay_before, float _delay_after)
 {
 	auto& movementMap = sInstance->m_Movements_Shape;
 	auto movementFound = movementMap.find(_shape);
@@ -369,13 +375,13 @@ const movementInfo* MovementContainer::addMovement(sf::Shape* _shape, sf::Vector
 		return nullptr;
 	}
 	
-	movementInfo* newMovement = new movementInfo(_starting_pos, _ending_pos, _movement_time, sInstance->movement_functions[_used_function], _repeat, _delay_before, _delay_after);
+	movementInfo* newMovement = new movementInfo(_starting_pos, _ending_pos, _movement_time, easeFunctions::movement_functions[_used_function], _repeat, _delay_before, _delay_after);
 	movementMap.insert(std::make_pair(_shape, newMovement));
 
 	return newMovement;
 }
 
-const movementInfo* MovementContainer::addMovement(sf::Shape* _shape, float _offset_x, float _offset_y, float _movement_time, movement_type _used_function, bool _repeat, float _delay_before, float _delay_after)
+const movementInfo* MovementContainer::addMovement(sf::Shape* _shape, float _offset_x, float _offset_y, float _movement_time, easeFunctions::Tmovement_function _used_function, bool _repeat, float _delay_before, float _delay_after)
 {
 	return this->addMovement(_shape, _shape->getPosition() + sf::Vector2f(_offset_x, _offset_y), _movement_time, _used_function, _repeat, _delay_before, _delay_after);
 }
@@ -394,7 +400,7 @@ const movementInfo* MovementContainer::addMovement(VertexArray2* _vertexarray, m
 	return _movementInfo;
 }
 
-const movementInfo* MovementContainer::addMovement(VertexArray2* _vertexarray, sf::Vector2f _ending_pos, float _movement_time, movement_type _used_function, bool _repeat, float _m_delayBefore, float _delay_after)
+const movementInfo* MovementContainer::addMovement(VertexArray2* _vertexarray, sf::Vector2f _ending_pos, float _movement_time, easeFunctions::Tmovement_function _used_function, bool _repeat, float _m_delayBefore, float _delay_after)
 {
 	auto& movementMap = sInstance->m_Movements_VA;
 	auto movementFound = movementMap.find(_vertexarray);
@@ -404,13 +410,13 @@ const movementInfo* MovementContainer::addMovement(VertexArray2* _vertexarray, s
 		return nullptr;
 	}
 
-	movementInfo* newMovement = new movementInfo(_vertexarray->getPosition(), _ending_pos, _movement_time, sInstance->movement_functions[_used_function], _repeat, _m_delayBefore, _delay_after);
+	movementInfo* newMovement = new movementInfo(_vertexarray->getPosition(), _ending_pos, _movement_time, easeFunctions::movement_functions[_used_function], _repeat, _m_delayBefore, _delay_after);
 	movementMap.insert(std::make_pair(_vertexarray, newMovement));
 
 	return newMovement;
 }
 
-const movementInfo* MovementContainer::addMovement(VertexArray2* _vertexarray, sf::Vector2f _starting_pos, sf::Vector2f _ending_pos, float _movement_time, movement_type _used_function, bool _repeat, float _m_delayBefore, float _delay_after)
+const movementInfo* MovementContainer::addMovement(VertexArray2* _vertexarray, sf::Vector2f _starting_pos, sf::Vector2f _ending_pos, float _movement_time, easeFunctions::Tmovement_function _used_function, bool _repeat, float _m_delayBefore, float _delay_after)
 {
 	auto& movementMap = sInstance->m_Movements_VA;
 	auto movementFound = movementMap.find(_vertexarray);
@@ -420,13 +426,13 @@ const movementInfo* MovementContainer::addMovement(VertexArray2* _vertexarray, s
 		return nullptr;
 	}
 
-	movementInfo* newMovement = new movementInfo(_starting_pos, _ending_pos, _movement_time, sInstance->movement_functions[_used_function], _repeat, _m_delayBefore, _delay_after);
+	movementInfo* newMovement = new movementInfo(_starting_pos, _ending_pos, _movement_time, easeFunctions::movement_functions[_used_function], _repeat, _m_delayBefore, _delay_after);
 	movementMap.insert(std::make_pair(_vertexarray, newMovement));
 
 	return newMovement;
 }
 
-const movementInfo* MovementContainer::addMovement(VertexArray2* _vertexarray, float _offset_x, float _offset_y, float _movement_time, movement_type _used_function, bool _repeat, float _m_delayBefore, float _delay_after)
+const movementInfo* MovementContainer::addMovement(VertexArray2* _vertexarray, float _offset_x, float _offset_y, float _movement_time, easeFunctions::Tmovement_function _used_function, bool _repeat, float _m_delayBefore, float _delay_after)
 {
 	if (_vertexarray->getVertexCount() == 0) {
 		printf("ERROR: VertexArray has no vertices!\n");
@@ -449,7 +455,7 @@ const movementInfo* MovementContainer::addMovement(sf::Sprite* _sprite, movement
 	return _movementInfo;
 }
 
-const movementInfo* MovementContainer::addMovement(sf::Sprite* _sprite, sf::Vector2f _ending_pos, float _movement_time, movement_type _used_function, bool _repeat, float _m_delayBefore, float _delay_after)
+const movementInfo* MovementContainer::addMovement(sf::Sprite* _sprite, sf::Vector2f _ending_pos, float _movement_time, easeFunctions::Tmovement_function _used_function, bool _repeat, float _m_delayBefore, float _delay_after)
 {
 	auto& movementMap = sInstance->m_Movements_S;
 	auto movementFound = movementMap.find(_sprite);
@@ -459,13 +465,13 @@ const movementInfo* MovementContainer::addMovement(sf::Sprite* _sprite, sf::Vect
 		return nullptr;
 	}
 	
-	movementInfo* newMovement = new movementInfo(_sprite->getPosition(), _ending_pos, _movement_time, sInstance->movement_functions[_used_function], _repeat, _m_delayBefore, _delay_after);
+	movementInfo* newMovement = new movementInfo(_sprite->getPosition(), _ending_pos, _movement_time, easeFunctions::movement_functions[_used_function], _repeat, _m_delayBefore, _delay_after);
 	movementMap.insert(std::make_pair(_sprite, newMovement));
 
 	return newMovement;
 }
 
-const movementInfo* MovementContainer::addMovement(sf::Sprite* _sprite, sf::Vector2f _starting_pos, sf::Vector2f _ending_pos, float _movement_time, movement_type _used_function, bool _repeat, float _m_delayBefore, float _delay_after)
+const movementInfo* MovementContainer::addMovement(sf::Sprite* _sprite, sf::Vector2f _starting_pos, sf::Vector2f _ending_pos, float _movement_time, easeFunctions::Tmovement_function _used_function, bool _repeat, float _m_delayBefore, float _delay_after)
 {
 	auto& movementMap = sInstance->m_Movements_S;
 	auto movementFound = movementMap.find(_sprite);
@@ -475,13 +481,13 @@ const movementInfo* MovementContainer::addMovement(sf::Sprite* _sprite, sf::Vect
 		return nullptr;
 	}
 
-	movementInfo* newMovement = new movementInfo(_starting_pos, _ending_pos, _movement_time, sInstance->movement_functions[_used_function], _repeat, _m_delayBefore, _delay_after);
+	movementInfo* newMovement = new movementInfo(_starting_pos, _ending_pos, _movement_time, easeFunctions::movement_functions[_used_function], _repeat, _m_delayBefore, _delay_after);
 	movementMap.insert(std::make_pair(_sprite, newMovement));
 
 	return newMovement;
 }
 
-const movementInfo* MovementContainer::addMovement(sf::Sprite* _sprite, float _offset_x, float _offset_y, float _movement_time, movement_type _used_function, bool _repeat, float _m_delayBefore, float _delay_after)
+const movementInfo* MovementContainer::addMovement(sf::Sprite* _sprite, float _offset_x, float _offset_y, float _movement_time, easeFunctions::Tmovement_function _used_function, bool _repeat, float _m_delayBefore, float _delay_after)
 {
 	return this->addMovement(_sprite, _sprite->getPosition() + sf::Vector2f(_offset_x, _offset_y), _movement_time, _used_function, _repeat, _m_delayBefore, _delay_after);
 }
@@ -662,7 +668,7 @@ void MovementContainer::swapMovement(sf::Shape* _shape, movementInfo* _newMoveme
 }
 
 // Scaling functions
-const bool MovementContainer::addScaling(sf::Shape* _shape, sf::Vector2f _ending_scale, float _scaling_time, movement_type _used_function, bool _repeat, float _m_delayBefore, float _delay_after)
+const bool MovementContainer::addScaling(sf::Shape* _shape, sf::Vector2f _ending_scale, float _scaling_time, easeFunctions::Tmovement_function _used_function, bool _repeat, float _m_delayBefore, float _delay_after)
 {
 	auto& scalingMap = sInstance->m_Scalings_Shape;
 	auto scalingFound = scalingMap.find(_shape);
@@ -672,13 +678,13 @@ const bool MovementContainer::addScaling(sf::Shape* _shape, sf::Vector2f _ending
 		return 0;
 	}
 	else {
-		scalingInfo* newScaling = new scalingInfo(_shape->getScale(), _ending_scale, _scaling_time, sInstance->movement_functions[_used_function], _repeat, _m_delayBefore, _delay_after);
+		scalingInfo* newScaling = new scalingInfo(_shape->getScale(), _ending_scale, _scaling_time, easeFunctions::movement_functions[_used_function], _repeat, _m_delayBefore, _delay_after);
 		scalingMap.insert(std::make_pair(_shape, newScaling));
 	}
 	return 1;
 }
 
-const bool MovementContainer::addScaling(sf::Shape* _shape, sf::Vector2f _starting_scale, sf::Vector2f _ending_scale, float _scaling_time, movement_type _used_function, bool _repeat, float _m_delayBefore, float _delay_after)
+const bool MovementContainer::addScaling(sf::Shape* _shape, sf::Vector2f _starting_scale, sf::Vector2f _ending_scale, float _scaling_time, easeFunctions::Tmovement_function _used_function, bool _repeat, float _m_delayBefore, float _delay_after)
 {
 	auto& scalingMap = sInstance->m_Scalings_Shape;
 	auto scalingFound = scalingMap.find(_shape);
@@ -688,13 +694,13 @@ const bool MovementContainer::addScaling(sf::Shape* _shape, sf::Vector2f _starti
 		return 0;
 	}
 	else {
-		scalingInfo* newScaling = new scalingInfo(_starting_scale, _ending_scale, _scaling_time, sInstance->movement_functions[_used_function], _repeat, _m_delayBefore, _delay_after);
+		scalingInfo* newScaling = new scalingInfo(_starting_scale, _ending_scale, _scaling_time, easeFunctions::movement_functions[_used_function], _repeat, _m_delayBefore, _delay_after);
 		scalingMap.insert(std::make_pair(_shape, newScaling));
 	}
 	return 1;
 }
 
-const bool MovementContainer::addScaling(VertexArray2* _vertexarray, sf::Vector2f _ending_scale, float _scaling_time, movement_type _used_function, bool _repeat, float _m_delayBefore, float _delay_after)
+const bool MovementContainer::addScaling(VertexArray2* _vertexarray, sf::Vector2f _ending_scale, float _scaling_time, easeFunctions::Tmovement_function _used_function, bool _repeat, float _m_delayBefore, float _delay_after)
 {
 	auto& scalingMap = sInstance->m_Scalings_VA;
 	auto scalingFound = scalingMap.find(_vertexarray);
@@ -704,13 +710,13 @@ const bool MovementContainer::addScaling(VertexArray2* _vertexarray, sf::Vector2
 		return 0;
 	}
 	else if (_vertexarray->getVertexCount() != 0){
-		scalingInfo* newScaling = new scalingInfo({ 1.f, 1.f }, _ending_scale, _scaling_time, sInstance->movement_functions[_used_function], _repeat, _m_delayBefore, _delay_after);
+		scalingInfo* newScaling = new scalingInfo({ 1.f, 1.f }, _ending_scale, _scaling_time, easeFunctions::movement_functions[_used_function], _repeat, _m_delayBefore, _delay_after);
 		scalingMap.insert(std::make_pair(_vertexarray, newScaling));
 	}
 	return 1;
 }
 
-const bool MovementContainer::addScaling(VertexArray2* _vertexarray, sf::Vector2f _starting_scale, sf::Vector2f _ending_scale, float _scaling_time, movement_type _used_function, bool _repeat, float _m_delayBefore, float _delay_after)
+const bool MovementContainer::addScaling(VertexArray2* _vertexarray, sf::Vector2f _starting_scale, sf::Vector2f _ending_scale, float _scaling_time, easeFunctions::Tmovement_function _used_function, bool _repeat, float _m_delayBefore, float _delay_after)
 {
 	auto& scalingMap = sInstance->m_Scalings_VA;
 	auto scalingFound = scalingMap.find(_vertexarray);
@@ -720,13 +726,13 @@ const bool MovementContainer::addScaling(VertexArray2* _vertexarray, sf::Vector2
 		return 0;
 	}
 	else if (_vertexarray->getVertexCount() != 0) {
-		scalingInfo* newScaling = new scalingInfo(_starting_scale, _ending_scale, _scaling_time, sInstance->movement_functions[_used_function], _repeat, _m_delayBefore, _delay_after);
+		scalingInfo* newScaling = new scalingInfo(_starting_scale, _ending_scale, _scaling_time, easeFunctions::movement_functions[_used_function], _repeat, _m_delayBefore, _delay_after);
 		scalingMap.insert(std::make_pair(_vertexarray, newScaling));
 	}
 	return 1;
 }
 
-const bool MovementContainer::addScaling(sf::Sprite* _sprite, sf::Vector2f _ending_scale, float _scaling_time, movement_type _used_function, bool _repeat, float _m_delayBefore, float _delay_after)
+const bool MovementContainer::addScaling(sf::Sprite* _sprite, sf::Vector2f _ending_scale, float _scaling_time, easeFunctions::Tmovement_function _used_function, bool _repeat, float _m_delayBefore, float _delay_after)
 {
 	auto& scalingMap = sInstance->m_Scalings_S;
 	auto scalingFound = scalingMap.find(_sprite);
@@ -736,13 +742,13 @@ const bool MovementContainer::addScaling(sf::Sprite* _sprite, sf::Vector2f _endi
 		return 0;
 	}
 	else {
-		scalingInfo* newScaling = new scalingInfo(_sprite->getScale(), _ending_scale, _scaling_time, sInstance->movement_functions[_used_function], _repeat, _m_delayBefore, _delay_after);
+		scalingInfo* newScaling = new scalingInfo(_sprite->getScale(), _ending_scale, _scaling_time, easeFunctions::movement_functions[_used_function], _repeat, _m_delayBefore, _delay_after);
 		scalingMap.insert(std::make_pair(_sprite, newScaling));
 	}
 	return 1;
 }
 
-const bool MovementContainer::addScaling(sf::Sprite* _sprite, sf::Vector2f _starting_scale, sf::Vector2f _ending_scale, float _scaling_time, movement_type _used_function, bool _repeat, float _m_delayBefore, float _delay_after)
+const bool MovementContainer::addScaling(sf::Sprite* _sprite, sf::Vector2f _starting_scale, sf::Vector2f _ending_scale, float _scaling_time, easeFunctions::Tmovement_function _used_function, bool _repeat, float _m_delayBefore, float _delay_after)
 {
 	auto& scalingMap = sInstance->m_Scalings_S;
 	auto scalingFound = scalingMap.find(_sprite);
@@ -752,7 +758,7 @@ const bool MovementContainer::addScaling(sf::Sprite* _sprite, sf::Vector2f _star
 		return 0;
 	}
 	else {
-		scalingInfo* newScaling = new scalingInfo(_starting_scale, _ending_scale, _scaling_time, sInstance->movement_functions[_used_function], _repeat, _m_delayBefore, _delay_after);
+		scalingInfo* newScaling = new scalingInfo(_starting_scale, _ending_scale, _scaling_time, easeFunctions::movement_functions[_used_function], _repeat, _m_delayBefore, _delay_after);
 		scalingMap.insert(std::make_pair(_sprite, newScaling));
 	}
 	return 1;
@@ -921,7 +927,7 @@ void MovementContainer::stopScaling(sf::Sprite* _sprite)
 }
 
 // Rotation functions
-const bool MovementContainer::addRotation(sf::Shape* _shape, float _ending_rotation, float _rotation_time, movement_type _used_function, bool _clockwise, bool _repeat, float _m_delayBefore, float _delay_after)
+const bool MovementContainer::addRotation(sf::Shape* _shape, float _ending_rotation, float _rotation_time, easeFunctions::Tmovement_function _used_function, bool _clockwise, bool _repeat, float _m_delayBefore, float _delay_after)
 {
 	auto& rotationMap = sInstance->m_Rotations_Shape;
 	auto rotationFound = rotationMap.find(_shape);
@@ -931,13 +937,13 @@ const bool MovementContainer::addRotation(sf::Shape* _shape, float _ending_rotat
 		return 0;
 	}
 	else {
-		rotationInfo* newRotation = new rotationInfo(_shape->getRotation(), _ending_rotation, _rotation_time, sInstance->movement_functions[_used_function], _repeat, _m_delayBefore, _delay_after, _clockwise);
+		rotationInfo* newRotation = new rotationInfo(_shape->getRotation(), _ending_rotation, _rotation_time, easeFunctions::movement_functions[_used_function], _repeat, _m_delayBefore, _delay_after, _clockwise);
 		rotationMap.insert(std::make_pair(_shape, newRotation));
 	}
 	return 1;
 }
 
-const bool MovementContainer::addRotation(sf::Shape* _shape, float _starting_rotation, float _ending_rotation, float _rotation_time, movement_type _used_function, bool _clockwise, bool _repeat, float _m_delayBefore, float _delay_after)
+const bool MovementContainer::addRotation(sf::Shape* _shape, float _starting_rotation, float _ending_rotation, float _rotation_time, easeFunctions::Tmovement_function _used_function, bool _clockwise, bool _repeat, float _m_delayBefore, float _delay_after)
 {
 	auto& rotationMap = sInstance->m_Rotations_Shape;
 	auto rotationFound = rotationMap.find(_shape);
@@ -947,13 +953,13 @@ const bool MovementContainer::addRotation(sf::Shape* _shape, float _starting_rot
 		return 0;
 	}
 	else {
-		rotationInfo* newRotation = new rotationInfo(_starting_rotation, _ending_rotation, _rotation_time, sInstance->movement_functions[_used_function], _repeat, _m_delayBefore, _delay_after, _clockwise);
+		rotationInfo* newRotation = new rotationInfo(_starting_rotation, _ending_rotation, _rotation_time, easeFunctions::movement_functions[_used_function], _repeat, _m_delayBefore, _delay_after, _clockwise);
 		rotationMap.insert(std::make_pair(_shape, newRotation));
 	}
 	return 1;
 }
 
-const bool MovementContainer::addRotation(VertexArray2* _vertexarray, float _ending_rotation, float _rotation_time, movement_type _used_function, bool _clockwise, bool _repeat, float _m_delayBefore, float _delay_after)
+const bool MovementContainer::addRotation(VertexArray2* _vertexarray, float _ending_rotation, float _rotation_time, easeFunctions::Tmovement_function _used_function, bool _clockwise, bool _repeat, float _m_delayBefore, float _delay_after)
 {
 	auto& rotationMap = sInstance->m_Rotations_VA;
 	auto rotationFound = rotationMap.find(_vertexarray);
@@ -963,13 +969,13 @@ const bool MovementContainer::addRotation(VertexArray2* _vertexarray, float _end
 		return 0;
 	}
 	else if (_vertexarray->getVertexCount() != 0) {
-		rotationInfo* newRotation = new rotationInfo(0.f, _ending_rotation, _rotation_time, sInstance->movement_functions[_used_function], _repeat, _m_delayBefore, _delay_after, _clockwise);
+		rotationInfo* newRotation = new rotationInfo(0.f, _ending_rotation, _rotation_time, easeFunctions::movement_functions[_used_function], _repeat, _m_delayBefore, _delay_after, _clockwise);
 		rotationMap.insert(std::make_pair(_vertexarray, newRotation));
 	}
 	return 1;
 }
 
-const bool MovementContainer::addRotation(VertexArray2* _vertexarray, float _starting_rotation, float _ending_rotation, float _rotation_time, movement_type _used_function, bool _clockwise, bool _repeat, float _m_delayBefore, float _delay_after)
+const bool MovementContainer::addRotation(VertexArray2* _vertexarray, float _starting_rotation, float _ending_rotation, float _rotation_time, easeFunctions::Tmovement_function _used_function, bool _clockwise, bool _repeat, float _m_delayBefore, float _delay_after)
 {
 	auto& rotationMap = sInstance->m_Rotations_VA;
 	auto rotationFound = rotationMap.find(_vertexarray);
@@ -979,13 +985,13 @@ const bool MovementContainer::addRotation(VertexArray2* _vertexarray, float _sta
 		return 0;
 	}
 	else if (_vertexarray->getVertexCount() != 0) {
-		rotationInfo* newRotation = new rotationInfo(_starting_rotation, _ending_rotation, _rotation_time, sInstance->movement_functions[_used_function], _repeat, _m_delayBefore, _delay_after, _clockwise);
+		rotationInfo* newRotation = new rotationInfo(_starting_rotation, _ending_rotation, _rotation_time, easeFunctions::movement_functions[_used_function], _repeat, _m_delayBefore, _delay_after, _clockwise);
 		rotationMap.insert(std::make_pair(_vertexarray, newRotation));
 	}
 	return 1;
 }
 
-const bool MovementContainer::addRotation(sf::Sprite* _sprite, float _ending_rotation, float _rotation_time, movement_type _used_function, bool _clockwise, bool _repeat, float _m_delayBefore, float _delay_after)
+const bool MovementContainer::addRotation(sf::Sprite* _sprite, float _ending_rotation, float _rotation_time, easeFunctions::Tmovement_function _used_function, bool _clockwise, bool _repeat, float _m_delayBefore, float _delay_after)
 {
 	auto& rotationMap = sInstance->m_Rotations_S;
 	auto rotationFound = rotationMap.find(_sprite);
@@ -995,12 +1001,12 @@ const bool MovementContainer::addRotation(sf::Sprite* _sprite, float _ending_rot
 		return 0;
 	}
 	else {
-		rotationInfo* newRotation = new rotationInfo(_sprite->getRotation(), _ending_rotation, _rotation_time, sInstance->movement_functions[_used_function], _repeat, _m_delayBefore, _delay_after, _clockwise);
+		rotationInfo* newRotation = new rotationInfo(_sprite->getRotation(), _ending_rotation, _rotation_time, easeFunctions::movement_functions[_used_function], _repeat, _m_delayBefore, _delay_after, _clockwise);
 		rotationMap.insert(std::make_pair(_sprite, newRotation));
 	}
 }
 
-const bool MovementContainer::addRotation(sf::Sprite* _sprite, float _starting_rotation, float _ending_rotation, float _rotation_time, movement_type _used_function, bool _clockwise, bool _repeat, float _m_delayBefore, float _delay_after)
+const bool MovementContainer::addRotation(sf::Sprite* _sprite, float _starting_rotation, float _ending_rotation, float _rotation_time, easeFunctions::Tmovement_function _used_function, bool _clockwise, bool _repeat, float _m_delayBefore, float _delay_after)
 {
 	auto& rotationMap = sInstance->m_Rotations_S;
 	auto rotationFound = rotationMap.find(_sprite);
@@ -1010,7 +1016,7 @@ const bool MovementContainer::addRotation(sf::Sprite* _sprite, float _starting_r
 		return 0;
 	}
 	else {
-		rotationInfo* newRotation = new rotationInfo(_starting_rotation, _ending_rotation, _rotation_time, sInstance->movement_functions[_used_function], _repeat, _m_delayBefore, _delay_after, _clockwise);
+		rotationInfo* newRotation = new rotationInfo(_starting_rotation, _ending_rotation, _rotation_time, easeFunctions::movement_functions[_used_function], _repeat, _m_delayBefore, _delay_after, _clockwise);
 		rotationMap.insert(std::make_pair(_sprite, newRotation));
 	}
 	return 1;
@@ -1277,12 +1283,8 @@ void MovementRoutineEngine::updateShape(float dt)
 				}
 			}
 			else {
-				if (movement.m_currentTime > movement.m_delayBefore) {
-					sf::Vector2f new_position(static_cast<float>(movement.m_usedFunctionPtr(static_cast<double>((movement.m_currentTime - movement.m_delayBefore) / movement.m_motionDuration))) * (movement.getEndingPos().x - movement.getStartingPos().x) + movement.getStartingPos().x,
-											  static_cast<float>(movement.m_usedFunctionPtr(static_cast<double>((movement.m_currentTime - movement.m_delayBefore) / movement.m_motionDuration))) * (movement.getEndingPos().y - movement.getStartingPos().y) + movement.getStartingPos().y);
-
-					shape.setPosition(new_position);
-				}
+				if (movement.m_currentTime > movement.m_delayBefore) 
+					shape.setPosition(movement.updatePosition());
 				else if (movement.m_currentTime - dt == 0.f)
 					shape.setPosition(movement.getStartingPos());
 			}
@@ -1318,12 +1320,8 @@ void MovementRoutineEngine::updateShape(float dt)
 				}
 			}
 			else {
-				if (scaling.m_currentTime > scaling.m_delayBefore) {
-					sf::Vector2f new_scale(static_cast<float>(scaling.m_usedFunctionPtr(static_cast<double>((scaling.m_currentTime - scaling.m_delayBefore) / scaling.m_motionDuration))) * (scaling.getEndingScale().x - scaling.getStartingScale().x) + scaling.getStartingScale().x,
-										   static_cast<float>(scaling.m_usedFunctionPtr(static_cast<double>((scaling.m_currentTime - scaling.m_delayBefore) / scaling.m_motionDuration))) * (scaling.getEndingScale().y - scaling.getStartingScale().y) + scaling.getStartingScale().y);
-
-					shape.setScale(new_scale);
-				}
+				if (scaling.m_currentTime > scaling.m_delayBefore) 
+					shape.setScale(scaling.updateScale());
 				else if (scaling.m_currentTime - dt == 0.f)
 					shape.setScale(scaling.getStartingScale());
 			}
@@ -1400,12 +1398,8 @@ void MovementRoutineEngine::updateVertexArray(float dt)
 					}					
 				}
 				else {
-					if (movement.m_currentTime > movement.m_delayBefore) {
-						sf::Vector2f new_position(static_cast<float>(movement.m_usedFunctionPtr(static_cast<double>((movement.m_currentTime - movement.m_delayBefore) / movement.m_motionDuration))) * (movement.getEndingPos().x - movement.getStartingPos().x) + movement.getStartingPos().x,
-												  static_cast<float>(movement.m_usedFunctionPtr(static_cast<double>((movement.m_currentTime - movement.m_delayBefore) / movement.m_motionDuration))) * (movement.getEndingPos().y - movement.getStartingPos().y) + movement.getStartingPos().y);
-
-						vertexarray.setPosition(new_position);
-					}
+					if (movement.m_currentTime > movement.m_delayBefore) 
+						vertexarray.setPosition(movement.updatePosition());
 					else if (movement.m_currentTime - dt == 0.f)
 						vertexarray.setPosition(movement.getStartingPos());
 				}
@@ -1444,12 +1438,8 @@ void MovementRoutineEngine::updateVertexArray(float dt)
 					}
 				}
 				else {
-					if (scaling.m_currentTime > scaling.m_delayBefore) {
-						sf::Vector2f new_scale(static_cast<float>(scaling.m_usedFunctionPtr(static_cast<double>((scaling.m_currentTime - scaling.m_delayBefore) / scaling.m_motionDuration))) * (scaling.getEndingScale().x - scaling.getStartingScale().x) + scaling.getStartingScale().x,
-											   static_cast<float>(scaling.m_usedFunctionPtr(static_cast<double>((scaling.m_currentTime - scaling.m_delayBefore) / scaling.m_motionDuration))) * (scaling.getEndingScale().y - scaling.getStartingScale().y) + scaling.getStartingScale().y);
-
-						vertexarray.setScale(new_scale);
-					}
+					if (scaling.m_currentTime > scaling.m_delayBefore) 
+						vertexarray.setScale(scaling.updateScale());
 					else if (scaling.m_currentTime - dt == 0.f) 
 						vertexarray.setScale(scaling.getStartingScale());
 				}
@@ -1528,12 +1518,8 @@ void MovementRoutineEngine::updateSprite(float dt)
 				}
 			}
 			else {
-				if (movement.m_currentTime > movement.m_delayBefore) {
-					sf::Vector2f new_position(static_cast<float>(movement.m_usedFunctionPtr(static_cast<double>((movement.m_currentTime - movement.m_delayBefore) / movement.m_motionDuration))) * (movement.getEndingPos().x - movement.getStartingPos().x) + movement.getStartingPos().x,
-											  static_cast<float>(movement.m_usedFunctionPtr(static_cast<double>((movement.m_currentTime - movement.m_delayBefore) / movement.m_motionDuration))) * (movement.getEndingPos().y - movement.getStartingPos().y) + movement.getStartingPos().y);
-
-					sprite.setPosition(new_position);
-				}
+				if (movement.m_currentTime > movement.m_delayBefore) 
+					sprite.setPosition(movement.updatePosition());
 				else if (movement.m_currentTime - dt == 0.f)
 					sprite.setPosition(movement.getStartingPos());
 			}
@@ -1569,12 +1555,8 @@ void MovementRoutineEngine::updateSprite(float dt)
 				}
 			}
 			else {
-				if (scaling.m_currentTime > scaling.m_delayBefore) {
-					sf::Vector2f new_scale(static_cast<float>(scaling.m_usedFunctionPtr(static_cast<double>((scaling.m_currentTime - scaling.m_delayBefore) / scaling.m_motionDuration))) * (scaling.getEndingScale().x - scaling.getStartingScale().x) + scaling.getStartingScale().x,
-										   static_cast<float>(scaling.m_usedFunctionPtr(static_cast<double>((scaling.m_currentTime - scaling.m_delayBefore) / scaling.m_motionDuration))) * (scaling.getEndingScale().y - scaling.getStartingScale().y) + scaling.getStartingScale().y);
-
-					sprite.setScale(new_scale);
-				}
+				if (scaling.m_currentTime > scaling.m_delayBefore) 
+					sprite.setScale(scaling.updateScale());
 				else if (scaling.m_currentTime - dt == 0.f)
 					sprite.setScale(scaling.getStartingScale());
 			}
@@ -1621,11 +1603,16 @@ void MovementRoutineEngine::updateSprite(float dt)
 	}
 }
 
-MovementRoutineEngine::MovementRoutineEngine(MovementManager* _MovementManager)
+MovementRoutineEngine* MovementRoutineEngine::getInstance()
 {
-	assert(this->sInstance == nullptr);
-	sInstance = this;
-	this->movementManager = _MovementManager;
+	if (!sInstance)
+		sInstance = new MovementRoutineEngine();
+	return sInstance;
+}
+
+void MovementRoutineEngine::setMovementManager(MovementManager* _movementManager)
+{
+	this->movementManager = _movementManager;
 }
 
 void MovementRoutineEngine::update(float dt)

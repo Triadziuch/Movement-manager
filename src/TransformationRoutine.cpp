@@ -180,90 +180,33 @@ void MovementRoutine::reset()
 	m_isPaused = false;
 }
 
-const bool MovementRoutine::start(sf::Shape& shape)
+const bool MovementRoutine::start(sf::Transformable& transformable)
 {
 	if (m_routineMovements.size() != 0) {
-		if (m_adjustAllToCurrentTransform)		  { adjustAllToCurrent(shape.getPosition()); }
-		else if (m_adjustStartToCurrentTransform) { adjustStartToCurrent(shape.getPosition()); }
+		if (m_adjustAllToCurrentTransform)		  { adjustAllToCurrent(transformable.getPosition()); }
+		else if (m_adjustStartToCurrentTransform) { adjustStartToCurrent(transformable.getPosition()); }
 
 		reset();
 
 		m_current = 0;
 		m_isActive = true;
-		m_movementRoutineEngine->addMovement(&shape, this);
+		m_movementRoutineEngine->addMovement(&transformable, this);
 		return true;
 	}
 
 	return false;
 }
 
-const bool MovementRoutine::start(sf::Sprite& sprite) 
-{
-	if (m_routineMovements.size() != 0) {
-		if (m_adjustAllToCurrentTransform)		  { adjustAllToCurrent(sprite.getPosition()); }
-		else if (m_adjustStartToCurrentTransform) { adjustStartToCurrent(sprite.getPosition()); }
-
-		reset();
-
-		m_current = 0;
-		m_isActive = true;
-		m_movementRoutineEngine->addMovement(&sprite, this);
-		return true;
-	}
-
-	return false;
-}
-
-const bool MovementRoutine::start(VertexArray2& vertexArray)
-{
-	if (m_routineMovements.size() != 0) {
-		if (m_adjustAllToCurrentTransform)		  { adjustAllToCurrent(vertexArray.getPosition()); }
-		else if (m_adjustStartToCurrentTransform) { adjustStartToCurrent(vertexArray.getPosition()); }
-
-		reset();
-
-		m_current = 0;
-		m_isActive = true;
-		m_movementRoutineEngine->addMovement(&vertexArray, this);
-		return true;
-	}
-
-	return false;
-}
-
-void MovementRoutine::reset(sf::Shape& shape)
+void MovementRoutine::reset(sf::Transformable& transformable)
 {
 	reset();
-	shape.setPosition(m_routineMovements.front()->getStartingPos());
+	transformable.setPosition(m_routineMovements.front()->getStartingPos());
 }
 
-void MovementRoutine::reset(sf::Sprite& sprite)
+void MovementRoutine::stop(sf::Transformable* transformable)
 {
 	reset();
-	sprite.setPosition(m_routineMovements.front()->getStartingPos());
-}
-
-void MovementRoutine::reset(VertexArray2& vertexArray)
-{
-	reset();
-	vertexArray.setPosition(m_routineMovements.front()->getStartingPos());
-}
-
-void MovementRoutine::stop(sf::Shape* shape) 
-{
-	reset();
-	m_movementRoutineEngine->stopMovement(shape);
-}
-
-void MovementRoutine::stop(sf::Sprite* sprite) {
-	reset();
-	m_movementRoutineEngine->stopMovement(sprite);
-}
-
-void MovementRoutine::stop(VertexArray2* vertexArray)
-{
-	reset();
-	m_movementRoutineEngine->stopMovement(vertexArray);
+	m_movementRoutineEngine->stopMovement(transformable);
 }
 
 movementInfo* MovementRoutine::getCurrentMovement() const
@@ -428,88 +371,32 @@ void ScalingRoutine::reset()
 	m_isPaused = false;
 }
 
-const bool ScalingRoutine::start(sf::Shape& shape)
+const bool ScalingRoutine::start(sf::Transformable& transformable)
 {
 	if (m_routineScalings.size() != 0) {
-		if (m_adjustAllToCurrentTransform)		  { adjustAllToCurrent(shape.getScale()); }
-		else if (m_adjustStartToCurrentTransform) { adjustStartToCurrent(shape.getScale()); }
+		if (m_adjustAllToCurrentTransform)		  { adjustAllToCurrent(transformable.getScale()); }
+		else if (m_adjustStartToCurrentTransform) { adjustStartToCurrent(transformable.getScale()); }
 		reset();
 
 		m_current = 0;
 		m_isActive = true;
-		m_movementRoutineEngine->addScaling(&shape, this);
+		m_movementRoutineEngine->addScaling(&transformable, this);
 		return true;
 	}
 
 	return false;
 }
 
-const bool ScalingRoutine::start(sf::Sprite& sprite)
-{
-	if (m_routineScalings.size() != 0) {
-		if (m_adjustAllToCurrentTransform)		  { adjustAllToCurrent(sprite.getScale()); }
-		else if (m_adjustStartToCurrentTransform) { adjustStartToCurrent(sprite.getScale()); }
-		reset();
-
-		m_current = 0;
-		m_isActive = true;
-		m_movementRoutineEngine->addScaling(&sprite, this);
-		return true;
-	}
-
-	return false;
-}
-
-const bool ScalingRoutine::start(VertexArray2& vertexArray)
-{
-	if (m_routineScalings.size() != 0) {
-		if (m_adjustAllToCurrentTransform)		  { adjustAllToCurrent(vertexArray.getScale()); }
-		else if (m_adjustStartToCurrentTransform) { adjustStartToCurrent(vertexArray.getScale()); }
-		reset();
-
-		m_current = 0;
-		m_isActive = true;
-		m_movementRoutineEngine->addScaling(&vertexArray, this);
-		return true;
-	}
-
-	return false;
-}
-
-void ScalingRoutine::reset(sf::Shape& shape)
+void ScalingRoutine::reset(sf::Transformable& transformable)
 {
 	reset();
-	shape.setScale(m_routineScalings.front()->getStartingScale());
+	transformable.setScale(m_routineScalings.front()->getStartingScale());
 }
 
-void ScalingRoutine::reset(sf::Sprite& sprite)
+void ScalingRoutine::stop(sf::Transformable* transformable)
 {
 	reset();
-	sprite.setScale(m_routineScalings.front()->getStartingScale());
-}
-
-void ScalingRoutine::reset(VertexArray2& vertexArray)
-{
-	reset();
-	vertexArray.setScale(m_routineScalings.front()->getStartingScale());
-}
-
-void ScalingRoutine::stop(sf::Shape* shape)
-{
-	reset();
-	m_movementRoutineEngine->stopScaling(shape);
-}
-
-void ScalingRoutine::stop(sf::Sprite* sprite)
-{
-	reset();
-	m_movementRoutineEngine->stopScaling(sprite);
-}
-
-void ScalingRoutine::stop(VertexArray2* vertexArray)
-{
-	reset();
-	m_movementRoutineEngine->stopScaling(vertexArray);
+	m_movementRoutineEngine->stopScaling(transformable);
 }
 
 scalingInfo* ScalingRoutine::getCurrentScaling() const
@@ -715,88 +602,32 @@ void RotationRoutine::reset()
 	m_isPaused = false;
 }
 
-const bool RotationRoutine::start(sf::Shape& shape)
+const bool RotationRoutine::start(sf::Transformable& transformable)
 {
 	if (m_routineRotations.size() != 0) {
-		if (m_adjustAllToCurrentTransform)		  { adjustAllToCurrent(shape.getRotation()); }
-		else if (m_adjustStartToCurrentTransform) { adjustStartToCurrent(shape.getRotation()); }
+		if (m_adjustAllToCurrentTransform)		  { adjustAllToCurrent(transformable.getRotation()); }
+		else if (m_adjustStartToCurrentTransform) { adjustStartToCurrent(transformable.getRotation()); }
 		reset();
 
 		m_current = 0;
 		m_isActive = true;
-		m_movementRoutineEngine->addRotation(&shape, this);
+		m_movementRoutineEngine->addRotation(&transformable, this);
 		return true;
 	}
 
 	return false;
 }
 
-const bool RotationRoutine::start(sf::Sprite& sprite)
-{
-	if (m_routineRotations.size() != 0) {
-		if (m_adjustAllToCurrentTransform)		  { adjustAllToCurrent(sprite.getRotation()); }
-		else if (m_adjustStartToCurrentTransform) { adjustStartToCurrent(sprite.getRotation()); }
-		reset();
-
-		m_current = 0;
-		m_isActive = true;
-		m_movementRoutineEngine->addRotation(&sprite, this);
-		return true;
-	}
-
-	return false;
-}
-
-const bool RotationRoutine::start(VertexArray2& vertexArray)
-{
-	if (m_routineRotations.size() != 0) {
-		if (m_adjustAllToCurrentTransform)		  { adjustAllToCurrent(vertexArray.getRotation()); }
-		else if (m_adjustStartToCurrentTransform) { adjustStartToCurrent(vertexArray.getRotation()); }
-		reset();
-
-		m_current = 0;
-		m_isActive = true;
-		m_movementRoutineEngine->addRotation(&vertexArray, this);
-		return true;
-	}
-
-	return false;
-}
-
-void RotationRoutine::reset(sf::Shape& shape)
+void RotationRoutine::reset(sf::Transformable& transformable)
 {
 	reset();
-	shape.setRotation(m_routineRotations.front()->getStartingRotation());
+	transformable.setRotation(m_routineRotations.front()->getStartingRotation());
 }
 
-void RotationRoutine::reset(sf::Sprite& sprite)
+void RotationRoutine::stop(sf::Transformable* transformable)
 {
 	reset();
-	sprite.setRotation(m_routineRotations.front()->getStartingRotation());
-}
-
-void RotationRoutine::reset(VertexArray2& vertexArray)
-{
-	reset();
-	vertexArray.setRotation(m_routineRotations.front()->getStartingRotation());
-}
-
-void RotationRoutine::stop(sf::Shape* shape)
-{
-	reset();
-	m_movementRoutineEngine->stopRotation(shape);
-}
-
-void RotationRoutine::stop(sf::Sprite* sprite)
-{
-	reset();
-	m_movementRoutineEngine->stopRotation(sprite);
-}
-
-void RotationRoutine::stop(VertexArray2* vertexArray)
-{
-	reset();
-	m_movementRoutineEngine->stopRotation(vertexArray);
+	m_movementRoutineEngine->stopRotation(transformable);
 }
 
 rotationInfo* RotationRoutine::getCurrentRotation() const

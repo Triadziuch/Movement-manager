@@ -68,17 +68,9 @@ public:
 	void clear();
 	void reset();
 
-	const bool start(sf::Shape& shape);
-	const bool start(sf::Sprite& sprite);
-	const bool start(VertexArray2& vertexArray);
-
-	void reset(sf::Shape& shape);
-	void reset(sf::Sprite& sprite);
-	void reset(VertexArray2& vertexArray);
-
-	void stop(sf::Shape* shape);
-	void stop(sf::Sprite* sprite);
-	void stop(VertexArray2* vertexArray);
+	const bool start(sf::Transformable& transformable);
+	void reset(sf::Transformable& transformable);
+	void stop(sf::Transformable* transformable);
 
 	movementInfo* getCurrentMovement() const;
 
@@ -121,17 +113,9 @@ public:
 	void clear();
 	void reset();
 
-	const bool start(sf::Shape& shape);
-	const bool start(sf::Sprite& sprite);
-	const bool start(VertexArray2& vertexArray);
-
-	void reset(sf::Shape& shape);
-	void reset(sf::Sprite& sprite);
-	void reset(VertexArray2& vertexArray);
-
-	void stop(sf::Shape* shape);
-	void stop(sf::Sprite* sprite);
-	void stop(VertexArray2* vertexArray);
+	const bool start(sf::Transformable& transformable);
+	void reset(sf::Transformable& transformable);
+	void stop(sf::Transformable* transformable);
 
 	scalingInfo* getCurrentScaling() const;
 
@@ -176,17 +160,9 @@ public:
 	void clear();
 	void reset();
 
-	const bool start(sf::Shape& shape);
-	const bool start(sf::Sprite& sprite);
-	const bool start(VertexArray2& vertexArray);
-
-	void reset(sf::Shape& shape);
-	void reset(sf::Sprite& sprite);
-	void reset(VertexArray2& vertexArray);
-
-	void stop(sf::Shape* shape);
-	void stop(sf::Sprite* sprite);
-	void stop(VertexArray2* vertexArray);
+	const bool start(sf::Transformable& transformable);
+	void reset(sf::Transformable& transformable);
+	void stop(sf::Transformable* transformable);
 
 	rotationInfo* getCurrentRotation() const;
 

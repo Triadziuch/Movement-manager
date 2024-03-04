@@ -7,12 +7,10 @@
 #include "VertexArray2.h"
 #include <chrono>
 
-#include "Instrumentor.h"
-
 using namespace std::chrono;
 
 long long int it = 0;
-long long int time_movement{}, time_scaling{}, time_rotation{};
+long long int time_movement{};
 bool synced = false;
 
 sf::Vector2f getCentroid(const sf::VertexArray& vertexArray) {
@@ -262,9 +260,9 @@ void demo2(sf::RenderWindow& window) {
 
 	const int easeTypeSize = 30;
 
-	constexpr static int max_routines = 5000;
+	constexpr static int max_routines = 100000;
 	constexpr static int max_movements_in_routine = 10;
-	constexpr static int max_shapes = 5000;
+	constexpr static int max_shapes = 100000;
 
 	float animation_time = 10.f;
 
@@ -357,27 +355,20 @@ void demo2(sf::RenderWindow& window) {
 	{
 		dt = dt_clock.restart().asSeconds();
 
-		Instrumentor::Get().BeginSession("Demo2", "results.json");
-		sf::Vector3i time = movementManager->update(dt);
-		Instrumentor::Get().EndSession();
-		time_movement += time.x;
-		time_scaling += time.y;
-		time_rotation += time.z;
+		auto start = high_resolution_clock::now();
+		movementManager->update(dt);
+		auto stop = high_resolution_clock::now();
+		time_movement += duration_cast<nanoseconds>(stop - start).count();
 		it++;
 
-		if (it == 300 && !synced) {
+		if (it == 100 && !synced) {
 			synced = true;
 			it = 0;
 			time_movement = 0;
-			time_scaling = 0;
-			time_rotation = 0;
 		}
 
-		if (it % 1000 == 0 && it != 0) {
-			std::cout << "Movement: " << static_cast<float>(time_movement / it) << " ns  =  " << static_cast<float>(time_movement / it) / 100000.f << " ms  =  " << static_cast<float>(time_movement / it) / 100000000.f << " s\n";
-			std::cout << "Scaling: " << static_cast<float>(time_scaling / it) << " ns  =  " << static_cast<float>(time_scaling / it) / 100000.f << " ms  =  " << static_cast<float>(time_scaling / it) / 100000000.f << " s\n";
-			std::cout << "Rotation: " << static_cast<float>(time_rotation / it) << " ns  =  " << static_cast<float>(time_rotation / it) / 100000.f << " ms  =  " << static_cast<float>(time_rotation / it) / 100000000.f << " s\n\n\n";
-		}
+		if (it % 500 == 0 && it != 0) 
+			std::cout << "Time: " << static_cast<float>(time_movement / it) << " ns  =  " << static_cast<float>(time_movement / it) / 100000.f << " ms  =  " << static_cast<float>(time_movement / it) / 100000000.f << " s\n";
 
 		sf::Event event;
 		if (window.pollEvent(event))

@@ -7,10 +7,12 @@
 #include "VertexArray2.h"
 #include <chrono>
 
+#include "Instrumentor.h"
+
 using namespace std::chrono;
 
 long long int it = 0;
-long long int total_duration = 0;
+long long int time_movement{}, time_scaling{}, time_rotation{};
 bool synced = false;
 
 sf::Vector2f getCentroid(const sf::VertexArray& vertexArray) {
@@ -169,19 +171,7 @@ void demo1(sf::RenderWindow& window) {
 	while (running)
 	{
 		dt = dt_clock.restart().asSeconds();
-
-		auto start = high_resolution_clock::now();
 		movementManager->update(dt);
-		auto stop = high_resolution_clock::now();
-		auto duration = duration_cast<nanoseconds>(stop - start);
-		total_duration += duration.count();
-		it++;
-
-		if (it % 1000 == 0) {
-			std::cout << static_cast<float>(total_duration / it) << " ns  =  " << static_cast<float>(total_duration / it) / 100000.f << " ms  =  " << static_cast<float>(total_duration / it) / 100000000.f << " s\n";
-			total_duration = 0;
-			it = 0;
-		}
 
 		sf::Event event;
 		if (window.pollEvent(event))
@@ -272,9 +262,9 @@ void demo2(sf::RenderWindow& window) {
 
 	const int easeTypeSize = 30;
 
-	constexpr static int max_routines = 100000;
+	constexpr static int max_routines = 5000;
 	constexpr static int max_movements_in_routine = 10;
-	constexpr static int max_shapes = 100000;
+	constexpr static int max_shapes = 5000;
 
 	float animation_time = 10.f;
 
@@ -367,23 +357,26 @@ void demo2(sf::RenderWindow& window) {
 	{
 		dt = dt_clock.restart().asSeconds();
 
-		auto start = high_resolution_clock::now();
-		movementManager->update(dt);
-		auto stop = high_resolution_clock::now();
-		auto duration = duration_cast<nanoseconds>(stop - start);
-		total_duration += duration.count();
+		Instrumentor::Get().BeginSession("Demo2", "results.json");
+		sf::Vector3i time = movementManager->update(dt);
+		Instrumentor::Get().EndSession();
+		time_movement += time.x;
+		time_scaling += time.y;
+		time_rotation += time.z;
 		it++;
 
-		if (it == 1000 && !synced) {
+		if (it == 300 && !synced) {
 			synced = true;
 			it = 0;
-			total_duration = 0;
+			time_movement = 0;
+			time_scaling = 0;
+			time_rotation = 0;
 		}
 
 		if (it % 1000 == 0 && it != 0) {
-			std::cout << static_cast<float>(total_duration / it) << " ns  =  " << static_cast<float>(total_duration / it) / 100000.f << " ms  =  " << static_cast<float>(total_duration / it) / 100000000.f << " s\n";
-			//total_duration = 0;
-			//it = 0;
+			std::cout << "Movement: " << static_cast<float>(time_movement / it) << " ns  =  " << static_cast<float>(time_movement / it) / 100000.f << " ms  =  " << static_cast<float>(time_movement / it) / 100000000.f << " s\n";
+			std::cout << "Scaling: " << static_cast<float>(time_scaling / it) << " ns  =  " << static_cast<float>(time_scaling / it) / 100000.f << " ms  =  " << static_cast<float>(time_scaling / it) / 100000000.f << " s\n";
+			std::cout << "Rotation: " << static_cast<float>(time_rotation / it) << " ns  =  " << static_cast<float>(time_rotation / it) / 100000.f << " ms  =  " << static_cast<float>(time_rotation / it) / 100000000.f << " s\n\n\n";
 		}
 
 		sf::Event event;
@@ -423,9 +416,9 @@ void demo3(sf::RenderWindow& window) {
 
 	const int easeTypeSize = 30;
 
-	constexpr static int max_routines = 20000;
+	constexpr static int max_routines = 10000;
 	constexpr static int max_movements_in_routine = 10;
-	constexpr static int max_shapes = 20000;
+	constexpr static int max_shapes = 10000;
 
 	float animation_time = 3.f;
 
@@ -473,17 +466,17 @@ void demo3(sf::RenderWindow& window) {
 	for (int i = 0; i < max_shapes; i++) {
 		if (i % 1000 == 0)
 			printf("Creating shape %d...\n", i);
-		shapes[i].setPrimitiveType(sf::Quads);
+		shapes[i].setPrimitiveType(sf::Points);
 		shapes[i].resize(4);
 		shapes[i][0].position = sf::Vector2f(0.f, 0.f);
 		shapes[i][1].position = shapes[i][0].position + sf::Vector2f(5.f, 0.f);
 		shapes[i][2].position = shapes[i][0].position + sf::Vector2f(5.f, 5.f);
-		shapes[i][3].position = shapes[i][0].position + sf::Vector2f(0.f, 5.f);
+		//shapes[i][3].position = shapes[i][0].position + sf::Vector2f(0.f, 5.f);
 
-		shapes[i][0].color = randomColor();
+		/*shapes[i][0].color = randomColor();
 		shapes[i][1].color = randomColor();
 		shapes[i][2].color = randomColor();
-		shapes[i][3].color = randomColor();
+		shapes[i][3].color = randomColor();*/
 
 		shapes[i].setOrigin(shapes[i].getCentroid());
 		shapes[i].setPosition(randomPosition());
@@ -528,24 +521,8 @@ void demo3(sf::RenderWindow& window) {
 	{
 		dt = dt_clock.restart().asSeconds();
 
-		auto start = high_resolution_clock::now();
 		movementManager->update(dt);
-		auto stop = high_resolution_clock::now();
-		auto duration = duration_cast<nanoseconds>(stop - start);
-		total_duration += duration.count();
 		it++;
-
-		if (it == 1000 && !synced) {
-			synced = true;
-			it = 0;
-			total_duration = 0;
-		}
-
-		if (it % 1000 == 0 && it != 0) {
-			std::cout << static_cast<float>(total_duration / it) << " ns  =  " << static_cast<float>(total_duration / it) / 100000.f << " ms  =  " << static_cast<float>(total_duration / it) / 100000000.f << " s\n";
-			//total_duration = 0;
-			//it = 0;
-		}
 
 		sf::Event event;
 		if (window.pollEvent(event))
@@ -584,7 +561,7 @@ int main()
 	sf::RenderWindow window(sf::VideoMode(1920, 1080), "Ease functions", sf::Style::Fullscreen, settings);
 	window.setVerticalSyncEnabled(true);
 
-	demo3(window);
+	demo2(window);
 
 	MovementContainer MovementContainer;
 

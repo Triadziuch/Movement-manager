@@ -58,7 +58,7 @@ public:
 	MovementRoutineEngine* movementRoutineEngine;
 
 	// Update functions
-	void update(const float dt);
+	sf::Vector3i update(const float dt);
 
 	// Universal public functions
 	void setFunction(sf::Shape& _shape, easeFunctions::Tmovement_function usedFunctionType);

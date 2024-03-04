@@ -1254,355 +1254,6 @@ const bool MovementContainer::isRotating(sf::Sprite* _sprite)
 // Singleton initialization
 MovementRoutineEngine* MovementRoutineEngine::sInstance = nullptr;
 
-void MovementRoutineEngine::updateShape(float dt)
-{
-	for (auto movementRoutine = this->m_Movement_Routines_Shape.begin(); movementRoutine != this->m_Movement_Routines_Shape.end();) {
-		if (!movementRoutine->second->m_isPaused) {
-			sf::Shape& shape = *movementRoutine->first;
-			movementInfo& movement = *movementRoutine->second->getCurrentMovement();
-
-			movement.m_currentTime += dt;
-
-			if (movement.isDone()) {
-				if (movement.m_currentTime - movement.m_delayBefore - dt < movement.m_motionDuration)
-					shape.setPosition(movement.getEndingPos());
-
-				if (movement.m_repeat) {
-					if (movement.m_currentTime - movement.m_motionDuration - movement.m_delayBefore >= movement.m_delayAfter) {
-						shape.setPosition(movement.getStartingPos());
-
-						movement.m_currentTime -= movement.m_totalDuration;
-					}
-				}
-				else if (movement.isFinished()) {
-					if (!movementRoutine->second->goToNextMovement(shape)) {
-						movementRoutine->second = nullptr;
-						movementRoutine = m_Movement_Routines_Shape.erase(movementRoutine);
-						continue;
-					}
-				}
-			}
-			else {
-				if (movement.m_currentTime > movement.m_delayBefore) 
-					shape.setPosition(movement.updatePosition());
-				else if (movement.m_currentTime - dt == 0.f)
-					shape.setPosition(movement.getStartingPos());
-			}
-		}
-
-		++movementRoutine;
-	}
-
-	for (auto scalingRoutine = this->m_Scaling_Routines_Shape.begin(); scalingRoutine != this->m_Scaling_Routines_Shape.end();) {
-		if (!scalingRoutine->second->m_isPaused) {
-			sf::Shape& shape = *scalingRoutine->first;
-			scalingInfo& scaling = *scalingRoutine->second->getCurrentScaling();
-
-			scaling.m_currentTime += dt;
-
-			if (scaling.isDone()) {
-				if (scaling.m_currentTime - scaling.m_delayBefore - dt < scaling.m_motionDuration)
-					shape.setScale(scaling.getEndingScale());
-
-				if (scaling.m_repeat) {
-					if (scaling.m_currentTime - scaling.m_motionDuration - scaling.m_delayBefore >= scaling.m_delayAfter) {
-						shape.setScale(scaling.getStartingScale());
-
-						scaling.m_currentTime -= scaling.m_totalDuration;
-					}
-				}
-				else if (scaling.isFinished()) {
-					if (!scalingRoutine->second->goToNextScaling(shape)) {
-						scalingRoutine->second = nullptr;
-						scalingRoutine = m_Scaling_Routines_Shape.erase(scalingRoutine);
-						continue;
-					}
-				}
-			}
-			else {
-				if (scaling.m_currentTime > scaling.m_delayBefore) 
-					shape.setScale(scaling.updateScale());
-				else if (scaling.m_currentTime - dt == 0.f)
-					shape.setScale(scaling.getStartingScale());
-			}
-		}
-
-		++scalingRoutine;
-	}
-
-	for (auto rotationRoutine = this->m_Rotation_Routines_Shape.begin(); rotationRoutine != this->m_Rotation_Routines_Shape.end();) {
-		if (!rotationRoutine->second->m_isPaused) {
-			sf::Shape& shape = *rotationRoutine->first;
-			rotationInfo& rotation = *rotationRoutine->second->getCurrentRotation();
-
-			rotation.m_currentTime += dt;
-
-			if (rotation.isDone()) {
-				if (rotation.m_currentTime - rotation.m_delayBefore - dt < rotation.m_motionDuration)
-					shape.setRotation(rotation.getEndingRotation());
-
-				if (rotation.m_repeat) {
-					if (rotation.m_currentTime - rotation.m_motionDuration - rotation.m_delayBefore >= rotation.m_delayAfter) {
-						shape.setRotation(rotation.getStartingRotation());
-
-						rotation.m_currentTime -= rotation.m_totalDuration;
-					}
-				}
-				else if (rotation.isFinished()) {
-					if (!rotationRoutine->second->goToNextRotation(shape)) {
-						rotationRoutine->second = nullptr;
-						rotationRoutine = m_Rotation_Routines_Shape.erase(rotationRoutine);
-						continue;
-					}
-				}
-			}
-			else {
-				if (rotation.m_currentTime > rotation.m_delayBefore)
-					shape.setRotation(rotation.updateRotation());
-				else if (rotation.m_currentTime - dt == 0.f)
-					shape.setRotation(rotation.getStartingRotation());
-
-			}
-		}
-
-		++rotationRoutine;
-	}
-}
-
-void MovementRoutineEngine::updateVertexArray(float dt)
-{
-	for (auto movementRoutine = this->m_Movement_Routines_VA.begin(); movementRoutine != this->m_Movement_Routines_VA.end();) {
-		if (!movementRoutine->second->m_isPaused) {
-			VertexArray2& vertexarray = *movementRoutine->first;
-			movementInfo& movement = *movementRoutine->second->getCurrentMovement();
-
-			movement.m_currentTime += dt;
-
-			if (vertexarray.getVertexCount() != 0) {
-				if (movement.isDone()) {
-					if (movement.m_currentTime - movement.m_delayBefore - dt < movement.m_motionDuration) 
-						vertexarray.setPosition(movement.getEndingPos());
-
-					if (movement.m_repeat) {
-						if (movement.m_currentTime - movement.m_motionDuration - movement.m_delayBefore >= movement.m_delayAfter) {
-							vertexarray.setPosition(movement.getStartingPos());
-							movement.m_currentTime -= movement.m_totalDuration;
-						}
-					}
-					else if (movement.isFinished()) {
-						if (!movementRoutine->second->goToNextMovement(vertexarray)) {
-							movementRoutine->second = nullptr;
-							movementRoutine = m_Movement_Routines_VA.erase(movementRoutine);
-							continue;
-						}
-					}					
-				}
-				else {
-					if (movement.m_currentTime > movement.m_delayBefore) 
-						vertexarray.setPosition(movement.updatePosition());
-					else if (movement.m_currentTime - dt == 0.f)
-						vertexarray.setPosition(movement.getStartingPos());
-				}
-			}
-		}
-
-		++movementRoutine;
-	}
-
-	for (auto scalingRoutine = this->m_Scaling_Routines_VA.begin(); scalingRoutine != this->m_Scaling_Routines_VA.end();) {
-		if (!scalingRoutine->second->m_isPaused) {
-			VertexArray2& vertexarray = *scalingRoutine->first;
-			scalingInfo&  scaling = *scalingRoutine->second->getCurrentScaling();
-
-			scaling.m_currentTime += dt;
-
-			if (vertexarray.getVertexCount() != 0) {
-				if (scaling.isDone()) {
-					if (scaling.m_currentTime - scaling.m_delayBefore - dt < scaling.m_motionDuration) 
-						vertexarray.setScale(scaling.getEndingScale());
-					
-
-					if (scaling.m_repeat) {
-						if (scaling.m_currentTime - scaling.m_motionDuration - scaling.m_delayBefore >= scaling.m_delayAfter){
-							vertexarray.setScale(scaling.getStartingScale());
-
-							scaling.m_currentTime -= scaling.m_totalDuration;
-						}
-					}
-					else if (scaling.isFinished()) {
-						if (!scalingRoutine->second->goToNextScaling(vertexarray)) {
-							scalingRoutine->second = nullptr;
-							scalingRoutine = m_Scaling_Routines_VA.erase(scalingRoutine);
-							continue;
-						}
-					}
-				}
-				else {
-					if (scaling.m_currentTime > scaling.m_delayBefore) 
-						vertexarray.setScale(scaling.updateScale());
-					else if (scaling.m_currentTime - dt == 0.f) 
-						vertexarray.setScale(scaling.getStartingScale());
-				}
-			}
-		}
-
-		++scalingRoutine;
-	}
-
-	for (auto rotationRoutine = this->m_Rotation_Routines_VA.begin(); rotationRoutine != this->m_Rotation_Routines_VA.end();) {
-		if (!rotationRoutine->second->m_isPaused) {
-			VertexArray2& vertexarray = *rotationRoutine->first;
-			rotationInfo& rotation = *rotationRoutine->second->getCurrentRotation();
-
-			rotation.m_currentTime += dt;
-
-			if (vertexarray.getVertexCount() != 0) {
-				if (rotation.isDone()) {
-					if (rotation.m_currentTime - rotation.m_delayBefore - dt < rotation.m_motionDuration) 
-						vertexarray.setRotation(rotation.getEndingRotation());
-
-					if (rotation.m_repeat) {
-						if (rotation.m_currentTime - rotation.m_motionDuration - rotation.m_delayBefore >= rotation.m_delayAfter) {
-							vertexarray.setRotation(rotation.getStartingRotation());
-
-							rotation.m_currentTime -= rotation.m_totalDuration;
-						}
-					}
-					else if (rotation.isFinished()) {
-						if (!rotationRoutine->second->goToNextRotation(vertexarray)) {
-							rotationRoutine->second = nullptr;
-							rotationRoutine = m_Rotation_Routines_VA.erase(rotationRoutine);
-							continue;
-						}
-					}
-				}
-				else {
-					if (rotation.m_currentTime > rotation.m_delayBefore) 
-						vertexarray.setRotation(rotation.updateRotation());
-					else if (rotation.m_currentTime - dt == 0.f) 
-						vertexarray.setRotation(rotation.getStartingRotation());
-				}
-			}
-		}
-
-		++rotationRoutine;
-	}
-}
-
-void MovementRoutineEngine::updateSprite(float dt)
-{
-	for (auto movementRoutine = this->m_Movement_Routines_S.begin(); movementRoutine != this->m_Movement_Routines_S.end();) {
-		if (!movementRoutine->second->m_isPaused) {
-			sf::Sprite& sprite = *movementRoutine->first;
-			movementInfo& movement = *movementRoutine->second->getCurrentMovement();
-
-			movement.m_currentTime += dt;
-
-			if (movement.isDone()) {
-				if (movement.m_currentTime - movement.m_delayBefore - dt < movement.m_motionDuration)
-					sprite.setPosition(movement.getEndingPos());
-
-				if (movement.m_repeat) {
-					if (movement.m_currentTime - movement.m_motionDuration - movement.m_delayBefore >= movement.m_delayAfter) {
-						sprite.setPosition(movement.getStartingPos());
-
-						movement.m_currentTime -= movement.m_totalDuration;
-					}
-				}
-				else if (movement.isFinished()) {
-					if (!movementRoutine->second->goToNextMovement(sprite)) {
-						movementRoutine->second = nullptr;
-						movementRoutine = m_Movement_Routines_S.erase(movementRoutine);
-						continue;
-					}
-				}
-			}
-			else {
-				if (movement.m_currentTime > movement.m_delayBefore) 
-					sprite.setPosition(movement.updatePosition());
-				else if (movement.m_currentTime - dt == 0.f)
-					sprite.setPosition(movement.getStartingPos());
-			}
-		}
-
-		++movementRoutine;
-	}
-
-	for (auto scalingRoutine = this->m_Scaling_Routines_S.begin(); scalingRoutine != this->m_Scaling_Routines_S.end();) {
-		if (!scalingRoutine->second->m_isPaused) {
-			sf::Sprite& sprite = *scalingRoutine->first;
-			scalingInfo& scaling = *scalingRoutine->second->getCurrentScaling();
-
-			scaling.m_currentTime += dt;
-
-			if (scaling.isDone()) {
-				if (scaling.m_currentTime - scaling.m_delayBefore - dt < scaling.m_motionDuration)
-					sprite.setScale(scaling.getEndingScale());
-
-				if (scaling.m_repeat) {
-					if (scaling.m_currentTime - scaling.m_motionDuration - scaling.m_delayBefore >= scaling.m_delayAfter) {
-						sprite.setScale(scaling.getStartingScale());
-
-						scaling.m_currentTime -= scaling.m_totalDuration;
-					}
-				}
-				else if (scaling.isFinished()) {
-					if (!scalingRoutine->second->goToNextScaling(sprite)) {
-						scalingRoutine->second = nullptr;
-						scalingRoutine = m_Scaling_Routines_S.erase(scalingRoutine);
-						continue;
-					}
-				}
-			}
-			else {
-				if (scaling.m_currentTime > scaling.m_delayBefore) 
-					sprite.setScale(scaling.updateScale());
-				else if (scaling.m_currentTime - dt == 0.f)
-					sprite.setScale(scaling.getStartingScale());
-			}
-		}
-
-		++scalingRoutine;
-	}
-
-	for (auto rotationRoutine = this->m_Rotation_Routines_S.begin(); rotationRoutine != this->m_Rotation_Routines_S.end();) {
-		if (!rotationRoutine->second->m_isPaused) {
-			sf::Sprite& sprite = *rotationRoutine->first;
-			rotationInfo& rotation = *rotationRoutine->second->getCurrentRotation();
-
-			rotation.m_currentTime += dt;
-
-			if (rotation.isDone()) {
-				if (rotation.m_currentTime - rotation.m_delayBefore - dt < rotation.m_motionDuration)
-					sprite.setRotation(rotation.getEndingRotation());
-
-				if (rotation.m_repeat) {
-					if (rotation.m_currentTime - rotation.m_motionDuration - rotation.m_delayBefore >= rotation.m_delayAfter) {
-						sprite.setRotation(rotation.getStartingRotation());
-
-						rotation.m_currentTime -= rotation.m_totalDuration;
-					}
-				}
-				else if (rotation.isFinished()) {
-					if (!rotationRoutine->second->goToNextRotation(sprite)) {
-						rotationRoutine->second = nullptr;
-						rotationRoutine = m_Rotation_Routines_S.erase(rotationRoutine);
-						continue;
-					}
-				}
-			}
-			else {
-				if (rotation.m_currentTime > rotation.m_delayBefore)
-					sprite.setRotation(rotation.updateRotation());
-				else if (rotation.m_currentTime - dt == 0.f)
-					sprite.setRotation(rotation.getStartingRotation());
-			}
-		}
-		
-		++rotationRoutine;
-	}
-}
-
 MovementRoutineEngine* MovementRoutineEngine::getInstance()
 {
 	if (!sInstance)
@@ -1617,50 +1268,50 @@ void MovementRoutineEngine::setMovementManager(MovementManager* _movementManager
 
 void MovementRoutineEngine::update(float dt)
 {
-	this->updateShape(dt);
-	this->updateVertexArray(dt);
-	this->updateSprite(dt);
+	for (auto routines = this->m_Routines.begin(); routines != this->m_Routines.end();) {
+
+		auto& movementRoutine = std::get<0>(*routines->second);
+		if (movementRoutine != nullptr)
+			if (!movementRoutine->update(*routines->first, dt))
+				movementRoutine = nullptr;
+
+		auto& scalingRoutine = std::get<1>(*routines->second);
+		if (scalingRoutine != nullptr)
+			if (!scalingRoutine->update(*routines->first, dt))
+				scalingRoutine = nullptr;
+
+		auto& rotationRoutine = std::get<2>(*routines->second);
+		if (rotationRoutine != nullptr)
+			if (!rotationRoutine->update(*routines->first, dt))
+				rotationRoutine = nullptr;
+
+		if (!movementRoutine && !scalingRoutine && !rotationRoutine) {
+			delete routines->second;
+			routines = m_Routines.erase(routines);
+		}
+		else
+			++routines;
+	}
 }
 
-const MovementRoutine* MovementRoutineEngine::addMovement(sf::Shape* _shape, MovementRoutine* _movementRoutine)
+const MovementRoutine* MovementRoutineEngine::addMovement(sf::Transformable* transformable, MovementRoutine* _movementRoutine)
 {
-	auto& movementRoutineMap = sInstance->m_Movement_Routines_Shape;
-	auto movementFound = movementRoutineMap.find(_shape);
+	auto& routinesMap = sInstance->m_Routines;
+	auto routinesFound = routinesMap.find(transformable);
 
-	if (movementFound != movementRoutineMap.end()) {
+	if (routinesFound != routinesMap.end() && std::get<0>(*routinesFound->second) != nullptr) {
 		printf("MovementRoutineEngine::addMovement: MovementRoutine already exists for this shape\n");
 		return nullptr;
 	}
-	
-	movementRoutineMap.insert(std::make_pair(_shape, _movementRoutine));
-	return _movementRoutine;
-}
-
-const MovementRoutine* MovementRoutineEngine::addMovement(VertexArray2* _vertexarray, MovementRoutine* _movementRoutine)
-{
-	auto& movementRoutineMap = sInstance->m_Movement_Routines_VA;
-	auto movementFound = movementRoutineMap.find(_vertexarray);
-
-	if (movementFound != movementRoutineMap.end()) {
-		printf("MovementRoutineEngine::addMovement: MovementRoutine already exists for this vertexarray\n");
-		return nullptr;
+	else if (routinesFound == routinesMap.end()) {
+		auto routinesTuplePtr = new std::tuple<MovementRoutine*, ScalingRoutine*, RotationRoutine*>(_movementRoutine, nullptr, nullptr);
+		routinesMap.insert(std::make_pair(transformable, routinesTuplePtr));
+	}
+	else {
+		auto& routinesTuplePtr = routinesFound->second;
+		std::get<0>(*routinesTuplePtr) = _movementRoutine;
 	}
 
-	movementRoutineMap.insert(std::make_pair(_vertexarray, _movementRoutine));
-	return _movementRoutine;
-}
-
-const MovementRoutine* MovementRoutineEngine::addMovement(sf::Sprite* _sprite, MovementRoutine* _movementRoutine)
-{
-	auto& movementRoutineMap = sInstance->m_Movement_Routines_S;
-	auto movementFound = movementRoutineMap.find(_sprite);
-
-	if (movementFound != movementRoutineMap.end()) {
-		printf("MovementRoutineEngine::addMovement: MovementRoutine already exists for this sprite\n");
-		return nullptr;
-	}
-
-	movementRoutineMap.insert(std::make_pair(_sprite, _movementRoutine));
 	return _movementRoutine;
 }
 
@@ -1668,126 +1319,72 @@ void MovementRoutineEngine::undoMovement()
 {
 }
 
-void MovementRoutineEngine::undoMovement(sf::Shape* _shape)
-{
-}
-
-void MovementRoutineEngine::undoMovement(VertexArray2* _vertexarray)
-{
-}
-
-void MovementRoutineEngine::undoMovement(sf::Sprite* _sprite)
+void MovementRoutineEngine::undoMovement(sf::Transformable* transformable)
 {
 }
 
 void MovementRoutineEngine::resetMovement()
 {
-	for (auto& movementRoutine: m_Movement_Routines_Shape) {
-		movementRoutine.second->reset();
-		movementRoutine.first->setPosition(movementRoutine.second->getCurrentMovement()->getStartingPos());
-	}
+	for (auto routines = this->m_Routines.begin(); routines != this->m_Routines.end();) {
+		auto& routinesTuple = routines->second;
+		auto& movement = std::get<0>(*routinesTuple);
 
-	for (auto& movementRoutine : m_Movement_Routines_VA) {
-		movementRoutine.second->reset();
-		movementRoutine.first->setPosition(movementRoutine.second->getCurrentMovement()->getStartingPos());
-	}
-
-	for (auto& movementRoutine : m_Movement_Routines_S) {
-		movementRoutine.second->reset();
-		movementRoutine.first->setPosition(movementRoutine.second->getCurrentMovement()->getStartingPos());
+		if (movement) {
+			movement->reset();
+			routines->first->setPosition(movement->getCurrentMovement()->getStartingPos());
+		}
 	}
 }
 
 void MovementRoutineEngine::stopMovement()
 {
-	for (auto routine = this->m_Movement_Routines_Shape.begin(); routine != this->m_Movement_Routines_Shape.end();) {
-		routine->second = nullptr;
-		routine = this->m_Movement_Routines_Shape.erase(routine);
-	}
+	for (auto routines = this->m_Routines.begin(); routines != this->m_Routines.end();) {
+		auto& routinesTuple = routines->second;
+		std::get<0>(*routinesTuple) = nullptr;
 
-	for (auto routine = this->m_Movement_Routines_VA.begin(); routine != this->m_Movement_Routines_VA.end();) {
-		routine->second = nullptr;
-		routine = this->m_Movement_Routines_VA.erase(routine);
-	}
-
-	for (auto routine = this->m_Movement_Routines_S.begin(); routine != this->m_Movement_Routines_S.end();) {
-		routine->second = nullptr;
-		routine = this->m_Movement_Routines_S.erase(routine);
+		if (std::get<1>(*routinesTuple) == nullptr && std::get<2>(*routinesTuple) == nullptr) {
+			delete routines->second;
+			routines = this->m_Routines.erase(routines);
+		}
+		else
+			++routines;
 	}
 }
 
-void MovementRoutineEngine::stopMovement(sf::Shape* _shape)
+void MovementRoutineEngine::stopMovement(sf::Transformable* transformable)
 {
-	auto& movementRoutineMap = sInstance->m_Movement_Routines_Shape;
-	auto movementRoutineFound = movementRoutineMap.find(_shape);
+	auto& routinesMap = sInstance->m_Routines;
+	auto routinesFound = routinesMap.find(transformable);
 
-	if (movementRoutineFound != movementRoutineMap.end()) {
-		movementRoutineFound->second = nullptr;
-		movementRoutineMap.erase(movementRoutineFound);
+	if (routinesFound != routinesMap.end()) {
+		auto& routinesTuple = routinesFound->second;
+		std::get<0>(*routinesTuple) = nullptr;
+
+		if (std::get<1>(*routinesTuple) == nullptr && std::get<2>(*routinesTuple) == nullptr) {
+			delete routinesFound->second;
+			routinesMap.erase(routinesFound);
+		}
 	}
 }
 
-void MovementRoutineEngine::stopMovement(VertexArray2* _vertexarray)
+const ScalingRoutine* MovementRoutineEngine::addScaling(sf::Transformable* transformable, ScalingRoutine* _scalingRoutine)
 {
-	auto& movementRoutineMap = sInstance->m_Movement_Routines_VA;
-	auto movementRoutineFound = movementRoutineMap.find(_vertexarray);
+	auto& routinesMap = sInstance->m_Routines;
+	auto routinesFound = routinesMap.find(transformable);
 
-	if (movementRoutineFound != movementRoutineMap.end()) {
-		movementRoutineFound->second = nullptr;
-		movementRoutineMap.erase(movementRoutineFound);
-	}
-}
-
-void MovementRoutineEngine::stopMovement(sf::Sprite* _sprite)
-{
-	auto& movementRoutineMap = sInstance->m_Movement_Routines_S;
-	auto movementRoutineFound = movementRoutineMap.find(_sprite);
-
-	if (movementRoutineFound != movementRoutineMap.end()) {
-		movementRoutineFound->second = nullptr;
-		movementRoutineMap.erase(movementRoutineFound);
-	}
-}
-
-const ScalingRoutine* MovementRoutineEngine::addScaling(sf::Shape* _shape, ScalingRoutine* _scalingRoutine)
-{
-	auto& scalingRoutineMap = sInstance->m_Scaling_Routines_Shape;
-	auto scalingFound = scalingRoutineMap.find(_shape);
-
-	if (scalingFound != scalingRoutineMap.end()) {
+	if (routinesFound != routinesMap.end() && std::get<1>(*routinesFound->second) != nullptr) {
 		printf("MovementRoutineEngine::addScaling: ScalingRoutine already exists for this shape\n");
 		return nullptr;
 	}
-
-	scalingRoutineMap.insert(std::make_pair(_shape, _scalingRoutine));
-	return _scalingRoutine;
-}
-
-const ScalingRoutine* MovementRoutineEngine::addScaling(VertexArray2* _vertexarray, ScalingRoutine* _scalingRoutine)
-{
-	auto& scalingRoutineMap = sInstance->m_Scaling_Routines_VA;
-	auto scalingFound = scalingRoutineMap.find(_vertexarray);
-
-	if (scalingFound != scalingRoutineMap.end()) {
-		printf("MovementRoutineEngine::addScaling: ScalingRoutine already exists for this vertexarray\n");
-		return nullptr;
+	else if (routinesFound == routinesMap.end()) {
+		auto routinesTuplePtr = new std::tuple<MovementRoutine*, ScalingRoutine*, RotationRoutine*>(nullptr, _scalingRoutine, nullptr);
+		routinesMap.insert(std::make_pair(transformable, routinesTuplePtr));
+	}
+	else {
+		auto& routinesTuplePtr = routinesFound->second;
+		std::get<1>(*routinesTuplePtr) = _scalingRoutine;
 	}
 
-	scalingRoutineMap.insert(std::make_pair(_vertexarray, _scalingRoutine));
-	return _scalingRoutine;
-}
-
-const ScalingRoutine* MovementRoutineEngine::addScaling(sf::Sprite* _sprite, ScalingRoutine* _scalingRoutine)
-{
-	auto& scalingRoutineMap = sInstance->m_Scaling_Routines_S;
-	auto scalingFound = scalingRoutineMap.find(_sprite);
-
-	if (scalingFound != scalingRoutineMap.end()) {
-		printf("MovementRoutineEngine::addScaling: ScalingRoutine already exists for this sprite\n");
-		return nullptr;
-	}
-
-	scalingRoutineMap.insert(std::make_pair(_sprite, _scalingRoutine));
 	return _scalingRoutine;
 }
 
@@ -1795,126 +1392,72 @@ void MovementRoutineEngine::undoScaling()
 {
 }
 
-void MovementRoutineEngine::undoScaling(sf::Shape* _shape)
-{
-}
-
-void MovementRoutineEngine::undoScaling(VertexArray2* _vertexarray)
-{
-}
-
-void MovementRoutineEngine::undoScaling(sf::Sprite* _sprite)
+void MovementRoutineEngine::undoScaling(sf::Transformable* transformable)
 {
 }
 
 void MovementRoutineEngine::resetScaling()
 {
-	for (auto& scalingRoutine : m_Scaling_Routines_Shape) {
-		scalingRoutine.second->reset();
-		scalingRoutine.first->setScale(scalingRoutine.second->getCurrentScaling()->getStartingScale());
-	}
+	for (auto routines = this->m_Routines.begin(); routines != this->m_Routines.end();) {
+		auto& routinesTuple = routines->second;
+		auto& scaling = std::get<1>(*routinesTuple);
 
-	for (auto& scalingRoutine : m_Scaling_Routines_VA) {
-		scalingRoutine.second->reset();
-		scalingRoutine.first->setScale(scalingRoutine.second->getCurrentScaling()->getStartingScale());
-	}
-
-	for (auto& scalingRoutine : m_Scaling_Routines_S) {
-		scalingRoutine.second->reset();
-		scalingRoutine.first->setScale(scalingRoutine.second->getCurrentScaling()->getStartingScale());
+		if (scaling) {
+			scaling->reset();
+			routines->first->setScale(scaling->getCurrentScaling()->getStartingScale());
+		}
 	}
 }
 
 void MovementRoutineEngine::stopScaling()
 {
-	for (auto routine = this->m_Scaling_Routines_Shape.begin(); routine != this->m_Scaling_Routines_Shape.end();) {
-		routine->second = nullptr;
-		routine = this->m_Scaling_Routines_Shape.erase(routine);
-	}
+	for (auto routines = this->m_Routines.begin(); routines != this->m_Routines.end();) {
+		auto& routinesTuple = routines->second;
+		std::get<1>(*routinesTuple) = nullptr;
 
-	for (auto routine = this->m_Scaling_Routines_VA.begin(); routine != this->m_Scaling_Routines_VA.end();) {
-		routine->second = nullptr;
-		routine = this->m_Scaling_Routines_VA.erase(routine);
-	}
-
-	for (auto routine = this->m_Scaling_Routines_S.begin(); routine != this->m_Scaling_Routines_S.end();) {
-		routine->second = nullptr;
-		routine = this->m_Scaling_Routines_S.erase(routine);
+		if (std::get<0>(*routinesTuple) == nullptr && std::get<2>(*routinesTuple) == nullptr) {
+			delete routines->second;
+			routines = this->m_Routines.erase(routines);
+		}
+		else
+			++routines;
 	}
 }
 
-void MovementRoutineEngine::stopScaling(sf::Shape* _shape)
+void MovementRoutineEngine::stopScaling(sf::Transformable* transformable)
 {
-	auto& scalingRoutineMap = sInstance->m_Scaling_Routines_Shape;
-	auto scalingRoutineFound = scalingRoutineMap.find(_shape);
+	auto& routinesMap = sInstance->m_Routines;
+	auto routinesFound = routinesMap.find(transformable);
 
-	if (scalingRoutineFound != scalingRoutineMap.end()) {
-		scalingRoutineFound->second = nullptr;
-		scalingRoutineMap.erase(scalingRoutineFound);
+	if (routinesFound != routinesMap.end()) {
+		auto& routinesTuple = routinesFound->second;
+		std::get<1>(*routinesTuple) = nullptr;
+
+		if (std::get<0>(*routinesTuple) == nullptr && std::get<2>(*routinesTuple) == nullptr) {
+			delete routinesFound->second;
+			routinesMap.erase(routinesFound);
+		}
 	}
 }
 
-void MovementRoutineEngine::stopScaling(VertexArray2* _vertexarray)
+const RotationRoutine* MovementRoutineEngine::addRotation(sf::Transformable* transformable, RotationRoutine* _rotationRoutine)
 {
-	auto& scalingRoutineMap = sInstance->m_Scaling_Routines_VA;
-	auto scalingRoutineFound = scalingRoutineMap.find(_vertexarray);
+	auto& routinesMap = sInstance->m_Routines;
+	auto routinesFound = routinesMap.find(transformable);
 
-	if (scalingRoutineFound != scalingRoutineMap.end()) {
-		scalingRoutineFound->second = nullptr;
-		scalingRoutineMap.erase(scalingRoutineFound);
-	}
-}
-
-void MovementRoutineEngine::stopScaling(sf::Sprite* _sprite)
-{
-	auto& scalingRoutineMap = sInstance->m_Scaling_Routines_S;
-	auto scalingRoutineFound = scalingRoutineMap.find(_sprite);
-
-	if (scalingRoutineFound != scalingRoutineMap.end()) {
-		scalingRoutineFound->second = nullptr;
-		scalingRoutineMap.erase(scalingRoutineFound);
-	}
-}
-
-const RotationRoutine* MovementRoutineEngine::addRotation(sf::Shape* _shape, RotationRoutine* _rotationRoutine)
-{
-	auto& rotationRoutineMap = sInstance->m_Rotation_Routines_Shape;
-	auto rotationFound = rotationRoutineMap.find(_shape);
-
-	if (rotationFound != rotationRoutineMap.end()) {
-		printf("RotationRoutineEngine::addRotation: RotationRoutine already exists for this shape\n");
+	if (routinesFound != routinesMap.end() && std::get<2>(*routinesFound->second) != nullptr) {
+		printf("MovementRoutineEngine::addRotation: RotationRoutine already exists for this shape\n");
 		return nullptr;
 	}
-
-	rotationRoutineMap.insert(std::make_pair(_shape, _rotationRoutine));
-	return _rotationRoutine;
-}
-
-const RotationRoutine* MovementRoutineEngine::addRotation(VertexArray2* _vertexarray, RotationRoutine* _rotationRoutine)
-{
-	auto& rotationRoutineMap = sInstance->m_Rotation_Routines_VA;
-	auto rotationFound = rotationRoutineMap.find(_vertexarray);
-
-	if (rotationFound != rotationRoutineMap.end()) {
-		printf("RotationRoutineEngine::addRotation: RotationRoutine already exists for this shape\n");
-		return nullptr;
+	else if (routinesFound == routinesMap.end()) {
+		auto routinesTuplePtr = new std::tuple<MovementRoutine*, ScalingRoutine*, RotationRoutine*>(nullptr, nullptr, _rotationRoutine);
+		routinesMap.insert(std::make_pair(transformable, routinesTuplePtr));
+	}
+	else {
+		auto& routinesTuplePtr = routinesFound->second;
+		std::get<2>(*routinesTuplePtr) = _rotationRoutine;
 	}
 
-	rotationRoutineMap.insert(std::make_pair(_vertexarray, _rotationRoutine));
-	return _rotationRoutine;
-}
-
-const RotationRoutine* MovementRoutineEngine::addRotation(sf::Sprite* _sprite, RotationRoutine* _rotationRoutine)
-{
-	auto& rotationRoutineMap = sInstance->m_Rotation_Routines_S;
-	auto rotationFound = rotationRoutineMap.find(_sprite);
-
-	if (rotationFound != rotationRoutineMap.end()) {
-		printf("RotationRoutineEngine::addRotation: RotationRoutine already exists for this shape\n");
-		return nullptr;
-	}
-
-	rotationRoutineMap.insert(std::make_pair(_sprite, _rotationRoutine));
 	return _rotationRoutine;
 }
 
@@ -1922,128 +1465,62 @@ void MovementRoutineEngine::undoRotation()
 {
 }
 
-void MovementRoutineEngine::undoRotation(sf::Shape* _shape)
-{
-}
-
-void MovementRoutineEngine::undoRotation(VertexArray2* _vertexarray)
-{
-}
-
-void MovementRoutineEngine::undoRotation(sf::Sprite* _sprite)
+void MovementRoutineEngine::undoRotation(sf::Transformable* transformable)
 {
 }
 
 void MovementRoutineEngine::resetRotation()
 {
-	for (auto& rotationRoutine : m_Rotation_Routines_Shape) {
-		rotationRoutine.second->reset();
-		rotationRoutine.first->setRotation(rotationRoutine.second->getCurrentRotation()->getStartingRotation());
-	}
+	for (auto routines = this->m_Routines.begin(); routines != this->m_Routines.end();) {
+		auto& routinesTuple = routines->second;
+		auto& rotation = std::get<2>(*routinesTuple);
 
-	for (auto& rotationRoutine : m_Rotation_Routines_VA) {
-		rotationRoutine.second->reset();
-		rotationRoutine.first->setRotation(rotationRoutine.second->getCurrentRotation()->getStartingRotation());
-	}
-
-	for (auto& rotationRoutine : m_Rotation_Routines_S) {
-		rotationRoutine.second->reset();
-		rotationRoutine.first->setRotation(rotationRoutine.second->getCurrentRotation()->getStartingRotation());
+		if (rotation) {
+			rotation->reset();
+			routines->first->setRotation(rotation->getCurrentRotation()->getStartingRotation());
+		}
 	}
 }
 
 void MovementRoutineEngine::stopRotation()
 {
-	for (auto routine = this->m_Rotation_Routines_Shape.begin(); routine != this->m_Rotation_Routines_Shape.end();) {
-		routine->second = nullptr;
-		routine = this->m_Rotation_Routines_Shape.erase(routine);
-	}
+	for (auto routines = this->m_Routines.begin(); routines != this->m_Routines.end();) {
+		auto& routinesTuple = routines->second;
+		std::get<2>(*routinesTuple) = nullptr;
 
-	for (auto routine = this->m_Rotation_Routines_VA.begin(); routine != this->m_Rotation_Routines_VA.end();) {
-		routine->second = nullptr;
-		routine = this->m_Rotation_Routines_VA.erase(routine);
-	}
-
-	for (auto routine = this->m_Rotation_Routines_S.begin(); routine != this->m_Rotation_Routines_S.end();) {
-		routine->second = nullptr;
-		routine = this->m_Rotation_Routines_S.erase(routine);
+		if (std::get<0>(*routinesTuple) == nullptr && std::get<1>(*routinesTuple) == nullptr) {
+			delete routines->second;
+			routines = this->m_Routines.erase(routines);
+		}
 	}
 }
 
-void MovementRoutineEngine::stopRotation(sf::Shape* _shape)
+void MovementRoutineEngine::stopRotation(sf::Transformable* transformable)
 {
-	auto& rotationRoutineMap = sInstance->m_Rotation_Routines_Shape;
-	auto rotationRoutineFound = rotationRoutineMap.find(_shape);
+	auto& routinesMap = sInstance->m_Routines;
+	auto routinesFound = routinesMap.find(transformable);
 
-	if (rotationRoutineFound != rotationRoutineMap.end()) {
-		rotationRoutineFound->second = nullptr;
-		rotationRoutineMap.erase(rotationRoutineFound);
+	if (routinesFound != routinesMap.end()) {
+		auto& routinesTuple = routinesFound->second;
+		std::get<2>(*routinesTuple) = nullptr;
+
+		if (std::get<0>(*routinesTuple) == nullptr && std::get<1>(*routinesTuple) == nullptr) {
+			delete routinesFound->second;
+			routinesMap.erase(routinesFound);
+		}
 	}
 }
-
-void MovementRoutineEngine::stopRotation(VertexArray2* _vertexarray)
-{
-	auto& rotationRoutineMap = sInstance->m_Rotation_Routines_VA;
-	auto rotationRoutineFound = rotationRoutineMap.find(_vertexarray);
-
-	if (rotationRoutineFound != rotationRoutineMap.end()) {
-		rotationRoutineFound->second = nullptr;
-		rotationRoutineMap.erase(rotationRoutineFound);
-	}
-}
-
-void MovementRoutineEngine::stopRotation(sf::Sprite* _sprite)
-{
-	auto& rotationRoutineMap = sInstance->m_Rotation_Routines_S;
-	auto rotationRoutineFound = rotationRoutineMap.find(_sprite);
-
-	if (rotationRoutineFound != rotationRoutineMap.end()) {
-		rotationRoutineFound->second = nullptr;
-		rotationRoutineMap.erase(rotationRoutineFound);
-	}
-}
-
-const bool MovementRoutineEngine::isMoving(sf::Shape* _shape)
+const bool MovementRoutineEngine::isMoving(sf::Transformable* transformable)
 {
 	return false;
 }
 
-const bool MovementRoutineEngine::isMoving(VertexArray2* _vertexarray)
+const bool MovementRoutineEngine::isScaling(sf::Transformable* transformable)
 {
 	return false;
 }
 
-const bool MovementRoutineEngine::isMoving(sf::Sprite* _sprite)
-{
-	return false;
-}
-
-const bool MovementRoutineEngine::isScaling(sf::Shape* _shape)
-{
-	return false;
-}
-
-const bool MovementRoutineEngine::isScaling(VertexArray2* _vertexarray)
-{
-	return false;
-}
-
-const bool MovementRoutineEngine::isScaling(sf::Sprite* _sprite)
-{
-	return false;
-}
-
-const bool MovementRoutineEngine::isRotating(sf::Shape* _shape)
-{
-	return false;
-}
-
-const bool MovementRoutineEngine::isRotating(VertexArray2* _vertexarray)
-{
-	return false;
-}
-
-const bool MovementRoutineEngine::isRotating(sf::Sprite* _sprite)
+const bool MovementRoutineEngine::isRotating(sf::Transformable* transformable)
 {
 	return false;
 }

@@ -58,6 +58,9 @@ public:
 	MovementRoutine(const MovementRoutine& obj);
 	~MovementRoutine();
 
+	// Update functions
+	const bool update(sf::Transformable& transformable, const float dt);
+
 	// Public functions
 	void addMovement(movementInfo* movement);
 	void removeMovement(movementInfo* movement);
@@ -79,9 +82,7 @@ public:
 
 	movementInfo* getCurrentMovement() const;
 
-	const bool goToNextMovement(const sf::Shape& shape);
-	const bool goToNextMovement(const sf::Sprite& sprite);
-	const bool goToNextMovement(VertexArray2& vertexArray);
+	const bool goToNextMovement(const sf::Transformable& transformable);
 
 	void setFunction(easeFunctions::Tmovement_function usedFunctionType);
 	void setFunction(easeFunctions::Tmovement_function usedFunctionType, const size_t movement_id);
@@ -110,6 +111,9 @@ public:
 	ScalingRoutine(const ScalingRoutine& obj);
 	~ScalingRoutine();
 
+	// Update functions
+	const bool update(sf::Transformable& transformable, const float dt);
+
 	// Public functions
 	void addScaling(scalingInfo* scaling);
 	void removeScaling(scalingInfo* scaling);
@@ -131,9 +135,7 @@ public:
 
 	scalingInfo* getCurrentScaling() const;
 
-	const bool goToNextScaling(const sf::Shape& shape);
-	const bool goToNextScaling(const sf::Sprite& sprite);
-	const bool goToNextScaling(VertexArray2& vertexArray);
+	const bool goToNextScaling(const sf::Transformable& transformable);
 
 	void setFunction(easeFunctions::Tmovement_function usedFunctionType);
 	void setFunction(easeFunctions::Tmovement_function usedFunctionType, const size_t scaling_id);
@@ -164,6 +166,9 @@ public:
 	RotationRoutine(const RotationRoutine& obj);
 	~RotationRoutine();
 
+	// Update functions
+	const bool update(sf::Transformable& transformable, const float dt);
+
 	// Public functions
 	void addRotation(rotationInfo* rotation);
 	void removeRotation(rotationInfo* rotation);
@@ -185,9 +190,7 @@ public:
 
 	rotationInfo* getCurrentRotation() const;
 
-	const bool goToNextRotation(const sf::Shape& shape);
-	const bool goToNextRotation(const sf::Sprite& sprite);
-	const bool goToNextRotation(VertexArray2& vertexArray);
+	const bool goToNextRotation(const sf::Transformable& transformable);
 
 	void setFunction(easeFunctions::Tmovement_function usedFunctionType);
 	void setFunction(easeFunctions::Tmovement_function usedFunctionType, const size_t rotation_id);

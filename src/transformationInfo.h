@@ -51,6 +51,7 @@ public:
 	bool operator==(const movementInfo& rhs) const;
 
 	// Update functions
+	const bool update(sf::Transformable& transformable, const float dt);
 	const sf::Vector2f updatePosition() const;
 
 	// Accessors
@@ -82,6 +83,7 @@ public:
 	void scale(const sf::Vector2f& scale);
 
 	// Update functions
+	const bool update(sf::Transformable& transformable, const float dt);
 	const sf::Vector2f updateScale() const;
 
 	// Accessors
@@ -110,6 +112,7 @@ public:
 	bool operator==(const rotationInfo& rhs) const;
 
 	// Update functions
+	const bool update(sf::Transformable& transformable, const float dt);
 	const float updateRotation() const;
 
 	// Accessors

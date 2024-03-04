@@ -32,9 +32,9 @@ MovementManager* MovementManager::getInstance()
 }
 
 // Update functions
-void MovementManager::update(const float dt)
+sf::Vector3i MovementManager::update(const float dt)
 {
-	this->movementRoutineEngine->update(dt);
+	return this->movementRoutineEngine->update(dt);
 }
 
 void MovementManager::setFunction(sf::Shape& _shape, easeFunctions::Tmovement_function usedFunctionType)

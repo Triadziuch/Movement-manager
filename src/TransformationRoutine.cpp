@@ -132,6 +132,17 @@ MovementRoutine::~MovementRoutine() {
 	m_routineMovements.clear();
 }
 
+// Update functions
+const bool MovementRoutine::update(sf::Transformable& transformable, const float dt)
+{
+	if (m_isPaused) return true;
+
+	if (!m_routineMovements[m_current]->update(transformable, dt) && !goToNextMovement(transformable))
+		return false;
+
+	return true;
+}
+
 // Public functions
 void MovementRoutine::addMovement(movementInfo* movement)
 {
@@ -260,55 +271,15 @@ movementInfo* MovementRoutine::getCurrentMovement() const
 	return m_current < m_count ? m_routineMovements[m_current] : nullptr;
 }
 
-const bool MovementRoutine::goToNextMovement(const sf::Shape& shape)
+const bool MovementRoutine::goToNextMovement(const sf::Transformable& transformable)
 {
 	if (m_current < m_count - 1) {
 		++m_current;
 		return true;
 	}
 	else {
-		if (m_adjustAllToCurrentTransform)		  { adjustAllToCurrent(shape.getPosition()); }
-		else if (m_adjustStartToCurrentTransform) { adjustStartToCurrent(shape.getPosition()); }
-		reset();
-
-		if (m_isLooping) {
-			m_isActive = true;
-			return true;
-		}
-
-		return false;
-	}
-}
-
-const bool MovementRoutine::goToNextMovement(const sf::Sprite& sprite)
-{
-	if (m_current < m_count - 1) {
-		++m_current;
-		return true;
-	}
-	else {
-		if (m_adjustAllToCurrentTransform)		  { adjustAllToCurrent(sprite.getPosition()); }
-		else if (m_adjustStartToCurrentTransform) { adjustStartToCurrent(sprite.getPosition()); }
-		reset();
-
-		if (m_isLooping) {
-			m_isActive = true;
-			return true;
-		}
-
-		return false;
-	}
-}
-
-const bool MovementRoutine::goToNextMovement(VertexArray2& vertexArray)
-{
-	if (m_current < m_count - 1) {
-		++m_current;
-		return true;
-	}
-	else {
-		if (m_adjustAllToCurrentTransform)		  { adjustAllToCurrent(vertexArray.getPosition()); }
-		else if (m_adjustStartToCurrentTransform) { adjustStartToCurrent(vertexArray.getPosition()); }
+		if (m_adjustAllToCurrentTransform)		  { adjustAllToCurrent(transformable.getPosition()); }
+		else if (m_adjustStartToCurrentTransform) { adjustStartToCurrent(transformable.getPosition()); }
 		reset();
 
 		if (m_isLooping) {
@@ -407,6 +378,17 @@ ScalingRoutine::~ScalingRoutine()
 	for (auto& scaling : m_routineScalings) 
 		delete scaling; 
 	m_routineScalings.clear();
+}
+
+// Update functions
+const bool ScalingRoutine::update(sf::Transformable& transformable, const float dt)
+{
+	if (m_isPaused) return true;
+
+	if (!m_routineScalings[m_current]->update(transformable, dt) && !goToNextScaling(transformable))
+		return false;
+
+	return true;
 }
 
 // Public functions
@@ -535,55 +517,15 @@ scalingInfo* ScalingRoutine::getCurrentScaling() const
 	return m_current < m_count ? m_routineScalings[m_current] : nullptr;
 }
 
-const bool ScalingRoutine::goToNextScaling(const sf::Shape& shape)
+const bool ScalingRoutine::goToNextScaling(const sf::Transformable& transformable)
 {
 	if (m_current < m_count - 1) {
 		++m_current;
 		return true;
 	}
 	else {
-		if (m_adjustAllToCurrentTransform)		  { adjustAllToCurrent(shape.getScale()); }
-		else if (m_adjustStartToCurrentTransform) { adjustStartToCurrent(shape.getScale()); }
-		reset();
-
-		if (m_isLooping) {
-			m_isActive = true;
-			return true;
-		}
-
-		return false;
-	}
-}
-
-const bool ScalingRoutine::goToNextScaling(const sf::Sprite& sprite)
-{
-	if (m_current < m_count - 1) {
-		++m_current;
-		return true;
-	}
-	else {
-		if (m_adjustAllToCurrentTransform)		  { adjustAllToCurrent(sprite.getScale()); }
-		else if (m_adjustStartToCurrentTransform) { adjustStartToCurrent(sprite.getScale()); }
-		reset();
-
-		if (m_isLooping) {
-			m_isActive = true;
-			return true;
-		}
-
-		return false;
-	}
-}
-
-const bool ScalingRoutine::goToNextScaling(VertexArray2& vertexArray)
-{
-	if (m_current < m_count - 1) {
-		++m_current;
-		return true;
-	}
-	else {
-		if (m_adjustAllToCurrentTransform)		  { adjustAllToCurrent(vertexArray.getScale()); }
-		else if (m_adjustStartToCurrentTransform) { adjustStartToCurrent(vertexArray.getScale()); }
+		if (m_adjustAllToCurrentTransform)		  { adjustAllToCurrent(transformable.getScale()); }
+		else if (m_adjustStartToCurrentTransform) { adjustStartToCurrent(transformable.getScale()); }
 		reset();
 
 		if (m_isLooping) {
@@ -725,6 +667,17 @@ RotationRoutine::~RotationRoutine()
 	m_routineRotations.clear();
 }
 
+// Update functions
+const bool RotationRoutine::update(sf::Transformable& transformable, const float dt)
+{
+	if (m_isPaused) return true;
+
+	if (!m_routineRotations[m_current]->update(transformable, dt) && !goToNextRotation(transformable))
+		return false;
+
+	return true;
+}
+
 // Public functions
 void RotationRoutine::addRotation(rotationInfo* rotation)
 {
@@ -851,7 +804,7 @@ rotationInfo* RotationRoutine::getCurrentRotation() const
 	return m_current < m_count ? m_routineRotations[m_current] : nullptr;
 }
 
-const bool RotationRoutine::goToNextRotation(const sf::Shape& shape)
+const bool RotationRoutine::goToNextRotation(const sf::Transformable& transformable)
 {
 	if (m_current < m_count - 1) {
 		was_last_clockwise = m_routineRotations[m_current]->getClockwise();
@@ -860,52 +813,8 @@ const bool RotationRoutine::goToNextRotation(const sf::Shape& shape)
 	}
 	else {
 		was_last_clockwise = m_routineRotations[m_current]->getClockwise();
-		if (m_adjustAllToCurrentTransform)		  { adjustAllToCurrent(shape.getRotation()); }
-		else if (m_adjustStartToCurrentTransform) { adjustStartToCurrent(shape.getRotation()); }
-		reset();
-
-		if (m_isLooping) {
-			m_isActive = true;
-			return true;
-		}
-
-		return false;
-	}
-}
-
-const bool RotationRoutine::goToNextRotation(const sf::Sprite& sprite)
-{
-	if (m_current < m_count - 1) {
-		was_last_clockwise = m_routineRotations[m_current]->getClockwise();
-		++m_current;
-		return true;
-	}
-	else {
-		was_last_clockwise = m_routineRotations[m_current]->getClockwise();
-		if (m_adjustAllToCurrentTransform)		  { adjustAllToCurrent(sprite.getRotation()); }
-		else if (m_adjustStartToCurrentTransform) { adjustStartToCurrent(sprite.getRotation()); }
-		reset();
-
-		if (m_isLooping) {
-			m_isActive = true;
-			return true;
-		}
-
-		return false;
-	}
-}
-
-const bool RotationRoutine::goToNextRotation(VertexArray2& vertexArray)
-{
-	if (m_current < m_count - 1) {
-		was_last_clockwise = m_routineRotations[m_current]->getClockwise();
-		++m_current;
-		return true;
-	}
-	else {
-		was_last_clockwise = m_routineRotations[m_current]->getClockwise();
-		if (m_adjustAllToCurrentTransform)		  { adjustAllToCurrent(vertexArray.getRotation()); }
-		else if (m_adjustStartToCurrentTransform) { adjustStartToCurrent(vertexArray.getRotation()); }
+		if (m_adjustAllToCurrentTransform)		  { adjustAllToCurrent(transformable.getRotation()); }
+		else if (m_adjustStartToCurrentTransform) { adjustStartToCurrent(transformable.getRotation()); }
 		reset();
 
 		if (m_isLooping) {

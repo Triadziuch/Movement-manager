@@ -59,7 +59,7 @@ void transformationInfo::reset()
 	m_currentTime = 0.f;
 }
 
-const bool transformationInfo::isDone() const
+inline const bool transformationInfo::isDone() const
 {
 	return (m_currentTime - m_delayBefore >= m_motionDuration);
 }
@@ -106,6 +106,26 @@ bool movementInfo::operator==(const movementInfo& rhs) const {
 	return	m_startingPos == rhs.m_startingPos &&
 		m_endingPos == rhs.m_endingPos &&
 		static_cast<const transformationInfo&>(*this) == static_cast<const transformationInfo&>(rhs);
+}
+
+const bool movementInfo::update(sf::Transformable& transformable, const float dt)
+{
+	m_currentTime += dt;
+
+	if (isDone()) {
+		if (m_currentTime - m_delayBefore - dt < m_motionDuration)
+			transformable.setPosition(m_endingPos);
+		else if (isFinished())
+			return false;
+	}
+	else {
+		if (m_currentTime > m_delayBefore) 
+			transformable.setPosition(updatePosition());
+		else if (m_currentTime == dt)
+			transformable.setPosition(m_startingPos);
+	}
+
+	return true;
 }
 
 // Update functions
@@ -173,6 +193,26 @@ void scalingInfo::scale(const sf::Vector2f& scale)
 	m_startingScale.y *= scale.y;
 	m_endingScale.x *= scale.x;
 	m_endingScale.y *= scale.y;
+}
+
+const bool scalingInfo::update(sf::Transformable& transformable, const float dt)
+{
+	m_currentTime += dt;
+
+	if (isDone()) {
+		if (m_currentTime - m_delayBefore - dt < m_motionDuration)
+			transformable.setScale(m_endingScale);
+		else if (isFinished())
+			return false;
+	}
+	else {
+		if (m_currentTime > m_delayBefore)
+			transformable.setScale(updateScale());
+		else if (m_currentTime == dt)
+			transformable.setScale(m_startingScale);
+	}
+
+	return true;
 }
 
 const sf::Vector2f scalingInfo::updateScale() const
@@ -249,6 +289,26 @@ bool rotationInfo::operator==(const rotationInfo& rhs) const
 		m_endingRotation == rhs.m_endingRotation &&
 		m_clockwise == rhs.m_clockwise &&
 		static_cast<const transformationInfo&>(*this) == static_cast<const transformationInfo&>(rhs);
+}
+
+const bool rotationInfo::update(sf::Transformable& transformable, const float dt)
+{
+	m_currentTime += dt;
+
+	if (isDone()) {
+		if (m_currentTime - m_delayBefore - dt < m_motionDuration)
+			transformable.setRotation(m_endingRotation);
+		else if (isFinished())
+			return false;
+	}
+	else {
+		if (m_currentTime > m_delayBefore)
+			transformable.setRotation(updateRotation());
+		else if (m_currentTime == dt)
+			transformable.setRotation(m_startingRotation);
+	}
+
+	return true;
 }
 
 // Update functions

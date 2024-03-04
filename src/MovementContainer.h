@@ -3,6 +3,18 @@
 #include "transformationInfo.h"
 #include <map>
 #include <assert.h>
+#include <chrono>
+
+#include "Instrumentor.h"
+#define PROFILING 1
+#if PROFILING
+#define PROFILE_SCOPE(name) InstrumentationTimer timer##__LINE__(name)
+#define PROFILE_FUNCTION() PROFILE_SCOPE(__FUNCSIG__)
+#else
+#define PROFILE_SCOPE(name)
+#endif
+
+using namespace std::chrono;
 
 class MovementManager;
 class TransformationRoutine;
@@ -149,26 +161,12 @@ public:
 
 class MovementRoutineEngine : protected MovementContainerBase {
 private:
-	std::map<sf::Shape*, MovementRoutine*>				m_Movement_Routines_Shape;
-	std::map<VertexArray2*, MovementRoutine*>			m_Movement_Routines_VA;
-	std::map<sf::Sprite*, MovementRoutine*>				m_Movement_Routines_S;
-
-	std::map<sf::Shape*, ScalingRoutine*>				m_Scaling_Routines_Shape;
-	std::map<VertexArray2*, ScalingRoutine*>			m_Scaling_Routines_VA;
-	std::map<sf::Sprite*, ScalingRoutine*>				m_Scaling_Routines_S;
-
-	std::map<sf::Shape*, RotationRoutine*>				m_Rotation_Routines_Shape;
-	std::map<VertexArray2*, RotationRoutine*>			m_Rotation_Routines_VA;
-	std::map<sf::Sprite*, RotationRoutine*>				m_Rotation_Routines_S;
+	std::map<sf::Transformable*, std::tuple<MovementRoutine*, ScalingRoutine*, RotationRoutine*>*>	m_Routines;
 
 	MovementManager* movementManager{};
 
 	// Singleton instance
 	static MovementRoutineEngine* sInstance;
-
-	void updateSprite(float dt);
-	void updateVertexArray(float dt);
-	void updateShape(float dt);
 
 	// Constructors / Destructors
 	MovementRoutineEngine() {};
@@ -187,70 +185,40 @@ public:
 	// Public functions
 
 	// Movement functions
-	const MovementRoutine* addMovement(sf::Shape* _shape, MovementRoutine* _movementRoutine);
-	const MovementRoutine* addMovement(VertexArray2* _vertexarray, MovementRoutine* _movementRoutine);
-	const MovementRoutine* addMovement(sf::Sprite* _sprite, MovementRoutine* _movementRoutine);
+	const MovementRoutine* addMovement(sf::Transformable* transformable, MovementRoutine* _movementRoutine);
 
 	void undoMovement();
-	void undoMovement(sf::Shape* _shape);
-	void undoMovement(VertexArray2* _vertexarray);
-	void undoMovement(sf::Sprite* _sprite);
+	void undoMovement(sf::Transformable* transformable);
 
 	void resetMovement();
 
 	void stopMovement();
-	void stopMovement(sf::Shape* _shape);
-	void stopMovement(VertexArray2* _vertexarray);
-	void stopMovement(sf::Sprite* _sprite);
+	void stopMovement(sf::Transformable* transformable);
 
 	// Scaling functions
-	const ScalingRoutine* addScaling(sf::Shape* _shape, ScalingRoutine* _scalingRoutine);
-	const ScalingRoutine* addScaling(VertexArray2* _vertexarray, ScalingRoutine* _scalingRoutine);
-	const ScalingRoutine* addScaling(sf::Sprite* _sprite, ScalingRoutine* _scalingRoutine);
+	const ScalingRoutine* addScaling(sf::Transformable* transformable, ScalingRoutine* _scalingRoutine);
 
 	void undoScaling();
-	void undoScaling(sf::Shape* _shape);
-	void undoScaling(VertexArray2* _vertexarray);
-	void undoScaling(sf::Sprite* _sprite);
+	void undoScaling(sf::Transformable* transformable);
 
 	void resetScaling();
 
 	void stopScaling();
-	void stopScaling(sf::Shape* _shape);
-	void stopScaling(VertexArray2* _vertexarray);
-	void stopScaling(sf::Sprite* _sprite);
+	void stopScaling(sf::Transformable* transformable);
 
 	// Rotation functions
-	const RotationRoutine* addRotation(sf::Shape* _shape, RotationRoutine* _rotationRoutine);
-	const RotationRoutine* addRotation(VertexArray2* _vertexarray, RotationRoutine* _rotationRoutine);
-	const RotationRoutine* addRotation(sf::Sprite* _sprite, RotationRoutine* _rotationRoutine);
+	const RotationRoutine* addRotation(sf::Transformable* transformable, RotationRoutine* _rotationRoutine);
 
 	void undoRotation();
-	void undoRotation(sf::Shape* _shape);
-	void undoRotation(VertexArray2* _vertexarray);
-	void undoRotation(sf::Sprite* _sprite);
+	void undoRotation(sf::Transformable* transformable);
 
 	void resetRotation();
 
 	void stopRotation();
-	void stopRotation(sf::Shape* _shape);
-	void stopRotation(VertexArray2* _vertexarray);
-	void stopRotation(sf::Sprite* _sprite);
+	void stopRotation(sf::Transformable* transformable);
 
 	// Accessors / Mutators
-	int getMovementCount() { return m_Movement_Routines_Shape.size() + m_Movement_Routines_VA.size() + m_Movement_Routines_S.size(); }
-	int getScalingCount() { return m_Scaling_Routines_Shape.size() + m_Scaling_Routines_VA.size() + m_Scaling_Routines_S.size(); }
-	int getRotationCount() { return m_Rotation_Routines_Shape.size() + m_Rotation_Routines_VA.size() + m_Rotation_Routines_S.size(); }
-
-	const bool isMoving(sf::Shape* _shape);
-	const bool isMoving(VertexArray2* _vertexarray);
-	const bool isMoving(sf::Sprite* _sprite);
-
-	const bool isScaling(sf::Shape* _shape);
-	const bool isScaling(VertexArray2* _vertexarray);
-	const bool isScaling(sf::Sprite* _sprite);
-
-	const bool isRotating(sf::Shape* _shape);
-	const bool isRotating(VertexArray2* _vertexarray);
-	const bool isRotating(sf::Sprite* _sprite);
+	const bool isMoving(sf::Transformable* transformable);
+	const bool isScaling(sf::Transformable* transformable);
+	const bool isRotating(sf::Transformable* transformable);
 };

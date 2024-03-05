@@ -6,6 +6,7 @@
 #include <random>
 #include "VertexArray2.h"
 #include <chrono>
+#include "Demos/easeFunctionsDemo1.h"
 
 using namespace std::chrono;
 
@@ -21,210 +22,6 @@ sf::Vector2f getCentroid(const sf::VertexArray& vertexArray) {
 	return centroid;
 }
 
-void demo1(sf::RenderWindow& window) {
-	MovementManager* movementManager = MovementManager::getInstance();
-
-	// Config
-	bool running = true;
-
-	const int	rows = 3;
-	const int	easeTypeSize = 30;
-	int			current_ease_type = 0;
-	float		shape_delay_before = 0.5f;
-	float		shape_delay_after = 0.5f;
-
-	float animation_time = 3.f;
-
-	// Start position initialization
-	sf::Vector2f start_pos[rows];
-	for (int i = 0; i < rows; i++)
-		start_pos[i] = sf::Vector2f(500.f, static_cast<float>(window.getSize().y) / static_cast<float>(rows) * static_cast<float>(i) + window.getSize().y / static_cast<float>(rows) / 2.f);
-
-	// End position initialization
-	sf::Vector2f end_pos[rows];
-	for (int i = 0; i < rows; i++)
-		end_pos[i] = sf::Vector2f(static_cast<float>(window.getSize().x) - 400.f, static_cast<float>(window.getSize().y) / static_cast<float>(rows) * static_cast<float>(i) + window.getSize().y / static_cast<float>(rows) / 2.f);
-
-	// Shapes initialiaztion
-	sf::RectangleShape shapes[rows];
-	for (int i = 0; i < rows; i++) {
-		shapes[i].setSize(sf::Vector2f(100.f, 100.f));
-		shapes[i].setFillColor(sf::Color::Blue);
-		shapes[i].setOrigin(shapes[i].getSize().x / 2.f, shapes[i].getSize().y / 2.f);
-		shapes[i].setPosition(start_pos[i]);
-	}
-
-	// Graph initialization
-	Graph graphs[rows];
-	for (int i = 0; i < rows; i++) {
-		graphs[i].setPrecision(200);
-		graphs[i].setSize(200.f, 200.f);
-		graphs[i].setPosition(sf::Vector2f(end_pos[i].x + 150.f, end_pos[i].y + graphs[i].getSize().y / 2.f));
-		graphs[i].setFunction(easeFunctions::getFunction(current_ease_type + i));
-	}
-
-	// GUI Initialization
-	sf::Font font;
-	if (!font.loadFromFile("Fonts/Helvetica Regular.otf"))
-		std::cout << "ERROR: Font not found!\n";
-
-	sf::Text text[rows];
-	for (int i = 0; i < rows; i++) {
-		text[i].setFont(font);
-		text[i].setCharacterSize(30);
-		text[i].setFillColor(sf::Color::White);
-		text[i].setString(easeFunctions::getFunctionName(current_ease_type + i));
-		text[i].setStyle(sf::Text::Bold);
-		text[i].setPosition(50.f, static_cast<float>(window.getSize().y) / static_cast<float>(rows) * static_cast<float>(i) + window.getSize().y / static_cast<float>(rows) / 2.f - text[i].getGlobalBounds().height / 2.f);
-	}
-
-	// Arrows initialization
-	VertexArray2 up_arrow(sf::LineStrip, 3u), down_arrow(sf::LineStrip, 3u);
-	up_arrow[0].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f - 40.f, 60.f);
-	up_arrow[1].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f, 30.f);
-	up_arrow[2].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f + 40.f, 60.f);
-
-	down_arrow[0].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f - 40.f, static_cast<float>(window.getSize().y) - 60.f);
-	down_arrow[1].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f, static_cast<float>(window.getSize().y) - 30.f);
-	down_arrow[2].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f + 40.f, static_cast<float>(window.getSize().y) - 60.f);
-
-	float arrow_movement_time = 0.5f;
-	float arrow_scaling_time = 0.5f;
-	float arrow_rotation_time = 0.5f;
-	float arrow_wait_time = 0.25f;
-
-	// Movement
-	auto movementRoutine = movementManager->createMovementRoutine("UP_ARROW_MOVEMENT");
-	movementRoutine->addMovement(new movementInfo(sf::Vector2f(960.f, 50.f), sf::Vector2f(960.f, 30.f), arrow_movement_time, easeFunctions::IN_OUT_SINE, false, arrow_wait_time, arrow_wait_time));
-	movementRoutine->addMovement(new movementInfo(sf::Vector2f(960.f, 30.f), sf::Vector2f(960.f, 50.f), arrow_movement_time, easeFunctions::IN_OUT_SINE, false, arrow_wait_time, arrow_wait_time));
-	movementRoutine->setLooping(true);
-	movementManager->linkMovementRoutine(&up_arrow, movementRoutine);
-	movementManager->startMovementRoutine(up_arrow, "UP_ARROW_MOVEMENT");
-
-	movementRoutine = movementManager->createMovementRoutine("DOWN_ARROW_MOVEMENT");
-	movementRoutine->addMovement(new movementInfo(sf::Vector2f(960.f, 1030.f), sf::Vector2f(960.f, 1050.f), arrow_movement_time, easeFunctions::IN_OUT_SINE, false, arrow_wait_time, arrow_wait_time));
-	movementRoutine->addMovement(new movementInfo(sf::Vector2f(960.f, 1050.f), sf::Vector2f(960.f, 1030.f), arrow_movement_time, easeFunctions::IN_OUT_SINE, false, arrow_wait_time, arrow_wait_time));
-	movementRoutine->setLooping(true);
-	movementManager->linkMovementRoutine(&down_arrow, movementRoutine);
-	movementManager->startMovementRoutine(down_arrow, "DOWN_ARROW_MOVEMENT");
-
-	// Scaling
-	auto scalingRoutine = movementManager->createScalingRoutine("UP_ARROW_SCALING");
-	scalingRoutine->addScaling(new scalingInfo(sf::Vector2f(1.f, 1.f), sf::Vector2f(1.2f, 1.2f), arrow_scaling_time, easeFunctions::IN_OUT_SINE, false, arrow_wait_time, arrow_wait_time));
-	scalingRoutine->addScaling(new scalingInfo(sf::Vector2f(1.2f, 1.2f), sf::Vector2f(1.f, 1.f), arrow_scaling_time, easeFunctions::IN_OUT_SINE, false, arrow_wait_time, arrow_wait_time));
-	scalingRoutine->setLooping(true);
-	movementManager->linkScalingRoutine(&up_arrow, scalingRoutine);
-	movementManager->startScalingRoutine(up_arrow, "UP_ARROW_SCALING");
-
-	scalingRoutine = movementManager->createScalingRoutine("DOWN_ARROW_SCALING");
-	scalingRoutine->addScaling(new scalingInfo(sf::Vector2f(1.f, 1.f), sf::Vector2f(1.2f, 1.2f), arrow_scaling_time, easeFunctions::IN_OUT_SINE, false, arrow_wait_time, arrow_wait_time));
-	scalingRoutine->addScaling(new scalingInfo(sf::Vector2f(1.2f, 1.2f), sf::Vector2f(1.f, 1.f), arrow_scaling_time, easeFunctions::IN_OUT_SINE, false, arrow_wait_time, arrow_wait_time));
-	scalingRoutine->setLooping(true);
-	movementManager->linkScalingRoutine(&down_arrow, scalingRoutine);
-	movementManager->startScalingRoutine(down_arrow, "DOWN_ARROW_SCALING");
-
-	// Rotation
-	auto rotationRoutine = movementManager->createRotationRoutine("UP_ARROW_ROTATION");
-	rotationRoutine->addRotation(new rotationInfo(-10.f, 10.f, arrow_rotation_time, easeFunctions::IN_OUT_SINE, false, arrow_wait_time, arrow_wait_time, false));
-	rotationRoutine->addRotation(new rotationInfo(10.f, -10.f, arrow_rotation_time, easeFunctions::IN_OUT_SINE, false, arrow_wait_time, arrow_wait_time, false));
-	rotationRoutine->setLooping(true);
-	movementManager->linkRotationRoutine(&up_arrow, rotationRoutine);
-	movementManager->startRotationRoutine(up_arrow, "UP_ARROW_ROTATION");
-
-	rotationRoutine = movementManager->createRotationRoutine("DOWN_ARROW_ROTATION");
-	rotationRoutine->addRotation(new rotationInfo(10.f, -10.f, arrow_rotation_time, easeFunctions::IN_OUT_SINE, false, arrow_wait_time, arrow_wait_time, false));
-	rotationRoutine->addRotation(new rotationInfo(-10.f, 10.f, arrow_rotation_time, easeFunctions::IN_OUT_SINE, false, arrow_wait_time, arrow_wait_time, false));
-	rotationRoutine->setLooping(true);
-	movementManager->linkRotationRoutine(&down_arrow, rotationRoutine);
-	movementManager->startRotationRoutine(down_arrow, "DOWN_ARROW_ROTATION");
-
-	sf::Clock dt_clock;
-	float dt;
-	float wait_time = 0.5f;
-
-	for (int i = 0; i < rows; i++) {
-		auto movementRoutine = movementManager->createMovementRoutine("SHAPE_MOVEMENT_" + std::to_string(i));
-		movementRoutine->addMovement(new movementInfo(start_pos[i], end_pos[i], animation_time, easeFunctions::IN_OUT_SINE, false, shape_delay_before, shape_delay_after));
-		movementRoutine->addMovement(new movementInfo(end_pos[i], start_pos[i], animation_time, easeFunctions::IN_OUT_SINE, false, shape_delay_before, shape_delay_after));
-		movementRoutine->setLooping(true);
-		movementManager->linkMovementRoutine(&shapes[i], movementRoutine);
-		movementManager->startMovementRoutine(shapes[i], "SHAPE_MOVEMENT_" + std::to_string(i));
-
-		auto scalingRoutine = movementManager->createScalingRoutine("SHAPE_SCALING_" + std::to_string(i));
-		scalingRoutine->addScaling(new scalingInfo(sf::Vector2f(1.f, 1.f), sf::Vector2f(1.5f, 1.5f), animation_time, easeFunctions::IN_OUT_SINE, false, shape_delay_before, shape_delay_after));
-		scalingRoutine->addScaling(new scalingInfo(sf::Vector2f(1.5f, 1.5f), sf::Vector2f(1.f, 1.f), animation_time, easeFunctions::IN_OUT_SINE, false, shape_delay_before, shape_delay_after));
-		scalingRoutine->setLooping(true);
-		movementManager->linkScalingRoutine(&shapes[i], scalingRoutine);
-		movementManager->startScalingRoutine(shapes[i], "SHAPE_SCALING_" + std::to_string(i));
-
-		auto rotationRoutine = movementManager->createRotationRoutine("SHAPE_ROTATION_" + std::to_string(i));
-		rotationRoutine->addRotation(new rotationInfo(0.f, 360.f, animation_time, easeFunctions::IN_OUT_SINE, false, shape_delay_before, shape_delay_after, true));
-		rotationRoutine->addRotation(new rotationInfo(360.f, 0.f, animation_time, easeFunctions::IN_OUT_SINE, false, shape_delay_before, shape_delay_after, true));
-		rotationRoutine->setLooping(true);
-		movementManager->linkRotationRoutine(&shapes[i], rotationRoutine);
-		movementManager->startRotationRoutine(shapes[i], "SHAPE_ROTATION_" + std::to_string(i));
-	}
-
-
-	while (running)
-	{
-		dt = dt_clock.restart().asSeconds();
-		movementManager->update(dt);
-
-		sf::Event event;
-		if (window.pollEvent(event))
-		{
-			if (event.type == sf::Event::Closed || (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape))
-				running = false;
-
-			if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::Up || event.key.code == sf::Keyboard::W)) {
-				current_ease_type += rows;
-				if (current_ease_type >= easeTypeSize - 2)
-					current_ease_type = 0;
-
-				for (int i = 0; i < rows; i++) {
-					text[i].setString(easeFunctions::getFunctionName(current_ease_type + i));
-					graphs[i].setFunction(easeFunctions::getFunction(current_ease_type + i));
-
-					movementManager->setFunction(shapes[i], easeFunctions::getTmovement(current_ease_type + i));
-					movementManager->resetRoutines(shapes[i]);
-				}
-
-			}
-			else if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::Down || event.key.code == sf::Keyboard::S)) {
-				current_ease_type -= rows;
-				if (current_ease_type < 0)
-					current_ease_type = easeTypeSize - rows;
-
-				for (size_t i = 0; i < rows; i++) {
-					text[i].setString(easeFunctions::getFunctionName(current_ease_type + i));
-					graphs[i].setFunction(easeFunctions::getFunction(current_ease_type + i));
-
-					movementManager->setFunction(shapes[i], easeFunctions::getTmovement(current_ease_type + i));
-					movementManager->resetRoutines(shapes[i]);
-				}
-			}
-		}
-
-		window.clear();
-		for (int i = 0; i < rows; i++) {
-			window.draw(text[i]);
-			window.draw(shapes[i]);
-
-			graphs[i].draw(window);
-
-			window.draw(up_arrow);
-			window.draw(down_arrow);
-		}
-
-		window.display();
-	}
-
-	movementManager->deleteMovementRoutine();
-	movementManager->deleteScalingRoutine();
-	movementManager->deleteRotationRoutine();
-}
-
 inline const sf::Vector2f randomPosition(const sf::Vector2f& min = sf::Vector2f(0.f, 0.f), const sf::Vector2f& max = sf::Vector2f(1920.f, 1080.f)) {
 	return sf::Vector2f(static_cast<float>(rand() % static_cast<int>(max.x - min.x) + static_cast<int>(min.x)), static_cast<float>(rand() % static_cast<int>(max.y - min.y) + static_cast<int>(min.y)));
 }
@@ -238,6 +35,7 @@ inline const float randomRotation(const float min = 0.f, const float max = 360.f
 }
 
 inline const size_t randomEaseType(const size_t min = 0, const size_t max = 30) {
+	return 0;
 	size_t random = static_cast<size_t>(rand() % static_cast<int>(max - min) + static_cast<int>(min));
 	if (random == 18 || random == 19 || random == 20)
 		return randomEaseType(min, max);
@@ -245,6 +43,7 @@ inline const size_t randomEaseType(const size_t min = 0, const size_t max = 30) 
 }
 
 inline const float randomDelay(const float min = 0.f, const float max = 1.f) {
+	return 0.5f;
 	return static_cast<float>(rand() % static_cast<int>(max * 100 - min * 100) + static_cast<int>(min * 100)) / 100.f;
 }
 
@@ -260,16 +59,21 @@ void demo2(sf::RenderWindow& window) {
 
 	const int easeTypeSize = 30;
 
-	constexpr static int max_routines = 100000;
+	constexpr static int max_routines = 125000;
 	constexpr static int max_movements_in_routine = 10;
-	constexpr static int max_shapes = 100000;
+	constexpr static int max_shapes = 125000;
 
-	float animation_time = 10.f;
+	float animation_time = 3.f;
+
+	long long int time_creating = 0, time_linking = 0, time_starting = 0;
 
 	// Routine initialization
 	printf("Creating routines...\n");
 	for (int i = 0; i < max_routines; ++i) {
+		auto start = high_resolution_clock::now();
 		auto movementRoutine = movementManager->createMovementRoutine("SM" + std::to_string(i));
+		auto stop = high_resolution_clock::now();
+		time_creating += duration_cast<nanoseconds>(stop - start).count();
 		sf::Vector2f previous_position = randomPosition();
 		for (int j = 0; j < max_movements_in_routine; ++j) {
 			sf::Vector2f new_position = randomPosition();
@@ -310,18 +114,24 @@ void demo2(sf::RenderWindow& window) {
 	for (int i = 0; i < max_shapes; i++) {
 		if (i % 1000 == 0)
 			printf("Creating shape %d...\n", i);
-		shapes[i].setSize(sf::Vector2f(5.f, 5.f));
+		shapes[i].setSize(sf::Vector2f(1.f, 1.f));
 		shapes[i].setFillColor(sf::Color::Blue);
 		shapes[i].setOrigin(shapes[i].getSize().x / 2.f, shapes[i].getSize().y / 2.f);
 		shapes[i].setPosition(randomPosition());
 
-		movementManager->linkMovementRoutine(&shapes[i], movementManager->getMovementRoutine("SM" + std::to_string(i % max_routines)));
-		movementManager->linkScalingRoutine(&shapes[i], movementManager->getScalingRoutine("SC" + std::to_string(i % max_routines)));
-		movementManager->linkRotationRoutine(&shapes[i], movementManager->getRotationRoutine("SR" + std::to_string(i % max_routines)));
+		auto start = high_resolution_clock::now();
+		movementManager->linkMovementRoutine(shapes[i], "SM" + std::to_string(i % max_routines));
+		//movementManager->linkScalingRoutine(shapes[i], "SC" + std::to_string(i % max_routines));
+		//movementManager->linkRotationRoutine(shapes[i], "SR" + std::to_string(i % max_routines));
+		auto stop = high_resolution_clock::now();
+		time_linking += duration_cast<nanoseconds>(stop - start).count();
 
+		auto start2 = high_resolution_clock::now();
 		movementManager->startMovementRoutine(shapes[i], "SM" + std::to_string(i % max_routines));
-		movementManager->startScalingRoutine(shapes[i], "SC" + std::to_string(i % max_routines));
-		movementManager->startRotationRoutine(shapes[i], "SR" + std::to_string(i % max_routines));
+		//movementManager->startScalingRoutine(shapes[i], "SC" + std::to_string(i % max_routines));
+		//movementManager->startRotationRoutine(shapes[i], "SR" + std::to_string(i % max_routines));
+		auto stop2 = high_resolution_clock::now();
+		time_starting += duration_cast<nanoseconds>(stop2 - start2).count();
 	}
 
 	//// GUI Initialization
@@ -349,7 +159,12 @@ void demo2(sf::RenderWindow& window) {
 	long long int sizeRotation = movementManager->getSizeRotation();
 	printf("Movement size: %lld B\t%f KB\t%f MB\n", sizeMovement, static_cast<float>(sizeMovement) / 1024.f, static_cast<float>(sizeMovement) / 1024.f / 1024.f);
 	printf("Scaling size: %lld B\t%f KB\t%f MB\n", sizeScaling, static_cast<float>(sizeScaling) / 1024.f, static_cast<float>(sizeScaling) / 1024.f / 1024.f);
-	printf("Rotation size: %lld B\t%f KB\t%f MB\n", sizeRotation, static_cast<float>(sizeRotation) / 1024.f, static_cast<float>(sizeRotation) / 1024.f / 1024.f);
+	printf("Rotation size: %lld B\t%f KB\t%f MB\n\n\n", sizeRotation, static_cast<float>(sizeRotation) / 1024.f, static_cast<float>(sizeRotation) / 1024.f / 1024.f);
+
+	printf("Time_creating: %lld ns\t=  %f ms\t=  %f s\n", time_creating, static_cast<float>(time_creating) / 1000000.f, static_cast<float>(time_creating) / 1000000000.f);
+	printf("Time linking:  %lld ns\t=  %f ms\t=  %f s\n", time_linking, static_cast<float>(time_linking) / 1000000.f, static_cast<float>(time_linking) / 1000000000.f);
+	printf("Time starting: %lld ns\t=  %f ms\t=  %f s\n", time_starting, static_cast<float>(time_starting) / 1000000.f, static_cast<float>(time_starting) / 1000000000.f);
+	printf("Time total:    %lld ns\t=  %f ms\t=  %f s\n\n\n", time_creating + time_linking + time_starting, static_cast<float>(time_creating + time_linking + time_starting) / 1000000.f, static_cast<float>(time_creating + time_linking + time_starting) / 1000000000.f);
 
 	while (running)
 	{
@@ -472,9 +287,9 @@ void demo3(sf::RenderWindow& window) {
 		shapes[i].setOrigin(shapes[i].getCentroid());
 		shapes[i].setPosition(randomPosition());
 
-		movementManager->linkMovementRoutine(&shapes[i], movementManager->getMovementRoutine("SM" + std::to_string(i % max_routines)));
-		movementManager->linkScalingRoutine(&shapes[i], movementManager->getScalingRoutine("SC" + std::to_string(i % max_routines)));
-		movementManager->linkRotationRoutine(&shapes[i], movementManager->getRotationRoutine("SR" + std::to_string(i % max_routines)));
+		movementManager->linkMovementRoutine(shapes[i], "SM" + std::to_string(i % max_routines));
+		movementManager->linkScalingRoutine(shapes[i], "SC" + std::to_string(i % max_routines));
+		movementManager->linkRotationRoutine(shapes[i], "SR" + std::to_string(i % max_routines));
 
 		movementManager->startMovementRoutine(shapes[i], "SM" + std::to_string(i % max_routines));
 		movementManager->startScalingRoutine(shapes[i], "SC" + std::to_string(i % max_routines));
@@ -552,7 +367,7 @@ int main()
 	sf::RenderWindow window(sf::VideoMode(1920, 1080), "Ease functions", sf::Style::Fullscreen, settings);
 	window.setVerticalSyncEnabled(true);
 
-	demo2(window);
+	demo1(window);
 
 	MovementContainer MovementContainer;
 
@@ -662,6 +477,16 @@ int main()
 	arrow4[0].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f - 40.f, 700.f);
 	arrow4[1].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f, 670.f);
 	arrow4[2].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f + 40.f, 700.f);
+
+	arrow1.setOrigin(arrow1.getCentroid());
+	arrow2.setOrigin(arrow2.getCentroid());
+	arrow3.setOrigin(arrow3.getCentroid());
+	arrow4.setOrigin(arrow4.getCentroid());
+
+	arrow1.setPosition(1000.f, 100.f);
+	arrow2.setPosition(1000.f, 300.f);
+	arrow3.setPosition(1000.f, 500.f);
+	arrow4.setPosition(1000.f, 700.f);
 
 	MovementManager* movementManager = MovementManager::getInstance();
 	float animation_time = 0.5f;
@@ -775,32 +600,32 @@ int main()
 	movementManager->linkMovementRoutine(test_shape[3], "TestowyM4");
 
 	auto routineMVA = movementManager->createMovementRoutine("TestowyMVA1");
-	routineMVA->addMovement(new movementInfo(getCentroid(arrow1) + starting_offset1, getCentroid(arrow1) + ending_offset1, animation_time, easeFunctions::IN_OUT_SINE, false, 0.5f, 0.5f));
-	routineMVA->addMovement(new movementInfo(getCentroid(arrow1) + starting_offset2, getCentroid(arrow1) + ending_offset2, animation_time, easeFunctions::IN_OUT_SINE, false, 0.5f, 0.5f));
+	routineMVA->addMovement(new movementInfo(arrow1.getPosition() + starting_offset1, arrow1.getPosition() + ending_offset1, animation_time, easeFunctions::IN_OUT_SINE, false, 0.5f, 0.5f));
+	routineMVA->addMovement(new movementInfo(arrow1.getPosition() + starting_offset2, arrow1.getPosition() + ending_offset2, animation_time, easeFunctions::IN_OUT_SINE, false, 0.5f, 0.5f));
 	routineMVA->adjustStartToCurrentTransform(adjust_start_movement);
 	routineMVA->adjustAllToCurrentTransform(adjust_all_movement);
 	routineMVA->setLooping(looping_movement);
 	movementManager->linkMovementRoutine(arrow1, "TestowyMVA1");
 
 	routineMVA = movementManager->createMovementRoutine("TestowyMVA2");
-	routineMVA->addMovement(new movementInfo(getCentroid(arrow2) + starting_offset1, getCentroid(arrow2) + ending_offset1, animation_time, easeFunctions::IN_OUT_SINE, false, 0.5f, 0.5f));
-	routineMVA->addMovement(new movementInfo(getCentroid(arrow2) + starting_offset2, getCentroid(arrow2) + ending_offset2, animation_time, easeFunctions::IN_OUT_SINE, false, 0.5f, 0.5f));
+	routineMVA->addMovement(new movementInfo(arrow2.getPosition() + starting_offset1, arrow2.getPosition() + ending_offset1, animation_time, easeFunctions::IN_OUT_SINE, false, 0.5f, 0.5f));
+	routineMVA->addMovement(new movementInfo(arrow2.getPosition() + starting_offset2, arrow2.getPosition() + ending_offset2, animation_time, easeFunctions::IN_OUT_SINE, false, 0.5f, 0.5f));
 	routineMVA->adjustStartToCurrentTransform(adjust_start_movement);
 	routineMVA->adjustAllToCurrentTransform(adjust_all_movement);
 	routineMVA->setLooping(looping_movement);
 	movementManager->linkMovementRoutine(arrow2, "TestowyMVA2");
 
 	routineMVA = movementManager->createMovementRoutine("TestowyMVA3");
-	routineMVA->addMovement(new movementInfo(getCentroid(arrow3) + starting_offset1, getCentroid(arrow3) + ending_offset1, animation_time, easeFunctions::IN_OUT_SINE, false, 0.5f, 0.5f));
-	routineMVA->addMovement(new movementInfo(getCentroid(arrow3) + starting_offset2, getCentroid(arrow3) + ending_offset2, animation_time, easeFunctions::IN_OUT_SINE, false, 0.5f, 0.5f));
+	routineMVA->addMovement(new movementInfo(arrow3.getPosition() + starting_offset1, arrow3.getPosition() + ending_offset1, animation_time, easeFunctions::IN_OUT_SINE, false, 0.5f, 0.5f));
+	routineMVA->addMovement(new movementInfo(arrow3.getPosition() + starting_offset2, arrow3.getPosition() + ending_offset2, animation_time, easeFunctions::IN_OUT_SINE, false, 0.5f, 0.5f));
 	routineMVA->adjustStartToCurrentTransform(adjust_start_movement);
 	routineMVA->adjustAllToCurrentTransform(adjust_all_movement);
 	routineMVA->setLooping(looping_movement);
 	movementManager->linkMovementRoutine(arrow3, "TestowyMVA3");
 
 	routineMVA = movementManager->createMovementRoutine("TestowyMVA4");
-	routineMVA->addMovement(new movementInfo(getCentroid(arrow4) + starting_offset1, getCentroid(arrow4) + ending_offset1, animation_time, easeFunctions::IN_OUT_SINE, false, 0.5f, 0.5f));
-	routineMVA->addMovement(new movementInfo(getCentroid(arrow4) + starting_offset2, getCentroid(arrow4) + ending_offset2, animation_time, easeFunctions::IN_OUT_SINE, false, 0.5f, 0.5f));
+	routineMVA->addMovement(new movementInfo(arrow4.getPosition() + starting_offset1, arrow4.getPosition() + ending_offset1, animation_time, easeFunctions::IN_OUT_SINE, false, 0.5f, 0.5f));
+	routineMVA->addMovement(new movementInfo(arrow4.getPosition() + starting_offset2, arrow4.getPosition() + ending_offset2, animation_time, easeFunctions::IN_OUT_SINE, false, 0.5f, 0.5f));
 	routineMVA->adjustStartToCurrentTransform(adjust_start_movement);
 	routineMVA->adjustAllToCurrentTransform(adjust_all_movement);
 	routineMVA->setLooping(looping_movement);
@@ -916,7 +741,7 @@ int main()
 	}
 
 	for (size_t i = 0; i < test_shape_size; ++i)
-		movementManager->linkMovementRoutine(&test_shape[i], "T" + std::to_string(i));
+		movementManager->linkMovementRoutine(test_shape[i], "T" + std::to_string(i));
 
 	for (size_t i = 0; i < test_shape_size; ++i)
 		movementManager->startMovementRoutine(&test_shape[i], "T" + std::to_string(i));
@@ -1069,7 +894,6 @@ int main()
 				MovementContainer.undoRotation(&down_arrow);*/
 			}
 		}
-
 		window.clear();
 		for (int i = 0; i < rows; i++) {
 			//window.draw(text[i]);
@@ -1083,10 +907,10 @@ int main()
 		for (int i = 0; i < 4; i++)
 			window.draw(test_shape[i]);
 
-		window.draw(arrow1);
-		window.draw(arrow2);
-		window.draw(arrow3);
-		window.draw(arrow4);
+		window.draw(arrow1, arrow1.getTransform());
+		window.draw(arrow2, arrow2.getTransform());
+		window.draw(arrow3, arrow3.getTransform());
+		window.draw(arrow4, arrow4.getTransform());
 
 		//window.draw(test_shape);
 		window.display();

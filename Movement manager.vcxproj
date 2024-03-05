@@ -134,24 +134,28 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Demos\easeFunctionsDemo1.cpp" />
     <ClCompile Include="src\easeFunctions.cpp" />
     <ClCompile Include="src\Graph.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\MovementContainer.cpp" />
     <ClCompile Include="src\MovementManager.cpp" />
     <ClCompile Include="src\RoutineContainer.cpp" />
+    <ClCompile Include="src\SidePanel.cpp" />
     <ClCompile Include="src\transformationInfo.cpp" />
     <ClCompile Include="src\TransformationRoutine.cpp" />
     <ClCompile Include="src\VertexArray2.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
+    <ClInclude Include="src\Demos\easeFunctionsDemo1.h" />
     <ClInclude Include="src\easeFunctions.h" />
     <ClInclude Include="src\Graph.h" />
     <ClInclude Include="src\Instrumentor.h" />
     <ClInclude Include="src\MovementContainer.h" />
     <ClInclude Include="src\MovementManager.h" />
     <ClInclude Include="src\RoutineContainer.h" />
+    <ClInclude Include="src\SidePanel.h" />
     <ClInclude Include="src\transformationInfo.h" />
     <ClInclude Include="src\TransformationRoutine.h" />
     <ClInclude Include="src\VertexArray2.h" />

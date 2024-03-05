@@ -46,7 +46,6 @@ public:
 	MovementRoutine* getMovementRoutine(sf::Transformable& transformable, const std::string& _name);
 
 	MovementRoutine* linkMovementRoutine(sf::Transformable& transformable, const std::string& _name);
-	MovementRoutine* linkMovementRoutine(sf::Transformable* transformable, MovementRoutine* routine);
 	void unlinkMovementRoutine(sf::Transformable* transformable, const std::string& _name);
 
 	void startMovementRoutine(sf::Transformable& transformable, const std::string& _name);
@@ -67,7 +66,6 @@ public:
 	ScalingRoutine* getScalingRoutine(sf::Transformable& transformable, const std::string& _name);
 
 	ScalingRoutine* linkScalingRoutine(sf::Transformable& transformable, const std::string& _name);
-	ScalingRoutine* linkScalingRoutine(sf::Transformable* transformable, ScalingRoutine* routine);
 	void unlinkScalingRoutine(sf::Transformable* transformable, const std::string& _name);
 
 	void startScalingRoutine(sf::Transformable& transformable, const std::string& _name);
@@ -88,7 +86,6 @@ public:
 	RotationRoutine* getRotationRoutine(sf::Transformable& transformable, const std::string& _name);
 
 	RotationRoutine* linkRotationRoutine(sf::Transformable& transformable, const std::string& _name); 
-	RotationRoutine* linkRotationRoutine(sf::Transformable* transformable, RotationRoutine* routine);
 	void unlinkRotationRoutine(sf::Transformable* transformable, const std::string& _name);
 
 	void startRotationRoutine(sf::Transformable& transformable, const std::string& _name);

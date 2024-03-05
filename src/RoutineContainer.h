@@ -1,4 +1,5 @@
 #pragma once
+#include <unordered_map>
 #include "TransformationRoutine.h"
 
 class RoutineContainer {
@@ -13,7 +14,7 @@ protected:
 
 class MovementRoutineContainer : protected RoutineContainer {
 private:
-	std::map<std::string, MovementRoutine*> m_movementRoutines{};
+	std::unordered_map<std::string, MovementRoutine*> m_movementRoutines{};
 
 public:
 	// Constructors / Destructors
@@ -41,7 +42,7 @@ public:
 
 class ScalingRoutineContainer : protected RoutineContainer {
 private:
-	std::map<std::string, ScalingRoutine*> scalingRoutines{};
+	std::unordered_map<std::string, ScalingRoutine*> scalingRoutines{};
 
 public:
 	// Constructors / Destructors
@@ -69,7 +70,7 @@ public:
 
 class RotationRoutineContainer : protected RoutineContainer {
 private:
-	std::map<std::string, RotationRoutine*> rotationRoutines{};
+	std::unordered_map<std::string, RotationRoutine*> rotationRoutines{};
 
 public:
 	// Constructors / Destructors

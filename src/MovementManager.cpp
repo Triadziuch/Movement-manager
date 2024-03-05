@@ -125,38 +125,6 @@ MovementRoutine* MovementManager::linkMovementRoutine(sf::Transformable& transfo
 	return m_movementRoutineContainerFound->second->createRoutine(_name, newMovementRoutine);
 }
 
-MovementRoutine* MovementManager::linkMovementRoutine(sf::Transformable* transformable, MovementRoutine* routine)
-{
-	MovementRoutine* movementRoutineFound = m_movementRoutineContainer->exists(routine);
-
-	if (movementRoutineFound == nullptr) {
-		printf("MovementManager::linkMovementRoutine: Routine not found\n");
-		return nullptr;
-	}
-	else {
-		// Check if we linked a movement routine to this shape before
-		auto m_movementRoutineContainerFound = m_routineMovement.find(transformable);
-		if (m_movementRoutineContainerFound != m_routineMovement.end()) {
-
-			auto* movementRoutineFound = m_movementRoutineContainerFound->second->exists(routine);
-			if (movementRoutineFound != nullptr) {
-				printf("MovementManager::linkMovementRoutine: Routine already linked to shape\n");
-				return movementRoutineFound;
-			}
-		}
-		else {
-			// If not, create a new movement routine container for this shape and link the movement routine to it
-			MovementRoutineContainer* newMovementRoutineContainer = new MovementRoutineContainer(this->movementRoutineEngine);
-			m_routineMovement.insert(std::make_pair(transformable, newMovementRoutineContainer));
-
-			return newMovementRoutineContainer->createRoutine(movementRoutineFound->getName(), new MovementRoutine(*routine));
-		}
-
-		// If yes, create a new movement routine and link it to the existing movement routine container
-		return m_movementRoutineContainerFound->second->createRoutine(movementRoutineFound->getName(), new MovementRoutine(*routine));
-	}
-}
-
 void MovementManager::unlinkMovementRoutine(sf::Transformable* transformable, const std::string& _name)
 {
 	// Stop the routine if it's active
@@ -357,38 +325,6 @@ ScalingRoutine* MovementManager::linkScalingRoutine(sf::Transformable& transform
 	// If yes, create a new scaling routine and link it to the existing scaling routine container
 	ScalingRoutine* newScalingRoutine = new ScalingRoutine(*scalingRoutineOriginal);
 	return m_scalingRoutineContainerFound->second->createRoutine(_name, newScalingRoutine);
-}
-
-ScalingRoutine* MovementManager::linkScalingRoutine(sf::Transformable* transformable, ScalingRoutine* routine)
-{
-	ScalingRoutine* scalingRoutineFound = m_scalingRoutineContainer->exists(routine);
-
-	if (scalingRoutineFound == nullptr) {
-		printf("MovementManager::linkScalingRoutine: Routine not found\n");
-		return nullptr;
-	}
-	else {
-		// Check if we linked a scaling routine to this shape before
-		auto m_scalingRoutineContainerFound = m_routineScaling.find(transformable);
-		if (m_scalingRoutineContainerFound != m_routineScaling.end()) {
-
-			auto* scalingRoutineFound = m_scalingRoutineContainerFound->second->exists(routine);
-			if (scalingRoutineFound != nullptr) {
-				printf("MovementManager::linkScalingRoutine: Routine already linked to shape\n");
-				return scalingRoutineFound;
-			}
-		}
-		else {
-			// If not, create a new scaling routine container for this shape and link the scaling routine to it
-			ScalingRoutineContainer* newScalingRoutineContainer = new ScalingRoutineContainer(this->movementRoutineEngine);
-			m_routineScaling.insert(std::make_pair(transformable, newScalingRoutineContainer));
-
-			return newScalingRoutineContainer->createRoutine(scalingRoutineFound->getName(), new ScalingRoutine(*routine));
-		}
-
-		// If yes, create a new scaling routine and link it to the existing scaling routine container
-		return m_scalingRoutineContainerFound->second->createRoutine(scalingRoutineFound->getName(), new ScalingRoutine(*routine));
-	}
 }
 
 void MovementManager::unlinkScalingRoutine(sf::Transformable* transformable, const std::string& _name)
@@ -593,38 +529,6 @@ RotationRoutine* MovementManager::linkRotationRoutine(sf::Transformable& transfo
 	// If yes, create a new rotation routine and link it to the existing rotation routine container
 	RotationRoutine* newRotationRoutine = new RotationRoutine(*rotationRoutineOriginal);
 	return m_rotationRoutineContainerFound->second->createRoutine(_name, newRotationRoutine);
-}
-
-RotationRoutine* MovementManager::linkRotationRoutine(sf::Transformable* transformable, RotationRoutine* routine)
-{
-	RotationRoutine* rotationRoutineFound = m_rotationRoutineContainer->exists(routine);
-
-	if (rotationRoutineFound == nullptr) {
-		printf("MovementManager::linkRotationRoutine: Routine not found\n");
-		return nullptr;
-	}
-	else {
-		// Check if we linked a rotation routine to this shape before
-		auto m_rotationRoutineContainerFound = m_routineRotation.find(transformable);
-		if (m_rotationRoutineContainerFound != m_routineRotation.end()) {
-
-			auto* rotationRoutineFound = m_rotationRoutineContainerFound->second->exists(routine);
-			if (rotationRoutineFound != nullptr) {
-				printf("MovementManager::linkRotationRoutine: Routine already linked to shape\n");
-				return rotationRoutineFound;
-			}
-		}
-		else {
-			// If not, create a new rotation routine container for this shape and link the rotation routine to it
-			RotationRoutineContainer* newRotationRoutineContainer = new RotationRoutineContainer(this->movementRoutineEngine);
-			m_routineRotation.insert(std::make_pair(transformable, newRotationRoutineContainer));
-
-			return newRotationRoutineContainer->createRoutine(rotationRoutineFound->getName(), new RotationRoutine(*routine));
-		}
-
-		// If yes, create a new rotation routine and link it to the existing rotation routine container
-		return m_rotationRoutineContainerFound->second->createRoutine(rotationRoutineFound->getName(), new RotationRoutine(*routine));
-	}
 }
 
 void MovementManager::unlinkRotationRoutine(sf::Transformable* transformable, const std::string& _name)

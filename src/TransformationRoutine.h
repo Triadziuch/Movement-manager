@@ -72,6 +72,8 @@ public:
 	void reset(sf::Transformable& transformable);
 	void stop(sf::Transformable* transformable);
 
+	void move(const sf::Vector2f& offset);
+
 	movementInfo* getCurrentMovement() const;
 
 	const bool goToNextMovement(const sf::Transformable& transformable);

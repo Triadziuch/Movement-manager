@@ -209,6 +209,14 @@ void MovementRoutine::stop(sf::Transformable* transformable)
 	m_movementRoutineEngine->stopMovement(transformable);
 }
 
+void MovementRoutine::move(const sf::Vector2f& offset)
+{
+	for (auto& movement : m_routineMovements) {
+		movement->getStartingPos() += offset;
+		movement->getEndingPos()   += offset;
+	}
+}
+
 movementInfo* MovementRoutine::getCurrentMovement() const
 {
 	return m_current < m_count ? m_routineMovements[m_current] : nullptr;

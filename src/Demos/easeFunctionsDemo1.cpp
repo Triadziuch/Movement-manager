@@ -1,4 +1,5 @@
 #include "easeFunctionsDemo1.h"
+#include "../SidePanel.h"
 
 void demo1(sf::RenderWindow& window) {
 	MovementManager* movementManager = MovementManager::getInstance();
@@ -143,6 +144,13 @@ void demo1(sf::RenderWindow& window) {
 		movementManager->startRotationRoutine(shapes[i], "SHAPE_ROTATION_" + std::to_string(i));
 	}
 
+	SidePanel side_panel(window, "Fonts/Helvetica Regular.otf", 32u, 16u, 12.f);
+	side_panel.setBackgroundColor(sf::Color(50, 50, 50));
+	side_panel.setTitle("Ease Functions");
+	side_panel.addText("Up", "Next function");
+	side_panel.addText("Down", "Previous function");
+
+
 
 	while (running)
 	{
@@ -182,6 +190,22 @@ void demo1(sf::RenderWindow& window) {
 					movementManager->resetRoutines(shapes[i]);
 				}
 			}
+
+			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::X) {
+				side_panel.show();
+			}
+
+			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Z) {
+				side_panel.hide();
+			}
+
+			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::LBracket) {
+				side_panel.setTitleFontSize(side_panel.getTitleFontSize() + 1);
+			}
+
+			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::RBracket) {
+				side_panel.setTitleFontSize(side_panel.getTitleFontSize() - 1);
+			}
 		}
 
 		window.clear();
@@ -194,6 +218,8 @@ void demo1(sf::RenderWindow& window) {
 			window.draw(up_arrow);
 			window.draw(down_arrow);
 		}
+
+		side_panel.draw(window);
 
 		window.display();
 	}

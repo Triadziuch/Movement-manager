@@ -295,32 +295,26 @@ void SidePanel::setTitle(const std::string& title)
 	recalculateTextPositions();
 }
 
-void SidePanel::addText(const std::string& text)
+void SidePanel::addText(const std::string& label)
 {
-	sf::Text label_text;
-	label_text.setFont(m_font);
-	label_text.setCharacterSize(m_textFontSize);
-	label_text.setFillColor(sf::Color::White);
-	label_text.setString(label);
-	label_text.setOrigin(0.f, label_text.getLocalBounds().top / 2.f);
+	instantHide();
+
+	sf::Text text;
+	text.setFont(m_font);
+	text.setCharacterSize(m_textFontSize);
+	text.setFillColor(sf::Color::White);
+	text.setString(label);
+	text.setOrigin(0.f, text.getLocalBounds().top / 2.f);
 
 	if (m_textObjects.empty()) {
 		if (m_title.getString().isEmpty()) 
-			label_text.setPosition(m_background.getPosition().x + m_padding, m_padding + label_text.getGlobalBounds().height / 2.f);
+			text.setPosition(m_background.getPosition().x + m_padding, m_padding + label_text.getGlobalBounds().height / 2.f);
 		else 
-			label_text.setPosition(m_background.getPosition().x + m_padding, m_title.getPosition().y + m_title.getGlobalBounds().height / 2.f + m_padding + label_text.getGlobalBounds().height / 2.f);
+			text.setPosition(m_background.getPosition().x + m_padding, m_title.getPosition().y + m_title.getGlobalBounds().height / 2.f + m_padding + label_text.getGlobalBounds().height / 2.f);
 	}
 	else 
-		label_text.setPosition(m_background.getPosition().x + m_padding, m_padding + m_textObjects.back().second.getPosition().y + m_textObjects.back().second.getGlobalBounds().height / 2.f + label_text.getGlobalBounds().height / 2.f);
+		text.setPosition(m_padding - m_width, m_padding + m_textObjects.back().second.getPosition().y + m_textObjects.back().second.getGlobalBounds().height / 2.f + label_text.getGlobalBounds().height / 2.f);
 	
-
-	sf::Text description_text;
-	description_text.setFont(m_font);
-	description_text.setCharacterSize(m_textFontSize);
-	description_text.setFillColor(sf::Color::White);
-	description_text.setString(description);
-	description_text.setOrigin(0.f, description_text.getLocalBounds().top / 2.f);
-	description_text.setPosition(label_text.getPosition().x + label_text.getGlobalBounds().width + m_padding, label_text.getPosition().y);
 
 	auto label_movement_show = m_movementManager->createMovementRoutine(m_labelMovementPrefix + "Show" + std::to_string(m_textObjects.size()));
 	label_movement_show->addMovement(new movementInfo(sf::Vector2f(m_padding - m_width, label_text.getPosition().y), sf::Vector2f(m_padding, label_text.getPosition().y), m_duration, easeFunctions::getFunction(easeFunctions::IN_SINE), 0.f, 0.f, 0.f));
@@ -330,13 +324,6 @@ void SidePanel::addText(const std::string& text)
 	label_movement_hide->addMovement(new movementInfo(sf::Vector2f(m_padding, label_text.getPosition().y), sf::Vector2f(m_padding - m_width, label_text.getPosition().y), m_duration, easeFunctions::getFunction(easeFunctions::IN_SINE), 0.f, 0.f, 0.f));
 	m_movementManager->linkMovementRoutine(label_text, m_labelMovementPrefix + "Hide" + std::to_string(m_textObjects.size()));
 
-	auto description_movement_show = m_movementManager->createMovementRoutine(m_descriptionMovementPrefix + "Show" + std::to_string(m_textObjects.size()));
-	description_movement_show->addMovement(new movementInfo(sf::Vector2f(2.f * m_padding - m_width + label_text.getGlobalBounds().width, description_text.getPosition().y), sf::Vector2f(2.f * m_padding + label_text.getGlobalBounds().width, description_text.getPosition().y), m_duration, easeFunctions::getFunction(easeFunctions::IN_SINE), 0.f, 0.f, 0.f));
-	m_movementManager->linkMovementRoutine(description_text, m_descriptionMovementPrefix + "Show" + std::to_string(m_textObjects.size()));
-
-	auto description_movement_hide = m_movementManager->createMovementRoutine(m_descriptionMovementPrefix + "Hide" + std::to_string(m_textObjects.size()));
-	description_movement_hide->addMovement(new movementInfo(sf::Vector2f(2.f * m_padding + label_text.getGlobalBounds().width, description_text.getPosition().y), sf::Vector2f(2.f * m_padding - m_width + label_text.getGlobalBounds().width, description_text.getPosition().y), m_duration, easeFunctions::getFunction(easeFunctions::IN_SINE), 0.f, 0.f, 0.f));
-	m_movementManager->linkMovementRoutine(description_text, m_descriptionMovementPrefix + "Hide" + std::to_string(m_textObjects.size()));
 
 	m_textString.push_back(std::make_pair(label, description));
 	m_textObjects.push_back(std::make_pair(label_text, description_text));

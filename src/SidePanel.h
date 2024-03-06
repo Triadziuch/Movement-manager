@@ -61,7 +61,7 @@ public:
 	unsigned getTitleFontSize() const;
 
 	void setTitle(const std::string& title);
-	void addText(const std::string& text);
+	void addText(const std::string& label);
 	void clearText();
 
 	void show();

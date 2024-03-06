@@ -20,17 +20,13 @@ void SidePanel::instantHide()
 
 void SidePanel::recalculateTextPositions()
 {
-	instantHide();
-
 	// Adjusting background position
-	m_backgroundMovementShow->getCurrentMovement()->getStartingPos() = sf::Vector2f(-m_width, 0.f);
-	m_backgroundMovementShow->getCurrentMovement()->getEndingPos() = sf::Vector2f(0.f, 0.f);
-	m_backgroundMovementHide->getCurrentMovement()->getStartingPos() = sf::Vector2f(0.f, 0.f);
-	m_backgroundMovementHide->getCurrentMovement()->getEndingPos() = sf::Vector2f(-m_width, 0.f);
+	m_backgroundMovementRoutine->operator[](0)->getStartingPos().x = -m_width;
+	m_backgroundMovementRoutine->operator[](1)->getEndingPos().x   = -m_width;
 
 	// Adjusting title position
 	m_title.setOrigin(m_title.getLocalBounds().left + m_title.getLocalBounds().width / 2.f, m_title.getLocalBounds().top + m_title.getLocalBounds().height / 2.f);
-	m_title.setPosition(m_background.getGlobalBounds().left + m_background.getGlobalBounds().width / 2.f, m_padding + m_title.getGlobalBounds().height / 2.f);
+	m_title.setPosition(-m_width / 2.f, m_padding + m_title.getGlobalBounds().height / 2.f);
 
 	m_titleMovementShow->getCurrentMovement()->getStartingPos() = sf::Vector2f(m_title.getPosition());
 	m_titleMovementShow->getCurrentMovement()->getEndingPos() = sf::Vector2f(m_title.getPosition().x + m_width, m_title.getPosition().y);
@@ -79,6 +75,8 @@ void SidePanel::recalculateTextPositions()
 			m_MovementRoutinesHide[i].second->getCurrentMovement()->getEndingPos() = sf::Vector2f(2.f * m_padding - m_width + m_textObjects[i].first.getGlobalBounds().width, m_textObjects[i].second.getPosition().y);
 		}
 	}
+
+	instantHide();
 }
 
 SidePanel::SidePanel() :
@@ -101,7 +99,6 @@ SidePanel::SidePanel(const sf::RenderTarget& window, const std::string& fontPath
 	m_hidden{true},
 	m_duration{0.5f},
 	m_showing{false},
-	m_hiding{false},
 	m_backgroundMovementName{"BackgroundMovement"},
 	m_titleMovementName{"TitleMovement"},
 	m_textMovementNames{"TextMovement"}
@@ -122,7 +119,7 @@ SidePanel::SidePanel(const sf::RenderTarget& window, const std::string& fontPath
 	m_backgroundMovement->setLooping(true);
 	m_movementManager->linkMovementRoutine(m_background, m_backgroundMovementName);
 	m_movementManager->startMovementRoutine(m_background, m_backgroundMovementName);
-
+	m_showing = &m_backgroundMovement->m_isPaused;
 
 	// Title initialization
 	m_title.setFont(m_font);
@@ -155,7 +152,6 @@ SidePanel::SidePanel(const SidePanel& obj) :
 	m_movementManager(obj.m_movementManager),
 	m_duration(obj.m_duration),
 	m_showing(obj.m_showing),
-	m_hiding(obj.m_hiding),
 	m_backgroundMovementName(obj.m_backgroundMovementName),
 	m_titleMovementName(obj.m_titleMovementName),
 	m_textMovementNames(obj.m_textMovementNames)
@@ -308,66 +304,56 @@ void SidePanel::addText(const std::string& label)
 
 	if (m_textObjects.empty()) {
 		if (m_title.getString().isEmpty()) 
-			text.setPosition(m_background.getPosition().x + m_padding, m_padding + label_text.getGlobalBounds().height / 2.f);
+			text.setPosition(m_padding - m_width, m_padding + text.getGlobalBounds().height / 2.f);
 		else 
-			text.setPosition(m_background.getPosition().x + m_padding, m_title.getPosition().y + m_title.getGlobalBounds().height / 2.f + m_padding + label_text.getGlobalBounds().height / 2.f);
+			text.setPosition(m_padding - m_width, 2.f * m_padding + m_title.getPosition().y + m_title.getGlobalBounds().height / 2.f + text.getGlobalBounds().height / 2.f);
 	}
 	else 
-		text.setPosition(m_padding - m_width, m_padding + m_textObjects.back().second.getPosition().y + m_textObjects.back().second.getGlobalBounds().height / 2.f + label_text.getGlobalBounds().height / 2.f);
+		text.setPosition(m_padding - m_width, 2.f * m_padding + m_textObjects.back().getPosition().y + m_textObjects.back().getGlobalBounds().height / 2.f + text.getGlobalBounds().height / 2.f);
 	
 
-	auto label_movement_show = m_movementManager->createMovementRoutine(m_labelMovementPrefix + "Show" + std::to_string(m_textObjects.size()));
-	label_movement_show->addMovement(new movementInfo(sf::Vector2f(m_padding - m_width, label_text.getPosition().y), sf::Vector2f(m_padding, label_text.getPosition().y), m_duration, easeFunctions::getFunction(easeFunctions::IN_SINE), 0.f, 0.f, 0.f));
-	m_movementManager->linkMovementRoutine(label_text, m_labelMovementPrefix + "Show" + std::to_string(m_textObjects.size()));
+	auto label_movement = m_movementManager->createMovementRoutine(m_textMovementNames + std::to_string(m_textObjects.size()));
+	label_movement->addMovement(new movementInfo(text.getPosition(), text.getPosition() + sf::Vector2f(m_width, 0.f), m_duration, easeFunctions::getFunction(easeFunctions::IN_SINE), 0.f, 0.f, 0.f));
+	label_movement->addMovement(new movementInfo(text.getPosition() + sf::Vector2f(m_width, 0.f), text.getPosition(), m_duration, easeFunctions::getFunction(easeFunctions::IN_SINE), 0.f, 0.f, 0.f));
+	label_movement->setPauseAfterChangingMovements(true);
+	label_movement->setLooping(true);
+	m_textMovementRoutines.emplace_back(m_movementManager->linkMovementRoutine(text, m_textMovementNames + std::to_string(m_textObjects.size())));
+	m_movementManager->startMovementRoutine(text, m_textMovementNames + std::to_string(m_textObjects.size()));
 
-	auto label_movement_hide = m_movementManager->createMovementRoutine(m_labelMovementPrefix + "Hide" + std::to_string(m_textObjects.size()));
-	label_movement_hide->addMovement(new movementInfo(sf::Vector2f(m_padding, label_text.getPosition().y), sf::Vector2f(m_padding - m_width, label_text.getPosition().y), m_duration, easeFunctions::getFunction(easeFunctions::IN_SINE), 0.f, 0.f, 0.f));
-	m_movementManager->linkMovementRoutine(label_text, m_labelMovementPrefix + "Hide" + std::to_string(m_textObjects.size()));
-
-
-	m_textString.push_back(std::make_pair(label, description));
-	m_textObjects.push_back(std::make_pair(label_text, description_text));
-	m_MovementRoutinesShow.push_back(std::make_pair(label_movement_show, description_movement_show));
-	m_MovementRoutinesHide.push_back(std::make_pair(label_movement_hide, description_movement_hide));
+	m_textObjects.push_back(text);
 }
 
 void SidePanel::clearText()
 {
-	for (const auto& text : m_textString) {
-		m_movementManager->deleteMovementRoutine(m_labelMovementPrefix + "Show" + std::to_string(m_textObjects.size()));
-		m_movementManager->deleteMovementRoutine(m_labelMovementPrefix + "Hide" + std::to_string(m_textObjects.size()));
-		m_movementManager->deleteMovementRoutine(m_descriptionMovementPrefix + "Show" + std::to_string(m_textObjects.size()));
-		m_movementManager->deleteMovementRoutine(m_descriptionMovementPrefix + "Hide" + std::to_string(m_textObjects.size()));
+	for (auto& movementRoutine : m_textMovementRoutines) {
+		m_movementManager->deleteMovementRoutine(movementRoutine->getName());
+		movementRoutine = nullptr;
 	}
-	m_textString.clear();
+
 	m_textObjects.clear();
-	m_MovementRoutinesShow.clear();
-	m_MovementRoutinesHide.clear();
 }
 
 void SidePanel::show()
 {
-	if (m_hidden == true && m_backgroundMovementShow->m_isActive == false && m_backgroundMovementHide->m_isActive == false) {
+	if (m_hidden == true && !*m_showing) {
 		m_hidden = false;
-		m_backgroundMovementShow->start(m_background);
-		m_titleMovementShow->start(m_title);
-		for (size_t i = 0; i < m_textObjects.size(); ++i) {
-			m_MovementRoutinesShow[i].first->start(m_textObjects[i].first);
-			m_MovementRoutinesShow[i].second->start(m_textObjects[i].second);
-		}
+
+		m_backgroundMovementRoutine->resume();
+		m_titleMovementRoutine->resume();
+		for (auto& movementRoutine : m_textMovementRoutines) 
+			movementRoutine->resume();
 	}
 }
 
 void SidePanel::hide()
 {
-	if (m_hidden == false && m_backgroundMovementShow->m_isActive == false && m_backgroundMovementHide->m_isActive == false) {
+	if (m_hidden == false && !*m_showing) {
 		m_hidden = true;
-		m_backgroundMovementHide->start(m_background);
-		m_titleMovementHide->start(m_title);
-		for (size_t i = 0; i < m_textObjects.size(); ++i) {
-			m_MovementRoutinesHide[i].first->start(m_textObjects[i].first);
-			m_MovementRoutinesHide[i].second->start(m_textObjects[i].second);
-		}
+
+		m_backgroundMovementRoutine->resume();
+		m_titleMovementRoutine->resume();
+		for (auto& movementRoutine : m_textMovementRoutines) 
+			movementRoutine->resume();
 	}
 }
 
@@ -375,8 +361,6 @@ void SidePanel::draw(sf::RenderTarget& window)
 {
 	window.draw(m_background);
 	window.draw(m_title);
-	for (const auto& text : m_textObjects) {
-		window.draw(text.first);
-		window.draw(text.second);
-	}
+	for (const auto& text : m_textObjects) 
+		window.draw(text);
 }

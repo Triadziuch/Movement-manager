@@ -14,7 +14,9 @@ private:
 	float		m_padding{};
 	std::string m_fontPath{};
 
-	bool  m_hidden{}, m_showing{}, m_hiding{};
+	bool  m_hidden{};
+	const bool* m_showing{};
+
 	float m_width{};
 	float m_height{};
 	float m_duration{};

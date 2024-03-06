@@ -144,8 +144,9 @@ void demo1(sf::RenderWindow& window) {
 		movementManager->startRotationRoutine(shapes[i], "SHAPE_ROTATION_" + std::to_string(i));
 	}
 
-	SidePanel side_panel(window, "Fonts/Helvetica Regular.otf", 32u, 16u, 12.f);
+	SidePanel side_panel(window, "Fonts/Helvetica Regular.otf", 48u, 32u, 12.f);
 	side_panel.setBackgroundColor(sf::Color(50, 50, 50));
+	side_panel.setPadding(40.f);
 	side_panel.setTitle("Ease Functions");
 	side_panel.addText("Up", "Next function");
 	side_panel.addText("Down", "Previous function");

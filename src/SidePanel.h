@@ -25,16 +25,17 @@ private:
 	sf::Font		  m_font{};
 	sf::Text		  m_title{};
 
-	std::string m_backgroundMovementName{};
-	MovementRoutine* m_backgroundMovementShow{}, * m_backgroundMovementHide{};
+	std::vector<sf::Text>		  m_textObjects{};
 
-	MovementRoutine* m_titleMovementShow{}, * m_titleMovementHide{};
-	std::string m_titleMovementName, m_labelMovementPrefix{}, m_descriptionMovementPrefix{};
-	std::vector<std::pair<std::string, std::string>> m_textString{};
-	std::vector<std::pair<sf::Text, sf::Text>>		 m_textObjects{};
-	std::vector<std::pair<MovementRoutine*, MovementRoutine*>> m_MovementRoutinesShow{};
-	std::vector<std::pair<MovementRoutine*, MovementRoutine*>> m_MovementRoutinesHide{};
-	
+	std::string					  m_backgroundMovementName{};
+	MovementRoutine*			  m_backgroundMovementRoutine{};
+
+	std::string					  m_titleMovementName{};
+	MovementRoutine*			  m_titleMovementRoutine{};
+
+	std::string					  m_textMovementNames{};
+	std::vector<MovementRoutine*> m_textMovementRoutines{};
+
 	void instantHide();
 	void recalculateTextPositions();
 
@@ -60,7 +61,7 @@ public:
 	unsigned getTitleFontSize() const;
 
 	void setTitle(const std::string& title);
-	void addText(const std::string& label, const std::string& description);
+	void addText(const std::string& text);
 	void clearText();
 
 	void show();

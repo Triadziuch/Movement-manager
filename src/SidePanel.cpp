@@ -6,21 +6,16 @@
 void SidePanel::instantHide()
 {
 	m_hidden = true;
-	m_showing = false;
-	m_hiding = false;
+
+	m_backgroundMovementRoutine->reset();
+	m_titleMovementRoutine->reset();
+	for (auto& movementRoutine : m_textMovementRoutines) 
+		movementRoutine->reset();
+
 	m_background.setPosition(-m_width, 0.f);
-
-	m_backgroundMovementShow->stop(&m_background);
-	m_backgroundMovementHide->stop(&m_background);
-	m_titleMovementShow->stop(&m_title);
-	m_titleMovementHide->stop(&m_title);
-
-	for (size_t i = 0; i < m_textObjects.size(); ++i) {
-		m_MovementRoutinesShow[i].first->stop(&m_textObjects[i].first);
-		m_MovementRoutinesShow[i].second->stop(&m_textObjects[i].second);
-		m_MovementRoutinesHide[i].first->stop(&m_textObjects[i].first);
-		m_MovementRoutinesHide[i].second->stop(&m_textObjects[i].second);
-	}
+	m_title.setPosition(-m_width / 2.f, 0.f);
+	for (auto& text : m_textObjects) 
+		text.setPosition(m_padding - m_width, text.getPosition().y);
 }
 
 void SidePanel::recalculateTextPositions()
@@ -102,45 +97,45 @@ SidePanel::SidePanel(const sf::RenderTarget& window, const std::string& fontPath
 	m_width{static_cast<float>(window.getSize().x) / 4.f },
 	m_height{static_cast<float>(window.getSize().y) },
 	m_movementManager(MovementManager::getInstance()),
-	m_background{sf::Vector2f(m_width, m_height)},
 	m_backgroundColor{sf::Color(0, 0, 0, 200)},
 	m_hidden{true},
-	m_titleMovementName{ "TitleMovement" },
-	m_labelMovementPrefix{ "LabelMovement" },
-	m_descriptionMovementPrefix{ "DescriptionMovement" },
-	m_duration{2.f},
-	m_MovementRoutinesShow{},
-	m_MovementRoutinesHide{},
-	m_backgroundMovementName{ "BackgroundMovement" },
+	m_duration{0.5f},
 	m_showing{false},
-	m_hiding{false}
+	m_hiding{false},
+	m_backgroundMovementName{"BackgroundMovement"},
+	m_titleMovementName{"TitleMovement"},
+	m_textMovementNames{"TextMovement"}
 {
+	// Font initialization
 	if (!m_font.loadFromFile(m_fontPath)) 
 		throw std::runtime_error("Error: SidePanel::SidePanel() - Font failed to load.");
 	
+	// Background initialization
+	m_background.setSize(sf::Vector2f(m_width, m_height));
+	m_background.setFillColor(m_backgroundColor);
+	m_background.setPosition(-m_width, 0.f);
+
+	auto m_backgroundMovement = m_movementManager->createMovementRoutine(m_backgroundMovementName);
+	m_backgroundMovement->addMovement(new movementInfo(sf::Vector2f(-m_width, 0.f), sf::Vector2f(0.f, 0.f), m_duration, easeFunctions::getFunction(easeFunctions::IN_SINE), 0.f, 0.f, 0.f));
+	m_backgroundMovement->addMovement(new movementInfo(sf::Vector2f(0.f, 0.f), sf::Vector2f(-m_width, 0.f), m_duration, easeFunctions::getFunction(easeFunctions::IN_SINE), 0.f, 0.f, 0.f));
+	m_backgroundMovement->setPauseAfterChangingMovements(true);
+	m_backgroundMovement->setLooping(true);
+	m_movementManager->linkMovementRoutine(m_background, m_backgroundMovementName);
+	m_movementManager->startMovementRoutine(m_background, m_backgroundMovementName);
+
+
+	// Title initialization
 	m_title.setFont(m_font);
 	m_title.setCharacterSize(m_titleFontSize);
 	m_title.setFillColor(sf::Color::White);
 
-	m_titleMovementShow = m_movementManager->createMovementRoutine(m_titleMovementName + "Show");
-	m_titleMovementShow->addMovement(new movementInfo(sf::Vector2f(-m_width, 0.f), sf::Vector2f(0.f, 0.f), m_duration, easeFunctions::getFunction(easeFunctions::IN_SINE), 0.f, 0.f, 0.f));
-	m_movementManager->linkMovementRoutine(m_title, m_titleMovementName + "Show");
-
-	m_titleMovementHide = m_movementManager->createMovementRoutine(m_titleMovementName + "Hide");
-	m_titleMovementHide->addMovement(new movementInfo(sf::Vector2f(0.f, 0.f), sf::Vector2f(-m_width, 0.f), m_duration, easeFunctions::getFunction(easeFunctions::IN_SINE), 0.f, 0.f, 0.f));
-	m_movementManager->linkMovementRoutine(m_title, m_titleMovementName + "Hide");
-
-
-	m_background.setFillColor(m_backgroundColor);
-	m_background.setPosition(-m_width, 0.f);
-
-	m_backgroundMovementShow = m_movementManager->createMovementRoutine(m_backgroundMovementName + "Show");
-	m_backgroundMovementShow->addMovement(new movementInfo(sf::Vector2f(-m_width, 0.f), sf::Vector2f(0.f, 0.f), m_duration, easeFunctions::getFunction(easeFunctions::IN_SINE), 0.f, 0.f, 0.f));
-	m_movementManager->linkMovementRoutine(m_background, m_backgroundMovementName + "Show");
-
-	m_backgroundMovementHide = m_movementManager->createMovementRoutine(m_backgroundMovementName + "Hide");
-	m_backgroundMovementHide->addMovement(new movementInfo(sf::Vector2f(0.f, 0.f), sf::Vector2f(-m_width, 0.f), m_duration, easeFunctions::getFunction(easeFunctions::IN_SINE), 0.f, 0.f, 0.f));
-	m_movementManager->linkMovementRoutine(m_background, m_backgroundMovementName + "Hide");
+	auto m_titleMovement = m_movementManager->createMovementRoutine(m_titleMovementName);
+	m_titleMovement->addMovement(new movementInfo(sf::Vector2f(-m_width / 2.f, 0.f), sf::Vector2f(m_width / 2.f, 0.f), m_duration, easeFunctions::getFunction(easeFunctions::IN_SINE), 0.f, 0.f, 0.f));
+	m_titleMovement->addMovement(new movementInfo(sf::Vector2f(m_width / 2.f, 0.f), sf::Vector2f(-m_width / 2.f, 0.f), m_duration, easeFunctions::getFunction(easeFunctions::IN_SINE), 0.f, 0.f, 0.f));
+	m_titleMovement->setPauseAfterChangingMovements(true);
+	m_titleMovement->setLooping(true);
+	m_titleMovementRoutine = m_movementManager->linkMovementRoutine(m_title, m_titleMovementName);
+	m_movementManager->startMovementRoutine(m_title, m_titleMovementName);
 }
 
 SidePanel::SidePanel(const SidePanel& obj) :
@@ -151,42 +146,38 @@ SidePanel::SidePanel(const SidePanel& obj) :
 	m_window(obj.m_window),
 	m_font(obj.m_font),
 	m_title(obj.m_title),
-	m_textString(obj.m_textString),
 	m_textObjects(obj.m_textObjects),
 	m_width(obj.m_width),
 	m_height(obj.m_height),
 	m_background(obj.m_background),
 	m_backgroundColor(obj.m_backgroundColor),
 	m_hidden(obj.m_hidden),
-	m_titleMovementName(obj.m_titleMovementName),
-	m_labelMovementPrefix(obj.m_labelMovementPrefix),
-	m_descriptionMovementPrefix(obj.m_descriptionMovementPrefix),
 	m_movementManager(obj.m_movementManager),
 	m_duration(obj.m_duration),
-	m_MovementRoutinesShow(obj.m_MovementRoutinesShow),
-	m_MovementRoutinesHide(obj.m_MovementRoutinesHide)
+	m_showing(obj.m_showing),
+	m_hiding(obj.m_hiding),
+	m_backgroundMovementName(obj.m_backgroundMovementName),
+	m_titleMovementName(obj.m_titleMovementName),
+	m_textMovementNames(obj.m_textMovementNames)
 	{}
 
 SidePanel::~SidePanel()
 {
 	instantHide();
 
-	for (const auto& text : m_textString) {
-		m_movementManager->deleteMovementRoutine(m_labelMovementPrefix + "Show" + std::to_string(m_textObjects.size()));
-		m_movementManager->deleteMovementRoutine(m_labelMovementPrefix + "Hide" + std::to_string(m_textObjects.size()));
-		m_movementManager->deleteMovementRoutine(m_descriptionMovementPrefix + "Show" + std::to_string(m_textObjects.size()));
-		m_movementManager->deleteMovementRoutine(m_descriptionMovementPrefix + "Hide" + std::to_string(m_textObjects.size()));
+	m_textObjects.clear();
+
+	m_movementManager->deleteMovementRoutine(m_backgroundMovementName);
+	m_backgroundMovementRoutine = nullptr;
+
+	m_movementManager->deleteMovementRoutine(m_titleMovementName);
+	m_titleMovementRoutine = nullptr;
+
+	for (size_t i = 0; i < m_textMovementRoutines.size(); ++i) {
+		m_movementManager->deleteMovementRoutine(m_textMovementNames + std::to_string(i));
+		m_textMovementRoutines[i] = nullptr;
 	}
 
-	m_movementManager->deleteMovementRoutine(m_titleMovementName + "Show");
-	m_movementManager->deleteMovementRoutine(m_titleMovementName + "Hide");
-
-	m_movementManager->deleteMovementRoutine(m_backgroundMovementName + "Show");
-	m_movementManager->deleteMovementRoutine(m_backgroundMovementName + "Hide");
-
-
-	m_textString.clear();
-	m_textObjects.clear();
 	m_window = nullptr;
 }
 
@@ -203,10 +194,8 @@ void SidePanel::setFont(const std::string& fontPath)
 		throw std::runtime_error("Error: SidePanel::setFont() - Font failed to load.");
 
 	m_title.setFont(m_font);
-	for (auto& text : m_textObjects) {
-		text.first.setFont(m_font);
-		text.second.setFont(m_font);
-	}
+	for (auto& text : m_textObjects)
+		text.setFont(m_font);
 
 	recalculateTextPositions();
 }
@@ -215,10 +204,8 @@ void SidePanel::setFont(const sf::Font& font)
 {
 	m_font = font;
 	m_title.setFont(m_font);
-	for (auto& text : m_textObjects) {
-		text.first.setFont(m_font);
-		text.second.setFont(m_font);
-	}
+	for (auto& text : m_textObjects)
+		text.setFont(m_font);
 
 	recalculateTextPositions();
 }
@@ -235,10 +222,8 @@ void SidePanel::setTextFontSize(unsigned fontSize)
 {
 	m_textFontSize = fontSize;
 
-	for (auto& text : m_textObjects) {
-		text.first.setCharacterSize(m_textFontSize);
-		text.second.setCharacterSize(m_textFontSize);
-	}
+	for (auto& text : m_textObjects) 
+		text.setCharacterSize(m_textFontSize);
 
 	recalculateTextPositions();
 }
@@ -248,72 +233,39 @@ void SidePanel::setPadding(float padding)
 	const float padding_offset = padding - m_padding;
 	m_padding = padding;
 
-	recalculateTextPositions();
+	// Adjusting title position and movement routine
+	m_title.move(0.f, padding_offset);
+	m_titleMovementRoutine->move(sf::Vector2f(0.f, padding_offset));
 
-	//// Adjusting title position
-	//m_title.move(0.f, padding_offset);
+	// Adjusting text position
+	float it = 1.f;
+	if (!m_title.getString().isEmpty())
+		it = 3.f;
 
-	//// Adjusting text position
-	//float it = 1.f;
-
-	//if (!m_title.getString().isEmpty())
-	//	it = 3.f;
-
-	//for (auto& text : m_textObjects) {
-	//	text.first.move(padding_offset, it * padding_offset);
-	//	text.second.move(padding_offset, it * padding_offset);
-	//	it += 2.f;
-	//}
-
-	//// Adjusting movement routines
-	//if (!m_title.getString().isEmpty())
-	//	it = 3.f;
-	//else
-	//	it = 1.f;
-	//for (auto& movementShow : m_MovementRoutinesShow) {
-	//	movementShow.first->move(sf::Vector2f(padding_offset, it * padding_offset));
-	//	movementShow.second->move(sf::Vector2f(padding_offset, it * padding_offset));
-	//	it += 2.f;
-	//}
-
-	//if (!m_title.getString().isEmpty())
-	//	it = 3.f;
-	//else
-	//	it = 1.f;
-	//for (auto& movementHide : m_MovementRoutinesHide) {
-	//	movementHide.first->move(sf::Vector2f(padding_offset, it * padding_offset));
-	//	movementHide.second->move(sf::Vector2f(padding_offset, it * padding_offset));
-	//	it += 2.f;
-	//}
+	for (size_t i = 0; it < m_textObjects.size(); ++it, it += 2.f) {
+		m_textObjects[i].move(padding_offset, it * padding_offset);
+		m_textMovementRoutines[i]->move(sf::Vector2f(padding_offset, it * padding_offset));
+	}
 }
 
 void SidePanel::setWidth(float width)
 {
-	const float offset = m_width - width;
+	m_hidden = true;
+
 	m_width = width;
 	m_background.setSize(sf::Vector2f(m_width, m_height));
+	m_backgroundMovementRoutine->operator[](0)->getStartingPos().x = -m_width;
+	m_backgroundMovementRoutine->operator[](1)->getEndingPos().x   = -m_width;
 
-	recalculateTextPositions();
+	instantHide();
 
-	//// Adjusting title position
-	//m_title.move(-offset, 0.f);
+	m_titleMovementRoutine->operator[](0)->getStartingPos().x = m_title.getPosition().x;
+	m_titleMovementRoutine->operator[](1)->getEndingPos().x   = m_titleMovementRoutine->operator[](0)->getStartingPos().x;
 
-	//// Adjusting text position
-	//for (auto& text : m_textObjects) {
-	//	text.first.move(-offset, 0.f);
-	//	text.second.move(-offset, 0.f);
-	//}
-
-	//// Adjusting movement routines
-	//for (auto& movementShow : m_MovementRoutinesShow) {
-	//	movementShow.first->move(sf::Vector2f(-offset, 0.f));
-	//	movementShow.second->move(sf::Vector2f(-offset, 0.f));
-	//}
-
-	//for (auto& movementHide : m_MovementRoutinesHide) {
-	//	movementHide.first->move(sf::Vector2f(-offset, 0.f));
-	//	movementHide.second->move(sf::Vector2f(-offset, 0.f));
-	//}
+	for (auto& movementRoutine : m_textMovementRoutines) {
+		movementRoutine->operator[](0)->getStartingPos().x = m_padding - m_width;
+		movementRoutine->operator[](1)->getEndingPos().x   = movementRoutine->operator[](0)->getStartingPos().x;
+	}
 }
 
 void SidePanel::setHeight(float height)
@@ -322,34 +274,7 @@ void SidePanel::setHeight(float height)
 	sf::Vector2f old_pos = m_background.getPosition();
 	m_background.setSize(sf::Vector2f(m_width, m_height));
 
-	recalculateTextPositions();
-
-	//if (m_hidden)
-	//	m_background.setPosition(-m_width, 0.f);
-	//else
-	//	m_background.setPosition(0.f, 0.f);
-
-	//sf::Vector2f position_offset = m_background.getPosition() - old_pos;
-
-	//// Adjusting title position
-	//m_title.move(position_offset);
-
-	//// Adjusting text position
-	//for (auto& text : m_textObjects) {
-	//	text.first.move(position_offset);
-	//	text.second.move(position_offset);
-	//}
-
-	//// Adjusting movement routines
-	//for (auto& movementShow : m_MovementRoutinesShow) {
-	//	movementShow.first->move(position_offset);
-	//	movementShow.second->move(position_offset);
-	//}
-
-	//for (auto& movementHide : m_MovementRoutinesHide) {
-	//	movementHide.first->move(position_offset);
-	//	movementHide.second->move(position_offset);
-	//}
+	instantHide();
 }
 
 void SidePanel::setBackgroundColor(const sf::Color& color)
@@ -370,7 +295,7 @@ void SidePanel::setTitle(const std::string& title)
 	recalculateTextPositions();
 }
 
-void SidePanel::addText(const std::string& label, const std::string& description)
+void SidePanel::addText(const std::string& text)
 {
 	sf::Text label_text;
 	label_text.setFont(m_font);
@@ -378,6 +303,7 @@ void SidePanel::addText(const std::string& label, const std::string& description
 	label_text.setFillColor(sf::Color::White);
 	label_text.setString(label);
 	label_text.setOrigin(0.f, label_text.getLocalBounds().top / 2.f);
+
 	if (m_textObjects.empty()) {
 		if (m_title.getString().isEmpty()) 
 			label_text.setPosition(m_background.getPosition().x + m_padding, m_padding + label_text.getGlobalBounds().height / 2.f);

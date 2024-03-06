@@ -14,7 +14,9 @@ TransformationRoutine::TransformationRoutine() :
 	m_isLooping{}, 
 	m_isPaused{}, 
 	m_adjustStartToCurrentTransform{}, 
-	m_adjustAllToCurrentTransform{} 
+	m_adjustAllToCurrentTransform{} ,
+	m_pauseAtStart{},
+	m_pauseAfterChangingMovements{}
 	{}
 
 TransformationRoutine::TransformationRoutine(const std::string& name, MovementRoutineEngine* movementRoutineEnginePtr) :
@@ -26,7 +28,9 @@ TransformationRoutine::TransformationRoutine(const std::string& name, MovementRo
 	m_isLooping{}, 
 	m_isPaused{}, 
 	m_adjustStartToCurrentTransform{}, 
-	m_adjustAllToCurrentTransform{} 
+	m_adjustAllToCurrentTransform{},
+	m_pauseAtStart{},
+	m_pauseAfterChangingMovements{}
 	{}
 
 TransformationRoutine::TransformationRoutine(const TransformationRoutine& obj) :
@@ -38,7 +42,9 @@ TransformationRoutine::TransformationRoutine(const TransformationRoutine& obj) :
 	m_isLooping{ obj.m_isLooping }, 
 	m_isPaused{ obj.m_isPaused }, 
 	m_adjustStartToCurrentTransform{ obj.m_adjustStartToCurrentTransform }, 
-	m_adjustAllToCurrentTransform{ obj.m_adjustAllToCurrentTransform } 
+	m_adjustAllToCurrentTransform{ obj.m_adjustAllToCurrentTransform } ,
+	m_pauseAtStart{ obj.m_pauseAtStart },
+	m_pauseAfterChangingMovements{ obj.m_pauseAfterChangingMovements }
 	{}
 
 TransformationRoutine::~TransformationRoutine() {
@@ -48,6 +54,16 @@ TransformationRoutine::~TransformationRoutine() {
 void TransformationRoutine::setLooping(bool looping)
 {
 	m_isLooping = looping;
+}
+
+void TransformationRoutine::setPauseAtStart(bool pauseAtStart)
+{
+	m_pauseAtStart = pauseAtStart;
+}
+
+void TransformationRoutine::setPauseAfterChangingMovements(bool pauseAfterChangingMovements)
+{
+	m_pauseAfterChangingMovements = pauseAfterChangingMovements;
 }
 
 void TransformationRoutine::adjustStartToCurrentTransform(bool adjust)
@@ -177,7 +193,7 @@ void MovementRoutine::reset()
 
 	m_current  = 0;
 	m_isActive = false;
-	m_isPaused = false;
+	m_isPaused = m_pauseAfterChangingMovements;
 }
 
 const bool MovementRoutine::start(sf::Transformable& transformable)
@@ -226,6 +242,7 @@ const bool MovementRoutine::goToNextMovement(const sf::Transformable& transforma
 {
 	if (m_current < m_count - 1) {
 		++m_current;
+		m_isPaused = m_pauseAfterChangingMovements;
 		return true;
 	}
 	else {
@@ -264,6 +281,11 @@ void MovementRoutine::setFunction(double(*usedFunctionPtr)(double), const size_t
 {
 	if (movement_id < m_count)
 		m_routineMovements[movement_id]->setFunction(usedFunctionPtr);
+}
+
+movementInfo* MovementRoutine::operator[](const size_t& index) const
+{
+	return index < m_count ? m_routineMovements[index] : nullptr;
 }
 
 const long long int& MovementRoutine::size() const
@@ -376,7 +398,7 @@ void ScalingRoutine::reset()
 
 	m_current = 0;
 	m_isActive = false;
-	m_isPaused = false;
+	m_isPaused = m_pauseAfterChangingMovements;
 }
 
 const bool ScalingRoutine::start(sf::Transformable& transformable)
@@ -416,6 +438,7 @@ const bool ScalingRoutine::goToNextScaling(const sf::Transformable& transformabl
 {
 	if (m_current < m_count - 1) {
 		++m_current;
+		m_isPaused = m_pauseAfterChangingMovements;
 		return true;
 	}
 	else {
@@ -607,7 +630,7 @@ void RotationRoutine::reset()
 
 	m_current = 0;
 	m_isActive = false;
-	m_isPaused = false;
+	m_isPaused = m_pauseAfterChangingMovements;
 }
 
 const bool RotationRoutine::start(sf::Transformable& transformable)
@@ -647,6 +670,7 @@ const bool RotationRoutine::goToNextRotation(const sf::Transformable& transforma
 {
 	if (m_current < m_count - 1) {
 		was_last_clockwise = m_routineRotations[m_current]->getClockwise();
+		m_isPaused = m_pauseAfterChangingMovements;
 		++m_current;
 		return true;
 	}

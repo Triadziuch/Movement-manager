@@ -18,6 +18,8 @@ public:
 	size_t				   m_count{};
 	bool				   m_isActive{};
 	bool				   m_isPaused{};
+	bool				   m_pauseAtStart{};
+	bool				   m_pauseAfterChangingMovements{};
 
 	// Constructors / Destructors
 	TransformationRoutine();
@@ -27,6 +29,8 @@ public:
 
 	// Mutators
 	void setLooping(bool looping);
+	void setPauseAtStart(bool pauseAtStart);
+	void setPauseAfterChangingMovements(bool pauseAfterChangingMovements);
 	void adjustStartToCurrentTransform(bool adjust);
 	void adjustAllToCurrentTransform(bool adjust);
 
@@ -60,7 +64,7 @@ public:
 
 	// Update functions
 	const bool update(sf::Transformable& transformable, const float dt);
-
+	
 	// Public functions
 	void addMovement(movementInfo* movement);
 	void removeMovement(movementInfo* movement);
@@ -82,6 +86,8 @@ public:
 	void setFunction(easeFunctions::Tmovement_function usedFunctionType, const size_t movement_id);
 	void setFunction(double(*usedFunctionPtr)(double));
 	void setFunction(double(*usedFunctionPtr)(double), const size_t movement_id);
+
+	movementInfo* operator[](const size_t& index) const;
 
 	const long long int& size() const;
 };

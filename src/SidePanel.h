@@ -8,36 +8,40 @@
 class SidePanel {
 private:
 	MovementManager* m_movementManager{};
+	const sf::RenderTarget* m_window{};
 
+	// Font variables
+	std::string m_fontPath{};
+	sf::Font	m_font{};
 	unsigned	m_titleFontSize{};
 	unsigned	m_textFontSize{};
 	float		m_padding{};
-	std::string m_fontPath{};
+	
+	// Movement variables
+	float		m_duration{ 0.5f };
+	bool		m_hidden{ true };
+	const bool* m_stationary{};
+	easeFunctions::Tmovement_function m_usedFunction{ easeFunctions::OUT_QUART };
+	
+	// Background variables
+	float				m_width{};
+	float				m_height{};
+	sf::RectangleShape	m_background{};
+	sf::Color			m_backgroundColor{ sf::Color{ 0, 0, 0, 200 } };
+	std::string			m_backgroundMovementName{ "BackgroundMovement" };
+	MovementRoutine*	m_backgroundMovementRoutine{};
 
-	bool  m_hidden{};
-	const bool* m_showing{};
+	// Title variables
+	sf::Text				m_title{};
+	std::vector<sf::Text*>	m_textObjects{};
+	std::string				m_titleMovementName{ "TitleMovement" };
+	MovementRoutine*		m_titleMovementRoutine{};
 
-	float m_width{};
-	float m_height{};
-	float m_duration{};
-	sf::RectangleShape m_background{};
-	sf::Color		   m_backgroundColor{};
-
-	const sf::RenderTarget* m_window{};
-	sf::Font		  m_font{};
-	sf::Text		  m_title{};
-
-	std::vector<sf::Text>		  m_textObjects{};
-
-	std::string					  m_backgroundMovementName{};
-	MovementRoutine*			  m_backgroundMovementRoutine{};
-
-	std::string					  m_titleMovementName{};
-	MovementRoutine*			  m_titleMovementRoutine{};
-
-	std::string					  m_textMovementNames{};
+	// Text variables
+	std::string					  m_textMovementNames{ "TextMovement" };
 	std::vector<MovementRoutine*> m_textMovementRoutines{};
 
+	// Private functions
 	void instantHide();
 	void recalculateTextPositions();
 

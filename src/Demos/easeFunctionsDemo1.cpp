@@ -148,8 +148,9 @@ void demo1(sf::RenderWindow& window) {
 	side_panel.setBackgroundColor(sf::Color(50, 50, 50));
 	side_panel.setPadding(40.f);
 	side_panel.setTitle("Ease Functions");
-	side_panel.addText("Up", "Next function");
-	side_panel.addText("Down", "Previous function");
+	side_panel.addText("Up - Next function");
+	side_panel.addText("Down - Previous function");
+	side_panel.addText("X - Show panel");
 
 
 

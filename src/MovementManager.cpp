@@ -52,6 +52,24 @@ void MovementManager::setFunction(sf::Transformable& transformable, easeFunction
 		rotationRoutineFound->second->setFunction(usedFunctionType);
 }
 
+void MovementManager::setAnimationTime(sf::Transformable& transformable, const float _time)
+{
+	if (_time < 0.f)
+		return;
+
+	auto movementRoutineFound = m_routineMovementActive.find(&transformable);
+	if (movementRoutineFound != m_routineMovementActive.end())
+		movementRoutineFound->second->setAnimationTime(_time);
+
+	auto scalingRoutineFound = m_routineScaling_Active.find(&transformable);
+	if (scalingRoutineFound != m_routineScaling_Active.end())
+		scalingRoutineFound->second->setAnimationTime(_time);
+
+	auto rotationRoutineFound = m_routineRotation_Active.find(&transformable);
+	if (rotationRoutineFound != m_routineRotation_Active.end())
+		rotationRoutineFound->second->setAnimationTime(_time);
+}
+
 void MovementManager::resetRoutines(sf::Transformable& transformable)
 {
 	auto movementRoutineFound = m_routineMovementActive.find(&transformable);

@@ -283,6 +283,12 @@ void MovementRoutine::setFunction(double(*usedFunctionPtr)(double), const size_t
 		m_routineMovements[movement_id]->setFunction(usedFunctionPtr);
 }
 
+void MovementRoutine::setAnimationTime(const float animationTime)
+{
+	for (auto& movement : m_routineMovements)
+		movement->setAnimationTime(animationTime);	
+}
+
 movementInfo* MovementRoutine::operator[](const size_t& index) const
 {
 	return index < m_count ? m_routineMovements[index] : nullptr;
@@ -477,6 +483,12 @@ void ScalingRoutine::setFunction(double(*usedFunctionPtr)(double), const size_t 
 {
 	if (scaling_id < m_count)
 		m_routineScalings[scaling_id]->setFunction(usedFunctionPtr);
+}
+
+void ScalingRoutine::setAnimationTime(const float animationTime)
+{
+	for (auto& scaling : m_routineScalings)
+		scaling->setAnimationTime(animationTime);
 }
 
 const long long int& ScalingRoutine::size() const
@@ -711,6 +723,12 @@ void RotationRoutine::setFunction(double(*usedFunctionPtr)(double), const size_t
 {
 	if (rotation_id < m_count)
 		m_routineRotations[rotation_id]->setFunction(usedFunctionPtr);
+}
+
+void RotationRoutine::setAnimationTime(const float animationTime)
+{
+	for (auto& rotation : m_routineRotations)
+		rotation->setAnimationTime(animationTime);
 }
 
 const long long int& RotationRoutine::size() const

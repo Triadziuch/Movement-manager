@@ -80,6 +80,23 @@ void transformationInfo::setFunction(double(*usedFunctionPtr)(double))
 	m_usedFunctionPtr = usedFunctionPtr;
 }
 
+void transformationInfo::setAnimationTime(const float time) {
+
+	if (time <= 0.f || time == m_motionDuration) return;
+
+	if (m_currentTime < m_delayBefore) 
+		m_motionDuration = time;
+	else {
+		const float timeFactor = (m_currentTime - m_delayBefore) / m_motionDuration;
+		m_motionDuration = time;
+		m_currentTime = m_delayBefore + timeFactor * m_motionDuration;
+	}
+
+	m_totalDuration = m_delayBefore + m_motionDuration + m_delayAfter;
+
+	if (m_currentTime > m_totalDuration) m_currentTime = m_totalDuration;
+}
+
 // - - - - - - - - - - - - - - - - - - - - movementInfo - - - - - - - - - - - - - - - - - - - - \\
 
 movementInfo::movementInfo(sf::Vector2f startingPos, sf::Vector2f endingPos, float motionDuration, easeFunctions::Tmovement_function usedFunctionType, bool repeat, float delayBefore, float delayAfter) :

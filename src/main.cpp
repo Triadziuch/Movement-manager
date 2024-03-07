@@ -59,9 +59,9 @@ void demo2(sf::RenderWindow& window) {
 
 	const int easeTypeSize = 30;
 
-	constexpr static int max_routines = 125000;
+	constexpr static int max_routines = 10000;
 	constexpr static int max_movements_in_routine = 10;
-	constexpr static int max_shapes = 125000;
+	constexpr static int max_shapes = 10000;
 
 	float animation_time = 3.f;
 
@@ -421,15 +421,6 @@ int main()
 		text[i].setPosition(50.f, static_cast<float>(window.getSize().y) / static_cast<float>(rows) * static_cast<float>(i) + window.getSize().y / static_cast<float>(rows) / 2.f - text[i].getGlobalBounds().height / 2.f);
 	}
 
-	// Arrows initialization
-	sf::VertexArray up_arrow(sf::LineStrip, 3u), down_arrow(sf::LineStrip, 3u);
-	up_arrow[0].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f - 40.f, 500.f);
-	up_arrow[1].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f, 470.f);
-	up_arrow[2].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f + 40.f, 500.f);
-
-	down_arrow[0].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f - 40.f, static_cast<float>(window.getSize().y) - 60.f);
-	down_arrow[1].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f, static_cast<float>(window.getSize().y) - 30.f);
-	down_arrow[2].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f + 40.f, static_cast<float>(window.getSize().y) - 60.f);
 
 	float arrow_movement_time = 1.f;
 	float arrow_scaling_time = 1.f;

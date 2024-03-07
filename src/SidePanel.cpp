@@ -65,7 +65,7 @@ SidePanel::SidePanel() :
 	m_padding{ 16.f }
 	{}
 
-SidePanel::SidePanel(const sf::RenderTarget& window, const std::string& fontPath, unsigned titleFontSize, unsigned textFontSize, float padding) :
+SidePanel::SidePanel(const sf::RenderTarget& window, const std::string& fontPath, unsigned int titleFontSize, unsigned int textFontSize, float padding) :
 	m_window{ &window },
 	m_fontPath{ fontPath },
 	m_titleFontSize{ titleFontSize },
@@ -255,7 +255,7 @@ void SidePanel::setBackgroundColor(const sf::Color& color)
 	m_background.setFillColor(m_backgroundColor);
 }
 
-unsigned SidePanel::getTitleFontSize() const
+unsigned int SidePanel::getTitleFontSize() const
 {
 	return m_titleFontSize;
 }
@@ -333,6 +333,15 @@ void SidePanel::hide()
 	}
 }
 
+void SidePanel::toggle()
+{
+	if (m_hidden == true) 
+		show();
+	else 
+		hide();
+}
+
+// Draw functions
 void SidePanel::draw(sf::RenderTarget& window)
 {
 	window.draw(m_background);

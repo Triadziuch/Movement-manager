@@ -6,13 +6,20 @@ void demo1(sf::RenderWindow& window) {
 
 	// Config
 	bool running = true;
-	const int	rows = 3;
-	const int	easeTypeSize = 30;
-	int			current_ease_type = 0;
-	float		shape_delay_before = 0.5f;
-	float		shape_delay_after = 0.5f;
+	const int rows = 3;
 
+	int current_ease_type  = 0;
+	const int easeTypeSize = 30;
+	
+	float delay_before	 = 0.5f;
 	float animation_time = 3.f;
+	float delay_after	 = 0.5f;
+
+	// Clock variables
+	sf::Clock dt_clock;
+	float dt;
+
+	
 
 	// Start position initialization
 	sf::Vector2f start_pos[rows];
@@ -67,15 +74,20 @@ void demo1(sf::RenderWindow& window) {
 	down_arrow[1].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f, static_cast<float>(window.getSize().y) - 30.f);
 	down_arrow[2].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f + 40.f, static_cast<float>(window.getSize().y) - 60.f);
 
-	float arrow_movement_time = 0.5f;
-	float arrow_scaling_time = 0.5f;
-	float arrow_rotation_time = 0.5f;
-	float arrow_wait_time = 0.25f;
+	up_arrow.setOrigin(up_arrow.getCentroid());
+	down_arrow.setOrigin(down_arrow.getCentroid());
+
+	up_arrow.setPosition(960.f, 50.f);
+	down_arrow.setPosition(960.f, 1030.f);
+
+	float arrow_movement_time = 1.f;
+	float arrow_wait_time     = 0.5f;
 
 	// Movement
 	auto movementRoutine = movementManager->createMovementRoutine("UP_ARROW_MOVEMENT");
 	movementRoutine->addMovement(new movementInfo(sf::Vector2f(960.f, 50.f), sf::Vector2f(960.f, 30.f), arrow_movement_time, easeFunctions::IN_OUT_SINE, false, arrow_wait_time, arrow_wait_time));
 	movementRoutine->addMovement(new movementInfo(sf::Vector2f(960.f, 30.f), sf::Vector2f(960.f, 50.f), arrow_movement_time, easeFunctions::IN_OUT_SINE, false, arrow_wait_time, arrow_wait_time));
+	movementRoutine->adjustStartToCurrentTransform(true);
 	movementRoutine->setLooping(true);
 	movementManager->linkMovementRoutine(up_arrow, "UP_ARROW_MOVEMENT");
 	movementManager->startMovementRoutine(up_arrow, "UP_ARROW_MOVEMENT");
@@ -87,72 +99,61 @@ void demo1(sf::RenderWindow& window) {
 	movementManager->linkMovementRoutine(down_arrow, "DOWN_ARROW_MOVEMENT");
 	movementManager->startMovementRoutine(down_arrow, "DOWN_ARROW_MOVEMENT");
 
-	// Scaling
-	auto scalingRoutine = movementManager->createScalingRoutine("UP_ARROW_SCALING");
-	scalingRoutine->addScaling(new scalingInfo(sf::Vector2f(1.f, 1.f), sf::Vector2f(1.2f, 1.2f), arrow_scaling_time, easeFunctions::IN_OUT_SINE, false, arrow_wait_time, arrow_wait_time));
-	scalingRoutine->addScaling(new scalingInfo(sf::Vector2f(1.2f, 1.2f), sf::Vector2f(1.f, 1.f), arrow_scaling_time, easeFunctions::IN_OUT_SINE, false, arrow_wait_time, arrow_wait_time));
-	scalingRoutine->setLooping(true);
-	movementManager->linkScalingRoutine(up_arrow, "UP_ARROW_SCALING");
-	movementManager->startScalingRoutine(up_arrow, "UP_ARROW_SCALING");
-
-	scalingRoutine = movementManager->createScalingRoutine("DOWN_ARROW_SCALING");
-	scalingRoutine->addScaling(new scalingInfo(sf::Vector2f(1.f, 1.f), sf::Vector2f(1.2f, 1.2f), arrow_scaling_time, easeFunctions::IN_OUT_SINE, false, arrow_wait_time, arrow_wait_time));
-	scalingRoutine->addScaling(new scalingInfo(sf::Vector2f(1.2f, 1.2f), sf::Vector2f(1.f, 1.f), arrow_scaling_time, easeFunctions::IN_OUT_SINE, false, arrow_wait_time, arrow_wait_time));
-	scalingRoutine->setLooping(true);
-	movementManager->linkScalingRoutine(down_arrow, "DOWN_ARROW_SCALING");
-	movementManager->startScalingRoutine(down_arrow, "DOWN_ARROW_SCALING");
-
-	// Rotation
-	auto rotationRoutine = movementManager->createRotationRoutine("UP_ARROW_ROTATION");
-	rotationRoutine->addRotation(new rotationInfo(-10.f, 10.f, arrow_rotation_time, easeFunctions::IN_OUT_SINE, false, arrow_wait_time, arrow_wait_time, false));
-	rotationRoutine->addRotation(new rotationInfo(10.f, -10.f, arrow_rotation_time, easeFunctions::IN_OUT_SINE, false, arrow_wait_time, arrow_wait_time, false));
-	rotationRoutine->setLooping(true);
-	movementManager->linkRotationRoutine(up_arrow, "UP_ARROW_ROTATION");
-	movementManager->startRotationRoutine(up_arrow, "UP_ARROW_ROTATION");
-
-	rotationRoutine = movementManager->createRotationRoutine("DOWN_ARROW_ROTATION");
-	rotationRoutine->addRotation(new rotationInfo(10.f, -10.f, arrow_rotation_time, easeFunctions::IN_OUT_SINE, false, arrow_wait_time, arrow_wait_time, false));
-	rotationRoutine->addRotation(new rotationInfo(-10.f, 10.f, arrow_rotation_time, easeFunctions::IN_OUT_SINE, false, arrow_wait_time, arrow_wait_time, false));
-	rotationRoutine->setLooping(true);
-	movementManager->linkRotationRoutine(down_arrow, "DOWN_ARROW_ROTATION");
-	movementManager->startRotationRoutine(down_arrow, "DOWN_ARROW_ROTATION");
-
-	sf::Clock dt_clock;
-	float dt;
-	float wait_time = 0.5f;
-
 	for (int i = 0; i < rows; i++) {
 		auto movementRoutine = movementManager->createMovementRoutine("SHAPE_MOVEMENT_" + std::to_string(i));
-		movementRoutine->addMovement(new movementInfo(start_pos[i], end_pos[i], animation_time, easeFunctions::IN_OUT_SINE, false, shape_delay_before, shape_delay_after));
-		movementRoutine->addMovement(new movementInfo(end_pos[i], start_pos[i], animation_time, easeFunctions::IN_OUT_SINE, false, shape_delay_before, shape_delay_after));
+		movementRoutine->addMovement(new movementInfo(start_pos[i], end_pos[i], animation_time, easeFunctions::getTmovement(current_ease_type + i), false, delay_before, delay_after));
+		movementRoutine->addMovement(new movementInfo(end_pos[i], start_pos[i], animation_time, easeFunctions::getTmovement(current_ease_type + i), false, delay_before, delay_after));
 		movementRoutine->setLooping(true);
 		movementManager->linkMovementRoutine(shapes[i], "SHAPE_MOVEMENT_" + std::to_string(i));
 		movementManager->startMovementRoutine(shapes[i], "SHAPE_MOVEMENT_" + std::to_string(i));
 
 		auto scalingRoutine = movementManager->createScalingRoutine("SHAPE_SCALING_" + std::to_string(i));
-		scalingRoutine->addScaling(new scalingInfo(sf::Vector2f(1.f, 1.f), sf::Vector2f(1.5f, 1.5f), animation_time, easeFunctions::IN_OUT_SINE, false, shape_delay_before, shape_delay_after));
-		scalingRoutine->addScaling(new scalingInfo(sf::Vector2f(1.5f, 1.5f), sf::Vector2f(1.f, 1.f), animation_time, easeFunctions::IN_OUT_SINE, false, shape_delay_before, shape_delay_after));
+		scalingRoutine->addScaling(new scalingInfo(sf::Vector2f(1.f, 1.f), sf::Vector2f(1.5f, 1.5f), animation_time, easeFunctions::getTmovement(current_ease_type + i), false, delay_before, delay_after));
+		scalingRoutine->addScaling(new scalingInfo(sf::Vector2f(1.5f, 1.5f), sf::Vector2f(1.f, 1.f), animation_time, easeFunctions::getTmovement(current_ease_type + i), false, delay_before, delay_after));
 		scalingRoutine->setLooping(true);
 		movementManager->linkScalingRoutine(shapes[i], "SHAPE_SCALING_" + std::to_string(i));
 		movementManager->startScalingRoutine(shapes[i], "SHAPE_SCALING_" + std::to_string(i));
 
 		auto rotationRoutine = movementManager->createRotationRoutine("SHAPE_ROTATION_" + std::to_string(i));
-		rotationRoutine->addRotation(new rotationInfo(0.f, 360.f, animation_time, easeFunctions::IN_OUT_SINE, false, shape_delay_before, shape_delay_after, true));
-		rotationRoutine->addRotation(new rotationInfo(360.f, 0.f, animation_time, easeFunctions::IN_OUT_SINE, false, shape_delay_before, shape_delay_after, true));
+		rotationRoutine->addRotation(new rotationInfo(0.f, 360.f, animation_time, easeFunctions::getTmovement(current_ease_type + i), false, delay_before, delay_after, true));
+		rotationRoutine->addRotation(new rotationInfo(360.f, 0.f, animation_time, easeFunctions::getTmovement(current_ease_type + i), false, delay_before, delay_after, true));
 		rotationRoutine->setLooping(true);
 		movementManager->linkRotationRoutine(shapes[i], "SHAPE_ROTATION_" + std::to_string(i));
 		movementManager->startRotationRoutine(shapes[i], "SHAPE_ROTATION_" + std::to_string(i));
 	}
 
-	SidePanel side_panel(window, "Fonts/Helvetica Regular.otf", 48u, 32u, 12.f);
-	side_panel.setBackgroundColor(sf::Color(50, 50, 50));
-	side_panel.setPadding(40.f);
-	side_panel.setTitle("Ease Functions");
-	side_panel.addText("Up - Next function");
+
+	// Side panel
+	SidePanel side_panel(window, "Fonts/Helvetica Regular.otf", 48u, 28u, 20u);
+	side_panel.setBackgroundColor(sf::Color(50, 50, 50, 245));
+	side_panel.setTitle("Controls");
+	side_panel.addText("Up      - Next function");
 	side_panel.addText("Down - Previous function");
-	side_panel.addText("X - Show panel");
+	side_panel.addText(" ");
+	side_panel.addText("Left   - Decrease animation speed");
+	side_panel.addText("Right - Increase animation speed");
+	side_panel.addText(" ");
+	side_panel.addText("M - Pause/Unpause movement");
+	side_panel.addText("S - Pause/Unpause scaling");
+	side_panel.addText("R - Pause/Unpause rotation");
+	side_panel.addText(" ");
+	side_panel.addText("C - Show controls");
 
+	// GUI Text
+	sf::Text controls_text("[C] - Controls", font, 20u);
+	controls_text.setPosition(10.f, 10.f);
 
+	sf::Text animation_speed_text("Animation speed: " + std::format("{:.2f}", animation_time) + "s", font, 20u);
+	animation_speed_text.setPosition(10.f, 40.f);
+
+	bool movement_paused = false, scaling_paused  = false, rotation_paused = false;
+	sf::Text movement_paused_text("Movement: ON", font, 20u);
+	sf::Text scaling_paused_text("Scaling: ON", font, 20u);
+	sf::Text rotation_paused_text("Rotation: ON", font, 20u);
+
+	movement_paused_text.setPosition(10.f, window.getSize().y - 120.f);
+	scaling_paused_text.setPosition(10.f, window.getSize().y - 80.f);
+	rotation_paused_text.setPosition(10.f, window.getSize().y - 40.f);
 
 	while (running)
 	{
@@ -165,48 +166,129 @@ void demo1(sf::RenderWindow& window) {
 			if (event.type == sf::Event::Closed || (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape))
 				running = false;
 
-			if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::Up || event.key.code == sf::Keyboard::W)) {
-				current_ease_type += rows;
-				if (current_ease_type >= easeTypeSize - 2)
-					current_ease_type = 0;
+			if (event.type == sf::Event::KeyPressed) {
+				// = = = = = Change ease function = = = = =
+				if (event.key.code == sf::Keyboard::Up) {
+					current_ease_type += rows;
+					if (current_ease_type >= easeTypeSize - 2)
+						current_ease_type = 0;
 
-				for (int i = 0; i < rows; i++) {
-					text[i].setString(easeFunctions::getFunctionName(current_ease_type + i));
-					graphs[i].setFunction(easeFunctions::getFunction(current_ease_type + i));
+					for (int i = 0; i < rows; i++) {
+						text[i].setString(easeFunctions::getFunctionName(current_ease_type + i));
+						graphs[i].setFunction(easeFunctions::getFunction(current_ease_type + i));
 
-					movementManager->setFunction(shapes[i], easeFunctions::getTmovement(current_ease_type + i));
-					movementManager->resetRoutines(shapes[i]);
+						movementManager->setFunction(shapes[i], easeFunctions::getTmovement(current_ease_type + i));
+						movementManager->resetRoutines(shapes[i]);
+					}
+
+				}
+				else if (event.key.code == sf::Keyboard::Down) {
+					current_ease_type -= rows;
+					if (current_ease_type < 0)
+						current_ease_type = easeTypeSize - rows;
+
+					for (size_t i = 0; i < rows; i++) {
+						text[i].setString(easeFunctions::getFunctionName(current_ease_type + i));
+						graphs[i].setFunction(easeFunctions::getFunction(current_ease_type + i));
+
+						movementManager->setFunction(shapes[i], easeFunctions::getTmovement(current_ease_type + i));
+						movementManager->resetRoutines(shapes[i]);
+					}
 				}
 
-			}
-			else if (event.type == sf::Event::KeyPressed && (event.key.code == sf::Keyboard::Down || event.key.code == sf::Keyboard::S)) {
-				current_ease_type -= rows;
-				if (current_ease_type < 0)
-					current_ease_type = easeTypeSize - rows;
+				// = = = = = Change animation time = = = = =
+				if (event.key.code == sf::Keyboard::Left || event.key.code == sf::Keyboard::A) {
+					animation_time -= 0.25f;
+					if (animation_time < 0.25f)
+						animation_time = 0.25f;
 
-				for (size_t i = 0; i < rows; i++) {
-					text[i].setString(easeFunctions::getFunctionName(current_ease_type + i));
-					graphs[i].setFunction(easeFunctions::getFunction(current_ease_type + i));
-
-					movementManager->setFunction(shapes[i], easeFunctions::getTmovement(current_ease_type + i));
-					movementManager->resetRoutines(shapes[i]);
+					animation_speed_text.setString("Animation speed: " + std::format("{:.2f}", animation_time) + "s");
+					for (size_t i = 0; i < rows; i++)
+						movementManager->setAnimationTime(shapes[i], animation_time);
 				}
-			}
+				else if (event.key.code == sf::Keyboard::Right || event.key.code == sf::Keyboard::D) {
+					animation_time += 0.25f;
+					if (animation_time > 25.f)
+						animation_time = 25.f;
 
-			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::X) {
-				side_panel.show();
-			}
+					animation_speed_text.setString("Animation speed: " + std::format("{:.2f}", animation_time) + "s");
+					for (size_t i = 0; i < rows; i++)
+						movementManager->setAnimationTime(shapes[i], animation_time);
+				}
 
-			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Z) {
-				side_panel.hide();
-			}
+				// = = = = = Pause/Unpause movement = = = = =
+				if (event.key.code == sf::Keyboard::M) {
+					if (movement_paused) {
+						for (size_t i = 0; i < rows; ++i) {
+							movementManager->resetMovementRoutine(shapes[i], "SHAPE_MOVEMENT_" + std::to_string(i));
 
-			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::LBracket) {
-				side_panel.setTitleFontSize(side_panel.getTitleFontSize() + 1);
-			}
+							if (!scaling_paused)
+								movementManager->resetScalingRoutine(shapes[i], "SHAPE_SCALING_" + std::to_string(i));
 
-			if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::RBracket) {
-				side_panel.setTitleFontSize(side_panel.getTitleFontSize() - 1);
+							if (!rotation_paused)
+								movementManager->resetRotationRoutine(shapes[i], "SHAPE_ROTATION_" + std::to_string(i));
+						}
+						movement_paused_text.setString("Movement: ON");
+					}
+					else {
+						for (size_t i = 0; i < rows; ++i)
+							movementManager->pauseMovementRoutine(shapes[i], "SHAPE_MOVEMENT_" + std::to_string(i));
+						movement_paused_text.setString("Movement: OFF");
+					}
+
+					movement_paused = !movement_paused;
+				}
+
+				// = = = = = Pause/Unpause scaling = = = = =
+				if (event.key.code == sf::Keyboard::S) {
+					if (scaling_paused) {
+						for (size_t i = 0; i < rows; ++i) {
+							movementManager->resetScalingRoutine(shapes[i], "SHAPE_SCALING_" + std::to_string(i));
+
+							if (!movement_paused)
+								movementManager->resetMovementRoutine(shapes[i], "SHAPE_MOVEMENT_" + std::to_string(i));
+
+							if (!rotation_paused)
+								movementManager->resetRotationRoutine(shapes[i], "SHAPE_ROTATION_" + std::to_string(i));
+						}
+						scaling_paused_text.setString("Scaling: ON");
+					}
+					else {
+						for (size_t i = 0; i < rows; ++i)
+							movementManager->pauseScalingRoutine(shapes[i], "SHAPE_SCALING_" + std::to_string(i));
+						scaling_paused_text.setString("Scaling: OFF");
+					}
+
+					scaling_paused = !scaling_paused;
+				}
+
+				// = = = = = Pause/Unpause rotation = = = = =
+				if (event.key.code == sf::Keyboard::R) {
+					if (rotation_paused) {
+						for (size_t i = 0; i < rows; ++i) {
+							movementManager->resetRotationRoutine(shapes[i], "SHAPE_ROTATION_" + std::to_string(i));
+
+							if (!movement_paused)
+								movementManager->resetMovementRoutine(shapes[i], "SHAPE_MOVEMENT_" + std::to_string(i));
+
+							if (!scaling_paused)
+								movementManager->resetScalingRoutine(shapes[i], "SHAPE_SCALING_" + std::to_string(i));
+						}
+						rotation_paused_text.setString("Rotation: ON");
+					}
+					else {
+						for (size_t i = 0; i < rows; ++i)
+							movementManager->pauseRotationRoutine(shapes[i], "SHAPE_ROTATION_" + std::to_string(i));
+						rotation_paused_text.setString("Rotation: OFF");
+					}
+
+					rotation_paused = !rotation_paused;
+				}
+
+				// = = = = = Show controls = = = = =
+				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::C) {
+					side_panel.toggle();
+				}
 			}
 		}
 
@@ -214,13 +296,17 @@ void demo1(sf::RenderWindow& window) {
 		for (int i = 0; i < rows; i++) {
 			window.draw(text[i]);
 			window.draw(shapes[i]);
-
 			graphs[i].draw(window);
-
-			window.draw(up_arrow);
-			window.draw(down_arrow);
 		}
 
+		window.draw(up_arrow, up_arrow.getTransform());
+		window.draw(down_arrow, down_arrow.getTransform());
+
+		window.draw(animation_speed_text);
+		window.draw(controls_text);
+		window.draw(movement_paused_text);
+		window.draw(scaling_paused_text);
+		window.draw(rotation_paused_text);
 		side_panel.draw(window);
 
 		window.display();

@@ -1282,9 +1282,10 @@ void MovementRoutineEngine::update(float dt)
 				scalingRoutine = nullptr;
 
 		auto& rotationRoutine = std::get<2>(*routines->second);
-		if (rotationRoutine != nullptr)
+		if (rotationRoutine != nullptr) 
 			if (!rotationRoutine->update(*routines->first, dt))
 				rotationRoutine = nullptr;
+			
 
 		if (!movementRoutine && !scalingRoutine && !rotationRoutine) {
 			delete routines->second;

@@ -87,6 +87,8 @@ public:
 	void setFunction(double(*usedFunctionPtr)(double));
 	void setFunction(double(*usedFunctionPtr)(double), const size_t movement_id);
 
+	void setAnimationTime(const float animationTime);
+
 	movementInfo* operator[](const size_t& index) const;
 
 	const long long int& size() const;
@@ -134,6 +136,8 @@ public:
 	void setFunction(double(*usedFunctionPtr)(double));
 	void setFunction(double(*usedFunctionPtr)(double), const size_t scaling_id);
 
+	void setAnimationTime(const float animationTime);
+
 	const long long int& size() const;
 };
 
@@ -180,6 +184,8 @@ public:
 	void setFunction(easeFunctions::Tmovement_function usedFunctionType, const size_t rotation_id);
 	void setFunction(double(*usedFunctionPtr)(double));
 	void setFunction(double(*usedFunctionPtr)(double), const size_t rotation_id);
+
+	void setAnimationTime(const float animationTime);
 
 	const long long int& size() const;
 };

@@ -32,6 +32,7 @@ public:
 	const bool isFinished() const;
 	void setFunction(easeFunctions::Tmovement_function usedFunctionType);
 	void setFunction(double (*usedFunctionPtr)(double));
+	void setAnimationTime(const float time);
 };
 
 

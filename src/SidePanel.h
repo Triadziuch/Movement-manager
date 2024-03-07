@@ -11,11 +11,11 @@ private:
 	const sf::RenderTarget* m_window{};
 
 	// Font variables
-	std::string m_fontPath{};
-	sf::Font	m_font{};
-	unsigned	m_titleFontSize{};
-	unsigned	m_textFontSize{};
-	float		m_padding{};
+	std::string  m_fontPath{};
+	sf::Font	 m_font{};
+	unsigned int m_titleFontSize{};
+	unsigned int m_textFontSize{};
+	float		 m_padding{};
 	
 	// Movement variables
 	float		m_duration{ 0.5f };
@@ -48,7 +48,7 @@ private:
 public:
 	// Constructors / Destructors
 	SidePanel();
-	SidePanel(const sf::RenderTarget& window, const std::string& fontPath, unsigned titleFontSize = 32u, unsigned textFontSize = 16u, float padding = 12.f);
+	SidePanel(const sf::RenderTarget& window, const std::string& fontPath, unsigned int  titleFontSize = 32u, unsigned int textFontSize = 16u, float padding = 12.f);
 	SidePanel(const SidePanel& obj);
 	~SidePanel();
 
@@ -64,7 +64,7 @@ public:
 	void setHeight(float height);
 	void setBackgroundColor(const sf::Color& color);
 
-	unsigned getTitleFontSize() const;
+	unsigned int getTitleFontSize() const;
 
 	void setTitle(const std::string& title);
 	void addText(const std::string& label);
@@ -72,6 +72,8 @@ public:
 
 	void show();
 	void hide();
+	void toggle();
 
+	// Draw functions
 	void draw(sf::RenderTarget& window);
 };

@@ -589,7 +589,7 @@ void movementDemo2(sf::RenderWindow& window)
 	
 
 	bool adjust_start_movement = false;
-	bool adjust_all_movement = true;
+	bool adjust_all_movement = false;
 	bool looping_movement = false;
 
 	sf::Vector2f starting_offset1(0.f, 0.f);
@@ -662,7 +662,7 @@ void movementDemo2(sf::RenderWindow& window)
 	movementManager->linkMovementRoutine(arrow4, "TestowyMVA4");
 
 	bool adjust_start_rotation = false;
-	bool adjust_all_rotation = true;
+	bool adjust_all_rotation = false;
 	bool looping_rotation = false;
 	auto routineRShape = movementManager->createRotationRoutine("TestowyR1");
 	routineRShape->addRotation(new rotationInfo(30.f, 180.f, animation_time, easeFunctions::IN_OUT_SINE, false, delay_before, delay_after, false));
@@ -729,7 +729,7 @@ void movementDemo2(sf::RenderWindow& window)
 	movementManager->linkRotationRoutine(arrow4, "TestowyRVA4");
 
 	bool adjust_start_scaling = false;
-	bool adjust_all_scaling = true;
+	bool adjust_all_scaling = false;
 	bool looping_scaling = false;
 	sf::Vector2f starting_scale1(1.f, 1.f);
 	sf::Vector2f ending_scale1(1.5f, 1.5f);
@@ -810,6 +810,7 @@ void movementDemo2(sf::RenderWindow& window)
 	side_panel.addText(" ");
 	side_panel.addText("F - Adjust first to current transform");
 	side_panel.addText("A - Adjust all to current transform");
+	side_panel.addText("L - Looping movement");
 	side_panel.addText(" ");
 	side_panel.addText("Q - Reset demo");
 	side_panel.addText("ESC - Close demo");
@@ -820,11 +821,14 @@ void movementDemo2(sf::RenderWindow& window)
 	sf::Text controls_text("[C] - Controls", font, 20u);
 	controls_text.setPosition(10.f, 10.f);
 
-	sf::Text adjust_all_text("Adjust all to current transform: ON", font, 20u);
+	sf::Text adjust_all_text("Adjust all to current transform: OFF", font, 20u);
 	adjust_all_text.setPosition(10.f, 40.f);
 
 	sf::Text adjust_start_text("Adjust first to current transform: OFF", font, 20u);
 	adjust_start_text.setPosition(10.f, 70.f);
+
+	sf::Text looping_text("Looping: OFF", font, 20u);
+	looping_text.setPosition(10.f, 100.f);
 
 	while (running)
 	{
@@ -910,80 +914,6 @@ void movementDemo2(sf::RenderWindow& window)
 					movementManager->startScalingRoutine(arrow4, "TestowySVA4");
 				}
 				
-				// Adjust first to current transform
-				if (event.key.code == sf::Keyboard::F) {
-					adjust_start_movement = !adjust_start_movement;
-					adjust_start_rotation = !adjust_start_rotation;
-					adjust_start_scaling  = !adjust_start_scaling;
-
-					if (adjust_start_movement)
-						adjust_start_text.setString("Adjust first to current transform: ON");
-					else
-						adjust_start_text.setString("Adjust first to current transform: OFF");
-
-					for (size_t i = 0; i < 4; ++i) {
-						movementManager->setAdjustStartToCurrent(shape[i], adjust_start_movement);
-						movementManager->setAdjustStartToCurrent(shape[i], adjust_start_rotation);
-						movementManager->setAdjustStartToCurrent(shape[i], adjust_start_scaling);
-						movementManager->resetMovementRoutine(shape[i], "TestowyM" + std::to_string(i + 1));
-						movementManager->resetRotationRoutine(shape[i], "TestowyS" + std::to_string(i + 1));
-						movementManager->resetScalingRoutine(shape[i], "TestowyR" + std::to_string(i + 1));
-					}
-
-					movementManager->setAdjustStartToCurrent(arrow1, adjust_start_movement);
-					movementManager->setAdjustStartToCurrent(arrow1, adjust_start_rotation);
-					movementManager->setAdjustStartToCurrent(arrow1, adjust_start_scaling);
-
-					movementManager->setAdjustStartToCurrent(arrow2, adjust_start_movement);
-					movementManager->setAdjustStartToCurrent(arrow2, adjust_start_rotation);
-					movementManager->setAdjustStartToCurrent(arrow2, adjust_start_scaling);
-
-					movementManager->setAdjustStartToCurrent(arrow3, adjust_start_movement);
-					movementManager->setAdjustStartToCurrent(arrow3, adjust_start_rotation);
-					movementManager->setAdjustStartToCurrent(arrow3, adjust_start_scaling);
-
-					movementManager->setAdjustStartToCurrent(arrow4, adjust_start_movement);
-					movementManager->setAdjustStartToCurrent(arrow4, adjust_start_rotation);
-					movementManager->setAdjustStartToCurrent(arrow4, adjust_start_scaling);
-				}
-
-				// Adjust all to current transform
-				if (event.key.code == sf::Keyboard::A) {
-					adjust_all_movement = !adjust_all_movement;
-					adjust_all_rotation = !adjust_all_rotation;
-					adjust_all_scaling = !adjust_all_scaling;
-
-					if (adjust_all_movement)
-						adjust_all_text.setString("Adjust all to current transform: ON");
-					else
-						adjust_all_text.setString("Adjust all to current transform: OFF");
-
-					for (size_t i = 0; i < 4; ++i) {
-						movementManager->setAdjustAllToCurrent(shape[i], adjust_all_movement);
-						movementManager->setAdjustAllToCurrent(shape[i], adjust_all_rotation);
-						movementManager->setAdjustAllToCurrent(shape[i], adjust_all_scaling);
-						movementManager->resetMovementRoutine(shape[i], "TestowyM" + std::to_string(i + 1));
-						movementManager->resetRotationRoutine(shape[i], "TestowyS" + std::to_string(i + 1));
-						movementManager->resetScalingRoutine(shape[i], "TestowyR" + std::to_string(i + 1));
-					}
-
-					movementManager->setAdjustAllToCurrent(arrow1, adjust_all_movement);
-					movementManager->setAdjustAllToCurrent(arrow1, adjust_all_rotation);
-					movementManager->setAdjustAllToCurrent(arrow1, adjust_all_scaling);
-
-					movementManager->setAdjustAllToCurrent(arrow2, adjust_all_movement);
-					movementManager->setAdjustAllToCurrent(arrow2, adjust_all_rotation);
-					movementManager->setAdjustAllToCurrent(arrow2, adjust_all_scaling);
-
-					movementManager->setAdjustAllToCurrent(arrow3, adjust_all_movement);
-					movementManager->setAdjustAllToCurrent(arrow3, adjust_all_rotation);
-					movementManager->setAdjustAllToCurrent(arrow3, adjust_all_scaling);
-
-					movementManager->setAdjustAllToCurrent(arrow4, adjust_all_movement);
-					movementManager->setAdjustAllToCurrent(arrow4, adjust_all_rotation);
-					movementManager->setAdjustAllToCurrent(arrow4, adjust_all_scaling);
-				}
-
 				// Reset demo
 				if (event.key.code == sf::Keyboard::Q) {
 					for (int i = 0; i < 4; i++) {
@@ -996,6 +926,170 @@ void movementDemo2(sf::RenderWindow& window)
 					arrow2.setPosition(600.f, 440.f);
 					arrow3.setPosition(600.f, 640.f);
 					arrow4.setPosition(600.f, 840.f);
+
+					looping_movement = false;
+					looping_rotation = false;
+					looping_scaling = false;
+
+					adjust_start_movement = false;
+					adjust_all_movement = false;
+					adjust_start_rotation = false;
+
+					adjust_start_text.setString("Adjust first to current transform: OFF");
+					adjust_all_text.setString("Adjust all to current transform: OFF");
+					looping_text.setString("Looping: OFF");
+				}
+
+				// Adjust first to current transform
+				if (event.key.code == sf::Keyboard::F) {
+					adjust_start_movement = !adjust_start_movement;
+					adjust_start_rotation = !adjust_start_rotation;
+					adjust_start_scaling  = !adjust_start_scaling;
+
+					if (adjust_start_movement)
+						adjust_start_text.setString("Adjust first to current transform: ON");
+					else
+						adjust_start_text.setString("Adjust first to current transform: OFF");
+				}
+
+				// Adjust all to current transform
+				if (event.key.code == sf::Keyboard::A) {
+					adjust_all_movement = !adjust_all_movement;
+					adjust_all_rotation = !adjust_all_rotation;
+					adjust_all_scaling = !adjust_all_scaling;
+
+					if (adjust_all_movement)
+						adjust_all_text.setString("Adjust all to current transform: ON");
+					else
+						adjust_all_text.setString("Adjust all to current transform: OFF");
+				}
+
+				if (event.key.code == sf::Keyboard::A || event.key.code == sf::Keyboard::F || event.key.code == sf::Keyboard::Q) {
+					for (size_t i = 0; i < 4; ++i) {
+						movementManager->unlinkMovementRoutine(&shape[i], "TestowyM" + std::to_string(i + 1));
+						auto movementRoutine = movementManager->linkMovementRoutine(shape[i], "TestowyM" + std::to_string(i + 1));
+						movementRoutine->adjustStartToCurrentTransform(adjust_start_movement);
+						movementRoutine->adjustAllToCurrentTransform(adjust_all_movement);
+						movementRoutine->setLooping(looping_movement);
+
+						movementManager->unlinkScalingRoutine(&shape[i], "TestowyS" + std::to_string(i + 1));
+						auto scalingRoutine = movementManager->linkScalingRoutine(shape[i], "TestowyS" + std::to_string(i + 1));
+						scalingRoutine->adjustStartToCurrentTransform(adjust_start_scaling);
+						scalingRoutine->adjustAllToCurrentTransform(adjust_all_scaling);
+						scalingRoutine->setLooping(looping_scaling);
+
+						movementManager->unlinkRotationRoutine(&shape[i], "TestowyR" + std::to_string(i + 1));
+						auto rotationRoutine = movementManager->linkRotationRoutine(shape[i], "TestowyR" + std::to_string(i + 1));
+						rotationRoutine->adjustStartToCurrentTransform(adjust_start_rotation);
+						rotationRoutine->adjustAllToCurrentTransform(adjust_all_rotation);
+						rotationRoutine->setLooping(looping_rotation);
+					}
+
+					movementManager->unlinkMovementRoutine(&arrow1, "TestowyMVA1");
+					auto movementRoutine = movementManager->linkMovementRoutine(arrow1, "TestowyMVA1");
+					movementRoutine->adjustStartToCurrentTransform(adjust_start_movement);
+					movementRoutine->adjustAllToCurrentTransform(adjust_all_movement);
+					movementRoutine->setLooping(looping_movement);
+
+					movementManager->unlinkScalingRoutine(&arrow1, "TestowySVA1");
+					auto scalingRoutine = movementManager->linkScalingRoutine(arrow1, "TestowySVA1");
+					scalingRoutine->adjustStartToCurrentTransform(adjust_start_scaling);
+					scalingRoutine->adjustAllToCurrentTransform(adjust_all_scaling);
+					scalingRoutine->setLooping(looping_scaling);
+
+					movementManager->unlinkRotationRoutine(&arrow1, "TestowyRVA1");
+					auto rotationRoutine = movementManager->linkRotationRoutine(arrow1, "TestowyRVA1");
+					rotationRoutine->adjustStartToCurrentTransform(adjust_start_rotation);
+					rotationRoutine->adjustAllToCurrentTransform(adjust_all_rotation);
+					rotationRoutine->setLooping(looping_rotation);
+
+					movementManager->unlinkMovementRoutine(&arrow2, "TestowyMVA2");
+					movementRoutine = movementManager->linkMovementRoutine(arrow2, "TestowyMVA2");
+					movementRoutine->adjustStartToCurrentTransform(adjust_start_movement);
+					movementRoutine->adjustAllToCurrentTransform(adjust_all_movement);
+					movementRoutine->setLooping(looping_movement);
+
+					movementManager->unlinkScalingRoutine(&arrow2, "TestowySVA2");
+					scalingRoutine = movementManager->linkScalingRoutine(arrow2, "TestowySVA2");
+					scalingRoutine->adjustStartToCurrentTransform(adjust_start_scaling);
+					scalingRoutine->adjustAllToCurrentTransform(adjust_all_scaling);
+					scalingRoutine->setLooping(looping_scaling);
+
+					movementManager->unlinkRotationRoutine(&arrow2, "TestowyRVA2");
+					rotationRoutine = movementManager->linkRotationRoutine(arrow2, "TestowyRVA2");
+					rotationRoutine->adjustStartToCurrentTransform(adjust_start_rotation);
+					rotationRoutine->adjustAllToCurrentTransform(adjust_all_rotation);
+					rotationRoutine->setLooping(looping_rotation);
+
+					movementManager->unlinkMovementRoutine(&arrow3, "TestowyMVA3");
+					movementRoutine = movementManager->linkMovementRoutine(arrow3, "TestowyMVA3");
+					movementRoutine->adjustStartToCurrentTransform(adjust_start_movement);
+					movementRoutine->adjustAllToCurrentTransform(adjust_all_movement);
+					movementRoutine->setLooping(looping_movement);
+
+					movementManager->unlinkScalingRoutine(&arrow3, "TestowySVA3");
+					scalingRoutine = movementManager->linkScalingRoutine(arrow3, "TestowySVA3");
+					scalingRoutine->adjustStartToCurrentTransform(adjust_start_scaling);
+					scalingRoutine->adjustAllToCurrentTransform(adjust_all_scaling);
+					scalingRoutine->setLooping(looping_scaling);
+
+					movementManager->unlinkRotationRoutine(&arrow3, "TestowyRVA3");
+					rotationRoutine = movementManager->linkRotationRoutine(arrow3, "TestowyRVA3");
+					rotationRoutine->adjustStartToCurrentTransform(adjust_start_rotation);
+					rotationRoutine->adjustAllToCurrentTransform(adjust_all_rotation);
+					rotationRoutine->setLooping(looping_rotation);
+
+					movementManager->unlinkMovementRoutine(&arrow4, "TestowyMVA4");
+					movementRoutine = movementManager->linkMovementRoutine(arrow4, "TestowyMVA4");
+					movementRoutine->adjustStartToCurrentTransform(adjust_start_movement);
+					movementRoutine->adjustAllToCurrentTransform(adjust_all_movement);
+					movementRoutine->setLooping(looping_movement);
+
+					movementManager->unlinkScalingRoutine(&arrow4, "TestowySVA4");
+					scalingRoutine = movementManager->linkScalingRoutine(arrow4, "TestowySVA4");
+					scalingRoutine->adjustStartToCurrentTransform(adjust_start_scaling);
+					scalingRoutine->adjustAllToCurrentTransform(adjust_all_scaling);
+					scalingRoutine->setLooping(looping_scaling);
+
+					movementManager->unlinkRotationRoutine(&arrow4, "TestowyRVA4");
+					rotationRoutine = movementManager->linkRotationRoutine(arrow4, "TestowyRVA4");
+					rotationRoutine->adjustStartToCurrentTransform(adjust_start_rotation);
+					rotationRoutine->adjustAllToCurrentTransform(adjust_all_rotation);
+					rotationRoutine->setLooping(looping_rotation);
+				}
+
+				// Looping movement
+				if (event.key.code == sf::Keyboard::L) {
+					looping_movement = !looping_movement;
+					looping_rotation = !looping_rotation;
+					looping_scaling = !looping_scaling;
+
+					if (looping_movement)
+						looping_text.setString("Looping: ON");
+					else
+						looping_text.setString("Looping: OFF");
+
+					for (size_t i = 0; i < 4; ++i) {
+						movementManager->getMovementRoutine(shape[i], "TestowyM" + std::to_string(i + 1))->setLooping(looping_movement);
+						movementManager->getScalingRoutine(shape[i], "TestowyS" + std::to_string(i + 1))->setLooping(looping_scaling);
+						movementManager->getRotationRoutine(shape[i], "TestowyR" + std::to_string(i + 1))->setLooping(looping_rotation);
+					}
+
+					movementManager->getMovementRoutine(arrow1, "TestowyMVA1")->setLooping(looping_movement);
+					movementManager->getScalingRoutine(arrow1, "TestowySVA1")->setLooping(looping_scaling);
+					movementManager->getRotationRoutine(arrow1, "TestowyRVA1")->setLooping(looping_rotation);
+
+					movementManager->getMovementRoutine(arrow2, "TestowyMVA2")->setLooping(looping_movement);
+					movementManager->getScalingRoutine(arrow2, "TestowySVA2")->setLooping(looping_scaling);
+					movementManager->getRotationRoutine(arrow2, "TestowyRVA2")->setLooping(looping_rotation);
+
+					movementManager->getMovementRoutine(arrow3, "TestowyMVA3")->setLooping(looping_movement);
+					movementManager->getScalingRoutine(arrow3, "TestowySVA3")->setLooping(looping_scaling);
+					movementManager->getRotationRoutine(arrow3, "TestowyRVA3")->setLooping(looping_rotation);
+
+					movementManager->getMovementRoutine(arrow4, "TestowyMVA4")->setLooping(looping_movement);
+					movementManager->getScalingRoutine(arrow4, "TestowySVA4")->setLooping(looping_scaling);
+					movementManager->getRotationRoutine(arrow4, "TestowyRVA4")->setLooping(looping_rotation);
 				}
 
 				// Show controls
@@ -1016,6 +1110,7 @@ void movementDemo2(sf::RenderWindow& window)
 		window.draw(controls_text);
 		window.draw(adjust_start_text);
 		window.draw(adjust_all_text);
+		window.draw(looping_text);
 
 		side_panel.draw(window);
 

@@ -4,117 +4,117 @@
 // Private functions
 void Graph::drawFunction()
 {
-	if (this->used_function == nullptr)
+	if (used_function == nullptr)
 		return;
 
-	if (this->function_vertexes.getVertexCount() != 0)
-		this->function_vertexes.clear();
+	if (function_vertexes.getVertexCount() != 0)
+		function_vertexes.clear();
 
-	this->function_vertexes.setPrimitiveType(sf::LineStrip);
-	this->function_vertexes.resize(static_cast<size_t>(this->precision + 1));
+	function_vertexes.setPrimitiveType(sf::LineStrip);
+	function_vertexes.resize(static_cast<size_t>(precision + 1));
 	
 	for (size_t i = 0; i <= static_cast<size_t>(precision); i++) {
-		this->function_vertexes[i].position = sf::Vector2f(
-					this->position.x + static_cast<float>(i) * this->scale.x,
-					this->position.y - this->precision * this->scale.y * static_cast<float>(this->used_function(static_cast<double>(i) / static_cast<double>(this->precision))));
+		function_vertexes[i].position = sf::Vector2f(
+					position.x + static_cast<float>(i) * scale.x,
+					position.y - precision * scale.y * static_cast<float>(used_function(static_cast<double>(i) / static_cast<double>(precision))));
 		
-		this->function_vertexes[i].color = this->function_color;
+		function_vertexes[i].color = function_color;
 	}
 }
 
 void Graph::drawOX()
 {
-	this->OX[0].position = this->position;
-	this->OX[1].position = sf::Vector2f(this->position.x + this->size.x, this->position.y);
+	OX[0].position = position;
+	OX[1].position = sf::Vector2f(position.x + size.x, position.y);
 
 	for (int i = 0; i < 2; i++)
-		this->OX[i].color = this->OX_color;
+		OX[i].color = OX_color;
 }
 
 void Graph::drawOY()
 {
-	this->OY[0].position = this->position;
-	this->OY[1].position = sf::Vector2f(this->position.x, this->position.y - this->size.y);
+	OY[0].position = position;
+	OY[1].position = sf::Vector2f(position.x, position.y - size.y);
 
 	for (int i = 0; i < 2; i++)
-		this->OY[i].color = this->OY_color;
+		OY[i].color = OY_color;
 }
 
 // Constructors & Destructors
 Graph::Graph()
 {
-	if (!this->font.loadFromFile("Fonts/Arial.ttf"))
-		printf("ERROR: Couldn't load font file: Fonts/Arial.ttf\n");
+	if (!font.loadFromFile("Fonts/Helvetica Regular.otf"))
+		printf("ERROR: Couldn't load font file: Fonts/Helvetica Regular.otf\n");
 
-	this->OX_label.setFont(this->font);
-	this->OX_label.setCharacterSize(this->label_size);
-	this->OX_label.setString(this->OX_label_string);
-	this->OX_label.setFillColor(sf::Color::White);
+	OX_label.setFont(font);
+	OX_label.setCharacterSize(label_size);
+	OX_label.setString(OX_label_string);
+	OX_label.setFillColor(sf::Color::White);
 
-	this->OY_label.setFont(this->font);
-	this->OY_label.setCharacterSize(this->label_size);
-	this->OY_label.setString(this->OY_label_string);
-	this->OX_label.setFillColor(sf::Color::White);
+	OY_label.setFont(font);
+	OY_label.setCharacterSize(label_size);
+	OY_label.setString(OY_label_string);
+	OX_label.setFillColor(sf::Color::White);
 }
 
 Graph::Graph(sf::Vector2f _position, sf::Vector2f _size, int _precision, double(*_used_function)(double))
 {
-	this->position = _position;
-	this->used_function = _used_function;
-	this->size = _size;
-	this->precision = _precision < 0 ? 0 : _precision;
-	this->scale = { this->size.x / static_cast<float>(this->precision), this->size.y / static_cast<float>(this->precision) };
+	position = _position;
+	used_function = _used_function;
+	size = _size;
+	precision = _precision < 0 ? 0 : _precision;
+	scale = { size.x / static_cast<float>(precision), size.y / static_cast<float>(precision) };
 
 	if (_used_function != nullptr) {
-		this->drawFunction();
-		this->drawOX();
-		this->drawOY();
+		drawFunction();
+		drawOX();
+		drawOY();
 	}
 
-	if (!this->font.loadFromFile("Fonts/Arial.ttf"))
+	if (!font.loadFromFile("Fonts/Arial.ttf"))
 		printf("ERROR: Couldn't load font file: Fonst/Arial.ttf\n");
 
-	this->OX_label.setFont(this->font);
-	this->OX_label.setCharacterSize(this->label_size);
-	this->OX_label.setString(this->OX_label_string);
-	this->OX_label.setFillColor(sf::Color::White);
-	this->OX_label.setPosition(this->position.x + this->size.x + 10.f, this->position.y - this->OX_label.getGlobalBounds().height);
+	OX_label.setFont(font);
+	OX_label.setCharacterSize(label_size);
+	OX_label.setString(OX_label_string);
+	OX_label.setFillColor(sf::Color::White);
+	OX_label.setPosition(position.x + size.x + 10.f, position.y - OX_label.getGlobalBounds().height);
 
-	this->OY_label.setFont(this->font);
-	this->OY_label.setCharacterSize(this->label_size);
-	this->OY_label.setString(this->OY_label_string);
-	this->OX_label.setFillColor(sf::Color::White);
-	this->OY_label.setPosition(this->position.x - this->OY_label.getGlobalBounds().width / 2.f, this->position.y - this->size.y - this->OY_label.getGlobalBounds().height - 30.f);
+	OY_label.setFont(font);
+	OY_label.setCharacterSize(label_size);
+	OY_label.setString(OY_label_string);
+	OX_label.setFillColor(sf::Color::White);
+	OY_label.setPosition(position.x - OY_label.getGlobalBounds().width / 2.f, position.y - size.y - OY_label.getGlobalBounds().height - 30.f);
 }
 
 Graph::Graph(const Graph& _graph)
 {
 	// Axis variables
 	for (size_t i = 0; i < 2; ++i) {
-		this->OX[i] = _graph.OX[i];
-		this->OY[i] = _graph.OY[i];
+		OX[i] = _graph.OX[i];
+		OY[i] = _graph.OY[i];
 	}
-	this->OX_color		 = _graph.OX_color;
-	this->OY_color		 = _graph.OY_color;
-	this->axis_visible	 = _graph.axis_visible;
+	OX_color		 = _graph.OX_color;
+	OY_color		 = _graph.OY_color;
+	axis_visible	 = _graph.axis_visible;
 
-	this->font = _graph.font;
-	this->label_size = _graph.label_size;
-	this->OX_label_string = _graph.OX_label_string;
-	this->OY_label_string = _graph.OY_label_string;
-	this->OX_label = _graph.OX_label;
-	this->OY_label = _graph.OY_label;
+	font = _graph.font;
+	label_size = _graph.label_size;
+	OX_label_string = _graph.OX_label_string;
+	OY_label_string = _graph.OY_label_string;
+	OX_label = _graph.OX_label;
+	OY_label = _graph.OY_label;
 
 	// Function variables
-	this->function_vertexes	 = _graph.function_vertexes;
-	this->function_color	 = _graph.function_color;
-	this->precision			 = _graph.precision;
-	this->used_function		 = _graph.used_function;
+	function_vertexes	 = _graph.function_vertexes;
+	function_color	 = _graph.function_color;
+	precision			 = _graph.precision;
+	used_function		 = _graph.used_function;
 
 	// General variables
-	this->position	= _graph.position;
-	this->size		= _graph.size;
-	this->scale		= _graph.scale;
+	position	= _graph.position;
+	size		= _graph.size;
+	scale		= _graph.scale;
 }
 
 Graph::~Graph()
@@ -124,115 +124,115 @@ Graph::~Graph()
 // Public functions
 void Graph::setOXColor(sf::Color _color)
 {
-	if (this->OX_color != _color) {
-		this->OX_color = _color;
+	if (OX_color != _color) {
+		OX_color = _color;
 
 		for (int i = 0; i < 2; i++)
-			this->OX[i].color = this->OX_color;
+			OX[i].color = OX_color;
 	}
 }
 
 void Graph::setOYColor(sf::Color _color)
 {
-	if (this->OY_color != _color) {
-		this->OY_color = _color;
+	if (OY_color != _color) {
+		OY_color = _color;
 
 		for (int i = 0; i < 2; i++)
-			this->OY[i].color = this->OY_color;
+			OY[i].color = OY_color;
 	}
 }
 
 void Graph::setLineColor(sf::Color _color)
 {
-	if (this->function_color != _color) {
-		this->function_color = _color;
+	if (function_color != _color) {
+		function_color = _color;
 
-		for (size_t i = 0; i < this->function_vertexes.getVertexCount(); i++)
-			this->function_vertexes[i].color = this->function_color;
+		for (size_t i = 0; i < function_vertexes.getVertexCount(); i++)
+			function_vertexes[i].color = function_color;
 	}
 }
 
 void Graph::setSize(sf::Vector2f _size)
 {
-	if (this->size != _size) {
-		this->size = _size;
-		this->scale = { this->size.x / static_cast<float>(this->precision), this->size.y / static_cast<float>(this->precision) };
+	if (size != _size) {
+		size = _size;
+		scale = { size.x / static_cast<float>(precision), size.y / static_cast<float>(precision) };
 
-		this->drawFunction();
-		this->drawOX();
-		this->drawOY();
+		drawFunction();
+		drawOX();
+		drawOY();
 
-		this->OX_label.setPosition(this->position.x + this->size.x + 10.f, this->position.y - this->OX_label.getGlobalBounds().height);
-		this->OY_label.setPosition(this->position.x - this->OY_label.getGlobalBounds().width / 2.f, this->position.y - this->size.y - this->OY_label.getGlobalBounds().height - 30.f);
+		OX_label.setPosition(position.x + size.x + 10.f, position.y - OX_label.getGlobalBounds().height);
+		OY_label.setPosition(position.x - OY_label.getGlobalBounds().width / 2.f, position.y - size.y - OY_label.getGlobalBounds().height - 30.f);
 	}
 }
 
 void Graph::setPrecision(int _precision)
 {
-	if (this->precision != _precision) {
-		this->precision = _precision < 0 ? 0 : _precision;
-		this->scale = { this->size.x / static_cast<float>(this->precision), this->size.y / static_cast<float>(this->precision) };
+	if (precision != _precision) {
+		precision = _precision < 0 ? 0 : _precision;
+		scale = { size.x / static_cast<float>(precision), size.y / static_cast<float>(precision) };
 
-		this->drawFunction();
-		this->drawOX();
-		this->drawOY();
+		drawFunction();
+		drawOX();
+		drawOY();
 	}
 }
 
 void Graph::setPosition(sf::Vector2f _position)
 {
-	if (this->position != _position) {
+	if (position != _position) {
 
-		sf::Vector2f offset = _position - this->position;
-		this->position = _position;
+		sf::Vector2f offset = _position - position;
+		position = _position;
 		
-		for (size_t i = 0; i < this->function_vertexes.getVertexCount(); i++)
-			this->function_vertexes[i].position += offset;
+		for (size_t i = 0; i < function_vertexes.getVertexCount(); i++)
+			function_vertexes[i].position += offset;
 		
 		for (int i = 0; i < 2; i++) {
-			this->OX[i].position += offset;
-			this->OY[i].position += offset;
+			OX[i].position += offset;
+			OY[i].position += offset;
 		}
 
-		this->OX_label.setPosition(this->OX_label.getPosition() + offset);
-		this->OY_label.setPosition(this->OY_label.getPosition() + offset);
+		OX_label.setPosition(OX_label.getPosition() + offset);
+		OY_label.setPosition(OY_label.getPosition() + offset);
 	}
 }
 
 void Graph::setFunction(double(*_used_function)(double))
 {
-	if (this->used_function != _used_function && _used_function != nullptr) {
-		this->used_function = _used_function;
-		this->drawFunction();
+	if (used_function != _used_function && _used_function != nullptr) {
+		used_function = _used_function;
+		drawFunction();
 	}
 }
 
 void Graph::setOXLabelText(std::string _label)
 {
-	if (this->OX_label_string != _label) {
-		this->OX_label_string = _label;
-		this->OX_label.setString(this->OX_label_string);
-		this->OX_label.setPosition(this->position.x + this->size.x + 10.f, this->position.y - this->OX_label.getGlobalBounds().height);
+	if (OX_label_string != _label) {
+		OX_label_string = _label;
+		OX_label.setString(OX_label_string);
+		OX_label.setPosition(position.x + size.x + 10.f, position.y - OX_label.getGlobalBounds().height);
 	}
 }
 
 void Graph::setOYLabelText(std::string _label)
 {
-	if (this->OY_label_string != _label) {
-		this->OY_label_string = _label;
-		this->OY_label.setString(this->OY_label_string);
-		this->OY_label.setPosition(this->position.x - this->OY_label.getGlobalBounds().width / 2.f, this->position.y - this->size.y - this->OY_label.getGlobalBounds().height - 30.f);
+	if (OY_label_string != _label) {
+		OY_label_string = _label;
+		OY_label.setString(OY_label_string);
+		OY_label.setPosition(position.x - OY_label.getGlobalBounds().width / 2.f, position.y - size.y - OY_label.getGlobalBounds().height - 30.f);
 	}
 }
 
 // Render functions
 void Graph::draw(sf::RenderWindow& window)
 {
-	if (this->axis_visible) {
-		window.draw(this->OX, 2, sf::Lines);
-		window.draw(this->OY, 2, sf::Lines);
-		window.draw(this->OX_label);
-		window.draw(this->OY_label);
+	if (axis_visible) {
+		window.draw(OX, 2, sf::Lines);
+		window.draw(OY, 2, sf::Lines);
+		window.draw(OX_label);
+		window.draw(OY_label);
 	}
-	window.draw(this->function_vertexes);
+	window.draw(function_vertexes);
 }

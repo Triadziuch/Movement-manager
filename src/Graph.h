@@ -46,22 +46,28 @@ public:
 	void setLineColor(sf::Color _color);
 
 	void setSize(sf::Vector2f _size);
-	void setSize(float _width, float _height) { this->setSize(sf::Vector2f(_width, _height)); }
+	void setSize(float _width, float _height) { setSize(sf::Vector2f(_width, _height)); }
+
 	void setPrecision(int _precision);
+
 	void setPosition(sf::Vector2f _position);
-	void setPosition(float _x, float _y) { this->setPosition(sf::Vector2f(_x, _y)); }
+	void setPosition(float _x, float _y) { setPosition(sf::Vector2f(_x, _y)); }
+
 	void setFunction(double(*_used_function)(double));
-	void setAxisVisible(bool _visible) { this->axis_visible = _visible; }
+
+	void setAxisVisible(bool _visible) { axis_visible = _visible; }
+	void toggleAxisVisible() { axis_visible = !axis_visible; }
+
 	void setOXLabelText(std::string _label);
 	void setOYLabelText(std::string _label);
 
 
 	// Accessors
-	const sf::Vector2f getSize()	 { return this->size; }
-	const int getPrecision()		 { return this->precision; }
-	const sf::Vector2f getPosition() { return this->position; }
-	double (*getFunction())(double)	 { return this->used_function; }
-	const bool getAxisVisible()	     { return this->axis_visible; }
+	const sf::Vector2f getSize()	 { return size; }
+	const int getPrecision()		 { return precision; }
+	const sf::Vector2f getPosition() { return position; }
+	double (*getFunction())(double)	 { return used_function; }
+	const bool getAxisVisible()	     { return axis_visible; }
 
 	// Render functions
 	void draw(sf::RenderWindow& window);

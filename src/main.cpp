@@ -1,3 +1,4 @@
+#pragma once
 #include <iostream>
 #include "MovementManager.h"
 #include "SFML\Graphics.hpp"
@@ -368,6 +369,7 @@ int main()
 	window.setVerticalSyncEnabled(true);
 
 	demo1(window);
+	//graphDemo1(window);
 
 	MovementContainer MovementContainer;
 

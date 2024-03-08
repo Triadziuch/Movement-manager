@@ -1021,6 +1021,4 @@ void movementDemo2(sf::RenderWindow& window)
 
 		window.display();
 	}
-
-	//delete[] shape;
 }

@@ -70,6 +70,37 @@ void MovementManager::setAnimationTime(sf::Transformable& transformable, const f
 		rotationRoutineFound->second->setAnimationTime(_time);
 }
 
+void MovementManager::setAdjustStartToCurrent(sf::Transformable& transformable, const bool _adjust)
+{
+	auto movementRoutineFound = m_routineMovementActive.find(&transformable);
+	if (movementRoutineFound != m_routineMovementActive.end())
+		movementRoutineFound->second->adjustStartToCurrentTransform(_adjust);
+
+	auto scalingRoutineFound = m_routineScaling_Active.find(&transformable);
+	if (scalingRoutineFound != m_routineScaling_Active.end())
+		scalingRoutineFound->second->adjustStartToCurrentTransform(_adjust);
+
+	auto rotationRoutineFound = m_routineRotation_Active.find(&transformable);
+	if (rotationRoutineFound != m_routineRotation_Active.end())
+		rotationRoutineFound->second->adjustStartToCurrentTransform(_adjust);
+
+}
+
+void MovementManager::setAdjustAllToCurrent(sf::Transformable& transformable, const bool _adjust)
+{
+	auto movementRoutineFound = m_routineMovementActive.find(&transformable);
+	if (movementRoutineFound != m_routineMovementActive.end())
+		movementRoutineFound->second->adjustAllToCurrentTransform(_adjust);
+
+	auto scalingRoutineFound = m_routineScaling_Active.find(&transformable);
+	if (scalingRoutineFound != m_routineScaling_Active.end())
+		scalingRoutineFound->second->adjustAllToCurrentTransform(_adjust);
+
+	auto rotationRoutineFound = m_routineRotation_Active.find(&transformable);
+	if (rotationRoutineFound != m_routineRotation_Active.end())
+		rotationRoutineFound->second->adjustAllToCurrentTransform(_adjust);
+}
+
 void MovementManager::resetRoutines(sf::Transformable& transformable)
 {
 	auto movementRoutineFound = m_routineMovementActive.find(&transformable);

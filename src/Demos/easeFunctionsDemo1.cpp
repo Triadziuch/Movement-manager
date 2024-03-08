@@ -1,7 +1,7 @@
 #include "easeFunctionsDemo1.h"
 
 // = = = = = = = = = = = = = = = = = = = = = = = = =  Movement Demo 1 = = = = = = = = = = = = = = = = = = = = = = = = = 
-void demo1(sf::RenderWindow& window) {
+void movementDemo1(sf::RenderWindow& window) {
 	MovementManager* movementManager = MovementManager::getInstance();
 
 	// Config
@@ -381,8 +381,8 @@ void demo1(sf::RenderWindow& window) {
 	movementManager->deleteRotationRoutine();
 }
 
-// = = = = = = = = = = = = = = = = = = = = = = = = =  Movement Demo 1 = = = = = = = = = = = = = = = = = = = = = = = = = 
-void graphDemo1(sf::RenderWindow& window)
+// = = = = = = = = = = = = = = = = = = = = = = = = =  Plot Demo 1 = = = = = = = = = = = = = = = = = = = = = = = = = 
+void plotDemo(sf::RenderWindow& window)
 {
 	MovementManager* movementManager = MovementManager::getInstance();
 
@@ -520,4 +520,507 @@ void graphDemo1(sf::RenderWindow& window)
 
 		window.display();
 	}
+}
+
+// = = = = = = = = = = = = = = = = = = = = = = = = =  Movement Demo 2 = = = = = = = = = = = = = = = = = = = = = = = = = 
+
+void movementDemo2(sf::RenderWindow& window)
+{
+	// Configuration
+	MovementManager* movementManager = MovementManager::getInstance();
+
+	bool running = true;
+	constexpr size_t easeTypeSize = 30;
+	int current_ease_type = 0;
+
+	float delay_before = 0.3f, animation_time = 0.5f, delay_after = 0.3f;
+
+	// GUI Initialization
+	sf::Font font;
+	if (!font.loadFromFile("Fonts/Helvetica Regular.otf"))
+		std::cout << "ERROR: Font not found!\n";
+
+	sf::Clock dt_clock;
+	float dt;
+	float wait_time = 0.5f;
+
+	// ----- Movement Container testing ----- //
+	sf::CircleShape shape[4];
+
+	for (int i = 0; i < 4; i++) {
+		shape[i].setPointCount(3);
+		shape[i].setRadius(50.f);
+		shape[i].setFillColor(sf::Color::Blue);
+		shape[i].setOrigin(shape[i].getRadius(), shape[i].getRadius());
+		shape[i].setPosition(400.f, 240.f + 200.f * i);
+	}
+
+	VertexArray2 arrow1(sf::LineStrip, 3u);
+	VertexArray2 arrow2(sf::LineStrip, 3u);
+	VertexArray2 arrow3(sf::LineStrip, 3u);
+	VertexArray2 arrow4(sf::LineStrip, 3u);
+
+	arrow1[0].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f - 40.f, 240.f);
+	arrow1[1].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f, 210.f);
+	arrow1[2].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f + 40.f, 240.f);
+
+	arrow2[0].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f - 40.f, 440.f);
+	arrow2[1].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f, 410.f);
+	arrow2[2].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f + 40.f, 440.f);
+
+	arrow3[0].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f - 40.f, 640.f);
+	arrow3[1].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f, 610.f);
+	arrow3[2].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f + 40.f, 640.f);
+
+	arrow4[0].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f - 40.f, 840.f);
+	arrow4[1].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f, 810.f);
+	arrow4[2].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f + 40.f, 840.f);
+
+	arrow1.setOrigin(arrow1.getCentroid());
+	arrow2.setOrigin(arrow2.getCentroid());
+	arrow3.setOrigin(arrow3.getCentroid());
+	arrow4.setOrigin(arrow4.getCentroid());
+
+	arrow1.setPosition(600.f, 240.f);
+	arrow2.setPosition(600.f, 440.f);
+	arrow3.setPosition(600.f, 640.f);
+	arrow4.setPosition(600.f, 840.f);
+
+	
+
+	bool adjust_start_movement = false;
+	bool adjust_all_movement = true;
+	bool looping_movement = false;
+
+	sf::Vector2f starting_offset1(0.f, 0.f);
+	sf::Vector2f ending_offset1 = sf::Vector2f(300.f, -100.f) + starting_offset1;
+	sf::Vector2f starting_offset2 = sf::Vector2f(0.f, 0.f) + ending_offset1;
+	sf::Vector2f ending_offset2 = sf::Vector2f(0., 100.f) + starting_offset2;
+
+	auto routineMShape = movementManager->createMovementRoutine("TestowyM1");
+	routineMShape->addMovement(new movementInfo(shape[0].getPosition() + starting_offset1, shape[0].getPosition() + ending_offset1, animation_time, easeFunctions::IN_OUT_SINE, false, delay_before, 0.5f));
+	routineMShape->addMovement(new movementInfo(shape[0].getPosition() + starting_offset2, shape[0].getPosition() + ending_offset2, animation_time, easeFunctions::IN_OUT_SINE, false, delay_before, 0.5f));
+	routineMShape->adjustStartToCurrentTransform(adjust_start_movement);
+	routineMShape->adjustAllToCurrentTransform(adjust_all_movement);
+	routineMShape->setLooping(looping_movement);
+	movementManager->linkMovementRoutine(shape[0], "TestowyM1");
+
+	routineMShape = movementManager->createMovementRoutine("TestowyM2");
+	routineMShape->addMovement(new movementInfo(shape[1].getPosition() + starting_offset1, shape[1].getPosition() + ending_offset1, animation_time, easeFunctions::IN_OUT_SINE, false, delay_before, 0.5f));
+	routineMShape->addMovement(new movementInfo(shape[1].getPosition() + starting_offset2, shape[1].getPosition() + ending_offset2, animation_time, easeFunctions::IN_OUT_SINE, false, delay_before, 0.5f));
+	routineMShape->adjustStartToCurrentTransform(adjust_start_movement);
+	routineMShape->adjustAllToCurrentTransform(adjust_all_movement);
+	routineMShape->setLooping(looping_movement);
+	movementManager->linkMovementRoutine(shape[1], "TestowyM2");
+
+	routineMShape = movementManager->createMovementRoutine("TestowyM3");
+	routineMShape->addMovement(new movementInfo(shape[2].getPosition() + starting_offset1, shape[2].getPosition() + ending_offset1, animation_time, easeFunctions::IN_OUT_SINE, false, delay_before, 0.5f));
+	routineMShape->addMovement(new movementInfo(shape[2].getPosition() + starting_offset2, shape[2].getPosition() + ending_offset2, animation_time, easeFunctions::IN_OUT_SINE, false, delay_before, 0.5f));
+	routineMShape->adjustStartToCurrentTransform(adjust_start_movement);
+	routineMShape->adjustAllToCurrentTransform(adjust_all_movement);
+	routineMShape->setLooping(looping_movement);
+	movementManager->linkMovementRoutine(shape[2], "TestowyM3");
+
+	routineMShape = movementManager->createMovementRoutine("TestowyM4");
+	routineMShape->addMovement(new movementInfo(shape[3].getPosition() + starting_offset1, shape[3].getPosition() + ending_offset1, animation_time, easeFunctions::IN_OUT_SINE, false, delay_before, 0.5f));
+	routineMShape->addMovement(new movementInfo(shape[3].getPosition() + starting_offset2, shape[3].getPosition() + ending_offset2, animation_time, easeFunctions::IN_OUT_SINE, false, delay_before, 0.5f));
+	routineMShape->adjustStartToCurrentTransform(adjust_start_movement);
+	routineMShape->adjustAllToCurrentTransform(adjust_all_movement);
+	routineMShape->setLooping(looping_movement);
+	movementManager->linkMovementRoutine(shape[3], "TestowyM4");
+
+	auto routineMVA = movementManager->createMovementRoutine("TestowyMVA1");
+	routineMVA->addMovement(new movementInfo(arrow1.getPosition() + starting_offset1, arrow1.getPosition() + ending_offset1, animation_time, easeFunctions::IN_OUT_SINE, false, delay_before, 0.5f));
+	routineMVA->addMovement(new movementInfo(arrow1.getPosition() + starting_offset2, arrow1.getPosition() + ending_offset2, animation_time, easeFunctions::IN_OUT_SINE, false, delay_before, 0.5f));
+	routineMVA->adjustStartToCurrentTransform(adjust_start_movement);
+	routineMVA->adjustAllToCurrentTransform(adjust_all_movement);
+	routineMVA->setLooping(looping_movement);
+	movementManager->linkMovementRoutine(arrow1, "TestowyMVA1");
+
+	routineMVA = movementManager->createMovementRoutine("TestowyMVA2");
+	routineMVA->addMovement(new movementInfo(arrow2.getPosition() + starting_offset1, arrow2.getPosition() + ending_offset1, animation_time, easeFunctions::IN_OUT_SINE, false, delay_before, 0.5f));
+	routineMVA->addMovement(new movementInfo(arrow2.getPosition() + starting_offset2, arrow2.getPosition() + ending_offset2, animation_time, easeFunctions::IN_OUT_SINE, false, delay_before, 0.5f));
+	routineMVA->adjustStartToCurrentTransform(adjust_start_movement);
+	routineMVA->adjustAllToCurrentTransform(adjust_all_movement);
+	routineMVA->setLooping(looping_movement);
+	movementManager->linkMovementRoutine(arrow2, "TestowyMVA2");
+
+	routineMVA = movementManager->createMovementRoutine("TestowyMVA3");
+	routineMVA->addMovement(new movementInfo(arrow3.getPosition() + starting_offset1, arrow3.getPosition() + ending_offset1, animation_time, easeFunctions::IN_OUT_SINE, false, delay_before, 0.5f));
+	routineMVA->addMovement(new movementInfo(arrow3.getPosition() + starting_offset2, arrow3.getPosition() + ending_offset2, animation_time, easeFunctions::IN_OUT_SINE, false, delay_before, 0.5f));
+	routineMVA->adjustStartToCurrentTransform(adjust_start_movement);
+	routineMVA->adjustAllToCurrentTransform(adjust_all_movement);
+	routineMVA->setLooping(looping_movement);
+	movementManager->linkMovementRoutine(arrow3, "TestowyMVA3");
+
+	routineMVA = movementManager->createMovementRoutine("TestowyMVA4");
+	routineMVA->addMovement(new movementInfo(arrow4.getPosition() + starting_offset1, arrow4.getPosition() + ending_offset1, animation_time, easeFunctions::IN_OUT_SINE, false, delay_before, 0.5f));
+	routineMVA->addMovement(new movementInfo(arrow4.getPosition() + starting_offset2, arrow4.getPosition() + ending_offset2, animation_time, easeFunctions::IN_OUT_SINE, false, delay_before, 0.5f));
+	routineMVA->adjustStartToCurrentTransform(adjust_start_movement);
+	routineMVA->adjustAllToCurrentTransform(adjust_all_movement);
+	routineMVA->setLooping(looping_movement);
+	movementManager->linkMovementRoutine(arrow4, "TestowyMVA4");
+
+	bool adjust_start_rotation = false;
+	bool adjust_all_rotation = true;
+	bool looping_rotation = false;
+	auto routineRShape = movementManager->createRotationRoutine("TestowyR1");
+	routineRShape->addRotation(new rotationInfo(30.f, 180.f, animation_time, easeFunctions::IN_OUT_SINE, false, delay_before, delay_after, false));
+	routineRShape->addRotation(new rotationInfo(180.f, 60.f, animation_time, easeFunctions::IN_OUT_SINE, false, delay_before, delay_after, false));
+	routineRShape->adjustStartToCurrentTransform(adjust_start_rotation);
+	routineRShape->adjustAllToCurrentTransform(adjust_all_rotation);
+	routineRShape->setLooping(looping_rotation);
+	movementManager->linkRotationRoutine(shape[0], "TestowyR1");
+
+	routineRShape = movementManager->createRotationRoutine("TestowyR2");
+	routineRShape->addRotation(new rotationInfo(30.f, 180.f, animation_time, easeFunctions::IN_OUT_SINE, false, delay_before, delay_after, false));
+	routineRShape->addRotation(new rotationInfo(180.f, 60.f, animation_time, easeFunctions::IN_OUT_SINE, false, delay_before, delay_after, true));
+	routineRShape->adjustStartToCurrentTransform(adjust_start_rotation);
+	routineRShape->adjustAllToCurrentTransform(adjust_all_rotation);
+	routineRShape->setLooping(looping_rotation);
+	movementManager->linkRotationRoutine(shape[1], "TestowyR2");
+
+	routineRShape = movementManager->createRotationRoutine("TestowyR3");
+	routineRShape->addRotation(new rotationInfo(30.f, 180.f, animation_time, easeFunctions::IN_OUT_SINE, false, delay_before, delay_after, true));
+	routineRShape->addRotation(new rotationInfo(180.f, 60.f, animation_time, easeFunctions::IN_OUT_SINE, false, delay_before, delay_after, false));
+	routineRShape->adjustStartToCurrentTransform(adjust_start_rotation);
+	routineRShape->adjustAllToCurrentTransform(adjust_all_rotation);
+	routineRShape->setLooping(looping_rotation);
+	movementManager->linkRotationRoutine(shape[2], "TestowyR3");
+
+	routineRShape = movementManager->createRotationRoutine("TestowyR4");
+	routineRShape->addRotation(new rotationInfo(30.f, 180.f, animation_time, easeFunctions::IN_OUT_SINE, false, delay_before, delay_after, true));
+	routineRShape->addRotation(new rotationInfo(180.f, 60.f, animation_time, easeFunctions::IN_OUT_SINE, false, delay_before, delay_after, true));
+	routineRShape->adjustStartToCurrentTransform(adjust_start_rotation);
+	routineRShape->adjustAllToCurrentTransform(adjust_all_rotation);
+	routineRShape->setLooping(looping_rotation);
+	movementManager->linkRotationRoutine(shape[3], "TestowyR4");
+
+	auto routineRVA = movementManager->createRotationRoutine("TestowyRVA1");
+	routineRVA->addRotation(new rotationInfo(30.f, 180.f, animation_time, easeFunctions::IN_OUT_SINE, false, delay_before, delay_after, false));
+	routineRVA->addRotation(new rotationInfo(180.f, 60.f, animation_time, easeFunctions::IN_OUT_SINE, false, delay_before, delay_after, false));
+	routineRVA->adjustStartToCurrentTransform(adjust_start_rotation);
+	routineRVA->adjustAllToCurrentTransform(adjust_all_rotation);
+	routineRVA->setLooping(looping_rotation);
+	movementManager->linkRotationRoutine(arrow1, "TestowyRVA1");
+
+	routineRVA = movementManager->createRotationRoutine("TestowyRVA2");
+	routineRVA->addRotation(new rotationInfo(30.f, 180.f, animation_time, easeFunctions::IN_OUT_SINE, false, delay_before, delay_after, false));
+	routineRVA->addRotation(new rotationInfo(180.f, 60.f, animation_time, easeFunctions::IN_OUT_SINE, false, delay_before, delay_after, true));
+	routineRVA->adjustStartToCurrentTransform(adjust_start_rotation);
+	routineRVA->adjustAllToCurrentTransform(adjust_all_rotation);
+	routineRVA->setLooping(looping_rotation);
+	movementManager->linkRotationRoutine(arrow2, "TestowyRVA2");
+
+	routineRVA = movementManager->createRotationRoutine("TestowyRVA3");
+	routineRVA->addRotation(new rotationInfo(30.f, 180.f, animation_time, easeFunctions::IN_OUT_SINE, false, delay_before, delay_after, true));
+	routineRVA->addRotation(new rotationInfo(180.f, 60.f, animation_time, easeFunctions::IN_OUT_SINE, false, delay_before, delay_after, false));
+	routineRVA->adjustStartToCurrentTransform(adjust_start_rotation);
+	routineRVA->adjustAllToCurrentTransform(adjust_all_rotation);
+	routineRVA->setLooping(looping_rotation);
+	movementManager->linkRotationRoutine(arrow3, "TestowyRVA3");
+
+	routineRVA = movementManager->createRotationRoutine("TestowyRVA4");
+	routineRVA->addRotation(new rotationInfo(30.f, 180.f, animation_time, easeFunctions::IN_OUT_SINE, false, delay_before, delay_after, true));
+	routineRVA->addRotation(new rotationInfo(180.f, 60.f, animation_time, easeFunctions::IN_OUT_SINE, false, delay_before, delay_after, true));
+	routineRVA->adjustStartToCurrentTransform(adjust_start_rotation);
+	routineRVA->adjustAllToCurrentTransform(adjust_all_rotation);
+	routineRVA->setLooping(looping_rotation);
+	movementManager->linkRotationRoutine(arrow4, "TestowyRVA4");
+
+	bool adjust_start_scaling = false;
+	bool adjust_all_scaling = true;
+	bool looping_scaling = false;
+	sf::Vector2f starting_scale1(1.f, 1.f);
+	sf::Vector2f ending_scale1(1.5f, 1.5f);
+	sf::Vector2f starting_scale2(1.5f, 1.5f);
+	sf::Vector2f ending_scale2(1.25f, 1.25f);
+	auto routineSShape = movementManager->createScalingRoutine("TestowyS1");
+	routineSShape->addScaling(new scalingInfo(starting_scale1, ending_scale1, animation_time, easeFunctions::IN_OUT_SINE, false, 0.5f, 0.5f));
+	routineSShape->addScaling(new scalingInfo(starting_scale2, ending_scale2, animation_time, easeFunctions::IN_OUT_SINE, false, 0.5f, 0.5f));
+	routineSShape->adjustStartToCurrentTransform(adjust_start_scaling);
+	routineSShape->adjustAllToCurrentTransform(adjust_all_scaling);
+	routineSShape->setLooping(looping_scaling);
+	movementManager->linkScalingRoutine(shape[0], "TestowyS1");
+
+	routineSShape = movementManager->createScalingRoutine("TestowyS2");
+	routineSShape->addScaling(new scalingInfo(starting_scale1, ending_scale1, animation_time, easeFunctions::IN_OUT_SINE, false, 0.5f, 0.5f));
+	routineSShape->addScaling(new scalingInfo(starting_scale2, ending_scale2, animation_time, easeFunctions::IN_OUT_SINE, false, 0.5f, 0.5f));
+	routineSShape->adjustStartToCurrentTransform(adjust_start_scaling);
+	routineSShape->adjustAllToCurrentTransform(adjust_all_scaling);
+	routineSShape->setLooping(looping_scaling);
+	movementManager->linkScalingRoutine(shape[1], "TestowyS2");
+
+	routineSShape = movementManager->createScalingRoutine("TestowyS3");
+	routineSShape->addScaling(new scalingInfo(starting_scale1, ending_scale1, animation_time, easeFunctions::IN_OUT_SINE, false, 0.5f, 0.5f));
+	routineSShape->addScaling(new scalingInfo(starting_scale2, ending_scale2, animation_time, easeFunctions::IN_OUT_SINE, false, 0.5f, 0.5f));
+	routineSShape->adjustStartToCurrentTransform(adjust_start_scaling);
+	routineSShape->adjustAllToCurrentTransform(adjust_all_scaling);
+	routineSShape->setLooping(looping_scaling);
+	movementManager->linkScalingRoutine(shape[2], "TestowyS3");
+
+	routineSShape = movementManager->createScalingRoutine("TestowyS4");
+	routineSShape->addScaling(new scalingInfo(starting_scale1, ending_scale1, animation_time, easeFunctions::IN_OUT_SINE, false, 0.5f, 0.5f));
+	routineSShape->addScaling(new scalingInfo(starting_scale2, ending_scale2, animation_time, easeFunctions::IN_OUT_SINE, false, 0.5f, 0.5f));
+	routineSShape->adjustStartToCurrentTransform(adjust_start_scaling);
+	routineSShape->adjustAllToCurrentTransform(adjust_all_scaling);
+	routineSShape->setLooping(looping_scaling);
+	movementManager->linkScalingRoutine(shape[3], "TestowyS4");
+
+	auto routineSVA = movementManager->createScalingRoutine("TestowySVA1");
+	routineSVA->addScaling(new scalingInfo(starting_scale1, ending_scale1, animation_time, easeFunctions::IN_OUT_SINE, false, 0.5f, 0.5f));
+	routineSVA->addScaling(new scalingInfo(starting_scale2, ending_scale2, animation_time, easeFunctions::IN_OUT_SINE, false, 0.5f, 0.5f));
+	routineSVA->adjustStartToCurrentTransform(adjust_start_scaling);
+	routineSVA->adjustAllToCurrentTransform(adjust_all_scaling);
+	routineSVA->setLooping(looping_scaling);
+	movementManager->linkScalingRoutine(arrow1, "TestowySVA1");
+
+	routineSVA = movementManager->createScalingRoutine("TestowySVA2");
+	routineSVA->addScaling(new scalingInfo(starting_scale1, ending_scale1, animation_time, easeFunctions::IN_OUT_SINE, false, 0.5f, 0.5f));
+	routineSVA->addScaling(new scalingInfo(starting_scale2, ending_scale2, animation_time, easeFunctions::IN_OUT_SINE, false, 0.5f, 0.5f));
+	routineSVA->adjustStartToCurrentTransform(adjust_start_scaling);
+	routineSVA->adjustAllToCurrentTransform(adjust_all_scaling);
+	routineSVA->setLooping(looping_scaling);
+	movementManager->linkScalingRoutine(arrow2, "TestowySVA2");
+
+	routineSVA = movementManager->createScalingRoutine("TestowySVA3");
+	routineSVA->addScaling(new scalingInfo(starting_scale1, ending_scale1, animation_time, easeFunctions::IN_OUT_SINE, false, 0.5f, 0.5f));
+	routineSVA->addScaling(new scalingInfo(starting_scale2, ending_scale2, animation_time, easeFunctions::IN_OUT_SINE, false, 0.5f, 0.5f));
+	routineSVA->adjustStartToCurrentTransform(adjust_start_scaling);
+	routineSVA->adjustAllToCurrentTransform(adjust_all_scaling);
+	routineSVA->setLooping(looping_scaling);
+	movementManager->linkScalingRoutine(arrow3, "TestowySVA3");
+
+	routineSVA = movementManager->createScalingRoutine("TestowySVA4");
+	routineSVA->addScaling(new scalingInfo(starting_scale1, ending_scale1, animation_time, easeFunctions::IN_OUT_SINE, false, 0.5f, 0.5f));
+	routineSVA->addScaling(new scalingInfo(starting_scale2, ending_scale2, animation_time, easeFunctions::IN_OUT_SINE, false, 0.5f, 0.5f));
+	routineSVA->adjustStartToCurrentTransform(adjust_start_scaling);
+	routineSVA->adjustAllToCurrentTransform(adjust_all_scaling);
+	routineSVA->setLooping(looping_scaling);
+	movementManager->linkScalingRoutine(arrow4, "TestowySVA4");
+
+	// Side panel initialization
+	SidePanel side_panel(window, "Fonts/Helvetica Regular.otf", 48u, 28u, 20u);
+	side_panel.setBackgroundColor(sf::Color(50, 50, 50, 245));
+	side_panel.setTitle("Controls");
+	side_panel.addText("Space - Start all");
+	side_panel.addText("M - Start movement");
+	side_panel.addText("S - Start scaling");
+	side_panel.addText("R - Start rotation");
+	side_panel.addText(" ");
+	side_panel.addText("F - Adjust first to current transform");
+	side_panel.addText("A - Adjust all to current transform");
+	side_panel.addText(" ");
+	side_panel.addText("Q - Reset demo");
+	side_panel.addText("ESC - Close demo");
+	side_panel.addText(" ");
+	side_panel.addText("C - Show controls");
+
+	// GUI Initialization
+	sf::Text controls_text("[C] - Controls", font, 20u);
+	controls_text.setPosition(10.f, 10.f);
+
+	sf::Text adjust_all_text("Adjust all to current transform: ON", font, 20u);
+	adjust_all_text.setPosition(10.f, 40.f);
+
+	sf::Text adjust_start_text("Adjust first to current transform: OFF", font, 20u);
+	adjust_start_text.setPosition(10.f, 70.f);
+
+	while (running)
+	{
+		dt = dt_clock.restart().asSeconds();
+		movementManager->update(dt);
+
+		sf::Event event;
+		if (window.pollEvent(event))
+		{
+			if (event.type == sf::Event::Closed || (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape))
+				running = false;
+
+			if (event.type == sf::Event::KeyPressed) {
+				// Start all
+				if (event.key.code == sf::Keyboard::Space) {
+					movementManager->startMovementRoutine(shape[0], "TestowyM1");
+					movementManager->startMovementRoutine(shape[1], "TestowyM2");
+					movementManager->startMovementRoutine(shape[2], "TestowyM3");
+					movementManager->startMovementRoutine(shape[3], "TestowyM4");
+
+					movementManager->startMovementRoutine(arrow1, "TestowyMVA1");
+					movementManager->startMovementRoutine(arrow2, "TestowyMVA2");
+					movementManager->startMovementRoutine(arrow3, "TestowyMVA3");
+					movementManager->startMovementRoutine(arrow4, "TestowyMVA4");
+
+					movementManager->startScalingRoutine(shape[0], "TestowyS1");
+					movementManager->startScalingRoutine(shape[1], "TestowyS2");
+					movementManager->startScalingRoutine(shape[2], "TestowyS3");
+					movementManager->startScalingRoutine(shape[3], "TestowyS4");
+
+					movementManager->startScalingRoutine(arrow1, "TestowySVA1");
+					movementManager->startScalingRoutine(arrow2, "TestowySVA2");
+					movementManager->startScalingRoutine(arrow3, "TestowySVA3");
+					movementManager->startScalingRoutine(arrow4, "TestowySVA4");
+
+					movementManager->startRotationRoutine(arrow1, "TestowyRVA1");
+					movementManager->startRotationRoutine(arrow2, "TestowyRVA2");
+					movementManager->startRotationRoutine(arrow3, "TestowyRVA3");
+					movementManager->startRotationRoutine(arrow4, "TestowyRVA4");
+
+					movementManager->startRotationRoutine(shape[0], "TestowyR1");
+					movementManager->startRotationRoutine(shape[1], "TestowyR2");
+					movementManager->startRotationRoutine(shape[2], "TestowyR3");
+					movementManager->startRotationRoutine(shape[3], "TestowyR4");
+				}
+
+				// Start rotation
+				if (event.key.code == sf::Keyboard::R) {
+					movementManager->startRotationRoutine(arrow1, "TestowyRVA1");
+					movementManager->startRotationRoutine(arrow2, "TestowyRVA2");
+					movementManager->startRotationRoutine(arrow3, "TestowyRVA3");
+					movementManager->startRotationRoutine(arrow4, "TestowyRVA4");
+
+					movementManager->startRotationRoutine(shape[0], "TestowyR1");
+					movementManager->startRotationRoutine(shape[1], "TestowyR2");
+					movementManager->startRotationRoutine(shape[2], "TestowyR3");
+					movementManager->startRotationRoutine(shape[3], "TestowyR4");
+				}
+
+				// Start movement
+				if (event.key.code == sf::Keyboard::M) {
+					movementManager->startMovementRoutine(shape[0], "TestowyM1");
+					movementManager->startMovementRoutine(shape[1], "TestowyM2");
+					movementManager->startMovementRoutine(shape[2], "TestowyM3");
+					movementManager->startMovementRoutine(shape[3], "TestowyM4");
+
+					movementManager->startMovementRoutine(arrow1, "TestowyMVA1");
+					movementManager->startMovementRoutine(arrow2, "TestowyMVA2");
+					movementManager->startMovementRoutine(arrow3, "TestowyMVA3");
+					movementManager->startMovementRoutine(arrow4, "TestowyMVA4");
+				}
+
+				// Start scaling
+				if (event.key.code == sf::Keyboard::S) {
+					movementManager->startScalingRoutine(shape[0], "TestowyS1");
+					movementManager->startScalingRoutine(shape[1], "TestowyS2");
+					movementManager->startScalingRoutine(shape[2], "TestowyS3");
+					movementManager->startScalingRoutine(shape[3], "TestowyS4");
+
+					movementManager->startScalingRoutine(arrow1, "TestowySVA1");
+					movementManager->startScalingRoutine(arrow2, "TestowySVA2");
+					movementManager->startScalingRoutine(arrow3, "TestowySVA3");
+					movementManager->startScalingRoutine(arrow4, "TestowySVA4");
+				}
+				
+				// Adjust first to current transform
+				if (event.key.code == sf::Keyboard::F) {
+					adjust_start_movement = !adjust_start_movement;
+					adjust_start_rotation = !adjust_start_rotation;
+					adjust_start_scaling  = !adjust_start_scaling;
+
+					if (adjust_start_movement)
+						adjust_start_text.setString("Adjust first to current transform: ON");
+					else
+						adjust_start_text.setString("Adjust first to current transform: OFF");
+
+					for (size_t i = 0; i < 4; ++i) {
+						movementManager->setAdjustStartToCurrent(shape[i], adjust_start_movement);
+						movementManager->setAdjustStartToCurrent(shape[i], adjust_start_rotation);
+						movementManager->setAdjustStartToCurrent(shape[i], adjust_start_scaling);
+						movementManager->resetMovementRoutine(shape[i], "TestowyM" + std::to_string(i + 1));
+						movementManager->resetRotationRoutine(shape[i], "TestowyS" + std::to_string(i + 1));
+						movementManager->resetScalingRoutine(shape[i], "TestowyR" + std::to_string(i + 1));
+					}
+
+					movementManager->setAdjustStartToCurrent(arrow1, adjust_start_movement);
+					movementManager->setAdjustStartToCurrent(arrow1, adjust_start_rotation);
+					movementManager->setAdjustStartToCurrent(arrow1, adjust_start_scaling);
+
+					movementManager->setAdjustStartToCurrent(arrow2, adjust_start_movement);
+					movementManager->setAdjustStartToCurrent(arrow2, adjust_start_rotation);
+					movementManager->setAdjustStartToCurrent(arrow2, adjust_start_scaling);
+
+					movementManager->setAdjustStartToCurrent(arrow3, adjust_start_movement);
+					movementManager->setAdjustStartToCurrent(arrow3, adjust_start_rotation);
+					movementManager->setAdjustStartToCurrent(arrow3, adjust_start_scaling);
+
+					movementManager->setAdjustStartToCurrent(arrow4, adjust_start_movement);
+					movementManager->setAdjustStartToCurrent(arrow4, adjust_start_rotation);
+					movementManager->setAdjustStartToCurrent(arrow4, adjust_start_scaling);
+				}
+
+				// Adjust all to current transform
+				if (event.key.code == sf::Keyboard::A) {
+					adjust_all_movement = !adjust_all_movement;
+					adjust_all_rotation = !adjust_all_rotation;
+					adjust_all_scaling = !adjust_all_scaling;
+
+					if (adjust_all_movement)
+						adjust_all_text.setString("Adjust all to current transform: ON");
+					else
+						adjust_all_text.setString("Adjust all to current transform: OFF");
+
+					for (size_t i = 0; i < 4; ++i) {
+						movementManager->setAdjustAllToCurrent(shape[i], adjust_all_movement);
+						movementManager->setAdjustAllToCurrent(shape[i], adjust_all_rotation);
+						movementManager->setAdjustAllToCurrent(shape[i], adjust_all_scaling);
+						movementManager->resetMovementRoutine(shape[i], "TestowyM" + std::to_string(i + 1));
+						movementManager->resetRotationRoutine(shape[i], "TestowyS" + std::to_string(i + 1));
+						movementManager->resetScalingRoutine(shape[i], "TestowyR" + std::to_string(i + 1));
+					}
+
+					movementManager->setAdjustAllToCurrent(arrow1, adjust_all_movement);
+					movementManager->setAdjustAllToCurrent(arrow1, adjust_all_rotation);
+					movementManager->setAdjustAllToCurrent(arrow1, adjust_all_scaling);
+
+					movementManager->setAdjustAllToCurrent(arrow2, adjust_all_movement);
+					movementManager->setAdjustAllToCurrent(arrow2, adjust_all_rotation);
+					movementManager->setAdjustAllToCurrent(arrow2, adjust_all_scaling);
+
+					movementManager->setAdjustAllToCurrent(arrow3, adjust_all_movement);
+					movementManager->setAdjustAllToCurrent(arrow3, adjust_all_rotation);
+					movementManager->setAdjustAllToCurrent(arrow3, adjust_all_scaling);
+
+					movementManager->setAdjustAllToCurrent(arrow4, adjust_all_movement);
+					movementManager->setAdjustAllToCurrent(arrow4, adjust_all_rotation);
+					movementManager->setAdjustAllToCurrent(arrow4, adjust_all_scaling);
+				}
+
+				// Reset demo
+				if (event.key.code == sf::Keyboard::Q) {
+					for (int i = 0; i < 4; i++) {
+						shape[i].setPosition(400.f, 240.f + 200.f * i);
+						shape[i].setRotation(0.f);
+						shape[i].setScale(1.f, 1.f);
+					}
+
+					arrow1.setPosition(600.f, 240.f);
+					arrow2.setPosition(600.f, 440.f);
+					arrow3.setPosition(600.f, 640.f);
+					arrow4.setPosition(600.f, 840.f);
+				}
+
+				// Show controls
+				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::C) {
+					side_panel.toggle();
+				}
+			}
+		}
+		window.clear();
+		for (int i = 0; i < 4; i++)
+			window.draw(shape[i]);
+
+		window.draw(arrow1, arrow1.getTransform());
+		window.draw(arrow2, arrow2.getTransform());
+		window.draw(arrow3, arrow3.getTransform());
+		window.draw(arrow4, arrow4.getTransform());
+
+		window.draw(controls_text);
+		window.draw(adjust_start_text);
+		window.draw(adjust_all_text);
+
+		side_panel.draw(window);
+
+		window.display();
+	}
+
+	//delete[] shape;
 }

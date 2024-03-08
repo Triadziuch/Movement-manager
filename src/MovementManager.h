@@ -38,6 +38,8 @@ public:
 	// Universal public functions
 	void setFunction(sf::Transformable& transformable, easeFunctions::Tmovement_function usedFunctionType);
 	void setAnimationTime(sf::Transformable& transformable, const float _time);
+	void setAdjustStartToCurrent(sf::Transformable& transformable, const bool _adjust);
+	void setAdjustAllToCurrent(sf::Transformable& transformable, const bool _adjust);
 	void resetRoutines(sf::Transformable& transformable);
 
 	// === Movement ===

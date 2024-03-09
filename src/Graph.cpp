@@ -94,9 +94,9 @@ Graph::Graph(const Graph& _graph)
 		OX[i] = _graph.OX[i];
 		OY[i] = _graph.OY[i];
 	}
-	OX_color		 = _graph.OX_color;
-	OY_color		 = _graph.OY_color;
-	axis_visible	 = _graph.axis_visible;
+	OX_color	 = _graph.OX_color;
+	OY_color	 = _graph.OY_color;
+	axis_visible = _graph.axis_visible;
 
 	font = _graph.font;
 	label_size = _graph.label_size;

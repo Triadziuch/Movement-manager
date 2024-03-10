@@ -1195,11 +1195,13 @@ void movementDemo3(sf::RenderWindow& window) {
 	// Config
 	bool running = true;
 
+	int current_ease_type = 0;
 	const int easeTypeSize = 30;
 
 	int routines = 200000;
 	int movements_in_routine = 10;
 	int shapes_count = 100000;
+	const int default_shapes_count = shapes_count;
 	sf::Vector2f shape_size(2.f, 2.f);
 
 	float animation_time = 3.f;
@@ -1251,6 +1253,10 @@ void movementDemo3(sf::RenderWindow& window) {
 	side_panel.addText(" ");
 	side_panel.addText("Up - +1000 shapes");
 	side_panel.addText("Down - -1000 shapes");
+	side_panel.addText("Left / Right - Change function");
+	side_panel.addText(" ");
+	side_panel.addText("Q - Reset demo");
+	side_panel.addText("ESC - Close demo");
 	side_panel.addText(" ");
 	side_panel.addText("H - Hide GUI");
 	side_panel.addText("C - Show controls");
@@ -1261,6 +1267,8 @@ void movementDemo3(sf::RenderWindow& window) {
 	shapes_count_text.setPosition(10.f, 40.f);
 	sf::Text average_time_text("Average time: " + std::to_string(average_time_ms) + " ms", font, 20u);
 	average_time_text.setPosition(10.f, 70.f);
+	sf::Text current_function_text("Current function: Random", font, 20u);
+	current_function_text.setPosition(10.f, 100.f);
 
 	while (running)
 	{
@@ -1328,6 +1336,62 @@ void movementDemo3(sf::RenderWindow& window) {
 					}
 				}
 
+				if (event.key.code == sf::Keyboard::Left) {
+					current_ease_type--;
+					if (current_ease_type < 0)
+						current_ease_type = easeTypeSize - 1;
+
+					for (size_t i = 0; i < shapes_count; ++i) {
+						movementManager->setFunction(*shapes[i], easeFunctions::getTmovement(current_ease_type));
+						movementManager->resetRoutines(*shapes[i]);
+					}
+					current_function_text.setString("Current function: " + easeFunctions::getTmovement(current_ease_type));
+				}
+				else if (event.key.code == sf::Keyboard::Right) {
+					current_ease_type++;
+					if (current_ease_type >= easeTypeSize)
+						current_ease_type = 0;
+
+					for (size_t i = 0; i < shapes_count; ++i) {
+						movementManager->setFunction(*shapes[i], easeFunctions::getTmovement(current_ease_type));
+						movementManager->resetRoutines(*shapes[i]);
+					}
+					current_function_text.setString("Current function: " + easeFunctions::getTmovement(current_ease_type));
+				}
+
+				if (event.key.code == sf::Keyboard::Q) {
+					current_ease_type = 0;
+					int shape_count_diff = default_shapes_count - shapes_count;
+					
+
+					if (shape_count_diff > 0) {
+						for (size_t i = shapes_count; i < default_shapes_count; ++i) {
+							sf::RectangleShape* shape = new sf::RectangleShape;
+							shape->setSize(shape_size);
+							shape->setFillColor(sf::Color::Blue);
+							shape->setOrigin(shape->getSize().x / 2.f, shape->getSize().y / 2.f);
+							shape->setPosition(randomPosition());
+							shapes.emplace_back(shape);
+						}
+					}
+					else if (shape_count_diff < 0) {
+						for (size_t i = default_shapes_count; i < shapes_count; ++i) {
+							movementManager->unlinkMovementRoutine(shapes[i], "SM" + std::to_string(i % routines));
+							delete shapes[i];
+						}
+						shapes.resize(shapes_count);
+					}
+
+					shapes_count = default_shapes_count;
+					shapes_count_text.setString("Shapes count: " + std::to_string(shapes_count));
+					
+					for (size_t i = 0; i < shapes_count; ++i) {
+						movementManager->setFunction(*shapes[i], easeFunctions::getTmovement(randomEaseType()));
+						movementManager->resetRoutines(*shapes[i]);
+					}
+					current_function_text.setString("Current function: Random");
+				}
+
 				if (event.key.code == sf::Keyboard::G) 
 					gui = !gui;
 				
@@ -1344,6 +1408,7 @@ void movementDemo3(sf::RenderWindow& window) {
 			window.draw(controls_text);
 			window.draw(shapes_count_text);
 			window.draw(average_time_text);
+			window.draw(current_function_text);
 		}
 
 		side_panel.draw(window);

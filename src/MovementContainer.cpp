@@ -1268,13 +1268,13 @@ void MovementRoutineEngine::setMovementManager(MovementManager* _movementManager
 
 void MovementRoutineEngine::update(float dt)
 {
+	int it = 0;
 	for (auto routines = this->m_Routines.begin(); routines != this->m_Routines.end();) {
+		++it;
 		auto& movementRoutine = std::get<0>(*routines->second);
-		if (movementRoutine != nullptr) {
+		if (movementRoutine != nullptr) 
 			if (!movementRoutine->update(*routines->first, dt))
 				movementRoutine = nullptr;
-		}
-			
 
 		auto& scalingRoutine = std::get<1>(*routines->second);
 		if (scalingRoutine != nullptr)

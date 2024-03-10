@@ -4,8 +4,10 @@
 #include "../Graph.h"
 #include "../SidePanel.h"
 
-void movementDemo1(sf::RenderWindow&);
+void movementDemo1(sf::RenderWindow& window);
 
-void plotDemo(sf::RenderWindow&);
+void plotDemo(sf::RenderWindow& window);
 
-void movementDemo2(sf::RenderWindow&);
+void movementDemo2(sf::RenderWindow& window);
+
+void movementDemo3(sf::RenderWindow& window);

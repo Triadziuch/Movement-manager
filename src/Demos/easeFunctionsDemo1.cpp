@@ -1197,6 +1197,7 @@ void movementDemo3(sf::RenderWindow& window) {
 
 	int current_ease_type = 0;
 	const int easeTypeSize = 30;
+	bool random_ease_type = true;
 
 	int routines = 200000;
 	int movements_in_routine = 10;
@@ -1272,7 +1273,7 @@ void movementDemo3(sf::RenderWindow& window) {
 	average_time_text.setPosition(10.f, 70.f);
 	sf::Text current_function_text("Current function: Random", font, 20u);
 	current_function_text.setPosition(10.f, 100.f);
-	sf::Text shape_size_text("Shape size: " + std::to_string(static_cast<int>(shape_size.x)), font, 20u);
+	sf::Text shape_size_text("Shape size: " + std::format("{:.2f}", shape_size.x), font, 20u);
 	shape_size_text.setPosition(10.f, 130.f);
 
 	while (running)
@@ -1294,12 +1295,11 @@ void movementDemo3(sf::RenderWindow& window) {
 		if (it % 10 == 0 && it != 0) {
 			average_time_ms = static_cast<float>(time_movement / it) / 1000000.f;
 			average_time_text.setString("Average time: " + std::to_string(average_time_ms) + " ms");
-		}
 
-
-		if (it % 50 == 0 && it != 0) {
-			it = 0;
-			time_movement = 0;
+			if (it % 50 == 0) {
+				it = 0;
+				time_movement = 0;
+			}
 		}
 
 		sf::Event event;
@@ -1320,7 +1320,10 @@ void movementDemo3(sf::RenderWindow& window) {
 							shapes.emplace_back(shape);
 
 							movementManager->linkMovementRoutine(*shape, "SM" + std::to_string(i % routines));
+							if (!random_ease_type)
+								movementManager->getMovementRoutine(*shape, "SM" + std::to_string(i % routines))->setFunction(easeFunctions::getTmovement(current_ease_type));
 							movementManager->startMovementRoutine(*shape, "SM" + std::to_string(i % routines));
+							
 						}
 
 						shapes_count += 1000;
@@ -1342,6 +1345,7 @@ void movementDemo3(sf::RenderWindow& window) {
 				}
 
 				if (event.key.code == sf::Keyboard::Left) {
+					random_ease_type = false;
 					current_ease_type--;
 					if (current_ease_type < 0)
 						current_ease_type = easeTypeSize - 1;
@@ -1353,6 +1357,7 @@ void movementDemo3(sf::RenderWindow& window) {
 					current_function_text.setString("Current function: " + easeFunctions::getFunctionName(current_ease_type));
 				}
 				else if (event.key.code == sf::Keyboard::Right) {
+					random_ease_type = false;
 					current_ease_type++;
 					if (current_ease_type >= easeTypeSize)
 						current_ease_type = 0;
@@ -1391,6 +1396,7 @@ void movementDemo3(sf::RenderWindow& window) {
 					shapes_count = default_shapes_count;
 					shapes_count_text.setString("Shapes count: " + std::to_string(shapes_count));
 
+					random_ease_type = true;
 					for (size_t i = 0; i < shapes_count; ++i) {
 						shapes[i]->setSize(shape_size);
 						shapes[i]->setOrigin(shapes[i]->getSize().x / 2.f, shapes[i]->getSize().y / 2.f);
@@ -1401,8 +1407,8 @@ void movementDemo3(sf::RenderWindow& window) {
 				}
 
 				if (event.key.code == sf::Keyboard::LBracket) {
-					shape_size.x -= 1.f;
-					shape_size.y -= 1.f;
+					shape_size.x -= 0.2f;
+					shape_size.y -= 0.2f;
 
 					if (shape_size.x < 1.f) {
 						shape_size.x = 1.f;
@@ -1415,11 +1421,11 @@ void movementDemo3(sf::RenderWindow& window) {
 						shapes[i]->setOrigin(shapes[i]->getSize().x / 2.f, shapes[i]->getSize().y / 2.f);
 					}
 
-					shape_size_text.setString("Shape size: " + std::to_string(static_cast<int>(shape_size.x)));
+					shape_size_text.setString("Shape size: " + std::format("{:.2f}", shape_size.x));
 				}
 				else if (event.key.code == sf::Keyboard::RBracket) {
-					shape_size.x += 1.f;
-					shape_size.y += 1.f;
+					shape_size.x += 0.2f;
+					shape_size.y += 0.2f;
 
 					if (shape_size.x > 20.f) {
 						shape_size.x = 20.f;
@@ -1431,7 +1437,7 @@ void movementDemo3(sf::RenderWindow& window) {
 						shapes[i]->setOrigin(shapes[i]->getSize().x / 2.f, shapes[i]->getSize().y / 2.f);
 					}
 
-					shape_size_text.setString("Shape size: " + std::to_string(static_cast<int>(shape_size.x)));
+					shape_size_text.setString("Shape size: " + std::format("{:.2f}", shape_size.x));
 				}
 
 				if (event.key.code == sf::Keyboard::G)

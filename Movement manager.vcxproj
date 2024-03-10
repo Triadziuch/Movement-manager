@@ -135,7 +135,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\Demos\easeFunctionsDemo1.cpp" />
+    <ClCompile Include="src\Demos\Demos.cpp" />
     <ClCompile Include="src\easeFunctions.cpp" />
     <ClCompile Include="src\Graph.cpp" />
     <ClCompile Include="src\main.cpp" />
@@ -149,7 +149,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
-    <ClInclude Include="src\Demos\easeFunctionsDemo1.h" />
+    <ClInclude Include="src\Demos\Demos.h" />
     <ClInclude Include="src\easeFunctions.h" />
     <ClInclude Include="src\Graph.h" />
     <ClInclude Include="src\Instrumentor.h" />

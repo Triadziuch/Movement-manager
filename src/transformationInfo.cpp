@@ -42,17 +42,6 @@ transformationInfo::transformationInfo(const transformationInfo& obj) :
 	m_totalDuration{ obj.m_totalDuration } 
 	{}
 
-// Operators
-bool transformationInfo::operator==(const transformationInfo& rhs) const
-{
-	return m_repeat == rhs.m_repeat &&
-		m_currentTime == rhs.m_currentTime &&
-		m_motionDuration == rhs.m_motionDuration &&
-		m_delayBefore == rhs.m_delayBefore &&
-		m_delayAfter == rhs.m_delayAfter &&
-		m_usedFunctionPtr == rhs.m_usedFunctionPtr;
-}
-
 // Public functions
 void transformationInfo::reset()
 {
@@ -101,29 +90,28 @@ void transformationInfo::setAnimationTime(const float time) {
 
 movementInfo::movementInfo(sf::Vector2f startingPos, sf::Vector2f endingPos, float motionDuration, easeFunctions::Tmovement_function usedFunctionType, bool repeat, float delayBefore, float delayAfter) :
 	transformationInfo{ repeat, motionDuration, delayBefore, delayAfter, usedFunctionType }, 
-	m_startingPos{ startingPos }, 
-	m_endingPos{ endingPos }
+	m_originalStartingPos{ startingPos },
+	m_originalEndingPos{ endingPos },
+	m_startingPos{ m_originalStartingPos },
+	m_endingPos{ m_originalEndingPos }
 	{}
 
 // Constructors / Destructors
 movementInfo::movementInfo(sf::Vector2f startingPos, sf::Vector2f endingPos, float motionDuration, double(*usedFunctionPtr)(double), bool repeat, float delayBefore, float delayAfter) :
-	transformationInfo{ repeat, motionDuration, delayBefore, delayAfter, usedFunctionPtr }, 
-	m_startingPos{ startingPos }, 
-	m_endingPos{ endingPos }
+	transformationInfo{ repeat, motionDuration, delayBefore, delayAfter, usedFunctionPtr },
+	m_originalStartingPos{ startingPos },
+	m_originalEndingPos{ endingPos },
+	m_startingPos{ m_originalStartingPos },
+	m_endingPos{ m_originalEndingPos }
 	{}
 
 movementInfo::movementInfo(const movementInfo & obj) :
 	transformationInfo{ obj.m_repeat, obj.m_currentTime, obj.m_motionDuration, obj.m_delayBefore, obj.m_delayAfter, obj.m_usedFunctionPtr },
-	m_startingPos(obj.m_startingPos),
-	m_endingPos(obj.m_endingPos)
+	m_originalStartingPos{ obj.m_originalStartingPos },
+	m_originalEndingPos{ obj.m_originalEndingPos },
+	m_startingPos{ m_originalStartingPos },
+	m_endingPos{ m_originalEndingPos }
 	{}
-
-// Operators
-bool movementInfo::operator==(const movementInfo& rhs) const {
-	return	m_startingPos == rhs.m_startingPos &&
-		m_endingPos == rhs.m_endingPos &&
-		static_cast<const transformationInfo&>(*this) == static_cast<const transformationInfo&>(rhs);
-}
 
 const bool movementInfo::update(sf::Transformable& transformable, const float dt)
 {
@@ -132,8 +120,15 @@ const bool movementInfo::update(sf::Transformable& transformable, const float dt
 	if (isDone()) {
 		if (m_currentTime - m_delayBefore - dt < m_motionDuration)
 			transformable.setPosition(m_endingPos);
-		else if (isFinished())
-			return false;
+		else if (isFinished()) {
+			if (m_repeat) {
+				transformable.setPosition(m_startingPos);
+				m_currentTime -= m_totalDuration;
+			}
+			else
+				return false;
+		}
+			
 	}
 	else {
 		if (m_currentTime > m_delayBefore) 
@@ -151,6 +146,14 @@ const sf::Vector2f movementInfo::updatePosition() const
 	const float ease_function_value = static_cast<float>(m_usedFunctionPtr(static_cast<double>((m_currentTime - m_delayBefore) / m_motionDuration)));
 	return sf::Vector2f{ ease_function_value * (m_endingPos.x - m_startingPos.x) + m_startingPos.x,
 						 ease_function_value * (m_endingPos.y - m_startingPos.y) + m_startingPos.y };
+}
+
+void movementInfo::undoMovement(sf::Transformable& transformable)
+{
+	m_currentTime = 0.f;
+	m_startingPos = m_originalStartingPos;
+	m_endingPos = m_originalEndingPos;
+	transformable.setPosition(m_originalStartingPos);
 }
 
 // Accessors
@@ -177,31 +180,29 @@ const sf::Vector2f& movementInfo::getEndingPos() const
 // - - - - - - - - - - - - - - - - - - - - scalingInfo - - - - - - - - - - - - - - - - - - - - \\
 
 scalingInfo::scalingInfo(sf::Vector2f startingScale, sf::Vector2f endingScale, float motionDuration, easeFunctions::Tmovement_function usedFunctionType, bool repeat, float delayBefore, float delayAfter) :
-	transformationInfo{ repeat, motionDuration, delayBefore, delayAfter, usedFunctionType }, 
-	m_startingScale(startingScale), 
-	m_endingScale(endingScale)
+	transformationInfo{ repeat, motionDuration, delayBefore, delayAfter, usedFunctionType },
+	m_originalStartingScale{ startingScale },
+	m_originalEndingScale{ endingScale },
+	m_startingScale{ m_originalStartingScale },
+	m_endingScale{ m_originalEndingScale }
 	{}
 
 // Constructors / Destructors
 scalingInfo::scalingInfo(sf::Vector2f startingScale, sf::Vector2f endingScale, float motionDuration, double(*usedFunctionPtr)(double), bool repeat, float delayBefore, float delayAfter) :
 	transformationInfo{ repeat, motionDuration, delayBefore, delayAfter, usedFunctionPtr },
-	m_startingScale(startingScale),
-	m_endingScale(endingScale)
+	m_originalStartingScale{ startingScale },
+	m_originalEndingScale{ endingScale },
+	m_startingScale{ m_originalStartingScale },
+	m_endingScale{ m_originalEndingScale }
 	{}
 
 scalingInfo::scalingInfo(const scalingInfo & obj) :
 	transformationInfo{ obj.m_repeat, obj.m_currentTime, obj.m_motionDuration, obj.m_delayBefore, obj.m_delayAfter, obj.m_usedFunctionPtr },
-	m_startingScale(obj.m_startingScale),
-	m_endingScale(obj.m_endingScale)
+	m_originalStartingScale{ obj.m_originalStartingScale },
+	m_originalEndingScale{ obj.m_originalEndingScale },
+	m_startingScale{ m_originalStartingScale },
+	m_endingScale{ m_originalEndingScale }
 	{}
-
-// Operators
-bool scalingInfo::operator==(const scalingInfo& rhs) const
-{
-	return	m_startingScale == rhs.m_startingScale &&
-		m_endingScale == rhs.m_endingScale &&
-		static_cast<const transformationInfo&>(*this) == static_cast<const transformationInfo&>(rhs);
-}
 
 // Public functions
 void scalingInfo::scale(const sf::Vector2f& scale)
@@ -219,8 +220,14 @@ const bool scalingInfo::update(sf::Transformable& transformable, const float dt)
 	if (isDone()) {
 		if (m_currentTime - m_delayBefore - dt < m_motionDuration)
 			transformable.setScale(m_endingScale);
-		else if (isFinished())
-			return false;
+		else if (isFinished()) {
+			if (m_repeat) {
+				transformable.setScale(m_startingScale);
+				m_currentTime -= m_totalDuration;
+			}
+			else
+				return false;
+		}
 	}
 	else {
 		if (m_currentTime > m_delayBefore)
@@ -237,6 +244,14 @@ const sf::Vector2f scalingInfo::updateScale() const
 	const float ease_function_value = static_cast<float>(m_usedFunctionPtr(static_cast<double>((m_currentTime - m_delayBefore) / m_motionDuration)));
 	return sf::Vector2f{ ease_function_value * (m_endingScale.x - m_startingScale.x) + m_startingScale.x,
 						 ease_function_value * (m_endingScale.y - m_startingScale.y) + m_startingScale.y };
+}
+
+void scalingInfo::undoScaling(sf::Transformable& transformable)
+{
+	m_currentTime = 0.f;
+	m_startingScale = m_originalStartingScale;
+	m_endingScale = m_originalEndingScale;
+	transformable.setScale(m_originalStartingScale);
 }
 
 // Accessors
@@ -268,12 +283,18 @@ rotationInfo::rotationInfo(float startingRotation, float endingRotation, float m
 	m_clockwise(clockwise)
 {
 	if (m_clockwise) {
-		m_startingRotation = startingRotation;
-		m_endingRotation = endingRotation;
+		m_originalStartingRotation = startingRotation;
+		m_originalEndingRotation = endingRotation;
+
+		m_startingRotation = m_originalStartingRotation;
+		m_endingRotation = m_originalEndingRotation;
 	}
 	else {
-		m_startingRotation = 360.f - startingRotation;
-		m_endingRotation = 360.f - endingRotation;
+		m_originalStartingRotation = 360.f - startingRotation;
+		m_originalEndingRotation = 360.f - endingRotation;
+
+		m_startingRotation = m_originalStartingRotation;
+		m_endingRotation = m_originalEndingRotation;
 	}
 }
 
@@ -283,30 +304,29 @@ rotationInfo::rotationInfo(float startingRotation, float endingRotation, float m
 	m_clockwise(clockwise) 
 {
 	if (m_clockwise) {
-		m_startingRotation = startingRotation;
-		m_endingRotation = endingRotation;
+		m_originalStartingRotation = startingRotation;
+		m_originalEndingRotation = endingRotation;
+
+		m_startingRotation = m_originalStartingRotation;
+		m_endingRotation = m_originalEndingRotation;
 	}
 	else {
-		m_startingRotation = 360.f - startingRotation;
-		m_endingRotation = 360.f - endingRotation;
+		m_originalStartingRotation = 360.f - startingRotation;
+		m_originalEndingRotation = 360.f - endingRotation;
+
+		m_startingRotation = m_originalStartingRotation;
+		m_endingRotation = m_originalEndingRotation;
 	}
 }
 
 rotationInfo::rotationInfo(const rotationInfo& obj) :
 	transformationInfo{ obj.m_repeat, obj.m_currentTime, obj.m_motionDuration, obj.m_delayBefore, obj.m_delayAfter, obj.m_usedFunctionPtr },
-	m_startingRotation(obj.m_startingRotation),
-	m_endingRotation(obj.m_endingRotation),
-	m_clockwise(obj.m_clockwise)
+	m_clockwise{ obj.m_clockwise },
+	m_originalStartingRotation{ obj.m_originalStartingRotation },
+	m_originalEndingRotation{ obj.m_originalEndingRotation },
+	m_startingRotation{ m_originalStartingRotation },
+	m_endingRotation{ m_originalEndingRotation }
 	{}
-
-// Operators
-bool rotationInfo::operator==(const rotationInfo& rhs) const
-{
-	return	m_startingRotation == rhs.m_startingRotation &&
-		m_endingRotation == rhs.m_endingRotation &&
-		m_clockwise == rhs.m_clockwise &&
-		static_cast<const transformationInfo&>(*this) == static_cast<const transformationInfo&>(rhs);
-}
 
 const bool rotationInfo::update(sf::Transformable& transformable, const float dt)
 {
@@ -315,8 +335,14 @@ const bool rotationInfo::update(sf::Transformable& transformable, const float dt
 	if (isDone()) {
 		if (m_currentTime - m_delayBefore - dt < m_motionDuration)
 			transformable.setRotation(m_endingRotation);
-		else if (isFinished())
-			return false;
+		else if (isFinished()) {
+			if (m_repeat) {
+				transformable.setRotation(m_startingRotation);
+				m_currentTime -= m_totalDuration;
+			}
+			else
+				return false;
+		}
 	}
 	else {
 		if (m_currentTime > m_delayBefore)
@@ -332,6 +358,14 @@ const bool rotationInfo::update(sf::Transformable& transformable, const float dt
 const float rotationInfo::updateRotation() const
 {
 	return static_cast<const float>(m_usedFunctionPtr(static_cast<double>((m_currentTime - m_delayBefore) / m_motionDuration))) * (m_endingRotation - m_startingRotation) + m_startingRotation;
+}
+
+void rotationInfo::undoRotation(sf::Transformable& transformable)
+{
+	m_currentTime = 0.f;
+	m_startingRotation = m_originalStartingRotation;
+	m_endingRotation = m_originalEndingRotation;
+	transformable.setRotation(m_originalStartingRotation);
 }
 
 // Accessors

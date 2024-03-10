@@ -45,7 +45,7 @@
     <ClCompile Include="src\transformationInfo.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
-    <ClCompile Include="src\Demos\easeFunctionsDemo1.cpp">
+    <ClCompile Include="src\Demos\Demos.cpp">
       <Filter>Pliki źródłowe\Demos</Filter>
     </ClCompile>
     <ClCompile Include="src\SidePanel.cpp">
@@ -83,7 +83,7 @@
     <ClInclude Include="src\Instrumentor.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="src\Demos\easeFunctionsDemo1.h">
+    <ClInclude Include="src\Demos\Demos.h">
       <Filter>Pliki źródłowe\Demos</Filter>
     </ClInclude>
     <ClInclude Include="src\SidePanel.h">

@@ -24,8 +24,6 @@ public:
 	transformationInfo(const transformationInfo& obj);
 	virtual ~transformationInfo() = default;
 
-	bool operator==(const transformationInfo& rhs) const;
-
 	// Public functions
 	void reset();
 	const bool isDone() const;
@@ -43,17 +41,19 @@ private:
 	sf::Vector2f m_startingPos{};
 	sf::Vector2f m_endingPos{};
 
+	sf::Vector2f m_originalStartingPos{};
+	sf::Vector2f m_originalEndingPos{};
+
 public:
 	// Constructors / Destructors
 	movementInfo(sf::Vector2f startingPos, sf::Vector2f endingPos, float motionDuration, easeFunctions::Tmovement_function usedFunctionType, bool repeat, float delayBefore, float delayAfter);
 	movementInfo(sf::Vector2f startingPos, sf::Vector2f endingPos, float motionDuration, double (*usedFunctionPtr)(double), bool repeat, float delayBefore, float delayAfter);
 	movementInfo(const movementInfo& obj);
 
-	bool operator==(const movementInfo& rhs) const;
-
 	// Update functions
 	const bool update(sf::Transformable& transformable, const float dt);
 	const sf::Vector2f updatePosition() const;
+	void undoMovement(sf::Transformable& transformable);
 
 	// Accessors
 	sf::Vector2f& getStartingPos();
@@ -72,13 +72,14 @@ private:
 	sf::Vector2f m_startingScale{};
 	sf::Vector2f m_endingScale{};
 
+	sf::Vector2f m_originalStartingScale{};
+	sf::Vector2f m_originalEndingScale{};
+
 public:
 	// Constructors / Destructors
 	scalingInfo(sf::Vector2f startingScale, sf::Vector2f endingScale, float motionDuration, easeFunctions::Tmovement_function usedFunctionType, bool repeat, float delayBefore, float delayAfter);
 	scalingInfo(sf::Vector2f startingScale, sf::Vector2f endingScale, float motionDuration, double(*usedFunctionPtr)(double), bool repeat, float delayBefore, float delayAfter);
 	scalingInfo(const scalingInfo& obj);
-
-	bool operator==(const scalingInfo& rhs) const;
 
 	// Public functions
 	void scale(const sf::Vector2f& scale);
@@ -86,6 +87,7 @@ public:
 	// Update functions
 	const bool update(sf::Transformable& transformable, const float dt);
 	const sf::Vector2f updateScale() const;
+	void undoScaling(sf::Transformable& transformable);
 
 	// Accessors
 	sf::Vector2f& getStartingScale();
@@ -102,6 +104,10 @@ class rotationInfo : public transformationInfo {
 private:
 	float m_startingRotation{};
 	float m_endingRotation{};
+
+	float m_originalStartingRotation{};
+	float m_originalEndingRotation{};
+
 	bool  m_clockwise = true;
 
 public:
@@ -110,11 +116,10 @@ public:
 	rotationInfo(float startingRotation, float endingRotation, float motionDuration, double(*usedFunctionPtr)(double), bool repeat, float delayBefore, float delayAfter, bool clockwise);
 	rotationInfo(const rotationInfo& obj);
 
-	bool operator==(const rotationInfo& rhs) const;
-
 	// Update functions
 	const bool update(sf::Transformable& transformable, const float dt);
 	const float updateRotation() const;
+	void undoRotation(sf::Transformable& transformable);
 
 	// Accessors
 	float& getStartingRotation();

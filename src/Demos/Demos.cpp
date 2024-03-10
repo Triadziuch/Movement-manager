@@ -1,4 +1,4 @@
-#include "easeFunctionsDemo1.h"
+#include "Demos.h"
 
 // = = = = = = = = = = = = = = = = = = = = = = = = =  Movement Demo 1 = = = = = = = = = = = = = = = = = = = = = = = = = 
 void movementDemo1(sf::RenderWindow& window) {
@@ -1188,25 +1188,19 @@ void movementDemo3(sf::RenderWindow& window) {
 
 	long long int time_movement{};
 	float average_time_ms = 0.f;
-	bool synced = false;
+	bool synced = false, gui = true, running = true;
 	int it = 0;
-	bool gui = true;
 
 	// Config
-	bool running = true;
-
 	int current_ease_type = 0;
 	const int easeTypeSize = 30;
 	bool random_ease_type = true;
 
-	int routines = 200000;
-	int movements_in_routine = 10;
-	int shapes_count = 100000;
+	const int routines = 200000;
+	int shapes_count = 50000;
 	const int default_shapes_count = shapes_count;
+	int movements_in_routine = 10;
 	sf::Vector2f shape_size(2.f, 2.f);
-
-	float animation_time = 3.f;
-
 
 	// Routine initialization
 	printf("Creating routines...\n");
@@ -1221,7 +1215,6 @@ void movementDemo3(sf::RenderWindow& window) {
 		movementRoutine->setLooping(true);
 		movementRoutine->adjustStartToCurrentTransform(true);
 	}
-
 
 	// Shapes initialiaztion
 	printf("Creating shapes...\n");
@@ -1414,7 +1407,6 @@ void movementDemo3(sf::RenderWindow& window) {
 						shape_size.x = 1.f;
 						shape_size.y = 1.f;
 					}
-						
 
 					for (size_t i = 0; i < shapes_count; ++i) {
 						shapes[i]->setSize(shape_size);
@@ -1469,5 +1461,7 @@ void movementDemo3(sf::RenderWindow& window) {
 	movementManager->deleteScalingRoutine();
 	movementManager->deleteRotationRoutine();
 
+	for (size_t i = 0; i < shapes.size(); ++i)
+		delete shapes[i];
 	shapes.clear();
 }

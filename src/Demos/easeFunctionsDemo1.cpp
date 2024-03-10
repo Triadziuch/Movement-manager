@@ -1254,7 +1254,10 @@ void movementDemo3(sf::RenderWindow& window) {
 	side_panel.addText("Up - +1000 shapes");
 	side_panel.addText("Down - -1000 shapes");
 	side_panel.addText("Left / Right - Change function");
-	side_panel.addText(" ");
+	side_panel.addText("");
+	side_panel.addText("[ - Decrease shape size");
+	side_panel.addText("] - Increase shape size");
+	side_panel.addText("");
 	side_panel.addText("Q - Reset demo");
 	side_panel.addText("ESC - Close demo");
 	side_panel.addText(" ");
@@ -1269,6 +1272,8 @@ void movementDemo3(sf::RenderWindow& window) {
 	average_time_text.setPosition(10.f, 70.f);
 	sf::Text current_function_text("Current function: Random", font, 20u);
 	current_function_text.setPosition(10.f, 100.f);
+	sf::Text shape_size_text("Shape size: " + std::to_string(static_cast<int>(shape_size.x)), font, 20u);
+	shape_size_text.setPosition(10.f, 130.f);
 
 	while (running)
 	{
@@ -1290,7 +1295,7 @@ void movementDemo3(sf::RenderWindow& window) {
 			average_time_ms = static_cast<float>(time_movement / it) / 1000000.f;
 			average_time_text.setString("Average time: " + std::to_string(average_time_ms) + " ms");
 		}
-		
+
 
 		if (it % 50 == 0 && it != 0) {
 			it = 0;
@@ -1324,7 +1329,7 @@ void movementDemo3(sf::RenderWindow& window) {
 				}
 				else if (event.key.code == sf::Keyboard::Down) {
 					if (shapes_count - 1000 >= 0) {
-						for (size_t i = shapes_count - 1000; i < shapes_count; ++i) 
+						for (size_t i = shapes_count - 1000; i < shapes_count; ++i)
 							movementManager->unlinkMovementRoutine(shapes[i], "SM" + std::to_string(i % routines));
 
 						shapes_count -= 1000;
@@ -1345,7 +1350,7 @@ void movementDemo3(sf::RenderWindow& window) {
 						movementManager->setFunction(*shapes[i], easeFunctions::getTmovement(current_ease_type));
 						movementManager->resetRoutines(*shapes[i]);
 					}
-					current_function_text.setString("Current function: " + easeFunctions::getTmovement(current_ease_type));
+					current_function_text.setString("Current function: " + easeFunctions::getFunctionName(current_ease_type));
 				}
 				else if (event.key.code == sf::Keyboard::Right) {
 					current_ease_type++;
@@ -1356,13 +1361,14 @@ void movementDemo3(sf::RenderWindow& window) {
 						movementManager->setFunction(*shapes[i], easeFunctions::getTmovement(current_ease_type));
 						movementManager->resetRoutines(*shapes[i]);
 					}
-					current_function_text.setString("Current function: " + easeFunctions::getTmovement(current_ease_type));
+					current_function_text.setString("Current function: " + easeFunctions::getFunctionName(current_ease_type));
 				}
 
 				if (event.key.code == sf::Keyboard::Q) {
 					current_ease_type = 0;
+					shape_size = sf::Vector2f(2.f, 2.f);
 					int shape_count_diff = default_shapes_count - shapes_count;
-					
+
 
 					if (shape_count_diff > 0) {
 						for (size_t i = shapes_count; i < default_shapes_count; ++i) {
@@ -1384,24 +1390,60 @@ void movementDemo3(sf::RenderWindow& window) {
 
 					shapes_count = default_shapes_count;
 					shapes_count_text.setString("Shapes count: " + std::to_string(shapes_count));
-					
+
 					for (size_t i = 0; i < shapes_count; ++i) {
+						shapes[i]->setSize(shape_size);
+						shapes[i]->setOrigin(shapes[i]->getSize().x / 2.f, shapes[i]->getSize().y / 2.f);
 						movementManager->setFunction(*shapes[i], easeFunctions::getTmovement(randomEaseType()));
 						movementManager->resetRoutines(*shapes[i]);
 					}
 					current_function_text.setString("Current function: Random");
 				}
 
-				if (event.key.code == sf::Keyboard::G) 
+				if (event.key.code == sf::Keyboard::LBracket) {
+					shape_size.x -= 1.f;
+					shape_size.y -= 1.f;
+
+					if (shape_size.x < 1.f) {
+						shape_size.x = 1.f;
+						shape_size.y = 1.f;
+					}
+						
+
+					for (size_t i = 0; i < shapes_count; ++i) {
+						shapes[i]->setSize(shape_size);
+						shapes[i]->setOrigin(shapes[i]->getSize().x / 2.f, shapes[i]->getSize().y / 2.f);
+					}
+
+					shape_size_text.setString("Shape size: " + std::to_string(static_cast<int>(shape_size.x)));
+				}
+				else if (event.key.code == sf::Keyboard::RBracket) {
+					shape_size.x += 1.f;
+					shape_size.y += 1.f;
+
+					if (shape_size.x > 20.f) {
+						shape_size.x = 20.f;
+						shape_size.y = 20.f;
+					}
+
+					for (size_t i = 0; i < shapes_count; ++i) {
+						shapes[i]->setSize(shape_size);
+						shapes[i]->setOrigin(shapes[i]->getSize().x / 2.f, shapes[i]->getSize().y / 2.f);
+					}
+
+					shape_size_text.setString("Shape size: " + std::to_string(static_cast<int>(shape_size.x)));
+				}
+
+				if (event.key.code == sf::Keyboard::G)
 					gui = !gui;
-				
-				if (event.key.code == sf::Keyboard::C) 
+
+				if (event.key.code == sf::Keyboard::C)
 					side_panel.toggle();
 			}
 		}
 
 		window.clear();
-		for (const auto& shape: shapes)
+		for (const auto& shape : shapes)
 			window.draw(*shape);
 
 		if (gui) {
@@ -1409,6 +1451,7 @@ void movementDemo3(sf::RenderWindow& window) {
 			window.draw(shapes_count_text);
 			window.draw(average_time_text);
 			window.draw(current_function_text);
+			window.draw(shape_size_text);
 		}
 
 		side_panel.draw(window);

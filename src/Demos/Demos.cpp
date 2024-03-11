@@ -1,4 +1,7 @@
 #include "Demos.h"
+#include <chrono>
+
+using namespace std::chrono;
 
 // = = = = = = = = = = = = = = = = = = = = = = = = =  Movement Demo 1 = = = = = = = = = = = = = = = = = = = = = = = = = 
 void movementDemo1(sf::RenderWindow& window) {
@@ -376,11 +379,18 @@ void movementDemo1(sf::RenderWindow& window) {
 		window.display();
 	}
 
+	// Clean-up
+	auto start = high_resolution_clock::now();
+	movementManager->deleteMovementRoutine("UP_ARROW_MOVEMENT");
+	movementManager->deleteMovementRoutine("DOWN_ARROW_MOVEMENT");
 	for (int i = 0; i < rows; i++) {
 		movementManager->deleteMovementRoutine("SHAPE_MOVEMENT_" + std::to_string(i));
 		movementManager->deleteScalingRoutine("SHAPE_SCALING_" + std::to_string(i));
 		movementManager->deleteRotationRoutine("SHAPE_ROTATION_" + std::to_string(i));
 	}
+	auto stop = high_resolution_clock::now();
+	auto duration = duration_cast<nanoseconds>(stop - start);
+	printf("Time taken by deleteMovementRoutine: %lld nanoseconds\n", duration.count());
 }
 
 // = = = = = = = = = = = = = = = = = = = = = = = = =  Plot Demo 1 = = = = = = = = = = = = = = = = = = = = = = = = = 
@@ -1204,7 +1214,7 @@ void movementDemo3(sf::RenderWindow& window) {
 	const int easeTypeSize = 30;
 	bool random_ease_type = true;
 
-	const int routines = 200000;
+	const int routines = 50000;
 	int shapes_count = 50000;
 	const int default_shapes_count = shapes_count;
 	int movements_in_routine = 10;
@@ -1465,7 +1475,14 @@ void movementDemo3(sf::RenderWindow& window) {
 		window.display();
 	}
 
-	movementManager->deleteMovementRoutine();
+	//movementManager->deleteMovementRoutine();
+
+	auto start = high_resolution_clock::now();
+	for (size_t i = 0; i < routines; ++i)
+		movementManager->deleteMovementRoutine("SM" + std::to_string(i));
+	auto stop = high_resolution_clock::now();
+	auto duration = duration_cast<nanoseconds>(stop - start);
+	printf("Deleting routines: %lld nanoseconds\n", duration.count());
 
 	for (size_t i = 0; i < shapes.size(); ++i)
 		delete shapes[i];

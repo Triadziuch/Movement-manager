@@ -235,8 +235,8 @@ void ScalingRoutineContainer::deleteRoutine(const std::string& _name)
 		delete scalingRoutineFound->second;
 		this->scalingRoutines.erase(scalingRoutineFound);
 	}
-	else
-		printf("ScalingRoutineContainer::deleteRoutine: Routine with given name does not exist\n");
+	else {}
+		//printf("ScalingRoutineContainer::deleteRoutine: Routine with given name does not exist : %s\n", _name.c_str());
 }
 
 const size_t& ScalingRoutineContainer::getRoutineCount() const

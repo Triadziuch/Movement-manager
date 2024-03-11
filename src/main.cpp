@@ -5,9 +5,17 @@
 #include <Windows.h>
 #include <random>
 #include "Demos/Demos.h"
+#include <boost/tuple/tuple.hpp>
+#include <boost/tuple/tuple_comparison.hpp>
+#include <boost/tuple/tuple_io.hpp>
 
 int main()
 {
+	boost::tuple<int, int> a(1, 2);
+	a.get_head() = 3;
+	printf("%d %d\n", a.get_head(), a.get_tail());
+	printf("%d %d\n", a.get<0>(), a.get<1>());
+	return 0;
 	MovementManager* movementManager = MovementManager::getInstance();
 
 	srand(static_cast<unsigned int>(time(NULL)));

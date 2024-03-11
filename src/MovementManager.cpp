@@ -32,7 +32,7 @@ inline void MovementManager::printDebug(const std::string& message) const
 
 MovementManager* MovementManager::getInstance()
 {
-	if (!sInstance) 
+	if (!sInstance)
 		sInstance = new MovementManager();
 	return sInstance;
 }
@@ -127,10 +127,10 @@ MovementRoutine* MovementManager::linkMovementRoutine(sf::Transformable& transfo
 
 	// Check if we linked a movement routine to this shape before
 	auto m_movementRoutineContainerFound = m_routineMovement.find(&transformable);
-	if (m_movementRoutineContainerFound != m_routineMovement.end()){
+	if (m_movementRoutineContainerFound != m_routineMovement.end()) {
 
 		auto* movementRoutineFound = m_movementRoutineContainerFound->second->exists(_name);
-		if (movementRoutineFound != nullptr){
+		if (movementRoutineFound != nullptr) {
 			printDebug("linkMovementRoutine: Routine with name " + _name + " already linked to shape");
 			return movementRoutineFound;
 		}
@@ -159,7 +159,7 @@ void MovementManager::unlinkMovementRoutine(sf::Transformable* transformable, co
 	if (m_movementRoutineContainerFound != m_routineMovement.end()) {
 
 		auto* movementRoutineFound = m_movementRoutineContainerFound->second->exists(_name);
-		if (movementRoutineFound != nullptr) 
+		if (movementRoutineFound != nullptr)
 			m_movementRoutineContainerFound->second->deleteRoutine(_name);
 		else
 			printDebug("unlinkMovementRoutine: Routine with name " + _name + " not found");
@@ -175,8 +175,10 @@ void MovementManager::startMovementRoutine(sf::Transformable& transformable, con
 
 		auto* movementRoutineFound = m_movementRoutineContainerFound->second->exists(_name);
 		if (movementRoutineFound != nullptr) {
-			if (movementRoutineFound->start(transformable))
-				m_routineMovementActive.insert(std::make_pair(&transformable, movementRoutineFound));
+			if (movementRoutineFound->start(transformable)) {
+				auto map_iterator = m_routineMovementActive.insert(std::make_pair(&transformable, movementRoutineFound)).first;
+				m_routineMovementActiveMapped.insert(std::make_pair(_name, map_iterator));
+			}
 		}
 		else
 			printDebug("startMovementRoutine: Routine with name " + _name + " not found");
@@ -189,7 +191,7 @@ void MovementManager::pauseMovementRoutine(sf::Transformable& transformable, con
 {
 	auto movementRoutineFound = m_routineMovementActive.find(&transformable);
 	if (movementRoutineFound != m_routineMovementActive.end()) {
-		if (movementRoutineFound->second->getName() == _name) 
+		if (movementRoutineFound->second->getName() == _name)
 			movementRoutineFound->second->pause();
 		else
 			printDebug("pauseMovementRoutine: Routine with name " + _name + " not found");
@@ -202,7 +204,7 @@ void MovementManager::resumeMovementRoutine(sf::Transformable& transformable, co
 {
 	auto movementRoutineFound = m_routineMovementActive.find(&transformable);
 	if (movementRoutineFound != m_routineMovementActive.end()) {
-		if (movementRoutineFound->second->getName() == _name) 
+		if (movementRoutineFound->second->getName() == _name)
 			movementRoutineFound->second->resume();
 		else
 			printDebug("resumeMovementRoutine: Routine with name " + _name + " not found");
@@ -215,7 +217,7 @@ void MovementManager::resetMovementRoutine(sf::Transformable& transformable, con
 {
 	auto movementRoutineFound = m_routineMovementActive.find(&transformable);
 	if (movementRoutineFound != m_routineMovementActive.end()) {
-		if (movementRoutineFound->second->getName() == _name) 
+		if (movementRoutineFound->second->getName() == _name)
 			movementRoutineFound->second->reset(transformable);
 		else
 			printDebug("resetMovementRoutine: Routine with name " + _name + " not found");
@@ -230,6 +232,7 @@ void MovementManager::stopMovementRoutine(sf::Transformable* transformable, cons
 	if (movementRoutineFound != m_routineMovementActive.end()) {
 		if (movementRoutineFound->second->getName() == _name) {
 			movementRoutineFound->second->stop(transformable);
+			m_routineMovementActiveMapped.erase(_name);
 			m_routineMovementActive.erase(movementRoutineFound);
 		}
 		else
@@ -243,6 +246,7 @@ void MovementManager::deleteMovementRoutine()
 {
 	for (auto routine_active = m_routineMovementActive.begin(); routine_active != m_routineMovementActive.end();) {
 		routine_active->second->stop(routine_active->first);
+		m_routineMovementActiveMapped.erase(routine_active->second->getName());
 		routine_active = m_routineMovementActive.erase(routine_active);
 	}
 
@@ -257,6 +261,12 @@ void MovementManager::deleteMovementRoutine()
 
 void MovementManager::deleteMovementRoutine(const std::string& _name)
 {
+	auto routineActiveFound = m_routineMovementActiveMapped.find(_name);
+	if (routineActiveFound != m_routineMovementActiveMapped.end()) {
+		m_routineMovementActive.erase(routineActiveFound->second);
+		m_routineMovementActiveMapped.erase(routineActiveFound);
+	}
+	
 	for (auto routine_active = m_routineMovementActive.begin(); routine_active != m_routineMovementActive.end();) {
 		if (routine_active->second->getName() == _name) {
 			routine_active->second->stop(routine_active->first);
@@ -311,7 +321,7 @@ ScalingRoutine* MovementManager::getScalingRoutine(sf::Transformable& transforma
 	if (scalingRoutineContainerFound != m_routineScaling.end()) {
 		return scalingRoutineContainerFound->second->exists(_name);
 	}
-	else 
+	else
 		printDebug("getScalingRoutine: Routine for shape not found");
 
 	return nullptr;
@@ -393,7 +403,7 @@ void MovementManager::pauseScalingRoutine(sf::Transformable& transformable, cons
 {
 	auto scalingRoutineFound = m_routineScaling_Active.find(&transformable);
 	if (scalingRoutineFound != m_routineScaling_Active.end()) {
-		if (scalingRoutineFound->second->getName() == _name) 
+		if (scalingRoutineFound->second->getName() == _name)
 			scalingRoutineFound->second->pause();
 		else
 			printDebug("pauseScalingRoutine: Routine with name " + _name + " not found");
@@ -406,7 +416,7 @@ void MovementManager::resumeScalingRoutine(sf::Transformable& transformable, con
 {
 	auto scalingRoutineFound = m_routineScaling_Active.find(&transformable);
 	if (scalingRoutineFound != m_routineScaling_Active.end()) {
-		if (scalingRoutineFound->second->getName() == _name) 
+		if (scalingRoutineFound->second->getName() == _name)
 			scalingRoutineFound->second->resume();
 		else
 			printDebug("resumeScalingRoutine: Routine with name " + _name + " not found");
@@ -419,7 +429,7 @@ void MovementManager::resetScalingRoutine(sf::Transformable& transformable, cons
 {
 	auto scalingRoutineFound = m_routineScaling_Active.find(&transformable);
 	if (scalingRoutineFound != m_routineScaling_Active.end()) {
-		if (scalingRoutineFound->second->getName() == _name) 
+		if (scalingRoutineFound->second->getName() == _name)
 			scalingRoutineFound->second->reset(transformable);
 		else
 			printDebug("resetScalingRoutine: Routine with name " + _name + " not found");
@@ -515,11 +525,11 @@ RotationRoutine* MovementManager::getRotationRoutine(sf::Transformable& transfor
 
 	if (rotationRoutineContainerFound != m_routineRotation.end())
 		return rotationRoutineContainerFound->second->exists(_name);
-	else 
+	else
 		printDebug("getRotationRoutine: Routine for shape not found");
 
 	return nullptr;
-	
+
 }
 
 RotationRoutine* MovementManager::linkRotationRoutine(sf::Transformable& transformable, const std::string& _name)
@@ -598,7 +608,7 @@ void MovementManager::pauseRotationRoutine(sf::Transformable& transformable, con
 {
 	auto rotationRoutineFound = m_routineRotation_Active.find(&transformable);
 	if (rotationRoutineFound != m_routineRotation_Active.end()) {
-		if (rotationRoutineFound->second->getName() == _name) 
+		if (rotationRoutineFound->second->getName() == _name)
 			rotationRoutineFound->second->pause();
 		else
 			printDebug("pauseRotationRoutine: Routine with name " + _name + " not found");
@@ -611,7 +621,7 @@ void MovementManager::resumeRotationRoutine(sf::Transformable& transformable, co
 {
 	auto rotationRoutineFound = m_routineRotation_Active.find(&transformable);
 	if (rotationRoutineFound != m_routineRotation_Active.end()) {
-		if (rotationRoutineFound->second->getName() == _name) 
+		if (rotationRoutineFound->second->getName() == _name)
 			rotationRoutineFound->second->resume();
 		else
 			printDebug("resumeRotationRoutine: Routine with name " + _name + " not found");
@@ -624,7 +634,7 @@ void MovementManager::resetRotationRoutine(sf::Transformable& transformable, con
 {
 	auto rotationRoutineFound = m_routineRotation_Active.find(&transformable);
 	if (rotationRoutineFound != m_routineRotation_Active.end()) {
-		if (rotationRoutineFound->second->getName() == _name) 
+		if (rotationRoutineFound->second->getName() == _name)
 			rotationRoutineFound->second->reset(transformable);
 		else
 			printDebug("resetRotationRoutine: Routine with name " + _name + " not found");
@@ -666,7 +676,7 @@ void MovementManager::deleteRotationRoutine()
 
 void MovementManager::deleteRotationRoutine(const std::string& _name)
 {
-for (auto routine_active = m_routineRotation_Active.begin(); routine_active != m_routineRotation_Active.end();) {
+	for (auto routine_active = m_routineRotation_Active.begin(); routine_active != m_routineRotation_Active.end();) {
 		if (routine_active->second->getName() == _name) {
 			routine_active->second->stop(routine_active->first);
 			routine_active = m_routineRotation_Active.erase(routine_active);

@@ -1,6 +1,7 @@
 #pragma once
 #include "MovementContainer.h"
 #include "RoutineContainer.h"
+#include <set>
 
 class MovementManager {
 private:
@@ -9,8 +10,10 @@ private:
 
 	bool debug = false;
 
-	std::map<sf::Transformable*,  MovementRoutine*> m_routineMovementActive; // Contains active routines linked to shapes
-	std::map<sf::Transformable*,  MovementRoutineContainer*>  m_routineMovement; // Contains copies of all linked routines to shapes. Contains COPY of LINKED routines from m_movementRoutineContainer
+	std::map<sf::Transformable*, MovementRoutine*> m_routineMovementActive; // Contains active routines linked to shapes
+	std::unordered_map<std::string, std::map<sf::Transformable*, MovementRoutine*>::iterator > m_routineMovementActiveMapped;
+
+	std::map<sf::Transformable*, MovementRoutineContainer*>  m_routineMovement; // Contains copies of all linked routines to shapes. Contains COPY of LINKED routines from m_movementRoutineContainer
 	MovementRoutineContainer* m_movementRoutineContainer;
 
 	std::map<sf::Transformable*, ScalingRoutine*> m_routineScaling_Active;
@@ -90,7 +93,7 @@ public:
 	RotationRoutine* getRotationRoutine(const std::string& _name);
 	RotationRoutine* getRotationRoutine(sf::Transformable& transformable, const std::string& _name);
 
-	RotationRoutine* linkRotationRoutine(sf::Transformable& transformable, const std::string& _name); 
+	RotationRoutine* linkRotationRoutine(sf::Transformable& transformable, const std::string& _name);
 	void unlinkRotationRoutine(sf::Transformable* transformable, const std::string& _name);
 
 	void startRotationRoutine(sf::Transformable& transformable, const std::string& _name);

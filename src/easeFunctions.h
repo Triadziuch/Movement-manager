@@ -63,7 +63,7 @@ private:
 	static double inOutBounce(double x);
 
 public:
-	static enum Tmovement_function : int {
+	enum Tmovement_function : int {
 		IN_SINE,
 		OUT_SINE,
 		IN_OUT_SINE,

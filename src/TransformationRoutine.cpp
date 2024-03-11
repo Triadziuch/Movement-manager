@@ -461,6 +461,15 @@ const bool ScalingRoutine::goToNextScaling(const sf::Transformable& transformabl
 	}
 }
 
+ScalingRoutine* ScalingRoutine::goToScaling(const sf::Transformable& transformable, const size_t scaling_id)
+{
+	if (scaling_id < m_count) {
+		m_current = scaling_id;
+		m_isPaused = m_pauseAfterChangingMovements;
+	}
+	return this;
+}
+
 void ScalingRoutine::setFunction(easeFunctions::Tmovement_function usedFunctionType)
 {
 	for (auto& scaling : m_routineScalings)

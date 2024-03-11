@@ -92,8 +92,8 @@ movementInfo::movementInfo(sf::Vector2f startingPos, sf::Vector2f endingPos, flo
 	transformationInfo{ repeat, motionDuration, delayBefore, delayAfter, usedFunctionType }, 
 	m_originalStartingPos{ startingPos },
 	m_originalEndingPos{ endingPos },
-	m_startingPos{ m_originalStartingPos },
-	m_endingPos{ m_originalEndingPos }
+	m_startingPos{ startingPos },
+	m_endingPos{ endingPos }
 	{}
 
 // Constructors / Destructors
@@ -101,16 +101,16 @@ movementInfo::movementInfo(sf::Vector2f startingPos, sf::Vector2f endingPos, flo
 	transformationInfo{ repeat, motionDuration, delayBefore, delayAfter, usedFunctionPtr },
 	m_originalStartingPos{ startingPos },
 	m_originalEndingPos{ endingPos },
-	m_startingPos{ m_originalStartingPos },
-	m_endingPos{ m_originalEndingPos }
+	m_startingPos{ startingPos },
+	m_endingPos{ endingPos }
 	{}
 
 movementInfo::movementInfo(const movementInfo & obj) :
 	transformationInfo{ obj.m_repeat, obj.m_currentTime, obj.m_motionDuration, obj.m_delayBefore, obj.m_delayAfter, obj.m_usedFunctionPtr },
 	m_originalStartingPos{ obj.m_originalStartingPos },
 	m_originalEndingPos{ obj.m_originalEndingPos },
-	m_startingPos{ m_originalStartingPos },
-	m_endingPos{ m_originalEndingPos }
+	m_startingPos{ obj.m_startingPos },
+	m_endingPos{ obj.m_endingPos }
 	{}
 
 const bool movementInfo::update(sf::Transformable& transformable, const float dt)
@@ -183,8 +183,8 @@ scalingInfo::scalingInfo(sf::Vector2f startingScale, sf::Vector2f endingScale, f
 	transformationInfo{ repeat, motionDuration, delayBefore, delayAfter, usedFunctionType },
 	m_originalStartingScale{ startingScale },
 	m_originalEndingScale{ endingScale },
-	m_startingScale{ m_originalStartingScale },
-	m_endingScale{ m_originalEndingScale }
+	m_startingScale{ startingScale },
+	m_endingScale{ endingScale }
 	{}
 
 // Constructors / Destructors
@@ -192,16 +192,16 @@ scalingInfo::scalingInfo(sf::Vector2f startingScale, sf::Vector2f endingScale, f
 	transformationInfo{ repeat, motionDuration, delayBefore, delayAfter, usedFunctionPtr },
 	m_originalStartingScale{ startingScale },
 	m_originalEndingScale{ endingScale },
-	m_startingScale{ m_originalStartingScale },
-	m_endingScale{ m_originalEndingScale }
+	m_startingScale{ startingScale },
+	m_endingScale{ endingScale }
 	{}
 
 scalingInfo::scalingInfo(const scalingInfo & obj) :
 	transformationInfo{ obj.m_repeat, obj.m_currentTime, obj.m_motionDuration, obj.m_delayBefore, obj.m_delayAfter, obj.m_usedFunctionPtr },
 	m_originalStartingScale{ obj.m_originalStartingScale },
 	m_originalEndingScale{ obj.m_originalEndingScale },
-	m_startingScale{ m_originalStartingScale },
-	m_endingScale{ m_originalEndingScale }
+	m_startingScale{ obj.m_startingScale },
+	m_endingScale{ obj.m_endingScale }
 	{}
 
 // Public functions
@@ -324,8 +324,8 @@ rotationInfo::rotationInfo(const rotationInfo& obj) :
 	m_clockwise{ obj.m_clockwise },
 	m_originalStartingRotation{ obj.m_originalStartingRotation },
 	m_originalEndingRotation{ obj.m_originalEndingRotation },
-	m_startingRotation{ m_originalStartingRotation },
-	m_endingRotation{ m_originalEndingRotation }
+	m_startingRotation{ obj.m_originalStartingRotation },
+	m_endingRotation{ obj.m_originalEndingRotation }
 	{}
 
 const bool rotationInfo::update(sf::Transformable& transformable, const float dt)

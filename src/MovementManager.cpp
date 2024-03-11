@@ -24,6 +24,12 @@ MovementManager::~MovementManager()
 	delete m_movementRoutineContainer;
 }
 
+inline void MovementManager::printDebug(const std::string& message) const
+{
+	if (debug)
+		printf("MovementManager: %s\n", message.c_str());
+}
+
 MovementManager* MovementManager::getInstance()
 {
 	if (!sInstance) 
@@ -104,7 +110,7 @@ MovementRoutine* MovementManager::getMovementRoutine(sf::Transformable& transfor
 		return m_movementRoutineContainerFound->second->exists(_name);
 	}
 	else {
-		printf("MovementManager::getMovementRoutine: Routine for shape not found\n");
+		printDebug("getMovementRoutine: Routine for shape not found");
 		return nullptr;
 	}
 }
@@ -115,7 +121,7 @@ MovementRoutine* MovementManager::linkMovementRoutine(sf::Transformable& transfo
 	MovementRoutine* movementRoutineOriginal = m_movementRoutineContainer->getRoutinePtr(_name);
 
 	if (movementRoutineOriginal == nullptr) {
-		printf("MovementManager::linkMovementRoutine: Routine with name %s not found\n", _name.c_str());
+		printDebug("linkMovementRoutine: Routine with name " + _name + " not found");
 		return nullptr;
 	}
 
@@ -125,7 +131,7 @@ MovementRoutine* MovementManager::linkMovementRoutine(sf::Transformable& transfo
 
 		auto* movementRoutineFound = m_movementRoutineContainerFound->second->exists(_name);
 		if (movementRoutineFound != nullptr){
-			printf("MovementManager::linkMovementRoutine: Routine with name %s already linked to shape\n", _name.c_str());
+			printDebug("linkMovementRoutine: Routine with name " + _name + " already linked to shape");
 			return movementRoutineFound;
 		}
 	}
@@ -156,10 +162,10 @@ void MovementManager::unlinkMovementRoutine(sf::Transformable* transformable, co
 		if (movementRoutineFound != nullptr) 
 			m_movementRoutineContainerFound->second->deleteRoutine(_name);
 		else
-			printf("MovementManager::unlinkMovementRoutine: Routine with name %s not found\n", _name.c_str());
+			printDebug("unlinkMovementRoutine: Routine with name " + _name + " not found");
 	}
 	else
-		printf("MovementManager::unlinkMovementRoutine: Routine for shape not found\n");
+		printDebug("unlinkMovementRoutine: Routine for shape not found");
 }
 
 void MovementManager::startMovementRoutine(sf::Transformable& transformable, const std::string& _name)
@@ -173,10 +179,10 @@ void MovementManager::startMovementRoutine(sf::Transformable& transformable, con
 				m_routineMovementActive.insert(std::make_pair(&transformable, movementRoutineFound));
 		}
 		else
-			printf("MovementManager::startMovementRoutine: Routine with name %s not found\n", _name.c_str());
+			printDebug("startMovementRoutine: Routine with name " + _name + " not found");
 	}
 	else
-		printf("MovementManager::startMovementRoutine: Routine for shape not found\n");
+		printDebug("startMovementRoutine: Routine for shape not found");
 }
 
 void MovementManager::pauseMovementRoutine(sf::Transformable& transformable, const std::string& _name)
@@ -186,10 +192,10 @@ void MovementManager::pauseMovementRoutine(sf::Transformable& transformable, con
 		if (movementRoutineFound->second->getName() == _name) 
 			movementRoutineFound->second->pause();
 		else
-			printf("MovementManager::pauseMovementRoutine: Routine with name %s not found\n", _name.c_str());
+			printDebug("pauseMovementRoutine: Routine with name " + _name + " not found");
 	}
 	else
-		printf("MovementManager::pauseMovementRoutine: Routine for shape not found\n");
+		printDebug("pauseMovementRoutine: Routine for shape not found");
 }
 
 void MovementManager::resumeMovementRoutine(sf::Transformable& transformable, const std::string& _name)
@@ -199,10 +205,10 @@ void MovementManager::resumeMovementRoutine(sf::Transformable& transformable, co
 		if (movementRoutineFound->second->getName() == _name) 
 			movementRoutineFound->second->resume();
 		else
-			printf("MovementManager::resumeMovementRoutine: Routine with name %s not found\n", _name.c_str());
+			printDebug("resumeMovementRoutine: Routine with name " + _name + " not found");
 	}
 	else
-		printf("MovementManager::resumeMovementRoutine: Routine for shape not found\n");
+		printDebug("resumeMovementRoutine: Routine for shape not found");
 }
 
 void MovementManager::resetMovementRoutine(sf::Transformable& transformable, const std::string& _name)
@@ -212,10 +218,10 @@ void MovementManager::resetMovementRoutine(sf::Transformable& transformable, con
 		if (movementRoutineFound->second->getName() == _name) 
 			movementRoutineFound->second->reset(transformable);
 		else
-			printf("MovementManager::resetMovementRoutine: Routine with name %s not found\n", _name.c_str());
+			printDebug("resetMovementRoutine: Routine with name " + _name + " not found");
 	}
 	else
-		printf("MovementManager::resetMovementRoutine: Routine for shape not found\n");
+		printDebug("resetMovementRoutine: Routine for shape not found");
 }
 
 void MovementManager::stopMovementRoutine(sf::Transformable* transformable, const std::string& _name)
@@ -227,10 +233,10 @@ void MovementManager::stopMovementRoutine(sf::Transformable* transformable, cons
 			m_routineMovementActive.erase(movementRoutineFound);
 		}
 		else
-			printf("MovementManager::stopMovementRoutine: Routine with name %s not found\n", _name.c_str());
+			printDebug("stopMovementRoutine: Routine with name " + _name + " not found");
 	}
 	else
-		printf("MovementManager::stopMovementRoutine: Routine for shape not found\n");
+		printDebug("stopMovementRoutine: Routine for shape not found");
 }
 
 void MovementManager::deleteMovementRoutine()
@@ -305,10 +311,10 @@ ScalingRoutine* MovementManager::getScalingRoutine(sf::Transformable& transforma
 	if (scalingRoutineContainerFound != m_routineScaling.end()) {
 		return scalingRoutineContainerFound->second->exists(_name);
 	}
-	else {
-		printf("MovementManager::getScalingRoutine: Routine for shape not found\n");
-		return nullptr;
-	}
+	else 
+		printDebug("getScalingRoutine: Routine for shape not found");
+
+	return nullptr;
 }
 
 ScalingRoutine* MovementManager::linkScalingRoutine(sf::Transformable& transformable, const std::string& _name)
@@ -317,7 +323,7 @@ ScalingRoutine* MovementManager::linkScalingRoutine(sf::Transformable& transform
 	ScalingRoutine* scalingRoutineOriginal = m_scalingRoutineContainer->getRoutinePtr(_name);
 
 	if (scalingRoutineOriginal == nullptr) {
-		printf("MovementManager::linkScalingRoutine: Routine with name %s not found\n", _name.c_str());
+		printDebug("linkScalingRoutine: Routine with name " + _name + " not found");
 		return nullptr;
 	}
 
@@ -327,7 +333,7 @@ ScalingRoutine* MovementManager::linkScalingRoutine(sf::Transformable& transform
 
 		auto* scalingRoutineFound = m_scalingRoutineContainerFound->second->exists(_name);
 		if (scalingRoutineFound != nullptr) {
-			printf("MovementManager::linkScalingRoutine: Routine with name %s already linked to shape\n", _name.c_str());
+			printDebug("linkScalingRoutine: Routine with name " + _name + " already linked to shape");
 			return scalingRoutineFound;
 		}
 	}
@@ -359,10 +365,10 @@ void MovementManager::unlinkScalingRoutine(sf::Transformable* transformable, con
 			m_scalingRoutineContainerFound->second->deleteRoutine(_name);
 		}
 		else
-			printf("MovementManager::unlinkScalingRoutine: Routine with name %s not found\n", _name.c_str());
+			printDebug("unlinkScalingRoutine: Routine with name " + _name + " not found");
 	}
 	else
-		printf("MovementManager::unlinkScalingRoutine: Routine for shape not found\n");
+		printDebug("unlinkScalingRoutine: Routine for shape not found");
 }
 
 void MovementManager::startScalingRoutine(sf::Transformable& transformable, const std::string& _name)
@@ -377,10 +383,10 @@ void MovementManager::startScalingRoutine(sf::Transformable& transformable, cons
 				m_routineScaling_Active.insert(std::make_pair(&transformable, scalingRoutineFound));
 		}
 		else
-			printf("MovementManager::startScalingRoutine: Routine with name %s not found\n", _name.c_str());
+			printDebug("startScalingRoutine: Routine with name " + _name + " not found");
 	}
 	else
-		printf("MovementManager::startScalingRoutine: Routine for shape not found\n");
+		printDebug("startScalingRoutine: Routine for shape not found");
 }
 
 void MovementManager::pauseScalingRoutine(sf::Transformable& transformable, const std::string& _name)
@@ -390,10 +396,10 @@ void MovementManager::pauseScalingRoutine(sf::Transformable& transformable, cons
 		if (scalingRoutineFound->second->getName() == _name) 
 			scalingRoutineFound->second->pause();
 		else
-			printf("MovementManager::pauseScalingRoutine: Routine with name %s not found\n", _name.c_str());
+			printDebug("pauseScalingRoutine: Routine with name " + _name + " not found");
 	}
 	else
-		printf("MovementManager::pauseScalingRoutine: Routine for shape not found\n");
+		printDebug("pauseScalingRoutine: Routine for shape not found");
 }
 
 void MovementManager::resumeScalingRoutine(sf::Transformable& transformable, const std::string& _name)
@@ -403,10 +409,10 @@ void MovementManager::resumeScalingRoutine(sf::Transformable& transformable, con
 		if (scalingRoutineFound->second->getName() == _name) 
 			scalingRoutineFound->second->resume();
 		else
-			printf("MovementManager::resumeScalingRoutine: Routine with name %s not found\n", _name.c_str());
+			printDebug("resumeScalingRoutine: Routine with name " + _name + " not found");
 	}
 	else
-		printf("MovementManager::resumeScalingRoutine: Routine for shape not found\n");
+		printDebug("resumeScalingRoutine: Routine for shape not found");
 }
 
 void MovementManager::resetScalingRoutine(sf::Transformable& transformable, const std::string& _name)
@@ -416,10 +422,10 @@ void MovementManager::resetScalingRoutine(sf::Transformable& transformable, cons
 		if (scalingRoutineFound->second->getName() == _name) 
 			scalingRoutineFound->second->reset(transformable);
 		else
-			printf("MovementManager::resetScalingRoutine: Routine with name %s not found\n", _name.c_str());
+			printDebug("resetScalingRoutine: Routine with name " + _name + " not found");
 	}
 	else
-		printf("MovementManager::resetScalingRoutine: Routine for shape not found\n");
+		printDebug("resetScalingRoutine: Routine for shape not found");
 }
 
 void MovementManager::stopScalingRoutine(sf::Transformable* transformable, const std::string& _name)
@@ -431,10 +437,10 @@ void MovementManager::stopScalingRoutine(sf::Transformable* transformable, const
 			m_routineScaling_Active.erase(scalingRoutineFound);
 		}
 		else
-			printf("MovementManager::stopScalingRoutine: Routine with name %s not found\n", _name.c_str());
+			printDebug("stopScalingRoutine: Routine with name " + _name + " not found");
 	}
 	else
-		printf("MovementManager::stopScalingRoutine: Routine for shape not found\n");
+		printDebug("stopScalingRoutine: Routine for shape not found");
 }
 
 void MovementManager::deleteScalingRoutine()
@@ -506,13 +512,14 @@ RotationRoutine* MovementManager::getRotationRoutine(const std::string& _name)
 RotationRoutine* MovementManager::getRotationRoutine(sf::Transformable& transformable, const std::string& _name)
 {
 	auto rotationRoutineContainerFound = m_routineRotation.find(&transformable);
-	if (rotationRoutineContainerFound != m_routineRotation.end()) {
+
+	if (rotationRoutineContainerFound != m_routineRotation.end())
 		return rotationRoutineContainerFound->second->exists(_name);
-	}
-	else {
-		printf("MovementManager::getRotationRoutine: Routine for shape not found\n");
-		return nullptr;
-	}
+	else 
+		printDebug("getRotationRoutine: Routine for shape not found");
+
+	return nullptr;
+	
 }
 
 RotationRoutine* MovementManager::linkRotationRoutine(sf::Transformable& transformable, const std::string& _name)
@@ -521,7 +528,7 @@ RotationRoutine* MovementManager::linkRotationRoutine(sf::Transformable& transfo
 	RotationRoutine* rotationRoutineOriginal = m_rotationRoutineContainer->getRoutinePtr(_name);
 
 	if (rotationRoutineOriginal == nullptr) {
-		printf("MovementManager::linkRotationRoutine: Routine with name %s not found\n", _name.c_str());
+		printDebug("linkRotationRoutine: Routine with name " + _name + " not found");
 		return nullptr;
 	}
 
@@ -531,7 +538,7 @@ RotationRoutine* MovementManager::linkRotationRoutine(sf::Transformable& transfo
 
 		auto* rotationRoutineFound = m_rotationRoutineContainerFound->second->exists(_name);
 		if (rotationRoutineFound != nullptr) {
-			printf("MovementManager::linkRotationRoutine: Routine with name %s already linked to shape\n", _name.c_str());
+			printDebug("linkRotationRoutine: Routine with name " + _name + " already linked to shape");
 			return rotationRoutineFound;
 		}
 	}
@@ -563,10 +570,10 @@ void MovementManager::unlinkRotationRoutine(sf::Transformable* transformable, co
 			m_rotationRoutineContainerFound->second->deleteRoutine(_name);
 		}
 		else
-			printf("MovementManager::unlinkRotationRoutine: Routine with name %s not found\n", _name.c_str());
+			printDebug("unlinkRotationRoutine: Routine with name " + _name + " not found");
 	}
 	else
-		printf("MovementManager::unlinkRotationRoutine: Routine for shape not found\n");
+		printDebug("unlinkRotationRoutine: Routine for shape not found");
 }
 
 void MovementManager::startRotationRoutine(sf::Transformable& transformable, const std::string& _name)
@@ -581,10 +588,10 @@ void MovementManager::startRotationRoutine(sf::Transformable& transformable, con
 				m_routineRotation_Active.insert(std::make_pair(&transformable, rotationRoutineFound));
 		}
 		else
-			printf("MovementManager::startRotationRoutine: Routine with name %s not found\n", _name.c_str());
+			printDebug("startRotationRoutine: Routine with name " + _name + " not found");
 	}
 	else
-		printf("MovementManager::startRotationRoutine: Routine for shape not found\n");
+		printDebug("startRotationRoutine: Routine for shape not found");
 }
 
 void MovementManager::pauseRotationRoutine(sf::Transformable& transformable, const std::string& _name)
@@ -594,10 +601,10 @@ void MovementManager::pauseRotationRoutine(sf::Transformable& transformable, con
 		if (rotationRoutineFound->second->getName() == _name) 
 			rotationRoutineFound->second->pause();
 		else
-			printf("MovementManager::pauseRotationRoutine: Routine with name %s not found\n", _name.c_str());
+			printDebug("pauseRotationRoutine: Routine with name " + _name + " not found");
 	}
 	else
-		printf("MovementManager::pauseRotationRoutine: Routine for shape not found\n");
+		printDebug("pauseRotationRoutine: Routine for shape not found");
 }
 
 void MovementManager::resumeRotationRoutine(sf::Transformable& transformable, const std::string& _name)
@@ -607,10 +614,10 @@ void MovementManager::resumeRotationRoutine(sf::Transformable& transformable, co
 		if (rotationRoutineFound->second->getName() == _name) 
 			rotationRoutineFound->second->resume();
 		else
-			printf("MovementManager::resumeRotationRoutine: Routine with name %s not found\n", _name.c_str());
+			printDebug("resumeRotationRoutine: Routine with name " + _name + " not found");
 	}
 	else
-		printf("MovementManager::resumeRotationRoutine: Routine for shape not found\n");
+		printDebug("resumeRotationRoutine: Routine for shape not found");
 }
 
 void MovementManager::resetRotationRoutine(sf::Transformable& transformable, const std::string& _name)
@@ -620,10 +627,10 @@ void MovementManager::resetRotationRoutine(sf::Transformable& transformable, con
 		if (rotationRoutineFound->second->getName() == _name) 
 			rotationRoutineFound->second->reset(transformable);
 		else
-			printf("MovementManager::resetRotationRoutine: Routine with name %s not found\n", _name.c_str());
+			printDebug("resetRotationRoutine: Routine with name " + _name + " not found");
 	}
 	else
-		printf("MovementManager::resetRotationRoutine: Routine for shape not found\n");
+		printDebug("resetRotationRoutine: Routine for shape not found");
 }
 
 void MovementManager::stopRotationRoutine(sf::Transformable* transformable, const std::string& _name)
@@ -635,10 +642,10 @@ void MovementManager::stopRotationRoutine(sf::Transformable* transformable, cons
 			m_routineRotation_Active.erase(rotationRoutineFound);
 		}
 		else
-			printf("MovementManager::stopRotationRoutine: Routine with name %s not found\n", _name.c_str());
+			printDebug("stopRotationRoutine: Routine with name " + _name + " not found");
 	}
 	else
-		printf("MovementManager::stopRotationRoutine: Routine for shape not found\n");
+		printDebug("stopRotationRoutine: Routine for shape not found");
 }
 
 void MovementManager::deleteRotationRoutine()
@@ -693,4 +700,9 @@ const long long int MovementManager::getSizeRotation() const
 		size += sizeof(routineActive.second);
 
 	return size;
+}
+
+void MovementManager::setDebug(const bool debug)
+{
+	this->debug = debug;
 }

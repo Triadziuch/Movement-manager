@@ -100,7 +100,7 @@ void movementDemo1(sf::RenderWindow& window) {
 	movementManager->startMovementRoutine(down_arrow, "DOWN_ARROW_MOVEMENT");
 
 	for (int i = 0; i < rows; i++) {
-		auto movementRoutine = movementManager->createMovementRoutine("SHAPE_MOVEMENT_" + std::to_string(i));
+		movementRoutine = movementManager->createMovementRoutine("SHAPE_MOVEMENT_" + std::to_string(i));
 		movementRoutine->addMovement(new movementInfo(start_pos[i], end_pos[i], animation_time, easeFunctions::getTmovement(current_ease_type + i), false, delay_before, delay_after));
 		movementRoutine->addMovement(new movementInfo(end_pos[i], start_pos[i], animation_time, easeFunctions::getTmovement(current_ease_type + i), false, delay_before, delay_after));
 		movementRoutine->setLooping(true);
@@ -376,9 +376,11 @@ void movementDemo1(sf::RenderWindow& window) {
 		window.display();
 	}
 
-	movementManager->deleteMovementRoutine();
-	movementManager->deleteScalingRoutine();
-	movementManager->deleteRotationRoutine();
+	for (int i = 0; i < rows; i++) {
+		movementManager->deleteMovementRoutine("SHAPE_MOVEMENT_" + std::to_string(i));
+		movementManager->deleteScalingRoutine("SHAPE_SCALING_" + std::to_string(i));
+		movementManager->deleteRotationRoutine("SHAPE_ROTATION_" + std::to_string(i));
+	}
 }
 
 // = = = = = = = = = = = = = = = = = = = = = = = = =  Plot Demo 1 = = = = = = = = = = = = = = = = = = = = = = = = = 
@@ -529,9 +531,6 @@ void movementDemo2(sf::RenderWindow& window)
 	MovementManager* movementManager = MovementManager::getInstance();
 
 	bool running = true;
-	constexpr size_t easeTypeSize = 30;
-	int current_ease_type = 0;
-
 	float delay_before = 0.3f, animation_time = 0.5f, delay_after = 0.3f;
 
 	// GUI Initialization
@@ -541,7 +540,6 @@ void movementDemo2(sf::RenderWindow& window)
 
 	sf::Clock dt_clock;
 	float dt;
-	float wait_time = 0.5f;
 
 	// ----- Movement Container testing ----- //
 	sf::CircleShape shape[4];
@@ -1153,6 +1151,16 @@ void movementDemo2(sf::RenderWindow& window)
 
 		window.display();
 	}
+
+	for (int i = 0; i < 4; i++) {
+		movementManager->deleteMovementRoutine("TestowyM" + std::to_string(i + 1));
+		movementManager->deleteMovementRoutine("TestowyS" + std::to_string(i + 1));
+		movementManager->deleteMovementRoutine("TestowyR" + std::to_string(i + 1));
+
+		movementManager->deleteMovementRoutine("TestowyMVA" + std::to_string(i + 1));
+		movementManager->deleteMovementRoutine("TestowySVA" + std::to_string(i + 1));
+		movementManager->deleteMovementRoutine("TestowyRVA" + std::to_string(i + 1));
+	}
 }
 
 // = = = = = = = = = = = = = = = = = = = = = = = = =  Movement Demo 3 = = = = = = = = = = = = = = = = = = = = = = = = = 
@@ -1235,7 +1243,6 @@ void movementDemo3(sf::RenderWindow& window) {
 
 	sf::Clock dt_clock;
 	float dt;
-	float wait_time = 0.5f;
 
 	// GUI Initialization
 	sf::Font font;
@@ -1304,7 +1311,7 @@ void movementDemo3(sf::RenderWindow& window) {
 			if (event.type == sf::Event::KeyPressed) {
 				if (event.key.code == sf::Keyboard::Up) {
 					if (shapes_count + 1000 <= routines) {
-						for (size_t i = shapes_count; i < shapes_count + 1000; ++i) {
+						for (size_t i = static_cast<size_t>(shapes_count); i < static_cast<size_t>(shapes_count) + 1000; ++i) {
 							sf::RectangleShape* shape = new sf::RectangleShape;
 							shape->setSize(shape_size);
 							shape->setFillColor(sf::Color::Blue);
@@ -1325,7 +1332,7 @@ void movementDemo3(sf::RenderWindow& window) {
 				}
 				else if (event.key.code == sf::Keyboard::Down) {
 					if (shapes_count - 1000 >= 0) {
-						for (size_t i = shapes_count - 1000; i < shapes_count; ++i)
+						for (size_t i = static_cast<size_t>(shapes_count) - 1000; i < static_cast<size_t>(shapes_count); ++i)
 							movementManager->unlinkMovementRoutine(shapes[i], "SM" + std::to_string(i % routines));
 
 						shapes_count -= 1000;
@@ -1343,7 +1350,7 @@ void movementDemo3(sf::RenderWindow& window) {
 					if (current_ease_type < 0)
 						current_ease_type = easeTypeSize - 1;
 
-					for (size_t i = 0; i < shapes_count; ++i) {
+					for (size_t i = 0; i < static_cast<size_t>(shapes_count); ++i) {
 						movementManager->setFunction(*shapes[i], easeFunctions::getTmovement(current_ease_type));
 						movementManager->resetRoutines(*shapes[i]);
 					}
@@ -1355,7 +1362,7 @@ void movementDemo3(sf::RenderWindow& window) {
 					if (current_ease_type >= easeTypeSize)
 						current_ease_type = 0;
 
-					for (size_t i = 0; i < shapes_count; ++i) {
+					for (size_t i = 0; i < static_cast<size_t>(shapes_count); ++i) {
 						movementManager->setFunction(*shapes[i], easeFunctions::getTmovement(current_ease_type));
 						movementManager->resetRoutines(*shapes[i]);
 					}
@@ -1369,7 +1376,7 @@ void movementDemo3(sf::RenderWindow& window) {
 
 
 					if (shape_count_diff > 0) {
-						for (size_t i = shapes_count; i < default_shapes_count; ++i) {
+						for (size_t i = static_cast<size_t>(shapes_count); i < static_cast<size_t>(default_shapes_count); ++i) {
 							sf::RectangleShape* shape = new sf::RectangleShape;
 							shape->setSize(shape_size);
 							shape->setFillColor(sf::Color::Blue);
@@ -1379,7 +1386,7 @@ void movementDemo3(sf::RenderWindow& window) {
 						}
 					}
 					else if (shape_count_diff < 0) {
-						for (size_t i = default_shapes_count; i < shapes_count; ++i) {
+						for (size_t i = static_cast<size_t>(default_shapes_count); i < static_cast<size_t>(shapes_count); ++i) {
 							movementManager->unlinkMovementRoutine(shapes[i], "SM" + std::to_string(i % routines));
 							delete shapes[i];
 						}
@@ -1388,9 +1395,10 @@ void movementDemo3(sf::RenderWindow& window) {
 
 					shapes_count = default_shapes_count;
 					shapes_count_text.setString("Shapes count: " + std::to_string(shapes_count));
+					shape_size_text.setString("Shape size: " + std::format("{:.2f}", shape_size.x));
 
 					random_ease_type = true;
-					for (size_t i = 0; i < shapes_count; ++i) {
+					for (size_t i = 0; i < static_cast<size_t>(shapes_count); ++i) {
 						shapes[i]->setSize(shape_size);
 						shapes[i]->setOrigin(shapes[i]->getSize().x / 2.f, shapes[i]->getSize().y / 2.f);
 						movementManager->setFunction(*shapes[i], easeFunctions::getTmovement(randomEaseType()));
@@ -1408,7 +1416,7 @@ void movementDemo3(sf::RenderWindow& window) {
 						shape_size.y = 1.f;
 					}
 
-					for (size_t i = 0; i < shapes_count; ++i) {
+					for (size_t i = 0; i < static_cast<size_t>(shapes_count); ++i) {
 						shapes[i]->setSize(shape_size);
 						shapes[i]->setOrigin(shapes[i]->getSize().x / 2.f, shapes[i]->getSize().y / 2.f);
 					}
@@ -1424,7 +1432,7 @@ void movementDemo3(sf::RenderWindow& window) {
 						shape_size.y = 20.f;
 					}
 
-					for (size_t i = 0; i < shapes_count; ++i) {
+					for (size_t i = 0; i < static_cast<size_t>(shapes_count); ++i) {
 						shapes[i]->setSize(shape_size);
 						shapes[i]->setOrigin(shapes[i]->getSize().x / 2.f, shapes[i]->getSize().y / 2.f);
 					}
@@ -1458,8 +1466,6 @@ void movementDemo3(sf::RenderWindow& window) {
 	}
 
 	movementManager->deleteMovementRoutine();
-	movementManager->deleteScalingRoutine();
-	movementManager->deleteRotationRoutine();
 
 	for (size_t i = 0; i < shapes.size(); ++i)
 		delete shapes[i];

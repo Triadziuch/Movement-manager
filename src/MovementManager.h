@@ -7,6 +7,8 @@ private:
 	// Singleton instance
 	static MovementManager* sInstance;
 
+	bool debug = false;
+
 	std::map<sf::Transformable*,  MovementRoutine*> m_routineMovementActive; // Contains active routines linked to shapes
 	std::map<sf::Transformable*,  MovementRoutineContainer*>  m_routineMovement; // Contains copies of all linked routines to shapes. Contains COPY of LINKED routines from m_movementRoutineContainer
 	MovementRoutineContainer* m_movementRoutineContainer;
@@ -22,6 +24,8 @@ private:
 	// Constructors / Destructors
 	MovementManager();
 	~MovementManager();
+
+	inline void printDebug(const std::string& message) const;
 
 public:
 	MovementManager(const MovementManager&) = delete;
@@ -99,4 +103,7 @@ public:
 	void deleteRotationRoutine(const std::string& _name);
 
 	const long long int getSizeRotation() const;
+
+	// Accessors / Mutators
+	void setDebug(const bool debug);
 };

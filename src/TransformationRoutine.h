@@ -130,6 +130,7 @@ public:
 	scalingInfo* getCurrentScaling() const;
 
 	const bool goToNextScaling(const sf::Transformable& transformable);
+	ScalingRoutine* goToScaling(const sf::Transformable& transformable, const size_t scaling_id);
 
 	void setFunction(easeFunctions::Tmovement_function usedFunctionType);
 	void setFunction(easeFunctions::Tmovement_function usedFunctionType, const size_t scaling_id);

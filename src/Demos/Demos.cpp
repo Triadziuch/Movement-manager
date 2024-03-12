@@ -1478,8 +1478,12 @@ void movementDemo3(sf::RenderWindow& window) {
 	//movementManager->deleteMovementRoutine();
 
 	auto start = high_resolution_clock::now();
-	for (size_t i = 0; i < routines; ++i)
+	for (size_t i = 0; i < routines; ++i) {
+		if (i % 1000 == 0)
+			printf("Deleting routine %d...\n", i);
 		movementManager->deleteMovementRoutine("SM" + std::to_string(i));
+	}
+		
 	auto stop = high_resolution_clock::now();
 	auto duration = duration_cast<nanoseconds>(stop - start);
 	printf("Deleting routines: %lld nanoseconds\n", duration.count());

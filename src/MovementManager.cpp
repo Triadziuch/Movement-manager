@@ -177,7 +177,12 @@ void MovementManager::startMovementRoutine(sf::Transformable& transformable, con
 		if (movementRoutineFound != nullptr) {
 			if (movementRoutineFound->start(transformable)) {
 				auto map_iterator = m_routineMovementActive.insert(std::make_pair(&transformable, movementRoutineFound)).first;
-				m_routineMovementActiveMapped.insert(std::make_pair(_name, map_iterator));
+
+				auto routineActiveMappedFound = m_routineMovementActiveMapped.find(_name);
+				if (routineActiveMappedFound != m_routineMovementActiveMapped.end())
+					routineActiveMappedFound->second.emplace_back(map_iterator);
+				else
+					m_routineMovementActiveMapped.insert(std::make_pair(_name, std::vector<std::map<sf::Transformable*, MovementRoutine*>::iterator>{ map_iterator }));
 			}
 		}
 		else
@@ -263,20 +268,26 @@ void MovementManager::deleteMovementRoutine(const std::string& _name)
 {
 	auto routineActiveFound = m_routineMovementActiveMapped.find(_name);
 	if (routineActiveFound != m_routineMovementActiveMapped.end()) {
-		m_routineMovementActive.erase(routineActiveFound->second);
+
+		for (auto& map_iterator : routineActiveFound->second) {
+			auto routineContainerFound = m_routineMovement.find(map_iterator->first);
+			if (routineContainerFound != m_routineMovement.end()) {
+				routineContainerFound->second->deleteRoutine(_name);
+
+				if (routineContainerFound->second->getRoutineCount() == 0) {
+					delete routineContainerFound->second;
+					m_routineMovement.erase(routineContainerFound);
+				}
+			}
+
+			m_routineMovementActive.erase(map_iterator);
+		}
+			
+
 		m_routineMovementActiveMapped.erase(routineActiveFound);
 	}
-	
-	for (auto routine_active = m_routineMovementActive.begin(); routine_active != m_routineMovementActive.end();) {
-		if (routine_active->second->getName() == _name) {
-			routine_active->second->stop(routine_active->first);
-			routine_active = m_routineMovementActive.erase(routine_active);
-		}
-		else
-			++routine_active;
-	}
 
-	for (auto routineContainer = m_routineMovement.begin(); routineContainer != m_routineMovement.end();) {
+	for (auto routineContainer = m_routineMovement.begin(); routineContainer != m_routineMovement.end();) {  // Poprawiæ wydajnoœæ tego
 		routineContainer->second->deleteRoutine(_name);
 		if (routineContainer->second->getRoutineCount() == 0) {
 			delete routineContainer->second;

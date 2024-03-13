@@ -91,17 +91,6 @@ int main()
 						break;
 					case 2:
 						movementDemo3(window);
-						for (size_t i = 0; i < 4; ++i) {
-							auto scaling = movementManager->createScalingRoutine("menu" + std::to_string(i));
-							scaling->addScaling(new scalingInfo(sf::Vector2f(1.f, 1.f), sf::Vector2f(1.15f, 1.15f), 0.4f, easeFunctions::getFunction(easeFunctions::IN_SINE), false, 0.f, 0.f));
-							scaling->addScaling(new scalingInfo(sf::Vector2f(1.15f, 1.15f), sf::Vector2f(1.f, 1.f), 0.2f, easeFunctions::getFunction(easeFunctions::OUT_SINE), false, 0.f, 0.f));
-							scaling->setPauseAfterChangingMovements(true);
-							scaling->setLooping(true);
-							movementManager->linkScalingRoutine(demo_text[i], "menu" + std::to_string(i));
-							movementManager->startScalingRoutine(demo_text[i], "menu" + std::to_string(i));
-						}
-						movementManager->getScalingRoutine(demo_text[selected], "menu" + std::to_string(selected))->resume();
-
 						break;
 					case 3:
 						plotDemo(window);

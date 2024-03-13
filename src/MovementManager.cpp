@@ -138,7 +138,13 @@ MovementRoutine* MovementManager::linkMovementRoutine(sf::Transformable& transfo
 	else {
 		// If not, create a new movement routine container for this shape and link the movement routine to it
 		MovementRoutineContainer* newMovementRoutineContainer = new MovementRoutineContainer(this->movementRoutineEngine);
-		m_routineMovement.insert(std::make_pair(&transformable, newMovementRoutineContainer));
+		auto map_iterator = m_routineMovement.insert(std::make_pair(&transformable, newMovementRoutineContainer)).first;
+
+		auto routineMappedFound = m_routineMovementMapped.find(_name);
+		if (routineMappedFound != m_routineMovementMapped.end())
+			routineMappedFound->second.emplace_back(map_iterator);
+		else
+			m_routineMovementMapped.insert(std::make_pair(_name, std::vector<std::map<sf::Transformable*, MovementRoutineContainer*>::iterator>{ map_iterator }));
 
 		MovementRoutine* newMovementRoutine = new MovementRoutine(*movementRoutineOriginal);
 		return newMovementRoutineContainer->createRoutine(_name, newMovementRoutine);
@@ -146,6 +152,12 @@ MovementRoutine* MovementManager::linkMovementRoutine(sf::Transformable& transfo
 
 	// If yes, create a new movement routine and link it to the existing movement routine container
 	MovementRoutine* newMovementRoutine = new MovementRoutine(*movementRoutineOriginal);
+
+	auto routineMappedFound = m_routineMovementMapped.find(_name);
+	if (routineMappedFound != m_routineMovementMapped.end())
+		routineMappedFound->second.emplace_back(m_movementRoutineContainerFound);
+	else
+		m_routineMovementMapped.insert(std::make_pair(_name, std::vector<std::map<sf::Transformable*, MovementRoutineContainer*>::iterator>{ m_movementRoutineContainerFound }));
 	return m_movementRoutineContainerFound->second->createRoutine(_name, newMovementRoutine);
 }
 
@@ -163,6 +175,16 @@ void MovementManager::unlinkMovementRoutine(sf::Transformable* transformable, co
 			m_movementRoutineContainerFound->second->deleteRoutine(_name);
 		else
 			printDebug("unlinkMovementRoutine: Routine with name " + _name + " not found");
+		
+		// Sprawdziæ czy mo¿na usprawniæ
+		auto routineMappedFound = m_routineMovementMapped.find(_name);
+		if (routineMappedFound != m_routineMovementMapped.end()) 
+			for (auto map_iterator = routineMappedFound->second.begin(); map_iterator != routineMappedFound->second.end(); ++map_iterator) 
+				if (*map_iterator == m_movementRoutineContainerFound) {
+					routineMappedFound->second.erase(map_iterator);
+					break;
+				}
+
 	}
 	else
 		printDebug("unlinkMovementRoutine: Routine for shape not found");
@@ -172,7 +194,7 @@ void MovementManager::startMovementRoutine(sf::Transformable& transformable, con
 {
 	auto m_movementRoutineContainerFound = m_routineMovement.find(&transformable);
 	if (m_movementRoutineContainerFound != m_routineMovement.end()) {
-
+		
 		auto* movementRoutineFound = m_movementRoutineContainerFound->second->exists(_name);
 		if (movementRoutineFound != nullptr) {
 			if (movementRoutineFound->start(transformable)) {
@@ -269,7 +291,7 @@ void MovementManager::deleteMovementRoutine(const std::string& _name)
 	auto routineActiveFound = m_routineMovementActiveMapped.find(_name);
 	if (routineActiveFound != m_routineMovementActiveMapped.end()) {
 
-		for (auto& map_iterator : routineActiveFound->second) {
+		/*for (auto& map_iterator : routineActiveFound->second) {
 			auto routineContainerFound = m_routineMovement.find(map_iterator->first);
 			if (routineContainerFound != m_routineMovement.end()) {
 				routineContainerFound->second->deleteRoutine(_name);
@@ -281,21 +303,38 @@ void MovementManager::deleteMovementRoutine(const std::string& _name)
 			}
 
 			m_routineMovementActive.erase(map_iterator);
+		}*/
+		for (const auto& active_routine : routineActiveFound->second) {
+			active_routine->second->stop(active_routine->first);
+			m_routineMovementActive.erase(active_routine);
 		}
 			
-
 		m_routineMovementActiveMapped.erase(routineActiveFound);
 	}
 
-	for (auto routineContainer = m_routineMovement.begin(); routineContainer != m_routineMovement.end();) {  // Poprawiæ wydajnoœæ tego
-		routineContainer->second->deleteRoutine(_name);
-		if (routineContainer->second->getRoutineCount() == 0) {
-			delete routineContainer->second;
-			routineContainer = m_routineMovement.erase(routineContainer);
+	auto routineFound = m_routineMovementMapped.find(_name);
+	if (routineFound != m_routineMovementMapped.end()) {
+		for (auto routine : routineFound->second) {
+			routine->second->deleteRoutine(_name);
+
+			if (routine->second->getRoutineCount() == 0) {
+				delete routine->second;
+				m_routineMovement.erase(routine);
+			}
 		}
-		else
-			++routineContainer;
+
+		m_routineMovementMapped.erase(routineFound);
 	}
+
+	//for (auto routineContainer = m_routineMovement.begin(); routineContainer != m_routineMovement.end();) {  // Poprawiæ wydajnoœæ tego
+	//	routineContainer->second->deleteRoutine(_name);
+	//	if (routineContainer->second->getRoutineCount() == 0) {
+	//		delete routineContainer->second;
+	//		routineContainer = m_routineMovement.erase(routineContainer);
+	//	}
+	//	else
+	//		++routineContainer;
+	//}
 
 	m_movementRoutineContainer->deleteRoutine(_name);
 }

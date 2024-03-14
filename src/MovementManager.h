@@ -13,17 +13,22 @@ private:
 	std::map<sf::Transformable*, MovementRoutine*> m_routineMovementActive; // Contains active routines linked to shapes
 	std::unordered_map<std::string, std::vector<std::map<sf::Transformable*, MovementRoutine*>::iterator> > m_routineMovementActiveMapped;
 
-	// zmieniamy to ni¿ej na     MovementRoutine*
 	std::map<sf::Transformable*, MovementRoutineContainer*>  m_routineMovement; // Contains copies of all linked routines to shapes. Contains COPY of LINKED routines from m_movementRoutineContainer
 	std::unordered_map<std::string, std::vector<std::map<sf::Transformable*, MovementRoutineContainer*>::iterator> > m_routineMovementMapped;
 	MovementRoutineContainer* m_movementRoutineContainer;
 
-	std::map<sf::Transformable*, ScalingRoutine*> m_routineScaling_Active;
+	std::map<sf::Transformable*, ScalingRoutine*> m_routineScalingActive;
+	std::unordered_map<std::string, std::vector<std::map<sf::Transformable*, ScalingRoutine*>::iterator> > m_routineScalingActiveMapped;
+
 	std::map<sf::Transformable*, ScalingRoutineContainer*>  m_routineScaling;
+	std::unordered_map<std::string, std::vector<std::map<sf::Transformable*, ScalingRoutineContainer*>::iterator> > m_routineScalingMapped;
 	ScalingRoutineContainer* m_scalingRoutineContainer;
 
-	std::map<sf::Transformable*, RotationRoutine*> m_routineRotation_Active;
+	std::map<sf::Transformable*, RotationRoutine*> m_routineRotationActive;
+	std::unordered_map<std::string, std::vector<std::map<sf::Transformable*, RotationRoutine*>::iterator> > m_routineRotationActiveMapped;
+
 	std::map<sf::Transformable*, RotationRoutineContainer*>  m_routineRotation;
+	std::unordered_map<std::string, std::vector<std::map<sf::Transformable*, RotationRoutineContainer*>::iterator> > m_routineRotationMapped;
 	RotationRoutineContainer* m_rotationRoutineContainer;
 
 	// Constructors / Destructors

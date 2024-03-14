@@ -1480,6 +1480,7 @@ void movementDemo3(sf::RenderWindow& window) {
 		movementManager->deleteMovementRoutine("SM" + std::to_string(i));
 	auto stop = high_resolution_clock::now();
 	auto duration = duration_cast<nanoseconds>(stop - start);
+	printf("Deleting routines: %lld ns\n", duration.count());
 
 	for (size_t i = 0; i < shapes.size(); ++i)
 		delete shapes[i];

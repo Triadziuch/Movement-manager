@@ -9,24 +9,24 @@ private:
 	// Private variables
 
 	// Axis variables
-	sf::Vertex OX[2]{}, OY[2]{};
-	sf::Color OXcolor{ sf::Color::White }, OYcolor{ sf::Color::White };
-	bool axis_visible{ true };
-	sf::Text OX_label{}, OY_label{};
-	std::string OX_label_string{"t"}, OY_label_string{"x"};
-	unsigned labelsize{ 30u };
-	sf::Font font{};
+	sf::Vertex m_OX[2]{}, m_OY[2]{};
+	sf::Color m_OXcolor{ sf::Color::White }, m_OYcolor{ sf::Color::White };
+	bool m_axis_visible{ true };
+	sf::Text m_OX_label{}, m_OY_label{};
+	std::string m_OX_label_string{"t"}, m_OY_label_string{"x"};
+	unsigned m_labelsize{ 30u };
+	sf::Font m_font{};
 
 	// Function variables
-	sf::VertexArray function_vertexes{};
-	sf::Color		functioncolor{ sf::Color::White };
-	int				precision{ 100 };
-	double(*used_function)(double) {};
+	sf::VertexArray m_function_vertexes{};
+	sf::Color		m_functioncolor{ sf::Color::White };
+	int				m_precision{ 100 };
+	double(*m_used_function)(double) {};
 
 	// General variables
-	sf::Vector2f position{};
-	sf::Vector2f size{};
-	sf::Vector2f scale{};
+	sf::Vector2f m_position{};
+	sf::Vector2f m_size{};
+	sf::Vector2f m_scale{};
 
 	// Private functions
 	void drawFunction();
@@ -55,8 +55,8 @@ public:
 
 	void setFunction(double(*used_function)(double));
 
-	void setAxisVisible(bool visible) { axis_visible = visible; }
-	void toggleAxisVisible() { axis_visible = !axis_visible; }
+	void setAxisVisible(bool visible) { m_axis_visible = visible; }
+	void toggleAxisVisible() { m_axis_visible = !m_axis_visible; }
 
 	void setOXLabelText(std::string label);
 	void setOYLabelText(std::string label);

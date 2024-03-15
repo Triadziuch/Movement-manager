@@ -10,10 +10,10 @@ private:
 
 	bool debug = false;
 
-	std::map<sf::Transformable*, MovementRoutine*> m_routineMovementActive; // Contains active routines linked to shapes
+	std::map<sf::Transformable*, MovementRoutine*> m_routineMovementActive;
 	std::unordered_map<std::string, std::vector<std::map<sf::Transformable*, MovementRoutine*>::iterator> > m_routineMovementActiveMapped;
 
-	std::map<sf::Transformable*, MovementRoutineContainer*>  m_routineMovement; // Contains copies of all linked routines to shapes. Contains COPY of LINKED routines from m_movementRoutineContainer
+	std::map<sf::Transformable*, MovementRoutineContainer*>  m_routineMovement;
 	std::unordered_map<std::string, std::vector<std::map<sf::Transformable*, MovementRoutineContainer*>::iterator> > m_routineMovementMapped;
 	MovementRoutineContainer* m_movementRoutineContainer;
 

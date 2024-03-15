@@ -777,6 +777,7 @@ void MovementManager::stopRotationRoutine(sf::Transformable* transformable, cons
 	auto rotationRoutineFound = m_routineRotationActive.find(transformable);
 	if (rotationRoutineFound != m_routineRotationActive.end()) {
 		if (rotationRoutineFound->second->getName() == _name) {
+			rotationRoutineFound->second->stop(transformable);
 			
 			auto rotationRoutineFoundMapped = m_routineRotationActiveMapped.find(_name);
 			if (rotationRoutineFoundMapped != m_routineRotationActiveMapped.end()) {

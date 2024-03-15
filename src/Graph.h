@@ -10,17 +10,17 @@ private:
 
 	// Axis variables
 	sf::Vertex OX[2]{}, OY[2]{};
-	sf::Color OX_color = sf::Color::White, OY_color = sf::Color::White;
-	bool axis_visible = true;
+	sf::Color OXcolor{ sf::Color::White }, OYcolor{ sf::Color::White };
+	bool axis_visible{ true };
 	sf::Text OX_label{}, OY_label{};
 	std::string OX_label_string{"t"}, OY_label_string{"x"};
-	unsigned label_size = 30u;
+	unsigned labelsize{ 30u };
 	sf::Font font{};
 
 	// Function variables
 	sf::VertexArray function_vertexes{};
-	sf::Color		function_color	= sf::Color::White;
-	int				precision		= 100;
+	sf::Color		functioncolor{ sf::Color::White };
+	int				precision{ 100 };
 	double(*used_function)(double) {};
 
 	// General variables
@@ -36,38 +36,38 @@ private:
 public:
 	// Constructors & Destructors
 	Graph();
-	Graph(sf::Vector2f _position, sf::Vector2f _size, int _precision, double(*_used_function)(double));
+	Graph(sf::Vector2f pos, sf::Vector2f size, int precision, double(*used_function)(double));
 	Graph(const Graph& _graph);
 	~Graph();
 
 	// Public functions
-	void setOXColor(sf::Color _color);
-	void setOYColor(sf::Color _color);
-	void setLineColor(sf::Color _color);
+	void setOXColor(sf::Color color);
+	void setOYColor(sf::Color color);
+	void setLineColor(sf::Color color);
 
-	void setSize(sf::Vector2f _size);
-	void setSize(float _width, float _height) { setSize(sf::Vector2f(_width, _height)); }
+	void setSize(sf::Vector2f size);
+	void setSize(float width, float height) { setSize(sf::Vector2f(width, height)); }
 
-	void setPrecision(int _precision);
+	void setPrecision(int precision);
 
-	void setPosition(sf::Vector2f _position);
-	void setPosition(float _x, float _y) { setPosition(sf::Vector2f(_x, _y)); }
+	void setPosition(sf::Vector2f pos);
+	void setPosition(float x, float y) { setPosition(sf::Vector2f(x, y)); }
 
-	void setFunction(double(*_used_function)(double));
+	void setFunction(double(*used_function)(double));
 
-	void setAxisVisible(bool _visible) { axis_visible = _visible; }
+	void setAxisVisible(bool visible) { axis_visible = visible; }
 	void toggleAxisVisible() { axis_visible = !axis_visible; }
 
-	void setOXLabelText(std::string _label);
-	void setOYLabelText(std::string _label);
+	void setOXLabelText(std::string label);
+	void setOYLabelText(std::string label);
 
 
 	// Accessors
-	const sf::Vector2f getSize()	 { return size; }
-	const int getPrecision()		 { return precision; }
-	const sf::Vector2f getPosition() { return position; }
-	double (*getFunction())(double)	 { return used_function; }
-	const bool getAxisVisible()	     { return axis_visible; }
+	const sf::Vector2f getSize() const;
+	const int getPrecision() const;
+	const sf::Vector2f getPosition() const;
+	double (*getFunction())(double);
+	const bool getAxisVisible() const;
 
 	// Render functions
 	void draw(sf::RenderWindow& window);

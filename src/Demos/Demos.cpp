@@ -1,5 +1,6 @@
 #include "Demos.h"
 #include <chrono>
+#include <boost/tuple/tuple.hpp>
 
 using namespace std::chrono;
 
@@ -1214,7 +1215,7 @@ void movementDemo3(sf::RenderWindow& window) {
 	const int easeTypeSize = 30;
 	bool random_ease_type = true;
 
-	const int routines = 50000;
+	const int routines = 200000;
 	int shapes_count = 50000;
 	const int default_shapes_count = shapes_count;
 	int movements_in_routine = 10;
@@ -1475,12 +1476,8 @@ void movementDemo3(sf::RenderWindow& window) {
 		window.display();
 	}
 
-	auto start = high_resolution_clock::now();
 	for (size_t i = 0; i < routines; ++i) 
 		movementManager->deleteMovementRoutine("SM" + std::to_string(i));
-	auto stop = high_resolution_clock::now();
-	auto duration = duration_cast<nanoseconds>(stop - start);
-	printf("Deleting routines: %lld ns\n", duration.count());
 
 	for (size_t i = 0; i < shapes.size(); ++i)
 		delete shapes[i];

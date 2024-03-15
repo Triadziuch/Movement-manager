@@ -659,6 +659,7 @@ void MovementRoutineEngine::stopRotation(sf::Transformable* transformable)
 		}
 	}
 }
+
 const bool MovementRoutineEngine::isMoving(sf::Transformable* transformable)
 {
 	return false;

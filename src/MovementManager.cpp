@@ -586,7 +586,7 @@ void MovementManager::deleteScalingRoutine(const std::string& _name)
 		m_routineScalingMapped.erase(routineFound);
 	}
 
-	m_movementRoutineContainer->deleteRoutine(_name);
+	m_scalingRoutineContainer->deleteRoutine(_name);
 }
 
 const long long int MovementManager::getSizeScaling() const
@@ -845,7 +845,7 @@ void MovementManager::deleteRotationRoutine(const std::string& _name)
 		m_routineRotationMapped.erase(routineFound);
 	}
 
-	m_movementRoutineContainer->deleteRoutine(_name);
+	m_rotationRoutineContainer->deleteRoutine(_name);
 }
 
 const long long int MovementManager::getSizeRotation() const

@@ -158,7 +158,6 @@
     <ClInclude Include="src\Demos\Demos.h" />
     <ClInclude Include="src\easeFunctions.h" />
     <ClInclude Include="src\Graph.h" />
-    <ClInclude Include="src\Instrumentor.h" />
     <ClInclude Include="src\MovementContainer.h" />
     <ClInclude Include="src\MovementManager.h" />
     <ClInclude Include="src\RoutineContainer.h" />

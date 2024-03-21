@@ -12,6 +12,9 @@ private:
 
 	constexpr static size_t m_functionCount = 30;
 
+	// Linear
+	static double linear(double x);
+
 	// Sine
 	static double inSine(double x);
 	static double outSine(double x);
@@ -64,6 +67,7 @@ private:
 
 public:
 	enum Tmovement_function : int {
+		LINEAR,
 		IN_SINE,
 		OUT_SINE,
 		IN_OUT_SINE,

@@ -9,7 +9,7 @@ void movementDemo1(sf::RenderWindow& window) {
 	MovementManager* movementManager = MovementManager::getInstance();
 
 	// Config
-	bool running = true, gui_visible = false;
+	bool running = true;
 	const int rows = 3;
 
 	const int default_ease_type = 0;
@@ -367,18 +367,14 @@ void movementDemo1(sf::RenderWindow& window) {
 			graphs[i].draw(window);
 		}
 
-		
+		window.draw(up_arrow, up_arrow.getTransform());
+		window.draw(down_arrow, down_arrow.getTransform());
 
-		if (gui_visible) {
-			window.draw(up_arrow, up_arrow.getTransform());
-			window.draw(down_arrow, down_arrow.getTransform());
-
-			window.draw(controls_text);
-			window.draw(animation_speed_text);
-			window.draw(movement_paused_text);
-			window.draw(scaling_paused_text);
-			window.draw(rotation_paused_text);
-		}
+		window.draw(controls_text);
+		window.draw(animation_speed_text);
+		window.draw(movement_paused_text);
+		window.draw(scaling_paused_text);
+		window.draw(rotation_paused_text);
 		
 		side_panel.draw(window);
 
@@ -546,7 +542,7 @@ void movementDemo2(sf::RenderWindow& window)
 	// Configuration
 	MovementManager* movementManager = MovementManager::getInstance();
 	printf("Size: %lld\n", movementManager->getSizeMovement() + movementManager->getSizeRotation() + movementManager->getSizeScaling());
-	bool running = true, gui_visible = false;
+	bool running = true;
 	float delay_before = 0.3f, animation_time = 0.5f, delay_after = 0.3f;
 
 	// GUI Initialization
@@ -1158,14 +1154,10 @@ void movementDemo2(sf::RenderWindow& window)
 		window.draw(arrow3, arrow3.getTransform());
 		window.draw(arrow4, arrow4.getTransform());
 
-		if (gui_visible) {
-			window.draw(controls_text);
-			window.draw(adjust_start_text);
-			window.draw(adjust_all_text);
-			window.draw(looping_text);
-		}
-		
-
+		window.draw(controls_text);
+		window.draw(adjust_start_text);
+		window.draw(adjust_all_text);
+		window.draw(looping_text);
 		side_panel.draw(window);
 
 		window.display();
@@ -1474,11 +1466,11 @@ void movementDemo3(sf::RenderWindow& window) {
 			window.draw(*shape);
 
 		if (gui) {
-			//window.draw(controls_text);
+			window.draw(controls_text);
 			window.draw(shapes_count_text);
-			//window.draw(average_time_text);
-			//window.draw(current_function_text);
-			//window.draw(shape_size_text);
+			window.draw(average_time_text);
+			window.draw(current_function_text);
+			window.draw(shape_size_text);
 		}
 
 		side_panel.draw(window);

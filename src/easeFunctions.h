@@ -10,7 +10,7 @@ private:
 	// Constructors / Destructors
 	easeFunctions();
 
-	constexpr static size_t m_functionCount = 30;
+	constexpr static size_t m_functionCount = 31;
 
 	// Linear
 	static double linear(double x);

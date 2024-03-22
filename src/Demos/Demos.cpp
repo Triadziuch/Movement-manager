@@ -12,9 +12,9 @@ void movementDemo1(sf::RenderWindow& window) {
 	bool running = true;
 	const int rows = 3;
 
-	const int default_ease_type = 0;
+	const int default_ease_type = 1;
 	int current_ease_type  = default_ease_type;
-	const int easeTypeSize = 30;
+	const int easeTypeSize = 31;
 	
 	float delay_before	 = 0.5f;
 	const float default_animation_time = 3.f;
@@ -179,7 +179,7 @@ void movementDemo1(sf::RenderWindow& window) {
 				if (event.key.code == sf::Keyboard::Up) {
 					current_ease_type += rows;
 					if (current_ease_type >= easeTypeSize - 2)
-						current_ease_type = 0;
+						current_ease_type = 1;
 
 					for (int i = 0; i < rows; i++) {
 						text[i].setString(easeFunctions::getFunctionName(current_ease_type + i));
@@ -206,7 +206,7 @@ void movementDemo1(sf::RenderWindow& window) {
 				}
 				else if (event.key.code == sf::Keyboard::Down) {
 					current_ease_type -= rows;
-					if (current_ease_type < 0)
+					if (current_ease_type < 1)
 						current_ease_type = easeTypeSize - rows;
 
 					for (size_t i = 0; i < rows; i++) {
@@ -541,7 +541,6 @@ void movementDemo2(sf::RenderWindow& window)
 {
 	// Configuration
 	MovementManager* movementManager = MovementManager::getInstance();
-	printf("Size: %lld\n", movementManager->getSizeMovement() + movementManager->getSizeRotation() + movementManager->getSizeScaling());
 	bool running = true;
 	float delay_before = 0.3f, animation_time = 0.5f, delay_after = 0.3f;
 
@@ -1162,7 +1161,7 @@ void movementDemo2(sf::RenderWindow& window)
 
 		window.display();
 	}
-	printf("Size: %lld\n", movementManager->getSizeMovement() + movementManager->getSizeRotation() + movementManager->getSizeScaling());
+
 	for (int i = 0; i < 4; i++) {
 		movementManager->deleteMovementRoutine("TestowyM" + std::to_string(i + 1));
 		movementManager->deleteScalingRoutine("TestowyS" + std::to_string(i + 1));
@@ -1172,8 +1171,6 @@ void movementDemo2(sf::RenderWindow& window)
 		movementManager->deleteScalingRoutine("TestowySVA" + std::to_string(i + 1));
 		movementManager->deleteRotationRoutine("TestowyRVA" + std::to_string(i + 1));
 	}
-
-	printf("Size: %lld\n", movementManager->getSizeMovement() + movementManager->getSizeRotation() + movementManager->getSizeScaling());
 }
 
 // = = = = = = = = = = = = = = = = = = = = = = = = =  Movement Demo 3 = = = = = = = = = = = = = = = = = = = = = = = = = 
@@ -1213,8 +1210,8 @@ void movementDemo3(sf::RenderWindow& window) {
 	int it = 0;
 
 	// Config
-	int current_ease_type = 0;
-	const int easeTypeSize = 30;
+	int current_ease_type = 1;
+	const int easeTypeSize = 31;
 	bool random_ease_type = true;
 
 	const int routines = 200000;
@@ -1360,7 +1357,7 @@ void movementDemo3(sf::RenderWindow& window) {
 				if (event.key.code == sf::Keyboard::Left) {
 					random_ease_type = false;
 					current_ease_type--;
-					if (current_ease_type < 0)
+					if (current_ease_type < 1)
 						current_ease_type = easeTypeSize - 1;
 
 					for (size_t i = 0; i < static_cast<size_t>(shapes_count); ++i) {
@@ -1373,7 +1370,7 @@ void movementDemo3(sf::RenderWindow& window) {
 					random_ease_type = false;
 					current_ease_type++;
 					if (current_ease_type >= easeTypeSize)
-						current_ease_type = 0;
+						current_ease_type = 1;
 
 					for (size_t i = 0; i < static_cast<size_t>(shapes_count); ++i) {
 						movementManager->setFunction(*shapes[i], easeFunctions::getTmovement(current_ease_type));
@@ -1383,7 +1380,7 @@ void movementDemo3(sf::RenderWindow& window) {
 				}
 
 				if (event.key.code == sf::Keyboard::Q) {
-					current_ease_type = 0;
+					current_ease_type = 1;
 					shape_size = sf::Vector2f(2.f, 2.f);
 					int shape_count_diff = default_shapes_count - shapes_count;
 

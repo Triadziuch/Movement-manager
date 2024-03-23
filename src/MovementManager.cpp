@@ -58,10 +58,60 @@ void MovementManager::setFunction(sf::Transformable& transformable, easeFunction
 		rotationRoutineFound->second->setFunction(usedFunctionType);
 }
 
+void MovementManager::setDelayBefore(const float delay, const bool reset)
+{
+	if (delay < 0.f) return;
+
+	for (auto& movementRoutine : m_routineMovement)
+		movementRoutine.second->setDelayBefore(delay, reset);
+
+	for (auto& scalingRoutine : m_routineScaling)
+		scalingRoutine.second->setDelayBefore(delay, reset);
+
+	for (auto& rotationRoutine : m_routineRotation)
+		rotationRoutine.second->setDelayBefore(delay, reset);
+}
+
+void MovementManager::setDelayBefore(std::string& name, const float delay, const bool reset)
+{
+	if (delay < 0.f) return;
+
+	auto movementRoutineFound = m_routineMovementMapped.find(name);
+	if (movementRoutineFound != m_routineMovementMapped.end())
+		for (const auto& movementRoutine : movementRoutineFound->second)
+			movementRoutine->second->setDelayBefore(delay, reset);
+
+	auto scalingRoutineFound = m_routineScalingMapped.find(name);
+	if (scalingRoutineFound != m_routineScalingMapped.end())
+		for (const auto& scalingRoutine : scalingRoutineFound->second)
+			scalingRoutine->second->setDelayBefore(delay, reset);
+
+	auto rotationRoutineFound = m_routineRotationMapped.find(name);
+	if (rotationRoutineFound != m_routineRotationMapped.end())
+		for (const auto& rotationRoutine : rotationRoutineFound->second)
+			rotationRoutine->second->setDelayBefore(delay, reset);
+}
+
+void MovementManager::setDelayBefore(sf::Transformable& transformable, const float delay, const bool reset)
+{
+	if (delay < 0.f) return;
+
+	auto movementRoutineFound = m_routineMovementActive.find(&transformable);
+	if (movementRoutineFound != m_routineMovementActive.end())
+		movementRoutineFound->second->setDelayBefore(delay, reset);
+
+	auto scalingRoutineFound = m_routineScalingActive.find(&transformable);
+	if (scalingRoutineFound != m_routineScalingActive.end())
+		scalingRoutineFound->second->setDelayBefore(delay, reset);
+
+	auto rotationRoutineFound = m_routineRotationActive.find(&transformable);
+	if (rotationRoutineFound != m_routineRotationActive.end())
+		rotationRoutineFound->second->setDelayBefore(delay, reset);
+}
+
 void MovementManager::setMotionDuration(const float time, const bool reset)
 {
-	if (time < 0.f)
-		return;
+	if (time < 0.f) return;
 
 	for (auto& movementRoutine : m_routineMovement)
 		movementRoutine.second->setMotionDuration(time, reset);
@@ -73,10 +123,29 @@ void MovementManager::setMotionDuration(const float time, const bool reset)
 		rotationRoutine.second->setMotionDuration(time, reset);
 }
 
+void MovementManager::setMotionDuration(std::string& name, const float time, const bool reset)
+{
+	if (time < 0.f) return;
+
+	auto movementRoutineFound = m_routineMovementMapped.find(name);
+	if (movementRoutineFound != m_routineMovementMapped.end())
+		for (const auto& movementRoutine : movementRoutineFound->second)
+			movementRoutine->second->setMotionDuration(time, reset);
+
+	auto scalingRoutineFound = m_routineScalingMapped.find(name);
+	if (scalingRoutineFound != m_routineScalingMapped.end())
+		for (const auto& scalingRoutine : scalingRoutineFound->second)
+			scalingRoutine->second->setMotionDuration(time, reset);
+
+	auto rotationRoutineFound = m_routineRotationMapped.find(name);
+	if (rotationRoutineFound != m_routineRotationMapped.end())
+		for (const auto& rotationRoutine : rotationRoutineFound->second)
+			rotationRoutine->second->setMotionDuration(time, reset);
+}
+
 void MovementManager::setMotionDuration(sf::Transformable& transformable, const float time, const bool reset)
 {
-	if (time < 0.f)
-		return;
+	if (time < 0.f) return;
 
 	auto movementRoutineFound = m_routineMovementActive.find(&transformable);
 	if (movementRoutineFound != m_routineMovementActive.end())
@@ -89,6 +158,57 @@ void MovementManager::setMotionDuration(sf::Transformable& transformable, const 
 	auto rotationRoutineFound = m_routineRotationActive.find(&transformable);
 	if (rotationRoutineFound != m_routineRotationActive.end())
 		rotationRoutineFound->second->setMotionDuration(time, reset);
+}
+
+void MovementManager::setDelayAfter(const float delay, const bool reset)
+{
+	if (delay < 0.f) return;
+
+	for (auto& movementRoutine : m_routineMovement)
+		movementRoutine.second->setDelayAfter(delay, reset);
+
+	for (auto& scalingRoutine : m_routineScaling)
+		scalingRoutine.second->setDelayAfter(delay, reset);
+
+	for (auto& rotationRoutine : m_routineRotation)
+		rotationRoutine.second->setDelayAfter(delay, reset);
+}
+
+void MovementManager::setDelayAfter(std::string& name, const float delay, const bool reset)
+{
+	if (delay < 0.f) return;
+
+	auto movementRoutineFound = m_routineMovementMapped.find(name);
+	if (movementRoutineFound != m_routineMovementMapped.end())
+		for (const auto& movementRoutine : movementRoutineFound->second)
+			movementRoutine->second->setDelayAfter(delay, reset);
+
+	auto scalingRoutineFound = m_routineScalingMapped.find(name);
+	if (scalingRoutineFound != m_routineScalingMapped.end())
+		for (const auto& scalingRoutine : scalingRoutineFound->second)
+			scalingRoutine->second->setDelayAfter(delay, reset);
+
+	auto rotationRoutineFound = m_routineRotationMapped.find(name);
+	if (rotationRoutineFound != m_routineRotationMapped.end())
+		for (const auto& rotationRoutine : rotationRoutineFound->second)
+			rotationRoutine->second->setDelayAfter(delay, reset);
+}
+
+void MovementManager::setDelayAfter(sf::Transformable& transformable, const float delay, const bool reset)
+{
+	if (delay < 0.f) return;
+
+	auto movementRoutineFound = m_routineMovementActive.find(&transformable);
+	if (movementRoutineFound != m_routineMovementActive.end())
+		movementRoutineFound->second->setDelayAfter(delay, reset);
+
+	auto scalingRoutineFound = m_routineScalingActive.find(&transformable);
+	if (scalingRoutineFound != m_routineScalingActive.end())
+		scalingRoutineFound->second->setDelayAfter(delay, reset);
+
+	auto rotationRoutineFound = m_routineRotationActive.find(&transformable);
+	if (rotationRoutineFound != m_routineRotationActive.end())
+		rotationRoutineFound->second->setDelayAfter(delay, reset);
 }
 
 void MovementManager::resetRoutines(sf::Transformable& transformable)

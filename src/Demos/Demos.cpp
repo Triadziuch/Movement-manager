@@ -1203,10 +1203,10 @@ inline sf::Color randomColor() {
 
 void movementDemo3(sf::RenderWindow& window) {
 	MovementManager* movementManager = MovementManager::getInstance();
-	printf("MovementManger size before: %lld\n", movementManager->getSizeMovement());
+
 	long long int time_movement{};
 	float average_time_ms = 0.f;
-	bool synced = false, gui = true, running = true;
+	bool synced = false, gui = true, running = true, synchronization = false;
 	int it = 0;
 
 	// Config
@@ -1269,6 +1269,8 @@ void movementDemo3(sf::RenderWindow& window) {
 	side_panel.addText("[ - Decrease shape size");
 	side_panel.addText("] - Increase shape size");
 	side_panel.addText("");
+	side_panel.addText("S - Synchronization on/off");
+	side_panel.addText("");
 	side_panel.addText("Q - Reset demo");
 	side_panel.addText("ESC - Close demo");
 	side_panel.addText(" ");
@@ -1285,6 +1287,8 @@ void movementDemo3(sf::RenderWindow& window) {
 	current_function_text.setPosition(10.f, 100.f);
 	sf::Text shape_size_text("Shape size: " + std::format("{:.2f}", shape_size.x), font, 20u);
 	shape_size_text.setPosition(10.f, 130.f);
+	sf::Text synchronization_text("Synchronization: OFF", font, 20u);
+	synchronization_text.setPosition(10.f, 160.f);
 
 	while (running)
 	{
@@ -1332,11 +1336,28 @@ void movementDemo3(sf::RenderWindow& window) {
 							movementManager->linkMovementRoutine(*shape, "SM" + std::to_string(i % routines));
 							if (!random_ease_type)
 								movementManager->getMovementRoutine(*shape, "SM" + std::to_string(i % routines))->setFunction(easeFunctions::getTmovement(current_ease_type));
+
 							movementManager->startMovementRoutine(*shape, "SM" + std::to_string(i % routines));
-							
 						}
 
 						shapes_count += 1000;
+
+						std::string name{};
+						if (synchronization)
+							for (size_t i = 0; i < static_cast<size_t>(shapes_count); ++i) {
+								name = "SM" + std::to_string(i % routines);
+								movementManager->setDelayBefore(name, 0.5f, true);
+								movementManager->setMotionDuration(name, 5.f, true);
+								movementManager->setDelayAfter(name, 0.5f, true);
+							}
+						else
+							for (size_t i = static_cast<size_t>(shapes_count - 1000); i < static_cast<size_t>(shapes_count); ++i) {
+								name = "SM" + std::to_string(i % routines);
+								movementManager->setDelayBefore(name, randomDelay());
+								movementManager->setMotionDuration(name, randomDelay(5.f, 10.f));
+								movementManager->setDelayAfter(name, randomDelay());
+							}
+
 						shapes_count_text.setString("Shapes count: " + std::to_string(shapes_count));
 					}
 				}
@@ -1351,6 +1372,31 @@ void movementDemo3(sf::RenderWindow& window) {
 						shapes.resize(shapes_count);
 
 						shapes_count_text.setString("Shapes count: " + std::to_string(shapes_count));
+					}
+				}
+
+				if (event.key.code == sf::Keyboard::S) {
+					synchronization = !synchronization;
+
+					if (synchronization) {
+						synchronization_text.setString("Synchronization: ON");
+						
+						for (size_t i = 0; i < static_cast<size_t>(shapes_count); ++i) {
+							std::string name{ "SM" + std::to_string(i % routines) };
+							movementManager->setDelayBefore(name, 0.5f, true);
+							movementManager->setMotionDuration(name, 5.f, true);
+							movementManager->setDelayAfter(name, 0.5f, true);
+						}
+					}
+					else {
+						synchronization_text.setString("Synchronization: OFF");
+
+						for (size_t i = 0; i < static_cast<size_t>(shapes_count); ++i) {
+							std::string name{ "SM" + std::to_string(i % routines) };
+							movementManager->setDelayBefore(name, randomDelay());
+							movementManager->setMotionDuration(name, randomDelay(5.f, 10.f));
+							movementManager->setDelayAfter(name, randomDelay());
+						}
 					}
 				}
 
@@ -1408,10 +1454,16 @@ void movementDemo3(sf::RenderWindow& window) {
 					shape_size_text.setString("Shape size: " + std::format("{:.2f}", shape_size.x));
 
 					random_ease_type = true;
+					synchronization = false;
 					for (size_t i = 0; i < static_cast<size_t>(shapes_count); ++i) {
 						shapes[i]->setSize(shape_size);
 						shapes[i]->setOrigin(shapes[i]->getSize().x / 2.f, shapes[i]->getSize().y / 2.f);
 						movementManager->setFunction(*shapes[i], easeFunctions::getTmovement(randomEaseType()));
+
+						movementManager->setDelayBefore(*shapes[i], randomDelay(), true);
+						movementManager->setMotionDuration(*shapes[i], randomDelay(5.f, 10.f), true);
+						movementManager->setDelayAfter(*shapes[i], randomDelay(), true);
+
 						movementManager->resetRoutines(*shapes[i]);
 					}
 					current_function_text.setString("Current function: Random");
@@ -1468,6 +1520,7 @@ void movementDemo3(sf::RenderWindow& window) {
 			window.draw(average_time_text);
 			window.draw(current_function_text);
 			window.draw(shape_size_text);
+			window.draw(synchronization_text);
 		}
 
 		side_panel.draw(window);
@@ -1481,5 +1534,4 @@ void movementDemo3(sf::RenderWindow& window) {
 	for (size_t i = 0; i < shapes.size(); ++i)
 		delete shapes[i];
 	shapes.clear();
-printf("MovementManger size after: %lld\n\n", movementManager->getSizeMovement());
 }

@@ -71,11 +71,11 @@ void transformationInfo::setFunction(double(*usedFunctionPtr)(double))
 
 void transformationInfo::setDelayBefore(const float delay, const bool reset)
 {
-	if (delay <= 0.f || delay == m_delayBefore) return;
+	if (delay < 0.f) return;
 
 	if (reset)
 		m_currentTime = 0.f;
-	else if (m_currentTime > m_delayBefore) {
+	else if (m_currentTime > m_delayBefore && m_motionDuration != 0.f) {
 		const float timeFactor = (m_currentTime - m_delayBefore) / m_motionDuration;
 		m_currentTime = delay + timeFactor * m_motionDuration;
 	}
@@ -89,11 +89,11 @@ void transformationInfo::setDelayBefore(const float delay, const bool reset)
 
 void transformationInfo::setMotionDuration(const float duration, const bool reset)
 {
-	if (duration <= 0.f || duration == m_motionDuration) return;
+	if (duration < 0.f) return;
 
 	if (reset) 
 		m_currentTime = 0.f;
-	else if (m_currentTime > m_delayBefore) {
+	else if (m_currentTime > m_delayBefore && m_motionDuration != 0.f) {
 		const float timeFactor = (m_currentTime - m_delayBefore) / m_motionDuration;
 		m_currentTime = m_delayBefore + timeFactor * duration;
 	}
@@ -107,11 +107,11 @@ void transformationInfo::setMotionDuration(const float duration, const bool rese
 
 void transformationInfo::setDelayAfter(const float delay, const bool reset)
 {
-	if (delay <= 0.f || delay == m_delayAfter) return;
+	if (delay <= 0.f) return;
 
 	if (reset)
 		m_currentTime = 0.f;
-	else if (m_currentTime > m_delayBefore + m_motionDuration) {
+	else if (m_currentTime > m_delayBefore + m_motionDuration && m_delayAfter != 0.f) {
 		const float timeFactor = (m_currentTime - m_delayBefore - m_motionDuration) / m_delayAfter;
 		m_currentTime = m_delayBefore + m_motionDuration + timeFactor * delay;
 	}

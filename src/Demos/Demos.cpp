@@ -1399,31 +1399,6 @@ void movementDemo3(sf::RenderWindow& window) {
 					}
 				}
 
-				if (event.key.code == sf::Keyboard::S) {
-					synchronization = !synchronization;
-
-					if (synchronization) {
-						synchronization_text.setString("Synchronization: ON");
-						
-						for (size_t i = 0; i < static_cast<size_t>(shapes_count); ++i) {
-							std::string name{ "SM" + std::to_string(i % routines) };
-							movementManager->setDelayBefore(name, 0.5f, true);
-							movementManager->setMotionDuration(name, 5.f, true);
-							movementManager->setDelayAfter(name, 0.5f, true);
-						}
-					}
-					else {
-						synchronization_text.setString("Synchronization: OFF");
-
-						for (size_t i = 0; i < static_cast<size_t>(shapes_count); ++i) {
-							std::string name{ "SM" + std::to_string(i % routines) };
-							movementManager->setDelayBefore(name, randomDelay());
-							movementManager->setMotionDuration(name, randomDelay(5.f, 10.f));
-							movementManager->setDelayAfter(name, randomDelay());
-						}
-					}
-				}
-
 				if (event.key.code == sf::Keyboard::Left) {
 					random_ease_type = false;
 					current_ease_type--;

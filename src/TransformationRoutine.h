@@ -105,8 +105,8 @@ private:
 	std::vector <scalingInfo*> m_routineScalings;
 
 	// Private functions
-	void adjustStartToCurrent(const sf::Vector2f& m_current_scale);
-	void adjustAllToCurrent(const sf::Vector2f& m_current_scale);
+	void adjustStartToCurrent(const sf::Vector2f& currentScale);
+	void adjustAllToCurrent(const sf::Vector2f& currentScale);
 
 public:
 	// Constructors / Destructors
@@ -145,10 +145,10 @@ public:
 class RotationRoutine : public TransformationRoutine {
 private:
 	std::vector <rotationInfo*> m_routineRotations;
-	bool was_last_clockwise{};
+	bool m_wasLastClockwise{};
 
-	void adjustStartToCurrent(float current_rotation);
-	void adjustAllToCurrent(const float current_rotation);
+	void adjustStartToCurrent(float currentRotation);
+	void adjustAllToCurrent(const float currentRotation);
 
 public:
 	// Constructors / Destructors

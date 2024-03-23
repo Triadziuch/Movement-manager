@@ -54,7 +54,7 @@ public:
 
 class ScalingRoutineContainer : public RoutineContainer {
 private:
-	std::unordered_map<std::string, ScalingRoutine*> scalingRoutines{};
+	std::unordered_map<std::string, ScalingRoutine*> m_scalingRoutines{};
 
 public:
 	// Constructors / Destructors
@@ -80,7 +80,7 @@ public:
 
 class RotationRoutineContainer : public RoutineContainer {
 private:
-	std::unordered_map<std::string, RotationRoutine*> rotationRoutines{};
+	std::unordered_map<std::string, RotationRoutine*> m_rotationRoutines{};
 
 public:
 	// Constructors / Destructors

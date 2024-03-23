@@ -59,16 +59,6 @@ const bool transformationInfo::isFinished() const
 }
 
 // Mutators
-void transformationInfo::setFunction(easeFunctions::Tmovement_function usedFunctionType)
-{
-	m_usedFunctionPtr = easeFunctions::movement_functions[usedFunctionType];
-}
-
-void transformationInfo::setFunction(double(*usedFunctionPtr)(double))
-{
-	m_usedFunctionPtr = usedFunctionPtr;
-}
-
 void transformationInfo::setDelayBefore(const float delay, const bool reset)
 {
 	if (delay < 0.f) return;
@@ -121,6 +111,16 @@ void transformationInfo::setDelayAfter(const float delay, const bool reset)
 
 	if (m_currentTime > m_totalDuration)
 		m_currentTime = m_totalDuration;
+}
+
+void transformationInfo::setFunction(double(*usedFunctionPtr)(double))
+{
+	m_usedFunctionPtr = usedFunctionPtr;
+}
+
+void transformationInfo::setFunction(easeFunctions::Tmovement_function usedFunctionType)
+{
+	m_usedFunctionPtr = easeFunctions::movement_functions[usedFunctionType];
 }
 
 // - - - - - - - - - - - - - - - - - - - - movementInfo - - - - - - - - - - - - - - - - - - - - \\

@@ -207,17 +207,17 @@ ScalingRoutineContainer::ScalingRoutineContainer(MovementRoutineEngine* movement
 
 ScalingRoutineContainer::~ScalingRoutineContainer()
 {
-	for (auto& routine : scalingRoutines)
+	for (auto& routine : m_scalingRoutines)
 		delete routine.second;
-	scalingRoutines.clear();
+	m_scalingRoutines.clear();
 	m_routines.clear();
 }
 
 ScalingRoutine* ScalingRoutineContainer::exists(const std::string& name)
 {
-	auto scalingRoutineFound = scalingRoutines.find(name);
+	auto scalingRoutineFound = m_scalingRoutines.find(name);
 
-	if (scalingRoutineFound != scalingRoutines.end())
+	if (scalingRoutineFound != m_scalingRoutines.end())
 		return scalingRoutineFound->second;
 	else
 		return nullptr;
@@ -225,7 +225,7 @@ ScalingRoutine* ScalingRoutineContainer::exists(const std::string& name)
 
 ScalingRoutine* ScalingRoutineContainer::exists(const ScalingRoutine* scalingRoutine)
 {
-	for (auto& routine : scalingRoutines)
+	for (auto& routine : m_scalingRoutines)
 		if (routine.second == scalingRoutine)
 			return routine.second;
 
@@ -235,7 +235,7 @@ ScalingRoutine* ScalingRoutineContainer::exists(const ScalingRoutine* scalingRou
 ScalingRoutine ScalingRoutineContainer::getRoutine(const std::string& name)
 {
 	if (exists(name) != nullptr)
-		return *scalingRoutines[name];
+		return *m_scalingRoutines[name];
 	else {
 		printf("ScalingRoutineContainer::getRoutine: Routine with given name does not exist\n");
 		return ScalingRoutine();
@@ -262,7 +262,7 @@ ScalingRoutine* ScalingRoutineContainer::createRoutine(const std::string& name)
 	}
 	else {
 		ScalingRoutine* newScalingRoutine = new ScalingRoutine(name, m_movementRoutineEngine);
-		scalingRoutines.insert(std::make_pair(name, newScalingRoutine));
+		m_scalingRoutines.insert(std::make_pair(name, newScalingRoutine));
 		m_routines.insert(std::make_pair(&newScalingRoutine->getName(), static_cast<TransformationRoutine*>(newScalingRoutine)));
 		return newScalingRoutine;
 	}
@@ -277,7 +277,7 @@ ScalingRoutine* ScalingRoutineContainer::createRoutine(const std::string& name, 
 		return scalingRoutineExists;
 	}
 	else {
-		scalingRoutines.insert(std::make_pair(name, scalingRoutine));
+		m_scalingRoutines.insert(std::make_pair(name, scalingRoutine));
 		m_routines.insert(std::make_pair(&scalingRoutine->getName(), static_cast<TransformationRoutine*>(scalingRoutine)));
 		return scalingRoutine;
 	}
@@ -285,33 +285,33 @@ ScalingRoutine* ScalingRoutineContainer::createRoutine(const std::string& name, 
 
 void ScalingRoutineContainer::clear()
 {
-	for (auto& routine : scalingRoutines)
+	for (auto& routine : m_scalingRoutines)
 		delete routine.second;
-	scalingRoutines.clear();	
+	m_scalingRoutines.clear();	
 	m_routines.clear();
 }
 
 void ScalingRoutineContainer::deleteRoutine(const std::string& name)
 {
-	auto scalingRoutineFound = this->scalingRoutines.find(name);
+	auto scalingRoutineFound = this->m_scalingRoutines.find(name);
 
-	if (scalingRoutineFound != this->scalingRoutines.end()) {
+	if (scalingRoutineFound != this->m_scalingRoutines.end()) {
 
 		auto routineFound = this->m_routines.find(&scalingRoutineFound->second->getName());
 		if (routineFound != this->m_routines.end())
 			this->m_routines.erase(routineFound);
 
 		delete scalingRoutineFound->second;
-		this->scalingRoutines.erase(scalingRoutineFound);
+		this->m_scalingRoutines.erase(scalingRoutineFound);
 	}
 }
 
 const long long int& ScalingRoutineContainer::size() const
 {
 	long long int size{ sizeof(this) };
-	for (const auto& routine : scalingRoutines)
+	for (const auto& routine : m_scalingRoutines)
 		size += routine.second->size();
-	size += sizeof(scalingRoutines);
+	size += sizeof(m_scalingRoutines);
 	size += sizeof(m_routines);
 	return size;
 }
@@ -329,17 +329,17 @@ RotationRoutineContainer::RotationRoutineContainer(MovementRoutineEngine* moveme
 
 RotationRoutineContainer::~RotationRoutineContainer()
 {
-	for (auto& routine : rotationRoutines)
+	for (auto& routine : m_rotationRoutines)
 		delete routine.second;
-	rotationRoutines.clear();
+	m_rotationRoutines.clear();
 	m_routines.clear();
 }
 
 RotationRoutine* RotationRoutineContainer::exists(const std::string& name)
 {
-	auto rotationRoutineFound = rotationRoutines.find(name);
+	auto rotationRoutineFound = m_rotationRoutines.find(name);
 
-	if (rotationRoutineFound != rotationRoutines.end())
+	if (rotationRoutineFound != m_rotationRoutines.end())
 		return rotationRoutineFound->second;
 	else
 		return nullptr;
@@ -347,7 +347,7 @@ RotationRoutine* RotationRoutineContainer::exists(const std::string& name)
 
 RotationRoutine* RotationRoutineContainer::exists(const RotationRoutine* rotationRoutine)
 {
-	for (auto& routine : rotationRoutines)
+	for (auto& routine : m_rotationRoutines)
 		if (routine.second == rotationRoutine)
 			return routine.second;
 
@@ -357,7 +357,7 @@ RotationRoutine* RotationRoutineContainer::exists(const RotationRoutine* rotatio
 RotationRoutine RotationRoutineContainer::getRoutine(const std::string& name)
 {
 	if (exists(name) != nullptr)
-		return *rotationRoutines[name];
+		return *m_rotationRoutines[name];
 	else {
 		printf("RotationRoutineContainer::getRoutine: Routine with given name does not exist\n");
 		return RotationRoutine();
@@ -384,7 +384,7 @@ RotationRoutine* RotationRoutineContainer::createRoutine(const std::string& name
 	}
 	else {
 		RotationRoutine* newRotationRoutine = new RotationRoutine(name, m_movementRoutineEngine);
-		rotationRoutines.insert(std::make_pair(name, newRotationRoutine));
+		m_rotationRoutines.insert(std::make_pair(name, newRotationRoutine));
 		m_routines.insert(std::make_pair(&newRotationRoutine->getName(), static_cast<TransformationRoutine*>(newRotationRoutine)));
 		return newRotationRoutine;
 	}
@@ -399,7 +399,7 @@ RotationRoutine* RotationRoutineContainer::createRoutine(const std::string& name
 		return rotationRoutineExists;
 	}
 	else {
-		rotationRoutines.insert(std::make_pair(name, rotationRoutine));
+		m_rotationRoutines.insert(std::make_pair(name, rotationRoutine));
 		m_routines.insert(std::make_pair(&rotationRoutine->getName(), static_cast<TransformationRoutine*>(rotationRoutine)));
 		return rotationRoutine;
 	}
@@ -407,32 +407,32 @@ RotationRoutine* RotationRoutineContainer::createRoutine(const std::string& name
 
 void RotationRoutineContainer::clear()
 {
-	for (auto& routine : rotationRoutines)
+	for (auto& routine : m_rotationRoutines)
 		delete routine.second;
-	rotationRoutines.clear();
+	m_rotationRoutines.clear();
 	m_routines.clear();
 }
 
 void RotationRoutineContainer::deleteRoutine(const std::string& name)
 {
-	auto rotationRoutineFound = this->rotationRoutines.find(name);
+	auto rotationRoutineFound = this->m_rotationRoutines.find(name);
 
-	if (rotationRoutineFound != this->rotationRoutines.end()) {
+	if (rotationRoutineFound != this->m_rotationRoutines.end()) {
 		auto routineFound = this->m_routines.find(&rotationRoutineFound->second->getName());
 		if (routineFound != this->m_routines.end())
 			this->m_routines.erase(routineFound);
 
 		delete rotationRoutineFound->second;
-		this->rotationRoutines.erase(rotationRoutineFound);
+		this->m_rotationRoutines.erase(rotationRoutineFound);
 	}
 }
 
 const long long int& RotationRoutineContainer::size() const
 {
 	long long int size{ sizeof(this) };
-	for (const auto& routine : rotationRoutines)
+	for (const auto& routine : m_rotationRoutines)
 		size += routine.second->size();
-	size += sizeof(rotationRoutines);
+	size += sizeof(m_rotationRoutines);
 	size += sizeof(m_routines);
 	return size;
 }

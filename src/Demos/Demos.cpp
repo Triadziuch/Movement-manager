@@ -1221,7 +1221,6 @@ void movementDemo3(sf::RenderWindow& window) {
 	sf::Vector2f shape_size(2.f, 2.f);
 
 	// Routine initialization
-	//printf("Creating routines...\n");
 	for (int i = 0; i < routines; ++i) {
 		auto movementRoutine = movementManager->createMovementRoutine("SM" + std::to_string(i));
 		sf::Vector2f previous_position = randomPosition();
@@ -1235,11 +1234,8 @@ void movementDemo3(sf::RenderWindow& window) {
 	}
 
 	// Shapes initialiaztion
-	//printf("Creating shapes...\n");
 	std::vector<sf::RectangleShape*> shapes;
 	for (int i = 0; i < shapes_count; i++) {
-		//if (i % 1000 == 0)
-		//	printf("Creating shape %d...\n", i);
 		sf::RectangleShape* shape = new sf::RectangleShape;
 		shape->setSize(shape_size);
 		shape->setFillColor(sf::Color::Blue);
@@ -1308,7 +1304,7 @@ void movementDemo3(sf::RenderWindow& window) {
 
 		if (it % 10 == 0 && it != 0) {
 			average_time_ms = static_cast<float>(time_movement / it) / 1000000.f;
-			average_time_text.setString("Average time: " + std::to_string(average_time_ms) + " ms");
+			average_time_text.setString("Update time: " + std::to_string(average_time_ms) + " ms");
 
 			if (it % 50 == 0) {
 				it = 0;

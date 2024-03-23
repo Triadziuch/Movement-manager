@@ -28,12 +28,13 @@ public:
 	void reset();
 	const bool isDone() const;
 	const bool isFinished() const;
-	void setFunction(easeFunctions::Tmovement_function usedFunctionType);
-	void setFunction(double (*usedFunctionPtr)(double));
 
 	void setDelayBefore(const float delay, const bool reset = false);
 	void setMotionDuration(const float duration, const  bool reset = false);
 	void setDelayAfter(const float delay, const  bool reset = false);
+
+	void setFunction(double (*usedFunctionPtr)(double));
+	void setFunction(easeFunctions::Tmovement_function usedFunctionType);
 };
 
 

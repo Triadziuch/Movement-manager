@@ -337,18 +337,18 @@ const long long int& MovementRoutine::size() const
 // - - - - - - - - - - - - - - - - - - - - ScalingRoutine - - - - - - - - - - - - - - - - - - - - \\
 
 // Private functions
-void ScalingRoutine::adjustStartToCurrent(const sf::Vector2f& current_scale)
+void ScalingRoutine::adjustStartToCurrent(const sf::Vector2f& currentScale)
 {
 	if (m_routineScalings.size() == 0) return;
-	m_routineScalings.front()->getStartingScale() = current_scale;
+	m_routineScalings.front()->getStartingScale() = currentScale;
 }
 
-void ScalingRoutine::adjustAllToCurrent(const sf::Vector2f& current_scale)
+void ScalingRoutine::adjustAllToCurrent(const sf::Vector2f& currentScale)
 {
 	if (m_routineScalings.size() == 0) return;
 
 	const sf::Vector2f& starting_scale = m_routineScalings.front()->getStartingScale();
-	const sf::Vector2f proportion{ current_scale.x / starting_scale.x, current_scale.y / starting_scale.y };
+	const sf::Vector2f proportion{ currentScale.x / starting_scale.x, currentScale.y / starting_scale.y };
 
 	if (proportion == sf::Vector2f{ 1.f, 1.f }) return;
 
@@ -518,50 +518,50 @@ const long long int& ScalingRoutine::size() const
 // - - - - - - - - - - - - - - - - - - - - RotationRoutine - - - - - - - - - - - - - - - - - - - - \\
 
 // Private functions
-void RotationRoutine::adjustStartToCurrent(float current_rotation)
+void RotationRoutine::adjustStartToCurrent(float currentRotation)
 {
 	if (m_routineRotations.size() == 0) return;
 
 	const rotationInfo& rotation = *m_routineRotations.front();
 
-	if (!was_last_clockwise) {
+	if (!m_wasLastClockwise) {
 		if (rotation.getClockwise()) {
-			if (current_rotation > rotation.getEndingRotation())
-				current_rotation -= 360.f;
+			if (currentRotation > rotation.getEndingRotation())
+				currentRotation -= 360.f;
 		}
 		else {
-			current_rotation -= 360.f;
-			current_rotation *= -1.f;
+			currentRotation -= 360.f;
+			currentRotation *= -1.f;
 
-			if (current_rotation > rotation.getEndingRotation())
-				current_rotation -= 360.f;
+			if (currentRotation > rotation.getEndingRotation())
+				currentRotation -= 360.f;
 		}
 	}
 	else {
 		if (rotation.getClockwise()) {
-			if (current_rotation > rotation.getEndingRotation())
-				current_rotation -= 360.f;
+			if (currentRotation > rotation.getEndingRotation())
+				currentRotation -= 360.f;
 		}
 		else if (rotation.getClockwise() == false) {
-			current_rotation -= 360.f;
-			current_rotation *= -1.f;
+			currentRotation -= 360.f;
+			currentRotation *= -1.f;
 
-			if (current_rotation > rotation.getEndingRotation())
-				current_rotation -= 360.f;
+			if (currentRotation > rotation.getEndingRotation())
+				currentRotation -= 360.f;
 		}
 	}
 
 	if (rotation.getClockwise())
-		m_routineRotations.front()->getStartingRotation() = current_rotation;
+		m_routineRotations.front()->getStartingRotation() = currentRotation;
 	else
-		m_routineRotations.front()->getStartingRotation() = 360.f - current_rotation;
+		m_routineRotations.front()->getStartingRotation() = 360.f - currentRotation;
 }
 
-void RotationRoutine::adjustAllToCurrent(const float current_rotation)
+void RotationRoutine::adjustAllToCurrent(const float currentRotation)
 {
 	if (m_routineRotations.size() == 0) return;
 
-	float rotation_offset = current_rotation - m_routineRotations.front()->getStartingRotation();
+	float rotation_offset = currentRotation - m_routineRotations.front()->getStartingRotation();
 
 	if (!m_routineRotations.front()->getClockwise())
 		rotation_offset = 360.f + rotation_offset;
@@ -606,7 +606,7 @@ RotationRoutine::RotationRoutine(const std::string& name, MovementRoutineEngine*
 
 RotationRoutine::RotationRoutine(const RotationRoutine& obj) :
 	TransformationRoutine{ obj },
-	was_last_clockwise{ obj.was_last_clockwise }
+	m_wasLastClockwise{ obj.m_wasLastClockwise }
 {
 	for (const auto& rotation : obj.m_routineRotations) {
 		m_routineRotations.emplace_back(new rotationInfo(*rotation));
@@ -637,7 +637,7 @@ const bool RotationRoutine::update(sf::Transformable& transformable, const float
 // Public functions
 void RotationRoutine::addRotation(rotationInfo* rotation)
 {
-	was_last_clockwise = rotation->getClockwise();
+	m_wasLastClockwise = rotation->getClockwise();
 	m_routineRotations.emplace_back(rotation);
 	m_transformations.emplace_back(static_cast<transformationInfo*>(rotation));
 	++m_count;
@@ -703,13 +703,13 @@ rotationInfo* RotationRoutine::getCurrentRotation() const
 const bool RotationRoutine::goToNextRotation(const sf::Transformable& transformable)
 {
 	if (m_current < m_count - 1) {
-		was_last_clockwise = m_routineRotations[m_current]->getClockwise();
+		m_wasLastClockwise = m_routineRotations[m_current]->getClockwise();
 		m_isPaused = m_pauseAfterChangingMovements;
 		++m_current;
 		return true;
 	}
 	else {
-		was_last_clockwise = m_routineRotations[m_current]->getClockwise();
+		m_wasLastClockwise = m_routineRotations[m_current]->getClockwise();
 		if (m_adjustAllToCurrentTransform) { adjustAllToCurrent(transformable.getRotation()); }
 		else if (m_adjustStartToCurrentTransform) { adjustStartToCurrent(transformable.getRotation()); }
 		TransformationRoutine::reset();

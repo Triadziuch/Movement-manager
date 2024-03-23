@@ -69,21 +69,58 @@ void transformationInfo::setFunction(double(*usedFunctionPtr)(double))
 	m_usedFunctionPtr = usedFunctionPtr;
 }
 
-void transformationInfo::setAnimationTime(const float time) {
+void transformationInfo::setDelayBefore(const float delay, const bool reset)
+{
+	if (delay <= 0.f || delay == m_delayBefore) return;
 
-	if (time <= 0.f || time == m_motionDuration) return;
-
-	if (m_currentTime < m_delayBefore) 
-		m_motionDuration = time;
-	else {
+	if (reset)
+		m_currentTime = 0.f;
+	else if (m_currentTime > m_delayBefore) {
 		const float timeFactor = (m_currentTime - m_delayBefore) / m_motionDuration;
-		m_motionDuration = time;
-		m_currentTime = m_delayBefore + timeFactor * m_motionDuration;
+		m_currentTime = delay + timeFactor * m_motionDuration;
 	}
 
+	m_delayBefore = delay;
 	m_totalDuration = m_delayBefore + m_motionDuration + m_delayAfter;
 
-	if (m_currentTime > m_totalDuration) m_currentTime = m_totalDuration;
+	if (m_currentTime > m_totalDuration)
+		m_currentTime = m_totalDuration;
+}
+
+void transformationInfo::setMotionDuration(const float duration, const bool reset)
+{
+	if (duration <= 0.f || duration == m_motionDuration) return;
+
+	if (reset) 
+		m_currentTime = 0.f;
+	else if (m_currentTime > m_delayBefore) {
+		const float timeFactor = (m_currentTime - m_delayBefore) / m_motionDuration;
+		m_currentTime = m_delayBefore + timeFactor * duration;
+	}
+
+	m_motionDuration = duration;
+	m_totalDuration = m_delayBefore + m_motionDuration + m_delayAfter;
+
+	if (m_currentTime > m_totalDuration)
+		m_currentTime = m_totalDuration;
+}
+
+void transformationInfo::setDelayAfter(const float delay, const bool reset)
+{
+	if (delay <= 0.f || delay == m_delayAfter) return;
+
+	if (reset)
+		m_currentTime = 0.f;
+	else if (m_currentTime > m_delayBefore + m_motionDuration) {
+		const float timeFactor = (m_currentTime - m_delayBefore - m_motionDuration) / m_delayAfter;
+		m_currentTime = m_delayBefore + m_motionDuration + timeFactor * delay;
+	}
+
+	m_delayAfter = delay;
+	m_totalDuration = m_delayBefore + m_motionDuration + m_delayAfter;
+
+	if (m_currentTime > m_totalDuration)
+		m_currentTime = m_totalDuration;
 }
 
 // - - - - - - - - - - - - - - - - - - - - movementInfo - - - - - - - - - - - - - - - - - - - - \\
@@ -128,7 +165,6 @@ const bool movementInfo::update(sf::Transformable& transformable, const float dt
 			else
 				return false;
 		}
-			
 	}
 	else {
 		if (m_currentTime > m_delayBefore) 

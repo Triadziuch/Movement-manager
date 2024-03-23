@@ -58,22 +58,37 @@ void MovementManager::setFunction(sf::Transformable& transformable, easeFunction
 		rotationRoutineFound->second->setFunction(usedFunctionType);
 }
 
-void MovementManager::setAnimationTime(sf::Transformable& transformable, const float _time)
+void MovementManager::setMotionDuration(const float time, const bool reset)
 {
-	if (_time < 0.f)
+	if (time < 0.f)
+		return;
+
+	for (auto& movementRoutine : m_routineMovement)
+		movementRoutine.second->setMotionDuration(time, reset);
+
+	for (auto& scalingRoutine : m_routineScaling)
+		scalingRoutine.second->setMotionDuration(time, reset);
+
+	for (auto& rotationRoutine : m_routineRotation)
+		rotationRoutine.second->setMotionDuration(time, reset);
+}
+
+void MovementManager::setMotionDuration(sf::Transformable& transformable, const float time, const bool reset)
+{
+	if (time < 0.f)
 		return;
 
 	auto movementRoutineFound = m_routineMovementActive.find(&transformable);
 	if (movementRoutineFound != m_routineMovementActive.end())
-		movementRoutineFound->second->setAnimationTime(_time);
+		movementRoutineFound->second->setMotionDuration(time, reset);
 
 	auto scalingRoutineFound = m_routineScalingActive.find(&transformable);
 	if (scalingRoutineFound != m_routineScalingActive.end())
-		scalingRoutineFound->second->setAnimationTime(_time);
+		scalingRoutineFound->second->setMotionDuration(time, reset);
 
 	auto rotationRoutineFound = m_routineRotationActive.find(&transformable);
 	if (rotationRoutineFound != m_routineRotationActive.end())
-		rotationRoutineFound->second->setAnimationTime(_time);
+		rotationRoutineFound->second->setMotionDuration(time, reset);
 }
 
 void MovementManager::resetRoutines(sf::Transformable& transformable)
@@ -344,6 +359,9 @@ const long long int MovementManager::getSizeMovement() const
 
 	for (const auto& routineActive : m_routineMovementActive)
 		size += sizeof(routineActive.second);
+
+	for (const auto& routineActiveMapped : m_routineMovementActiveMapped)
+		size += routineActiveMapped.second.size() * sizeof(routineActiveMapped.second) + sizeof(routineActiveMapped.first);
 
 	return size;
 }

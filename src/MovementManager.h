@@ -51,7 +51,10 @@ public:
 
 	// Universal public functions
 	void setFunction(sf::Transformable& transformable, easeFunctions::Tmovement_function usedFunctionType);
-	void setAnimationTime(sf::Transformable& transformable, const float _time);
+
+	void setMotionDuration(const float time, const bool reset = false);
+	void setMotionDuration(sf::Transformable& transformable, const float time, const bool reset = false);
+
 	void resetRoutines(sf::Transformable& transformable);
 
 	// === Movement ===

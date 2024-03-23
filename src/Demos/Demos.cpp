@@ -241,7 +241,7 @@ void movementDemo1(sf::RenderWindow& window) {
 
 					animation_speed_text.setString("Animation speed: " + std::format("{:.2f}", animation_time) + "s");
 					for (size_t i = 0; i < rows; i++)
-						movementManager->setAnimationTime(shapes[i], animation_time);
+						movementManager->setMotionDuration(shapes[i], animation_time, false);
 				}
 				else if (event.key.code == sf::Keyboard::Right || event.key.code == sf::Keyboard::D) {
 					animation_time += 0.25f;
@@ -250,7 +250,7 @@ void movementDemo1(sf::RenderWindow& window) {
 
 					animation_speed_text.setString("Animation speed: " + std::format("{:.2f}", animation_time) + "s");
 					for (size_t i = 0; i < rows; i++)
-						movementManager->setAnimationTime(shapes[i], animation_time);
+						movementManager->setMotionDuration(shapes[i], animation_time, false);
 				}
 
 				// = = = = = Pause/Unpause movement = = = = =
@@ -1203,7 +1203,7 @@ inline sf::Color randomColor() {
 
 void movementDemo3(sf::RenderWindow& window) {
 	MovementManager* movementManager = MovementManager::getInstance();
-
+	printf("MovementManger size before: %lld\n", movementManager->getSizeMovement());
 	long long int time_movement{};
 	float average_time_ms = 0.f;
 	bool synced = false, gui = true, running = true;
@@ -1221,7 +1221,7 @@ void movementDemo3(sf::RenderWindow& window) {
 	sf::Vector2f shape_size(2.f, 2.f);
 
 	// Routine initialization
-	printf("Creating routines...\n");
+	//printf("Creating routines...\n");
 	for (int i = 0; i < routines; ++i) {
 		auto movementRoutine = movementManager->createMovementRoutine("SM" + std::to_string(i));
 		sf::Vector2f previous_position = randomPosition();
@@ -1235,11 +1235,11 @@ void movementDemo3(sf::RenderWindow& window) {
 	}
 
 	// Shapes initialiaztion
-	printf("Creating shapes...\n");
+	//printf("Creating shapes...\n");
 	std::vector<sf::RectangleShape*> shapes;
 	for (int i = 0; i < shapes_count; i++) {
-		if (i % 1000 == 0)
-			printf("Creating shape %d...\n", i);
+		//if (i % 1000 == 0)
+		//	printf("Creating shape %d...\n", i);
 		sf::RectangleShape* shape = new sf::RectangleShape;
 		shape->setSize(shape_size);
 		shape->setFillColor(sf::Color::Blue);
@@ -1279,7 +1279,7 @@ void movementDemo3(sf::RenderWindow& window) {
 	controls_text.setPosition(10.f, 10.f);
 	sf::Text shapes_count_text("Shapes count: " + std::to_string(shapes_count), font, 20u);
 	shapes_count_text.setPosition(10.f, 40.f);
-	sf::Text average_time_text("Average time: " + std::to_string(average_time_ms) + " ms", font, 20u);
+	sf::Text average_time_text("Update time: " + std::to_string(average_time_ms) + " ms", font, 20u);
 	average_time_text.setPosition(10.f, 70.f);
 	sf::Text current_function_text("Current function: Random", font, 20u);
 	current_function_text.setPosition(10.f, 100.f);
@@ -1481,4 +1481,5 @@ void movementDemo3(sf::RenderWindow& window) {
 	for (size_t i = 0; i < shapes.size(); ++i)
 		delete shapes[i];
 	shapes.clear();
+printf("MovementManger size after: %lld\n\n", movementManager->getSizeMovement());
 }

@@ -30,7 +30,10 @@ public:
 	const bool isFinished() const;
 	void setFunction(easeFunctions::Tmovement_function usedFunctionType);
 	void setFunction(double (*usedFunctionPtr)(double));
-	void setAnimationTime(const float time);
+
+	void setDelayBefore(const float delay, const bool reset = false);
+	void setMotionDuration(const float duration, const  bool reset = false);
+	void setDelayAfter(const float delay, const  bool reset = false);
 };
 
 
@@ -108,7 +111,7 @@ private:
 	float m_originalStartingRotation{};
 	float m_originalEndingRotation{};
 
-	bool  m_clockwise = true;
+	bool m_clockwise = true;
 
 public:
 	// Constructors / Destructors

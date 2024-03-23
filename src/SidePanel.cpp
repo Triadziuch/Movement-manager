@@ -6,10 +6,10 @@ void SidePanel::instantHide()
 {
 	m_hidden = true;
 
-	m_backgroundMovementRoutine->reset();
-	m_titleMovementRoutine->reset();
+	m_backgroundMovementRoutine->TransformationRoutine::reset();
+	m_titleMovementRoutine->TransformationRoutine::reset();
 	for (auto& movementRoutine : m_textMovementRoutines) 
-		movementRoutine->reset();
+		movementRoutine->TransformationRoutine::reset();
 
 	m_background.setPosition(-m_width, 0.f);
 	m_title.setPosition(-m_width / 2.f, m_title.getPosition().y);

@@ -52,8 +52,17 @@ public:
 	// Universal public functions
 	void setFunction(sf::Transformable& transformable, easeFunctions::Tmovement_function usedFunctionType);
 
+	void setDelayBefore(const float delay, const bool reset = false);
+	void setDelayBefore(std::string& name, const float delay, const bool reset = false);
+	void setDelayBefore(sf::Transformable& transformable, const float delay, const bool reset = false);
+
 	void setMotionDuration(const float time, const bool reset = false);
+	void setMotionDuration(std::string& name, const float time, const bool reset = false);
 	void setMotionDuration(sf::Transformable& transformable, const float time, const bool reset = false);
+
+	void setDelayAfter(const float delay, const bool reset = false);
+	void setDelayAfter(std::string& name, const float delay, const bool reset = false);
+	void setDelayAfter(sf::Transformable& transformable, const float delay, const bool reset = false);
 
 	void resetRoutines(sf::Transformable& transformable);
 

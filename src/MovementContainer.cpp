@@ -479,7 +479,7 @@ void MovementRoutineEngine::resetMovement()
 		auto& movement = std::get<0>(*routinesTuple);
 
 		if (movement) {
-			movement->reset();
+			movement->TransformationRoutine::reset();
 			routines->first->setPosition(movement->getCurrentMovement()->getStartingPos());
 		}
 	}
@@ -552,7 +552,7 @@ void MovementRoutineEngine::resetScaling()
 		auto& scaling = std::get<1>(*routinesTuple);
 
 		if (scaling) {
-			scaling->reset();
+			scaling->TransformationRoutine::reset();
 			routines->first->setScale(scaling->getCurrentScaling()->getStartingScale());
 		}
 	}
@@ -625,7 +625,7 @@ void MovementRoutineEngine::resetRotation()
 		auto& rotation = std::get<2>(*routinesTuple);
 
 		if (rotation) {
-			rotation->reset();
+			rotation->TransformationRoutine::reset();
 			routines->first->setRotation(rotation->getCurrentRotation()->getStartingRotation());
 		}
 	}

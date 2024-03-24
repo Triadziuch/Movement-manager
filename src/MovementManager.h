@@ -8,7 +8,7 @@ private:
 	// Movement container
 	MovementRoutineEngine* movementRoutineEngine;
 	
-	bool debug = false;
+	bool m_showDebug = false;
 
 	std::map<sf::Transformable*, MovementRoutine*> m_routineMovementActive;
 	std::unordered_map<std::string, std::vector<std::map<sf::Transformable*, MovementRoutine*>::iterator> > m_routineMovementActiveMapped;

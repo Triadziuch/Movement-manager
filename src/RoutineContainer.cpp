@@ -3,17 +3,12 @@
 // - - - - - - - - - - - - - - - - - - - - RoutineContainer - - - - - - - - - - - - - - - - - - - - \\
 
 // Constructors / Destructors
-RoutineContainer::RoutineContainer() :
-	m_movementRoutineEngine(nullptr)
-	{}
-
 RoutineContainer::RoutineContainer(MovementRoutineEngine* movementRoutineEnginePtr) :
 	m_movementRoutineEngine(movementRoutineEnginePtr)
 	{}
 
 RoutineContainer::RoutineContainer(const RoutineContainer & obj) :
-	m_movementRoutineEngine(obj.m_movementRoutineEngine),
-	m_routines(obj.m_routines)
+	m_movementRoutineEngine(obj.m_movementRoutineEngine)
 	{}
 
 RoutineContainer::~RoutineContainer()
@@ -94,15 +89,12 @@ std::vector<std::string>& RoutineContainer::getRoutineNames() const
 // - - - - - - - - - - - - - - - - - - - - MovementRoutineContainer - - - - - - - - - - - - - - - - - - - - \\
 
 // Constructors / Destructors
-MovementRoutineContainer::MovementRoutineContainer() :
-	RoutineContainer{}
-	{}
-
 MovementRoutineContainer::MovementRoutineContainer(MovementRoutineEngine * movementRoutineEnginePtr) :
 	RoutineContainer{ movementRoutineEnginePtr }
 	{}
 
-MovementRoutineContainer::MovementRoutineContainer(const MovementRoutineContainer & obj)
+MovementRoutineContainer::MovementRoutineContainer(const MovementRoutineContainer & obj) :
+	RoutineContainer{ obj.m_movementRoutineEngine }
 {
 	for (const auto& routine : obj.m_movementRoutines) 
 		m_movementRoutines.insert(std::make_pair(routine.first, new MovementRoutine(*routine.second)));
@@ -145,7 +137,7 @@ MovementRoutine MovementRoutineContainer::getRoutine(const std::string& name)
 		return *m_movementRoutines[name];
 	else {
 		printf("MovementRoutineContainer::getRoutine: Routine with given name does not exist\n");
-		return MovementRoutine();
+		return MovementRoutine{ std::string{}, nullptr };
 	}
 }
 
@@ -228,15 +220,12 @@ const long long int& MovementRoutineContainer::size() const
 // - - - - - - - - - - - - - - - - - - - - ScalingRoutineContainer - - - - - - - - - - - - - - - - - - - - \\
 
 // Constructors / Destructors
-ScalingRoutineContainer::ScalingRoutineContainer() :
-	RoutineContainer{}
-	{}
-
 ScalingRoutineContainer::ScalingRoutineContainer(MovementRoutineEngine* movementRoutineEnginePtr) :
 	RoutineContainer{ movementRoutineEnginePtr }
 	{}
 
-ScalingRoutineContainer::ScalingRoutineContainer(const ScalingRoutineContainer & obj)
+ScalingRoutineContainer::ScalingRoutineContainer(const ScalingRoutineContainer & obj) :
+	RoutineContainer{ obj.m_movementRoutineEngine }
 {
 	for (const auto& routine : obj.m_scalingRoutines)
 		m_scalingRoutines.insert(std::make_pair(routine.first, new ScalingRoutine(*routine.second)));
@@ -278,7 +267,7 @@ ScalingRoutine ScalingRoutineContainer::getRoutine(const std::string& name)
 		return *m_scalingRoutines[name];
 	else {
 		printf("ScalingRoutineContainer::getRoutine: Routine with given name does not exist\n");
-		return ScalingRoutine();
+		return ScalingRoutine{ std::string{}, nullptr };
 	}
 }
 
@@ -359,15 +348,12 @@ const long long int& ScalingRoutineContainer::size() const
 // - - - - - - - - - - - - - - - - - - - - RotationRoutineContainer - - - - - - - - - - - - - - - - - - - - \\
 
 // Constructors / Destructors
-RotationRoutineContainer::RotationRoutineContainer() :
-	RoutineContainer{}
-	{}
-
 RotationRoutineContainer::RotationRoutineContainer(MovementRoutineEngine* movementRoutineEnginePtr) :
 	RoutineContainer{ movementRoutineEnginePtr }
 	{}
 
-RotationRoutineContainer::RotationRoutineContainer(const RotationRoutineContainer & obj)
+RotationRoutineContainer::RotationRoutineContainer(const RotationRoutineContainer & obj) :
+	RoutineContainer{ obj.m_movementRoutineEngine }
 {
 	for (const auto& routine : obj.m_rotationRoutines)
 		m_rotationRoutines.insert(std::make_pair(routine.first, new RotationRoutine(*routine.second)));
@@ -409,7 +395,7 @@ RotationRoutine RotationRoutineContainer::getRoutine(const std::string& name)
 		return *m_rotationRoutines[name];
 	else {
 		printf("RotationRoutineContainer::getRoutine: Routine with given name does not exist\n");
-		return RotationRoutine();
+		return RotationRoutine{ std::string{}, nullptr };
 	}
 }
 

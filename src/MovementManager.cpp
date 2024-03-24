@@ -3,25 +3,23 @@
 
 inline void MovementManager::printDebug(const std::string& message) const
 {
-	if (debug)
+	if (m_showDebug)
 		printf("MovementManager: %s\n", message.c_str());
 }
 
 // Constructors / Destructors
 MovementManager::MovementManager()
 {
-	movementRoutineEngine = MovementRoutineEngine::getInstance();
-	movementRoutineEngine->setMovementManager(this);
+	movementRoutineEngine = new MovementRoutineEngine(this);
 
-	m_movementRoutineContainer = new MovementRoutineContainer();
-	m_scalingRoutineContainer = new ScalingRoutineContainer();
-	m_rotationRoutineContainer = new RotationRoutineContainer();
+	m_movementRoutineContainer = new MovementRoutineContainer(movementRoutineEngine);
+	m_scalingRoutineContainer = new ScalingRoutineContainer(movementRoutineEngine);
+	m_rotationRoutineContainer = new RotationRoutineContainer(movementRoutineEngine);
 }
 
 MovementManager::MovementManager(const MovementManager& obj)
 {
-	movementRoutineEngine = MovementRoutineEngine::getInstance();
-	movementRoutineEngine->setMovementManager(this);
+	movementRoutineEngine = new MovementRoutineEngine(this);
 
 	m_movementRoutineContainer = new MovementRoutineContainer(*obj.m_movementRoutineContainer);
 	m_scalingRoutineContainer = new ScalingRoutineContainer(*obj.m_scalingRoutineContainer);

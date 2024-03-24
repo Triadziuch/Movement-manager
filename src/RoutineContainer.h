@@ -8,7 +8,7 @@ protected:
 	std::unordered_map<std::string*, TransformationRoutine*> m_routines{};
 
 	// Constructors / Destructors
-	RoutineContainer();
+	RoutineContainer() = delete;
 	RoutineContainer(MovementRoutineEngine* movementRoutineEnginePtr);
 	RoutineContainer(const RoutineContainer& obj);
 	~RoutineContainer();
@@ -36,7 +36,7 @@ private:
 
 public:
 	// Constructors / Destructors
-	MovementRoutineContainer();
+	MovementRoutineContainer() = delete;
 	MovementRoutineContainer(MovementRoutineEngine* movementRoutineEnginePtr);
 	MovementRoutineContainer(const MovementRoutineContainer& obj);
 	~MovementRoutineContainer();
@@ -63,7 +63,7 @@ private:
 
 public:
 	// Constructors / Destructors
-	ScalingRoutineContainer();
+	ScalingRoutineContainer() = delete;
 	ScalingRoutineContainer(MovementRoutineEngine* movementRoutineEnginePtr);
 	ScalingRoutineContainer(const ScalingRoutineContainer& obj);
 	~ScalingRoutineContainer();
@@ -90,7 +90,7 @@ private:
 
 public:
 	// Constructors / Destructors
-	RotationRoutineContainer();
+	RotationRoutineContainer() = delete;
 	RotationRoutineContainer(MovementRoutineEngine* movementRoutineEnginePtr);
 	RotationRoutineContainer(const RotationRoutineContainer& obj);
 	~RotationRoutineContainer();

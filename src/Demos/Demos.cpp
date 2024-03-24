@@ -167,6 +167,7 @@ void movementDemo1(sf::RenderWindow& window) {
 	{
 		dt = dt_clock.restart().asSeconds();
 		movementManager->update(dt);
+		side_panel.update(dt);
 
 		sf::Event event;
 		if (window.pollEvent(event))
@@ -451,6 +452,7 @@ void plotDemo(sf::RenderWindow& window)
 	{
 		dt = dt_clock.restart().asSeconds();
 		movementManager->update(dt);
+		side_panel.update(dt);
 
 		sf::Event event;
 		if (window.pollEvent(event))
@@ -859,6 +861,7 @@ void movementDemo2(sf::RenderWindow& window)
 	{
 		dt = dt_clock.restart().asSeconds();
 		movementManager->update(dt);
+		side_panel.update(dt);
 
 		sf::Event event;
 		if (window.pollEvent(event))
@@ -1271,6 +1274,7 @@ void movementDemo3(sf::RenderWindow& window) {
 		movementManager->update(dt);
 		auto stop = high_resolution_clock::now();
 		time_movement += duration_cast<nanoseconds>(stop - start).count();
+		side_panel.update(dt);
 		it++;
 
 		if (it == 100 && !synced) {

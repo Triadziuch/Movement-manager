@@ -153,6 +153,11 @@ SidePanel::~SidePanel()
 	m_window = nullptr;
 }
 
+void SidePanel::update(const float dt)
+{
+	m_movementManager->update(dt);
+}
+
 // Accessors / Mutators
 void SidePanel::setWindow(const sf::RenderTarget& window)
 {

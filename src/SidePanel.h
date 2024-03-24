@@ -52,6 +52,8 @@ public:
 	SidePanel(const SidePanel& obj);
 	~SidePanel();
 
+	void update(const float dt);
+
 	// Accessors / Mutators
 	void setWindow(const sf::RenderTarget& window);
 	void setFont(const std::string& fontPath);

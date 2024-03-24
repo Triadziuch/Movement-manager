@@ -26,7 +26,7 @@ int main()
 	if (!font.loadFromFile("Fonts/Helvetica Regular.otf"))
 		throw std::runtime_error("ERROR: Font not found!\n");
 
-	std::string demo_string[4] = { "Ease functions demo 1", "Ease functions demo 2", "Ease functions demo 3", "Plot demo" };
+	std::string demo_string[4] = { "Movement demo 1", "Movement demo 2", "Movement demo 3", "Plot demo" };
 	sf::Text demo_text[4];
 	sf::Color selected_color(150, 150, 150);
 	

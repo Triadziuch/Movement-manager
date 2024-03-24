@@ -129,18 +129,48 @@ void MovementManager::update(const float dt)
 	this->movementRoutineEngine->update(dt);
 }
 
+void MovementManager::setFunction(easeFunctions::Tmovement_function usedFunctionType)
+{
+	for (auto& movementRoutine : m_routineMovement)
+		movementRoutine.second->setFunction(usedFunctionType);
+
+	for (auto& scalingRoutine : m_routineScaling)
+		scalingRoutine.second->setFunction(usedFunctionType);
+
+	for (auto& rotationRoutine : m_routineRotation)
+		rotationRoutine.second->setFunction(usedFunctionType);
+}
+
+void MovementManager::setFunction(std::string& name, easeFunctions::Tmovement_function usedFunctionType)
+{
+	auto movementRoutineFound = m_routineMovementMapped.find(name);
+	if (movementRoutineFound != m_routineMovementMapped.end())
+		for (const auto& movementRoutine : movementRoutineFound->second)
+			movementRoutine->second->setFunction(usedFunctionType);
+
+	auto scalingRoutineFound = m_routineScalingMapped.find(name);
+	if (scalingRoutineFound != m_routineScalingMapped.end())
+		for (const auto& scalingRoutine : scalingRoutineFound->second)
+			scalingRoutine->second->setFunction(usedFunctionType);
+
+	auto rotationRoutineFound = m_routineRotationMapped.find(name);
+	if (rotationRoutineFound != m_routineRotationMapped.end())
+		for (const auto& rotationRoutine : rotationRoutineFound->second)
+			rotationRoutine->second->setFunction(usedFunctionType);
+}
+
 void MovementManager::setFunction(sf::Transformable& transformable, easeFunctions::Tmovement_function usedFunctionType)
 {
-	auto movementRoutineFound = m_routineMovementActive.find(&transformable);
-	if (movementRoutineFound != m_routineMovementActive.end())
+	auto movementRoutineFound = m_routineMovement.find(&transformable);
+	if (movementRoutineFound != m_routineMovement.end())
 		movementRoutineFound->second->setFunction(usedFunctionType);
 
-	auto scalingRoutineFound = m_routineScalingActive.find(&transformable);
-	if (scalingRoutineFound != m_routineScalingActive.end())
+	auto scalingRoutineFound = m_routineScaling.find(&transformable);
+	if (scalingRoutineFound != m_routineScaling.end())
 		scalingRoutineFound->second->setFunction(usedFunctionType);
 
-	auto rotationRoutineFound = m_routineRotationActive.find(&transformable);
-	if (rotationRoutineFound != m_routineRotationActive.end())
+	auto rotationRoutineFound = m_routineRotation.find(&transformable);
+	if (rotationRoutineFound != m_routineRotation.end())
 		rotationRoutineFound->second->setFunction(usedFunctionType);
 }
 
@@ -295,6 +325,18 @@ void MovementManager::setDelayAfter(sf::Transformable& transformable, const floa
 	auto rotationRoutineFound = m_routineRotationActive.find(&transformable);
 	if (rotationRoutineFound != m_routineRotationActive.end())
 		rotationRoutineFound->second->setDelayAfter(delay, reset);
+}
+
+void MovementManager::resetRoutines()
+{
+	for (auto& movementRoutine : m_routineMovementActive)
+		movementRoutine.second->reset(*movementRoutine.first);
+
+	for (auto& scalingRoutine : m_routineScalingActive)
+		scalingRoutine.second->reset(*scalingRoutine.first);
+
+	for (auto& rotationRoutine : m_routineRotationActive)
+		rotationRoutine.second->reset(*rotationRoutine.first);
 }
 
 void MovementManager::resetRoutines(sf::Transformable& transformable)

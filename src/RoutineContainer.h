@@ -14,6 +14,9 @@ protected:
 	~RoutineContainer();
 
 public:
+	void setFunction(easeFunctions::Tmovement_function usedFunctionType);
+	void setFunction(std::string& name, easeFunctions::Tmovement_function usedFunctionType);
+	
 	void setDelayBefore(const float delay, const bool reset = false);
 	void setDelayBefore(std::string& name, const float delay, const bool reset = false);
 

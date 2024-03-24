@@ -22,6 +22,20 @@ RoutineContainer::~RoutineContainer()
 	m_routines.clear();
 }
 
+void RoutineContainer::setFunction(easeFunctions::Tmovement_function usedFunctionType)
+{
+	for (auto& routine : m_routines)
+		routine.second->setFunction(usedFunctionType);
+}
+
+void RoutineContainer::setFunction(std::string& name, easeFunctions::Tmovement_function usedFunctionType)
+{
+	auto routine = m_routines.find(&name);
+
+	if (routine != m_routines.end())
+		routine->second->setFunction(usedFunctionType);
+}
+
 void RoutineContainer::setDelayBefore(const float delay, const bool reset)
 {
 	for (auto& routine : m_routines)

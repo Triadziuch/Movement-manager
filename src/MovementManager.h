@@ -42,6 +42,8 @@ public:
 	void update(const float dt);
 
 	// Universal public functions
+	void setFunction(easeFunctions::Tmovement_function usedFunctionType);
+	void setFunction(std::string& name, easeFunctions::Tmovement_function usedFunctionType);
 	void setFunction(sf::Transformable& transformable, easeFunctions::Tmovement_function usedFunctionType);
 
 	void setDelayBefore(const float delay, const bool reset = false);
@@ -56,6 +58,7 @@ public:
 	void setDelayAfter(std::string& name, const float delay, const bool reset = false);
 	void setDelayAfter(sf::Transformable& transformable, const float delay, const bool reset = false);
 
+	void resetRoutines();
 	void resetRoutines(sf::Transformable& transformable);
 
 	// === Movement ===

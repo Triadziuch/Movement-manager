@@ -381,18 +381,7 @@ void movementDemo1(sf::RenderWindow& window) {
 		window.display();
 	}
 
-	// Clean-up
-	auto start = high_resolution_clock::now();
-	movementManager->deleteMovementRoutine("UP_ARROW_MOVEMENT");
-	movementManager->deleteMovementRoutine("DOWN_ARROW_MOVEMENT");
-	for (int i = 0; i < rows; i++) {
-		movementManager->deleteMovementRoutine("SHAPE_MOVEMENT_" + std::to_string(i));
-		movementManager->deleteScalingRoutine("SHAPE_SCALING_" + std::to_string(i));
-		movementManager->deleteRotationRoutine("SHAPE_ROTATION_" + std::to_string(i));
-	}
-	auto stop = high_resolution_clock::now();
-	auto duration = duration_cast<nanoseconds>(stop - start);
-	printf("Time taken by deleteMovementRoutine: %lld nanoseconds\n", duration.count());
+	delete movementManager;
 }
 
 // = = = = = = = = = = = = = = = = = = = = = = = = =  Plot Demo 1 = = = = = = = = = = = = = = = = = = = = = = = = = 
@@ -1178,14 +1167,6 @@ inline const sf::Vector2f randomPosition(const sf::Vector2f& min = sf::Vector2f(
 	return sf::Vector2f(static_cast<float>(rand() % static_cast<int>(max.x - min.x) + static_cast<int>(min.x)), static_cast<float>(rand() % static_cast<int>(max.y - min.y) + static_cast<int>(min.y)));
 }
 
-inline const sf::Vector2f randomScale(const sf::Vector2f& min = sf::Vector2f(0.5f, 0.5f), const sf::Vector2f& max = sf::Vector2f(1.5f, 1.5f)) {
-	return sf::Vector2f(static_cast<float>(rand() % static_cast<int>(max.x * 100 - min.x * 100) + static_cast<int>(min.x * 100)) / 100.f, static_cast<float>(rand() % static_cast<int>(max.y * 100 - min.y * 100) + static_cast<int>(min.y * 100)) / 100.f);
-}
-
-inline const float randomRotation(const float min = 0.f, const float max = 360.f) {
-	return static_cast<float>(rand() % static_cast<int>(max - min) + static_cast<int>(min));
-}
-
 inline const size_t randomEaseType(const size_t min = 0, const size_t max = 30) {
 	size_t random = static_cast<size_t>(rand() % static_cast<int>(max - min) + static_cast<int>(min));
 	if (random == 18 || random == 19 || random == 20)
@@ -1195,10 +1176,6 @@ inline const size_t randomEaseType(const size_t min = 0, const size_t max = 30) 
 
 inline const float randomDelay(const float min = 0.1f, const float max = 1.f) {
 	return static_cast<float>(rand() % static_cast<int>(max * 100 - min * 100) + static_cast<int>(min * 100)) / 100.f;
-}
-
-inline sf::Color randomColor() {
-	return sf::Color(rand() % 235 + 20, rand() % 235 + 20, rand() % 235 + 20);
 }
 
 void movementDemo3(sf::RenderWindow& window) {

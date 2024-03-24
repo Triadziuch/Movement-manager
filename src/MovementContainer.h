@@ -3,9 +3,6 @@
 #include "transformationInfo.h"
 #include <map>
 #include <assert.h>
-#include <chrono>
-
-using namespace std::chrono;
 
 class MovementManager;
 class TransformationRoutine;

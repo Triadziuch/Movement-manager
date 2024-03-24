@@ -9,7 +9,7 @@
 
 int main()
 {
-	MovementManager* movementManager = MovementManager::getInstance();
+	MovementManager* movementManager = new MovementManager();
 
 	srand(static_cast<unsigned int>(time(NULL)));
 	sf::ContextSettings settings;

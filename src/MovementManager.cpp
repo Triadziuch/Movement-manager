@@ -1,8 +1,11 @@
 #pragma once
 #include "MovementManager.h"
 
-// Singleton initialization
-MovementManager* MovementManager::sInstance = nullptr;
+inline void MovementManager::printDebug(const std::string& message) const
+{
+	if (debug)
+		printf("MovementManager: %s\n", message.c_str());
+}
 
 // Constructors / Destructors
 MovementManager::MovementManager()
@@ -15,6 +18,100 @@ MovementManager::MovementManager()
 	m_rotationRoutineContainer = new RotationRoutineContainer();
 }
 
+MovementManager::MovementManager(const MovementManager& obj)
+{
+	movementRoutineEngine = MovementRoutineEngine::getInstance();
+	movementRoutineEngine->setMovementManager(this);
+
+	m_movementRoutineContainer = new MovementRoutineContainer(*obj.m_movementRoutineContainer);
+	m_scalingRoutineContainer = new ScalingRoutineContainer(*obj.m_scalingRoutineContainer);
+	m_rotationRoutineContainer = new RotationRoutineContainer(*obj.m_rotationRoutineContainer);
+
+	for (const auto& movementRoutine : obj.m_routineMovementActive) {
+		auto* newMovementRoutine = new MovementRoutine(*movementRoutine.second);
+		auto map_iterator = m_routineMovementActive.insert(std::make_pair(movementRoutine.first, newMovementRoutine)).first;
+
+		auto routineActiveMappedFound = m_routineMovementActiveMapped.find(newMovementRoutine->getName());
+		if (routineActiveMappedFound != m_routineMovementActiveMapped.end())
+			routineActiveMappedFound->second.emplace_back(map_iterator);
+		else
+			m_routineMovementActiveMapped.insert(std::make_pair(newMovementRoutine->getName(), std::vector<std::map<sf::Transformable*, MovementRoutine*>::iterator>{ map_iterator }));
+	}
+
+	for (const auto& movementRoutine : obj.m_routineMovement) {
+		auto* newMovementRoutineContainer = new MovementRoutineContainer(*movementRoutine.second);
+		auto map_iterator = m_routineMovement.insert(std::make_pair(movementRoutine.first, newMovementRoutineContainer)).first;
+
+		std::vector<std::string> &routineNames = newMovementRoutineContainer->getRoutineNames();
+		for (std::string& name : routineNames) {
+
+			auto routineMappedFound = m_routineMovementMapped.find(name);
+			if (routineMappedFound != m_routineMovementMapped.end())
+				routineMappedFound->second.emplace_back(map_iterator);
+			else
+				m_routineMovementMapped.insert(std::make_pair(name, std::vector<std::map<sf::Transformable*, MovementRoutineContainer*>::iterator>{ map_iterator }));
+		}
+	}
+
+	m_movementRoutineContainer = new MovementRoutineContainer(*obj.m_movementRoutineContainer);
+
+	for (const auto& scalingRoutine : obj.m_routineScalingActive) {
+		auto* newScalingRoutine = new ScalingRoutine(*scalingRoutine.second);
+		auto map_iterator = m_routineScalingActive.insert(std::make_pair(scalingRoutine.first, newScalingRoutine)).first;
+
+		auto routineActiveMappedFound = m_routineScalingActiveMapped.find(newScalingRoutine->getName());
+		if (routineActiveMappedFound != m_routineScalingActiveMapped.end())
+			routineActiveMappedFound->second.emplace_back(map_iterator);
+		else
+			m_routineScalingActiveMapped.insert(std::make_pair(newScalingRoutine->getName(), std::vector<std::map<sf::Transformable*, ScalingRoutine*>::iterator>{ map_iterator }));
+	}
+
+	for (const auto& scalingRoutine : obj.m_routineScaling) {
+		auto* newScalingRoutineContainer = new ScalingRoutineContainer(*scalingRoutine.second);
+		auto map_iterator = m_routineScaling.insert(std::make_pair(scalingRoutine.first, newScalingRoutineContainer)).first;
+
+		const std::vector<std::string> &routineNames = newScalingRoutineContainer->getRoutineNames();
+		for (const std::string& name : routineNames) {
+
+			auto routineMappedFound = m_routineScalingMapped.find(name);
+			if (routineMappedFound != m_routineScalingMapped.end())
+				routineMappedFound->second.emplace_back(map_iterator);
+			else
+				m_routineScalingMapped.insert(std::make_pair(name, std::vector<std::map<sf::Transformable*, ScalingRoutineContainer*>::iterator>{ map_iterator }));
+		}
+	}
+
+	m_scalingRoutineContainer = new ScalingRoutineContainer(*obj.m_scalingRoutineContainer);
+
+	for (const auto& rotationRoutine : obj.m_routineRotationActive) {
+		auto* newRotationRoutine = new RotationRoutine(*rotationRoutine.second);
+		auto map_iterator = m_routineRotationActive.insert(std::make_pair(rotationRoutine.first, newRotationRoutine)).first;
+
+		auto routineActiveMappedFound = m_routineRotationActiveMapped.find(newRotationRoutine->getName());
+		if (routineActiveMappedFound != m_routineRotationActiveMapped.end())
+			routineActiveMappedFound->second.emplace_back(map_iterator);
+		else
+			m_routineRotationActiveMapped.insert(std::make_pair(newRotationRoutine->getName(), std::vector<std::map<sf::Transformable*, RotationRoutine*>::iterator>{ map_iterator }));
+	}
+
+	for (const auto& rotationRoutine : obj.m_routineRotation) {
+		auto* newRotationRoutineContainer = new RotationRoutineContainer(*rotationRoutine.second);
+		auto map_iterator = m_routineRotation.insert(std::make_pair(rotationRoutine.first, newRotationRoutineContainer)).first;
+
+		const std::vector<std::string> &routineNames = newRotationRoutineContainer->getRoutineNames();
+		for (const std::string& name : routineNames) {
+
+			auto routineMappedFound = m_routineRotationMapped.find(name);
+			if (routineMappedFound != m_routineRotationMapped.end())
+				routineMappedFound->second.emplace_back(map_iterator);
+			else
+				m_routineRotationMapped.insert(std::make_pair(name, std::vector<std::map<sf::Transformable*, RotationRoutineContainer*>::iterator>{ map_iterator }));
+		}
+	}
+
+	m_rotationRoutineContainer = new RotationRoutineContainer(*obj.m_rotationRoutineContainer);
+}
+
 MovementManager::~MovementManager()
 {
 	this->deleteMovementRoutine();
@@ -22,19 +119,8 @@ MovementManager::~MovementManager()
 	this->deleteRotationRoutine();
 
 	delete m_movementRoutineContainer;
-}
-
-inline void MovementManager::printDebug(const std::string& message) const
-{
-	if (debug)
-		printf("MovementManager: %s\n", message.c_str());
-}
-
-MovementManager* MovementManager::getInstance()
-{
-	if (!sInstance)
-		sInstance = new MovementManager();
-	return sInstance;
+	delete m_scalingRoutineContainer;
+	delete m_rotationRoutineContainer;
 }
 
 // Update functions

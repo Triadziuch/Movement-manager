@@ -71,7 +71,7 @@ SidePanel::SidePanel(const sf::RenderTarget& window, const std::string& fontPath
 	m_titleFontSize{ titleFontSize },
 	m_textFontSize{ textFontSize },
 	m_padding{ padding },
-	m_movementManager{ MovementManager::getInstance() }
+	m_movementManager{ new MovementManager() }
 {
 	// Font initialization
 	if (!m_font.loadFromFile(m_fontPath)) 
@@ -109,7 +109,7 @@ SidePanel::SidePanel(const sf::RenderTarget& window, const std::string& fontPath
 }
 
 SidePanel::SidePanel(const SidePanel& obj) :
-	m_movementManager{ MovementManager::getInstance() },
+	m_movementManager{ new MovementManager() },
 	m_window{ obj.m_window },
 	m_fontPath{ obj.m_fontPath },
 	m_font{ obj.m_font },

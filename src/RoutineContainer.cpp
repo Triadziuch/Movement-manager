@@ -69,6 +69,14 @@ const size_t& RoutineContainer::getRoutineCount() const
 	return m_routines.size();
 }
 
+std::vector<std::string>& RoutineContainer::getRoutineNames() const
+{
+	std::vector<std::string> routineNames{ m_routines.size() };
+	for (const auto& routine : m_routines)
+		routineNames.push_back(*routine.first);
+	return routineNames;
+}
+
 // - - - - - - - - - - - - - - - - - - - - MovementRoutineContainer - - - - - - - - - - - - - - - - - - - - \\
 
 // Constructors / Destructors
@@ -79,6 +87,15 @@ MovementRoutineContainer::MovementRoutineContainer() :
 MovementRoutineContainer::MovementRoutineContainer(MovementRoutineEngine * movementRoutineEnginePtr) :
 	RoutineContainer{ movementRoutineEnginePtr }
 	{}
+
+MovementRoutineContainer::MovementRoutineContainer(const MovementRoutineContainer & obj)
+{
+	for (const auto& routine : obj.m_movementRoutines) 
+		m_movementRoutines.insert(std::make_pair(routine.first, new MovementRoutine(*routine.second)));
+
+	for (const auto& routine : obj.m_movementRoutines)
+		m_routines.insert(std::make_pair(&routine.second->getName(), static_cast<TransformationRoutine*>(routine.second)));
+}
 
 MovementRoutineContainer::~MovementRoutineContainer()
 {
@@ -205,6 +222,15 @@ ScalingRoutineContainer::ScalingRoutineContainer(MovementRoutineEngine* movement
 	RoutineContainer{ movementRoutineEnginePtr }
 	{}
 
+ScalingRoutineContainer::ScalingRoutineContainer(const ScalingRoutineContainer & obj)
+{
+	for (const auto& routine : obj.m_scalingRoutines)
+		m_scalingRoutines.insert(std::make_pair(routine.first, new ScalingRoutine(*routine.second)));
+
+	for (const auto& routine : obj.m_scalingRoutines)
+		m_routines.insert(std::make_pair(&routine.second->getName(), static_cast<TransformationRoutine*>(routine.second)));
+}
+
 ScalingRoutineContainer::~ScalingRoutineContainer()
 {
 	for (auto& routine : m_scalingRoutines)
@@ -326,6 +352,15 @@ RotationRoutineContainer::RotationRoutineContainer() :
 RotationRoutineContainer::RotationRoutineContainer(MovementRoutineEngine* movementRoutineEnginePtr) :
 	RoutineContainer{ movementRoutineEnginePtr }
 	{}
+
+RotationRoutineContainer::RotationRoutineContainer(const RotationRoutineContainer & obj)
+{
+	for (const auto& routine : obj.m_rotationRoutines)
+		m_rotationRoutines.insert(std::make_pair(routine.first, new RotationRoutine(*routine.second)));
+
+	for (const auto& routine : obj.m_rotationRoutines)
+		m_routines.insert(std::make_pair(&routine.second->getName(), static_cast<TransformationRoutine*>(routine.second)));
+}
 
 RotationRoutineContainer::~RotationRoutineContainer()
 {

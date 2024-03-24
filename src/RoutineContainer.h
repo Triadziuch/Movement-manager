@@ -24,6 +24,7 @@ public:
 	void setDelayAfter(std::string& name, const float delay, const bool reset = false);
 
 	const size_t& getRoutineCount() const;
+	std::vector<std::string>& getRoutineNames() const;
 };
 
 class MovementRoutineContainer : public RoutineContainer {
@@ -34,6 +35,7 @@ public:
 	// Constructors / Destructors
 	MovementRoutineContainer();
 	MovementRoutineContainer(MovementRoutineEngine* movementRoutineEnginePtr);
+	MovementRoutineContainer(const MovementRoutineContainer& obj);
 	~MovementRoutineContainer();
 
 	// Public functions
@@ -60,6 +62,7 @@ public:
 	// Constructors / Destructors
 	ScalingRoutineContainer();
 	ScalingRoutineContainer(MovementRoutineEngine* movementRoutineEnginePtr);
+	ScalingRoutineContainer(const ScalingRoutineContainer& obj);
 	~ScalingRoutineContainer();
 
 	// Public functions
@@ -86,6 +89,7 @@ public:
 	// Constructors / Destructors
 	RotationRoutineContainer();
 	RotationRoutineContainer(MovementRoutineEngine* movementRoutineEnginePtr);
+	RotationRoutineContainer(const RotationRoutineContainer& obj);
 	~RotationRoutineContainer();
 
 	RotationRoutine* exists(const std::string& name);

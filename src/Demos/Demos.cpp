@@ -6,7 +6,7 @@ using namespace std::chrono;
 
 // = = = = = = = = = = = = = = = = = = = = = = = = =  Movement Demo 1 = = = = = = = = = = = = = = = = = = = = = = = = = 
 void movementDemo1(sf::RenderWindow& window) {
-	MovementManager* movementManager = MovementManager::getInstance();
+	MovementManager* movementManager = new MovementManager();
 
 	// Config
 	bool running = true;
@@ -398,7 +398,7 @@ void movementDemo1(sf::RenderWindow& window) {
 // = = = = = = = = = = = = = = = = = = = = = = = = =  Plot Demo 1 = = = = = = = = = = = = = = = = = = = = = = = = = 
 void plotDemo(sf::RenderWindow& window)
 {
-	MovementManager* movementManager = MovementManager::getInstance();
+	MovementManager* movementManager = new MovementManager();
 
 	// Config
 	bool running = true;
@@ -540,7 +540,7 @@ void plotDemo(sf::RenderWindow& window)
 void movementDemo2(sf::RenderWindow& window)
 {
 	// Configuration
-	MovementManager* movementManager = MovementManager::getInstance();
+	MovementManager* movementManager = new MovementManager();
 	bool running = true;
 	float delay_before = 0.3f, animation_time = 0.5f, delay_after = 0.3f;
 
@@ -1202,7 +1202,7 @@ inline sf::Color randomColor() {
 }
 
 void movementDemo3(sf::RenderWindow& window) {
-	MovementManager* movementManager = MovementManager::getInstance();
+	MovementManager* movementManager = new MovementManager();
 
 	long long int time_movement{};
 	float average_time_ms = 0.f;
@@ -1523,8 +1523,7 @@ void movementDemo3(sf::RenderWindow& window) {
 		window.display();
 	}
 
-	for (size_t i = 0; i < routines; ++i) 
-		movementManager->deleteMovementRoutine("SM" + std::to_string(i));
+	delete movementManager;
 
 	for (size_t i = 0; i < shapes.size(); ++i)
 		delete shapes[i];

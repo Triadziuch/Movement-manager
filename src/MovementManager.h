@@ -5,9 +5,9 @@
 
 class MovementManager {
 private:
-	// Singleton instance
-	static MovementManager* sInstance;
-
+	// Movement container
+	MovementRoutineEngine* movementRoutineEngine;
+	
 	bool debug = false;
 
 	std::map<sf::Transformable*, MovementRoutine*> m_routineMovementActive;
@@ -31,20 +31,12 @@ private:
 	std::unordered_map<std::string, std::vector<std::map<sf::Transformable*, RotationRoutineContainer*>::iterator> > m_routineRotationMapped;
 	RotationRoutineContainer* m_rotationRoutineContainer;
 
-	// Constructors / Destructors
-	MovementManager();
-	~MovementManager();
-
 	inline void printDebug(const std::string& message) const;
 
 public:
-	MovementManager(const MovementManager&) = delete;
-	MovementManager& operator=(const MovementManager&) = delete;
-
-	static MovementManager* getInstance();
-
-	// Movement container
-	MovementRoutineEngine* movementRoutineEngine;
+	MovementManager();
+	MovementManager(const MovementManager& obj);
+	~MovementManager();
 
 	// Update functions
 	void update(const float dt);

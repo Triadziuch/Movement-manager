@@ -91,8 +91,6 @@ public:
 	MovementRoutineEngine(const MovementRoutineEngine& obj);
 	MovementRoutineEngine(MovementManager* movementManager);
 
-	void setMovementManager(MovementManager* movementManager);
-
 	// Update functions
 	void update(float dt);
 

@@ -409,11 +409,6 @@ MovementRoutineEngine::MovementRoutineEngine(const MovementRoutineEngine& obj) :
 
 MovementRoutineEngine::MovementRoutineEngine(MovementManager* movementManager) : movementManager(movementManager) {}
 
-void MovementRoutineEngine::setMovementManager(MovementManager* movementManager)
-{
-	movementManager = movementManager;
-}
-
 void MovementRoutineEngine::update(float dt)
 {
 	int it = 0;
@@ -450,7 +445,7 @@ const MovementRoutine* MovementRoutineEngine::addMovement(sf::Transformable* tra
 	auto routinesFound = routinesMap.find(transformable);
 
 	if (routinesFound != routinesMap.end() && std::get<0>(*routinesFound->second) != nullptr) {
-		printf("MovementRoutineEngine::addMovement: MovementRoutine already exists for this shape\n");
+		printDebug("MovementRoutineEngine::addMovement: MovementRoutine already exists for this shape\n");
 		return nullptr;
 	}
 	else if (routinesFound == routinesMap.end()) {
@@ -523,7 +518,7 @@ const ScalingRoutine* MovementRoutineEngine::addScaling(sf::Transformable* trans
 	auto routinesFound = routinesMap.find(transformable);
 
 	if (routinesFound != routinesMap.end() && std::get<1>(*routinesFound->second) != nullptr) {
-		printf("MovementRoutineEngine::addScaling: ScalingRoutine already exists for this shape\n");
+		printDebug("MovementRoutineEngine::addScaling: ScalingRoutine already exists for this shape\n");
 		return nullptr;
 	}
 	else if (routinesFound == routinesMap.end()) {
@@ -596,7 +591,7 @@ const RotationRoutine* MovementRoutineEngine::addRotation(sf::Transformable* tra
 	auto routinesFound = routinesMap.find(transformable);
 
 	if (routinesFound != routinesMap.end() && std::get<2>(*routinesFound->second) != nullptr) {
-		printf("MovementRoutineEngine::addRotation: RotationRoutine already exists for this shape\n");
+		printDebug("MovementRoutineEngine::addRotation: RotationRoutine already exists for this shape\n");
 		return nullptr;
 	}
 	else if (routinesFound == routinesMap.end()) {

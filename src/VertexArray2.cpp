@@ -26,7 +26,7 @@ VertexArray2::VertexArray2() : sf::VertexArray{}, m_centroid{}, m_needCentroidUp
 VertexArray2::VertexArray2(sf::PrimitiveType type, size_t vertexCount) : sf::VertexArray{ type, vertexCount },
 							   m_centroid{}, m_needCentroidUpdate{ false } {}
 
-VertexArray2::VertexArray2(const VertexArray2& other) : sf::VertexArray{ other }, m_centroid{ other.m_centroid },
+VertexArray2::VertexArray2(const VertexArray2& other) : sf::VertexArray{ other }, sf::Transformable{ other }, m_centroid{ other.m_centroid },
 							   m_needCentroidUpdate{ other.m_needCentroidUpdate } {}
 
 VertexArray2::~VertexArray2() { 

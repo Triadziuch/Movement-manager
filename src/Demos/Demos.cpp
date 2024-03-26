@@ -1,6 +1,5 @@
 #include "Demos.h"
 #include <chrono>
-#include <boost/tuple/tuple.hpp>
 
 using namespace std::chrono;
 
@@ -385,7 +384,7 @@ void movementDemo1(sf::RenderWindow& window) {
 	delete movementManager;
 }
 
-// = = = = = = = = = = = = = = = = = = = = = = = = =  Plot Demo 1 = = = = = = = = = = = = = = = = = = = = = = = = = 
+// = = = = = = = = = = = = = = = = = = = = = = = = =    Plot Demo 1   = = = = = = = = = = = = = = = = = = = = = = = = = 
 void plotDemo(sf::RenderWindow& window)
 {
 	MovementManager* movementManager = new MovementManager();
@@ -543,32 +542,30 @@ void movementDemo2(sf::RenderWindow& window)
 	sf::Clock dt_clock;
 	float dt;
 
-	// ----- Movement Container testing ----- //
 	sf::CircleShape shape[4];
-
-	for (int i = 0; i < 4; i++) {
+	for (size_t i = 0; i < 4; i++) {
 		shape[i].setPointCount(3);
 		shape[i].setRadius(50.f);
 		shape[i].setFillColor(sf::Color::Blue);
 		shape[i].setOrigin(shape[i].getRadius(), shape[i].getRadius());
-		shape[i].setPosition(400.f, 240.f + 200.f * i);
+		shape[i].setPosition(400.f, 240.f + 200.f * static_cast<float>(i));
 	}
 
 	std::vector<VertexArray2> arrows;
-	for (int i = 0; i < 4; i++) {
+	for (size_t i = 0; i < 4; i++) {
 		VertexArray2 arrow(sf::LineStrip, 3u);
-		arrow[0].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f - 40.f, 240.f + 200.f * i);
-		arrow[1].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f, 210.f + 200.f * i);
-		arrow[2].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f + 40.f, 240.f + 200.f * i);
+		arrow[0].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f - 40.f, 240.f + 200.f * static_cast<float>(i));
+		arrow[1].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f, 210.f + 200.f * static_cast<float>(i));
+		arrow[2].position = sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f + 40.f, 240.f + 200.f * static_cast<float>(i));
 
 		arrow.setOrigin(arrow.getCentroid());
-		arrow.setPosition(600.f, 240.f + 200.f * i);
+		arrow.setPosition(600.f, 240.f + 200.f * static_cast<float>(i));
 		arrows.push_back(arrow);
 	}
 
-	bool adjust_start_movement = false;
-	bool adjust_all_movement = false;
-	bool looping_movement = false;
+	bool adjust_start_movement = false,
+		 adjust_all_movement = false,
+		 looping_movement = false;
 
 	sf::Vector2f starting_offset1(0.f, 0.f);
 	sf::Vector2f ending_offset1 = sf::Vector2f(300.f, -100.f) + starting_offset1;
@@ -688,6 +685,8 @@ void movementDemo2(sf::RenderWindow& window)
 		movementManager->update(dt);
 		side_panel.update(dt);
 
+
+		// Event handling
 		sf::Event event;
 		if (window.pollEvent(event))
 		{
@@ -695,35 +694,34 @@ void movementDemo2(sf::RenderWindow& window)
 				running = false;
 
 			if (event.type == sf::Event::KeyPressed) {
-				// Start all
+
+				// Start all routines
 				if (event.key.code == sf::Keyboard::Space) 
 					for (size_t i = 0; i < 4; i++) {
 						movementManager->startMovementRoutine(shape[i], "TestowyM" + std::to_string(i + 1));
-						movementManager->startMovementRoutine(arrows[i], "TestowyMVA" + std::to_string(i + 1));
-
 						movementManager->startScalingRoutine(shape[i], "TestowyS" + std::to_string(i + 1));
-						movementManager->startScalingRoutine(arrows[i], "TestowySVA" + std::to_string(i + 1));
-
 						movementManager->startRotationRoutine(shape[i], "TestowyR" + std::to_string(i + 1));
+
+						movementManager->startMovementRoutine(arrows[i], "TestowyMVA" + std::to_string(i + 1));
+						movementManager->startScalingRoutine(arrows[i], "TestowySVA" + std::to_string(i + 1));
 						movementManager->startRotationRoutine(arrows[i], "TestowyRVA" + std::to_string(i + 1));
 					}
 
-				// Start rotation
+				// Start rotation routines
 				if (event.key.code == sf::Keyboard::R) 
 					for (size_t i = 0; i < 4; i++) {
 						movementManager->startRotationRoutine(shape[i], "TestowyR" + std::to_string(i + 1));
 						movementManager->startRotationRoutine(arrows[i], "TestowyRVA" + std::to_string(i + 1));
 					}
 
-				// Start movement
+				// Start movement routines
 				if (event.key.code == sf::Keyboard::M) 
 					for (size_t i = 0; i < 4; i++) {
 						movementManager->startMovementRoutine(shape[i], "TestowyM" + std::to_string(i + 1));
 						movementManager->startMovementRoutine(arrows[i], "TestowyMVA" + std::to_string(i + 1));
 					}
 				
-
-				// Start scaling
+				// Start scaling routines
 				if (event.key.code == sf::Keyboard::S) 
 					for (size_t i = 0; i < 4; i++) {
 						movementManager->startScalingRoutine(shape[i], "TestowyS" + std::to_string(i + 1));
@@ -741,7 +739,6 @@ void movementDemo2(sf::RenderWindow& window)
 						arrows[i].setRotation(0.f);
 						arrows[i].setScale(1.f, 1.f);
 					}
-
 
 					looping_movement = false;
 					looping_rotation = false;
@@ -780,7 +777,7 @@ void movementDemo2(sf::RenderWindow& window)
 						adjust_all_text.setString("Adjust all to current transform: OFF");
 				}
 
-				if (event.key.code == sf::Keyboard::A || event.key.code == sf::Keyboard::F || event.key.code == sf::Keyboard::Q) {
+				if (event.key.code == sf::Keyboard::A || event.key.code == sf::Keyboard::F || event.key.code == sf::Keyboard::Q) 
 					for (size_t i = 0; i < 4; ++i) {
 						movementManager->unlinkMovementRoutine(&shape[i], "TestowyM" + std::to_string(i + 1));
 						auto movementRoutine = movementManager->linkMovementRoutine(shape[i], "TestowyM" + std::to_string(i + 1));
@@ -818,7 +815,6 @@ void movementDemo2(sf::RenderWindow& window)
 						rotationRoutine->adjustAllToCurrentTransform(adjust_all_rotation);
 						rotationRoutine->setLooping(looping_rotation);
 					}
-				}
 
 				// Looping movement
 				if (event.key.code == sf::Keyboard::L) {
@@ -843,9 +839,9 @@ void movementDemo2(sf::RenderWindow& window)
 				}
 
 				// Show controls
-				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::C) {
+				if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::C) 
 					side_panel.toggle();
-				}
+				
 			}
 		}
 		window.clear();
@@ -890,7 +886,6 @@ void movementDemo3(sf::RenderWindow& window) {
 	bool synced = false, gui = true, running = true, synchronization = false;
 	int it = 0;
 
-	// Config
 	int current_ease_type = 1;
 	const int easeTypeSize = 31;
 	bool random_ease_type = true;
@@ -978,6 +973,7 @@ void movementDemo3(sf::RenderWindow& window) {
 		side_panel.update(dt);
 		it++;
 
+		// Calculate upadte time
 		if (it == 100 && !synced) {
 			synced = true;
 			it = 0;
@@ -994,6 +990,7 @@ void movementDemo3(sf::RenderWindow& window) {
 			}
 		}
 
+		// Event handling
 		sf::Event event;
 		if (window.pollEvent(event))
 		{
@@ -1001,6 +998,8 @@ void movementDemo3(sf::RenderWindow& window) {
 				running = false;
 
 			if (event.type == sf::Event::KeyPressed) {
+
+				// Increase / Decrease shape amount
 				if (event.key.code == sf::Keyboard::Up) {
 					if (shapes_count + 1000 <= routines) {
 						for (size_t i = static_cast<size_t>(shapes_count); i < static_cast<size_t>(shapes_count) + 1000; ++i) {
@@ -1051,6 +1050,7 @@ void movementDemo3(sf::RenderWindow& window) {
 					}
 				}
 
+				// Toggle movement synchronization
 				if (event.key.code == sf::Keyboard::S) {
 					synchronization = !synchronization;
 
@@ -1071,6 +1071,7 @@ void movementDemo3(sf::RenderWindow& window) {
 					}
 				}
 
+				// Change current function
 				if (event.key.code == sf::Keyboard::Left) {
 					random_ease_type = false;
 					current_ease_type--;
@@ -1092,6 +1093,7 @@ void movementDemo3(sf::RenderWindow& window) {
 					current_function_text.setString("Current function: " + easeFunctions::getFunctionName(current_ease_type));
 				}
 
+				// Reset demo
 				if (event.key.code == sf::Keyboard::Q) {
 					current_ease_type = 1;
 					shape_size = sf::Vector2f(2.f, 2.f);
@@ -1136,6 +1138,7 @@ void movementDemo3(sf::RenderWindow& window) {
 					current_function_text.setString("Current function: Random");
 				}
 
+				// Decrease / increase shape size
 				if (event.key.code == sf::Keyboard::LBracket) {
 					shape_size.x -= 0.2f;
 					shape_size.y -= 0.2f;
@@ -1169,9 +1172,11 @@ void movementDemo3(sf::RenderWindow& window) {
 					shape_size_text.setString("Shape size: " + std::format("{:.2f}", shape_size.x));
 				}
 
+				// Toggle GUI
 				if (event.key.code == sf::Keyboard::G)
 					gui = !gui;
 
+				// Show controls
 				if (event.key.code == sf::Keyboard::C)
 					side_panel.toggle();
 			}

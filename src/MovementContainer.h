@@ -96,41 +96,30 @@ public:
 
 	// Public functions
 
-	// Movement functions
+	// = = = = = Movement functions = = = = = 
 	const MovementRoutine* addMovement(sf::Transformable* transformable, MovementRoutine* routine);
 
-	void undoMovement();
-	void undoMovement(sf::Transformable* transformable);
-
 	void resetMovement();
+	void resetMovement(sf::Transformable* transformable);
 
 	void stopMovement();
 	void stopMovement(sf::Transformable* transformable);
 
-	// Scaling functions
+	// = = = = = Scaling functions = = = = = 
 	const ScalingRoutine* addScaling(sf::Transformable* transformable, ScalingRoutine* routine);
 
-	void undoScaling();
-	void undoScaling(sf::Transformable* transformable);
-
 	void resetScaling();
+	void resetScaling(sf::Transformable* transformable);
 
 	void stopScaling();
 	void stopScaling(sf::Transformable* transformable);
 
-	// Rotation functions
+	// = = = = = Rotation functions = = = = = 
 	const RotationRoutine* addRotation(sf::Transformable* transformable, RotationRoutine* routine);
 
-	void undoRotation();
-	void undoRotation(sf::Transformable* transformable);
-
 	void resetRotation();
+	void resetRotation(sf::Transformable* transformable);
 
 	void stopRotation();
 	void stopRotation(sf::Transformable* transformable);
-
-	// Accessors / Mutators
-	const bool isMoving(sf::Transformable* transformable);
-	const bool isScaling(sf::Transformable* transformable);
-	const bool isRotating(sf::Transformable* transformable);
 };

@@ -439,6 +439,7 @@ void MovementRoutineEngine::update(float dt)
 	}
 }
 
+// = = = = = Movement functions = = = = = 
 const MovementRoutine* MovementRoutineEngine::addMovement(sf::Transformable* transformable, MovementRoutine* routine)
 {
 	auto& routinesMap = m_Routines;
@@ -460,14 +461,6 @@ const MovementRoutine* MovementRoutineEngine::addMovement(sf::Transformable* tra
 	return routine;
 }
 
-void MovementRoutineEngine::undoMovement()
-{
-}
-
-void MovementRoutineEngine::undoMovement(sf::Transformable* transformable)
-{
-}
-
 void MovementRoutineEngine::resetMovement()
 {
 	for (auto routines = m_Routines.begin(); routines != m_Routines.end();) {
@@ -477,6 +470,22 @@ void MovementRoutineEngine::resetMovement()
 		if (movement) {
 			movement->TransformationRoutine::reset();
 			routines->first->setPosition(movement->getCurrentMovement()->getStartingPos());
+		}
+	}
+}
+
+void MovementRoutineEngine::resetMovement(sf::Transformable* transformable)
+{
+	auto& routinesMap = m_Routines;
+	auto routinesFound = routinesMap.find(transformable);
+
+	if (routinesFound != routinesMap.end()) {
+		auto& routinesTuple = routinesFound->second;
+		auto& movement = std::get<0>(*routinesTuple);
+
+		if (movement) {
+			movement->TransformationRoutine::reset();
+			transformable->setPosition(movement->getCurrentMovement()->getStartingPos());
 		}
 	}
 }
@@ -512,6 +521,7 @@ void MovementRoutineEngine::stopMovement(sf::Transformable* transformable)
 	}
 }
 
+// = = = = = Scaling functions = = = = = 
 const ScalingRoutine* MovementRoutineEngine::addScaling(sf::Transformable* transformable, ScalingRoutine* routine)
 {
 	auto& routinesMap = m_Routines;
@@ -533,14 +543,6 @@ const ScalingRoutine* MovementRoutineEngine::addScaling(sf::Transformable* trans
 	return routine;
 }
 
-void MovementRoutineEngine::undoScaling()
-{
-}
-
-void MovementRoutineEngine::undoScaling(sf::Transformable* transformable)
-{
-}
-
 void MovementRoutineEngine::resetScaling()
 {
 	for (auto routines = m_Routines.begin(); routines != m_Routines.end();) {
@@ -550,6 +552,22 @@ void MovementRoutineEngine::resetScaling()
 		if (scaling) {
 			scaling->TransformationRoutine::reset();
 			routines->first->setScale(scaling->getCurrentScaling()->getStartingScale());
+		}
+	}
+}
+
+void MovementRoutineEngine::resetScaling(sf::Transformable* transformable)
+{
+	auto& routinesMap = m_Routines;
+	auto routinesFound = routinesMap.find(transformable);
+
+	if (routinesFound != routinesMap.end()) {
+		auto& routinesTuple = routinesFound->second;
+		auto& scaling = std::get<1>(*routinesTuple);
+
+		if (scaling) {
+			scaling->TransformationRoutine::reset();
+			transformable->setScale(scaling->getCurrentScaling()->getStartingScale());
 		}
 	}
 }
@@ -585,6 +603,7 @@ void MovementRoutineEngine::stopScaling(sf::Transformable* transformable)
 	}
 }
 
+// = = = = = Rotation functions = = = = = 
 const RotationRoutine* MovementRoutineEngine::addRotation(sf::Transformable* transformable, RotationRoutine* routine)
 {
 	auto& routinesMap = m_Routines;
@@ -606,14 +625,6 @@ const RotationRoutine* MovementRoutineEngine::addRotation(sf::Transformable* tra
 	return routine;
 }
 
-void MovementRoutineEngine::undoRotation()
-{
-}
-
-void MovementRoutineEngine::undoRotation(sf::Transformable* transformable)
-{
-}
-
 void MovementRoutineEngine::resetRotation()
 {
 	for (auto routines = m_Routines.begin(); routines != m_Routines.end();) {
@@ -623,6 +634,22 @@ void MovementRoutineEngine::resetRotation()
 		if (rotation) {
 			rotation->TransformationRoutine::reset();
 			routines->first->setRotation(rotation->getCurrentRotation()->getStartingRotation());
+		}
+	}
+}
+
+void MovementRoutineEngine::resetRotation(sf::Transformable* transformable)
+{
+	auto& routinesMap = m_Routines;
+	auto routinesFound = routinesMap.find(transformable);
+
+	if (routinesFound != routinesMap.end()) {
+		auto& routinesTuple = routinesFound->second;
+		auto& rotation = std::get<2>(*routinesTuple);
+
+		if (rotation) {
+			rotation->TransformationRoutine::reset();
+			transformable->setRotation(rotation->getCurrentRotation()->getStartingRotation());
 		}
 	}
 }
@@ -654,19 +681,4 @@ void MovementRoutineEngine::stopRotation(sf::Transformable* transformable)
 			routinesMap.erase(routinesFound);
 		}
 	}
-}
-
-const bool MovementRoutineEngine::isMoving(sf::Transformable* transformable)
-{
-	return false;
-}
-
-const bool MovementRoutineEngine::isScaling(sf::Transformable* transformable)
-{
-	return false;
-}
-
-const bool MovementRoutineEngine::isRotating(sf::Transformable* transformable)
-{
-	return false;
 }

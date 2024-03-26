@@ -56,11 +56,11 @@ int main()
 		dt = dt_clock.restart().asSeconds();
 		movementManager->update(dt);
 
+		// Event handling
 		sf::Event event;
 		if (window.pollEvent(event)) {
 			if (event.type == sf::Event::Closed || (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape))
 				running = false;
-
 
 			if (event.type == sf::Event::KeyPressed) {
 				if (event.key.code == sf::Keyboard::Up || event.key.code == sf::Keyboard::W) {

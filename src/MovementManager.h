@@ -61,6 +61,8 @@ public:
 	void resetRoutines();
 	void resetRoutines(sf::Transformable& transformable);
 
+	const long long int getSize() const;
+
 	// === Movement ===
 	MovementRoutine* createMovementRoutine(const std::string& name);
 

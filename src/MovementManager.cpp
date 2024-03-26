@@ -352,6 +352,11 @@ void MovementManager::resetRoutines(sf::Transformable& transformable)
 		rotationRoutineFound->second->reset(transformable);
 }
 
+const long long int MovementManager::getSize() const
+{
+	return getSizeMovement() + getSizeScaling() + getSizeRotation();
+}
+
 // - - - - - - - - - - - - - - - - - - - - Movement  - - - - - - - - - - - - - - - - - - - - \\
 
 MovementRoutine* MovementManager::createMovementRoutine(const std::string& name)

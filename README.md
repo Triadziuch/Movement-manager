@@ -24,6 +24,9 @@ The Plot demo is a demonstration of simple Graph class, designed for drawing eas
 # Examples of Implementation
 MovementManager was used to create fluid animations for a clone of the game 2048. The repository showcasing the result of this implementation can be found [here](https://github.com/Triadziuch/2048).
 
+## Dependencies
+Before running this application, ensure that you have installed the Visual C++ Redistributable for Visual Studio 2015-2022. You can download it from the official Microsoft website [here](https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads).
+
 ## License
 Copyright © 2024 by Triadziuch
 

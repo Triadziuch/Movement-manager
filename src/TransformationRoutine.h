@@ -9,18 +9,18 @@ class TransformationRoutine {
 protected:
 	MovementRoutineEngine* m_movementRoutineEngine{};
 	std::vector <transformationInfo*> m_transformations;
-	bool				   m_adjustStartToCurrentTransform{};
-	bool				   m_adjustAllToCurrentTransform{};
-	bool				   m_isLooping{};
+	bool m_adjustStartToCurrentTransform{};
+	bool m_adjustAllToCurrentTransform{};
+	bool m_isLooping{};
 
 public:
-	std::string			   m_routineName{};
-	size_t				   m_current{};
-	size_t				   m_count{};
-	bool				   m_isActive{};
-	bool				   m_isPaused{};
-	bool				   m_pauseAtStart{};
-	bool				   m_pauseAfterChangingMovements{};
+	std::string	m_routineName{};
+	size_t		m_current{};
+	size_t		m_count{};
+	bool		m_isActive{};
+	bool		m_isPaused{};
+	bool		m_pauseAtStart{};
+	bool		m_pauseAfterChangingMovements{};
 
 	// Constructors / Destructors
 	TransformationRoutine() = delete;

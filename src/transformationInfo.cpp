@@ -22,9 +22,9 @@ transformationInfo::transformationInfo(bool repeat, float motionDuration, float 
 	m_totalDuration{ delayBefore + motionDuration + delayAfter }
 	{}
 
-transformationInfo::transformationInfo(bool repeat, float _current__time, float motionDuration, float delayBefore, float delayAfter, double(*usedFunctionPtr)(double)) :
+transformationInfo::transformationInfo(bool repeat, float currentTime, float motionDuration, float delayBefore, float delayAfter, double(*usedFunctionPtr)(double)) :
 	m_repeat{ repeat }, 
-	m_currentTime{ _current__time }, 
+	m_currentTime{ currentTime },
 	m_motionDuration{ motionDuration }, 
 	m_delayBefore{ delayBefore }, 
 	m_delayAfter{ delayAfter }, 

@@ -33,7 +33,7 @@ public:
 	// Update functions
 	void update(float dt);
 
-	// Public functions
+
 
 	// Movement functions
 	const movementInfo* addMovement(sf::Transformable* transformable, movementInfo* movement);
@@ -47,6 +47,8 @@ public:
 	void stopMovement();
 	void stopMovement(sf::Transformable* transformable);
 
+
+
 	// Scaling functions
 	const scalingInfo* addScaling(sf::Transformable* transformable, scalingInfo* scaling);
 
@@ -58,6 +60,8 @@ public:
 
 	void stopScaling();
 	void stopScaling(sf::Transformable* transformable);
+
+
 
 	// Rotation functions
 	const rotationInfo* addRotation(sf::Transformable* transformable, rotationInfo* rotation);
@@ -96,6 +100,8 @@ public:
 
 	// Public functions
 
+
+
 	// = = = = = Movement functions = = = = = 
 	const MovementRoutine* addMovement(sf::Transformable* transformable, MovementRoutine* routine);
 
@@ -105,6 +111,8 @@ public:
 	void stopMovement();
 	void stopMovement(sf::Transformable* transformable);
 
+
+
 	// = = = = = Scaling functions = = = = = 
 	const ScalingRoutine* addScaling(sf::Transformable* transformable, ScalingRoutine* routine);
 
@@ -113,6 +121,8 @@ public:
 
 	void stopScaling();
 	void stopScaling(sf::Transformable* transformable);
+
+
 
 	// = = = = = Rotation functions = = = = = 
 	const RotationRoutine* addRotation(sf::Transformable* transformable, RotationRoutine* routine);

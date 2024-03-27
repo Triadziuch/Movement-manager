@@ -8,19 +8,19 @@
  
 class transformationInfo {
 public:
-	bool		  m_repeat{};
-	float		  m_currentTime{};
-	float		  m_motionDuration{};
-	float		  m_delayBefore{};
-	float		  m_delayAfter{};
-	float		  m_totalDuration{};
-	double		  (*m_usedFunctionPtr)(double) {};
+	bool	m_repeat{};
+	float	m_currentTime{};
+	float	m_motionDuration{};
+	float	m_delayBefore{};
+	float	m_delayAfter{};
+	float	m_totalDuration{};
+	double	(*m_usedFunctionPtr)(double) {};
 
 	// Constructors / Destructors
 	transformationInfo() = default;
 	transformationInfo(bool repeat, float motionDuration, float delayBefore, float delayAfter, easeFunctions::Tmovement_function usedFunctionType);
 	transformationInfo(bool repeat, float motionDuration, float delayBefore, float delayAfter, double (*usedFunctionPtr)(double));
-	transformationInfo(bool repeat, float _current__time, float motionDuration, float delayBefore, float delayAfter, double (*usedFunctionPtr)(double));
+	transformationInfo(bool repeat, float currentTime, float motionDuration, float delayBefore, float delayAfter, double (*usedFunctionPtr)(double));
 	transformationInfo(const transformationInfo& obj);
 	virtual ~transformationInfo() = default;
 
